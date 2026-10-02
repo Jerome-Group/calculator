@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { sourceToLatex } from "@/lib/calculator/notation";
 import Choice from "./Choice";
 import MathView from "./MathView";
 import type { Definition, Operation } from "@/lib/calculator/types";
@@ -50,39 +50,21 @@ export function Preview({
   source: string;
   block?: boolean;
 }) {
-  const [latex, setLatex] = useState("");
-  useEffect(() => {
-    let active = true;
-    import("mathlive")
-      .then((m) => {
-        if (active) {
-          const rows = matrixRows(source);
-          setLatex(
-            source.startsWith("latex:")
-              ? source.slice(6)
-              : rows
-                ? "\\begin{pmatrix}" +
-                  rows
-                    .map((r) =>
-                      r.map((x) => m.convertAsciiMathToLatex(x)).join("&"),
-                    )
-                    .join("\\\\") +
-                  "\\end{pmatrix}"
-                : m
-                    .convertAsciiMathToLatex(source)
-                    .replace(/\\lbrack(?=[A-Za-z])/g, "\\lbrack "),
-          );
-        }
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, [source]);
+  const rows = matrixRows(source);
+  let latex = sourceToLatex(source);
+  if (rows) {
+    const cells = rows.map((row) => row.map(sourceToLatex));
+    if (cells.every((row) => row.every((cell) => cell !== null)))
+      latex =
+        "\\begin{pmatrix}" +
+        cells.map((row) => row.join("&")).join("\\\\") +
+        "\\end{pmatrix}";
+    else latex = null;
+  }
   return latex ? (
     <MathView latex={latex} block={block} />
   ) : (
-    <span>{source}</span>
+    <code className="source-expression">{source}</code>
   );
 }
 export function MatrixInput({
@@ -866,7 +848,7 @@ export default function StructuredFields({
                   aria-label={"Math editor for " + f.label}
                   onClick={() => onMath(f.key, f.label)}
                 >
-                  ƒx
+                  Math
                 </button>
               </div>
             )}
@@ -886,99 +868,103 @@ export function ProblemPreview({
   params: Record<string, string>;
   compact?: boolean;
 }) {
-  const [latex, setLatex] = useState("");
-  useEffect(() => {
-    let active = true;
-    import("mathlive")
-      .then((m) => {
-        const tex = (s: string) =>
-          s?.startsWith("latex:")
-            ? s.slice(6)
-            : m
-                .convertAsciiMathToLatex(s || "")
-                .replace(/\\lbrack(?=[A-Za-z])/g, "\\lbrack ");
-        let l = "";
-        const e = tex(params.expression || params.equation || "");
-        if (op.id === "distribution") {
-          const pv = listItems(params.parameters) || [];
-          const symbol =
-            params.distribution === "normal"
-              ? `X\\sim N(${tex(pv[0])},${tex(pv[1])}^{2})`
-              : `X\\sim \\operatorname{${params.distribution}}`;
-          const action = params.action;
-          const question =
-            action === "cdf"
-              ? `P(X\\le ${tex(params.value)})`
-              : action === "sf"
-                ? `P(X>${tex(params.value)})`
-                : action === "moments"
-                  ? "E[X],\\; \\operatorname{Var}(X)"
-                  : action === "pdf/pmf"
-                    ? `f(${tex(params.value)})`
-                    : `\\operatorname{quantile}(${tex(params.value)})`;
-          l = symbol + "\\qquad " + question;
-        } else if (op.id === "graph_analysis") {
-          l = `y=${e}\\qquad x\\in[${tex(params.lower)},${tex(params.upper)}]`;
-        } else if (op.id.startsWith("matrix_")) {
-          const ex = tex(params.expression);
-          l =
-            op.id === "matrix_inverse"
-              ? ex + "^{-1}"
-              : op.id === "matrix_det"
-                ? "\\det(" + ex + ")"
-                : ex;
-        } else if (op.id === "integrate")
-          l = `\\int${params.lower ? "_{" + tex(params.lower) + "}^{" + tex(params.upper) + "}" : ""} ${e}\\,d${tex(params.variable)}`;
-        else if (op.id === "multiple_integral") {
-          const b = (listItems(params.bounds) || []).map(
-            (x) => listItems(x) || [],
-          );
-          l =
-            [...b]
-              .reverse()
-              .map((x) => `\\int_{${tex(x[1])}}^{${tex(x[2])}}`)
-              .join("") +
-            e +
-            b.map((x) => "\\,d" + tex(x[0])).join("");
-        } else if (op.id === "differentiate")
-          l = `\\frac{d^{${params.order || 1}}}{d${tex(params.variable)}^{${params.order || 1}}}\\left(${e}\\right)`;
-        else if (["system", "numeric_system"].includes(op.id))
-          l =
-            "\\begin{cases}" +
-            (listItems(params.equations) || [])
-              .map((x) => tex(x) + (x.includes("=") ? "" : "=0"))
-              .join("\\\\") +
-            "\\end{cases}";
-        else if (op.id === "logic") {
-          const match = (params.expression || "").match(
-              /^(Implies|And|Or|Xor|Equivalent)\((.*)\)$/,
-            ),
-            a = match ? splitMath(match[2]) : [];
-          l = match
-            ? tex(a[0]) +
-              " " +
-              (
-                {
-                  Implies: "\\implies",
-                  And: "\\land",
-                  Or: "\\lor",
-                  Xor: "\\oplus",
-                  Equivalent: "\\iff",
-                } as Record<string, string>
-              )[match[1]] +
-              " " +
-              tex(a[1])
-            : e;
-        } else if (op.id === "apart")
-          l = `\\operatorname{apart}_{${tex(params.variable || "x")}}\\left(${e}\\right)`;
-        else l = e;
-        if (active) setLatex(l);
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
+  let latex = "";
+  try {
+    const tex = (source: string) => {
+      if (!source) return "";
+      const value = sourceToLatex(source);
+      if (value === null) throw Error("Use the exact source preview");
+      return value;
     };
-  }, [op, params]);
+    let l = "";
+    const e = ["logic", "distribution"].includes(op.id)
+      ? ""
+      : tex(params.expression || params.equation || "");
+    if (op.id === "distribution") {
+      const pv = listItems(params.parameters) || [];
+      const symbol =
+        params.distribution === "normal"
+          ? `X\\sim N(${tex(pv[0])},\\left(${tex(pv[1])}\\right)^{2})`
+          : `X\\sim \\operatorname{${params.distribution}}\\left(${pv.map(tex).join(",")}\\right)`;
+      const action = params.action;
+      const question =
+        action === "cdf"
+          ? `P(X\\le ${tex(params.value)})`
+          : action === "sf"
+            ? `P(X>${tex(params.value)})`
+            : action === "moments"
+              ? "E[X],\\; \\operatorname{Var}(X)"
+              : action === "pdf/pmf"
+                ? [
+                    "binomial",
+                    "poisson",
+                    "geometric",
+                    "hypergeometric",
+                    "negative-binomial",
+                  ].includes(params.distribution)
+                  ? `P(X=${tex(params.value)})`
+                  : `f(${tex(params.value)})`
+                : action === "isf"
+                  ? `\\operatorname{inverse\\ upper\\ tail}(${tex(params.value)})`
+                  : `\\operatorname{quantile}(${tex(params.value)})`;
+      l = symbol + "\\qquad " + question;
+    } else if (op.id === "graph_analysis") {
+      l = `y=${e}\\qquad x\\in[${tex(params.lower)},${tex(params.upper)}]`;
+    } else if (op.id.startsWith("matrix_")) {
+      const ex = tex(params.expression);
+      l =
+        op.id === "matrix_inverse"
+          ? "\\left(" + ex + "\\right)^{-1}"
+          : op.id === "matrix_det"
+            ? "\\det(" + ex + ")"
+            : ex;
+    } else if (op.id === "integrate")
+      l = `\\int${params.lower ? "_{" + tex(params.lower) + "}^{" + tex(params.upper) + "}" : ""} ${e}\\,d${tex(params.variable)}`;
+    else if (op.id === "multiple_integral") {
+      const b = (listItems(params.bounds) || []).map((x) => listItems(x) || []);
+      l =
+        [...b]
+          .reverse()
+          .map((x) => `\\int_{${tex(x[1])}}^{${tex(x[2])}}`)
+          .join("") +
+        e +
+        b.map((x) => "\\,d" + tex(x[0])).join("");
+    } else if (op.id === "differentiate")
+      l = `\\frac{d^{${tex(params.order || "1")}}}{d${tex(params.variable)}^{${tex(params.order || "1")}}}\\left(${e}\\right)`;
+    else if (["system", "numeric_system"].includes(op.id))
+      l =
+        "\\begin{cases}" +
+        (listItems(params.equations) || [])
+          .map((x) => tex(x) + (x.includes("=") ? "" : "=0"))
+          .join("\\\\") +
+        "\\end{cases}";
+    else if (op.id === "logic") {
+      const match = (params.expression || "").match(
+          /^(Implies|And|Or|Xor|Equivalent)\((.*)\)$/,
+        ),
+        a = match ? splitMath(match[2]) : [];
+      l = match
+        ? tex(a[0]) +
+          " " +
+          (
+            {
+              Implies: "\\implies",
+              And: "\\land",
+              Or: "\\lor",
+              Xor: "\\oplus",
+              Equivalent: "\\iff",
+            } as Record<string, string>
+          )[match[1]] +
+          " " +
+          tex(a[1])
+        : e;
+    } else if (op.id === "apart")
+      l = `\\operatorname{apart}_{${tex(params.variable || "x")}}\\left(${e}\\right)`;
+    else l = e;
+    latex = l;
+  } catch {
+    latex = "";
+  }
   return (
     <div className="problem-preview">
       {!compact && <span className="section-label">PROBLEM</span>}
@@ -986,18 +972,16 @@ export function ProblemPreview({
         <MathView latex={latex} block />
       ) : (
         <div className="problem-summary">
-          {op.fields
-            .filter((f) => f.key !== "parameters")
-            .map((f) => (
-              <div key={f.key}>
-                <span>{f.label}</span>
-                {f.choices ? (
-                  <span>{params[f.key] ?? f.value}</span>
-                ) : (
-                  <Preview source={params[f.key] ?? f.value} />
-                )}
-              </div>
-            ))}
+          {op.fields.map((f) => (
+            <div key={f.key}>
+              <span>{f.label}</span>
+              {f.choices ? (
+                <span>{params[f.key] ?? f.value}</span>
+              ) : (
+                <Preview source={params[f.key] ?? f.value} />
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

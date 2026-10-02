@@ -1,0 +1,4533 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "form.simplify.default",
+      "surfaceId": "form.simplify",
+      "request": {
+        "operation": "simplify",
+        "params": {
+          "expression": "x^2-5*x+6"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "x**2-5*x+6"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.simplify.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.expand.default",
+      "surfaceId": "form.expand",
+      "request": {
+        "operation": "expand",
+        "params": {
+          "expression": "(x+1)^3"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "x**3+3*x**2+3*x+1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.expand.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.factor.default",
+      "surfaceId": "form.factor",
+      "request": {
+        "operation": "factor",
+        "params": {
+          "expression": "x^2-5*x+6"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "(x-2)*(x-3)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.factor.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.apart.default",
+      "surfaceId": "form.apart",
+      "request": {
+        "operation": "apart",
+        "params": {
+          "variable": "x",
+          "expression": "(2*x+3)/(x^2+3*x+2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1/(x+1)+1/(x+2)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.apart.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.cancel.default",
+      "surfaceId": "form.cancel",
+      "request": {
+        "operation": "cancel",
+        "params": {
+          "expression": "(x^2-1)/(x-1)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "x+1"
+        },
+        {
+          "kind": "noteContains",
+          "expected": "x - 1 \u2260 0"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.cancel.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.trigsimp.default",
+      "surfaceId": "form.trigsimp",
+      "request": {
+        "operation": "trigsimp",
+        "params": {
+          "expression": "sin(x)^2+cos(x)^2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.trigsimp.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.approx.default",
+      "surfaceId": "form.approx",
+      "request": {
+        "operation": "approx",
+        "params": {
+          "expression": "x^2-5*x+6"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "x**2-5*x+6"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.approx.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.substitute.default",
+      "surfaceId": "form.substitute",
+      "request": {
+        "operation": "substitute",
+        "params": {
+          "expression": "x^2+y",
+          "substitutions": "{x:2,y:3}"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "7"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.substitute.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.solve.default",
+      "surfaceId": "form.solve",
+      "request": {
+        "operation": "solve",
+        "params": {
+          "expression": "x^2-5*x+6",
+          "variable": "x"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "FiniteSet(2,3)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.solve.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.system.default",
+      "surfaceId": "form.system",
+      "request": {
+        "operation": "system",
+        "params": {
+          "equations": "[x+y-3,x-y-1]",
+          "variables": "[x,y]",
+          "kind": "linear"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "solutionSet",
+          "variables": ["x", "y"],
+          "expected": [["2", "1"]]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.system.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.inequality.default",
+      "surfaceId": "form.inequality",
+      "request": {
+        "operation": "inequality",
+        "params": {
+          "inequalities": "[x^2<4,x>0]",
+          "variable": "x"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "And(0<x,x<2)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.inequality.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.differentiate.default",
+      "surfaceId": "form.differentiate",
+      "request": {
+        "operation": "differentiate",
+        "params": {
+          "expression": "sin(x)*exp(x)",
+          "variable": "x",
+          "order": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "exp(x)*(sin(x)+cos(x))"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.differentiate.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.integrate.default",
+      "surfaceId": "form.integrate",
+      "request": {
+        "operation": "integrate",
+        "params": {
+          "expression": "exp(-x^2)",
+          "variable": "x",
+          "lower": "",
+          "upper": ""
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "C+sqrt(pi)*erf(x)/2"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.integrate.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.multiple_integral.default",
+      "surfaceId": "form.multiple_integral",
+      "request": {
+        "operation": "multiple_integral",
+        "params": {
+          "expression": "x+y",
+          "bounds": "[(y,0,x),(x,0,1)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1/2"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.multiple_integral.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.limit.default",
+      "surfaceId": "form.limit",
+      "request": {
+        "operation": "limit",
+        "params": {
+          "expression": "sin(x)/x",
+          "variable": "x",
+          "point": "0",
+          "direction": "+-"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.limit.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.series.default",
+      "surfaceId": "form.series",
+      "request": {
+        "operation": "series",
+        "params": {
+          "expression": "exp(x)",
+          "variable": "x",
+          "point": "0",
+          "order": "6",
+          "direction": "+"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "seriesCoefficients",
+          "variable": "x",
+          "point": 0,
+          "coefficients": ["1", "1", "1/2", "1/6", "1/24", "1/120"],
+          "order": 6
+        }
+      ],
+      "renderedEvidenceId": "browser.form.series.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.sum.default",
+      "surfaceId": "form.sum",
+      "request": {
+        "operation": "sum",
+        "params": {
+          "expression": "1/n^2",
+          "variable": "n",
+          "lower": "1",
+          "upper": "oo"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "pi**2/6"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.sum.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.product.default",
+      "surfaceId": "form.product",
+      "request": {
+        "operation": "product",
+        "params": {
+          "expression": "n",
+          "variable": "n",
+          "lower": "1",
+          "upper": "10"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "3628800"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.product.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.convergence.default",
+      "surfaceId": "form.convergence",
+      "request": {
+        "operation": "convergence",
+        "params": {
+          "expression": "1/n^2",
+          "variable": "n",
+          "lower": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "convergent": true,
+            "absolutely convergent": true
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.convergence.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.sequence_limit.default",
+      "surfaceId": "form.sequence_limit",
+      "request": {
+        "operation": "sequence_limit",
+        "params": {
+          "expression": "(1+1/n)^n",
+          "variable": "n"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "E"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.sequence_limit.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.multilimit.default",
+      "surfaceId": "form.multilimit",
+      "request": {
+        "operation": "multilimit",
+        "params": {
+          "expression": "x*y/(x^2+y^2)",
+          "variables": "[x,y]",
+          "paths": "[[t,0],[0,t],[t,t]]",
+          "parameter": "t",
+          "point": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "path limits": {
+              "$mathList": ["0", "0", "1/2"]
+            }
+          }
+        },
+        {
+          "kind": "noteContains",
+          "expected": "Agreement along finitely many paths does not prove"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.multilimit.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.residue.default",
+      "surfaceId": "form.residue",
+      "request": {
+        "operation": "residue",
+        "params": {
+          "expression": "exp(z)/z^2",
+          "variable": "z",
+          "point": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.residue.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.singularities.default",
+      "surfaceId": "form.singularities",
+      "request": {
+        "operation": "singularities",
+        "params": {
+          "expression": "1/(x^2-1)",
+          "variable": "x"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "FiniteSet(-1,1)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.singularities.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.domain.default",
+      "surfaceId": "form.domain",
+      "request": {
+        "operation": "domain",
+        "params": {
+          "expression": "sqrt(x)/(x-1)",
+          "variable": "x"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Union(Interval.Ropen(0,1),Interval.open(1,oo))"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.domain.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_det.default",
+      "surfaceId": "form.matrix_det",
+      "request": {
+        "operation": "matrix_det",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "-2"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_det.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_inverse.default",
+      "surfaceId": "form.matrix_inverse",
+      "request": {
+        "operation": "matrix_inverse",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[-2,1],[Rational(3,2),-Rational(1,2)]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_inverse.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_transpose.default",
+      "surfaceId": "form.matrix_transpose",
+      "request": {
+        "operation": "matrix_transpose",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[1,3],[2,4]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_transpose.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_adjoint.default",
+      "surfaceId": "form.matrix_adjoint",
+      "request": {
+        "operation": "matrix_adjoint",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[1,3],[2,4]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_adjoint.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_adjugate.default",
+      "surfaceId": "form.matrix_adjugate",
+      "request": {
+        "operation": "matrix_adjugate",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[4,-2],[-3,1]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_adjugate.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_cofactors.default",
+      "surfaceId": "form.matrix_cofactors",
+      "request": {
+        "operation": "matrix_cofactors",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[4,-3],[-2,1]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_cofactors.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_rref.default",
+      "surfaceId": "form.matrix_rref",
+      "request": {
+        "operation": "matrix_rref",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "eye(2)"
+        },
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "pivot columns (1-based)": [1, 2]
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_rref.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_rank.default",
+      "surfaceId": "form.matrix_rank",
+      "request": {
+        "operation": "matrix_rank",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "2"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_rank.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_null.default",
+      "surfaceId": "form.matrix_null",
+      "request": {
+        "operation": "matrix_null",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "[]"
+        },
+        {
+          "kind": "displayContains",
+          "expected": "only the zero vector"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_null.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_row.default",
+      "surfaceId": "form.matrix_row",
+      "request": {
+        "operation": "matrix_row",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "matrixBasis",
+          "span": "row",
+          "matrix": [
+            [1, 2],
+            [3, 4]
+          ],
+          "dimension": 2
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_row.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_column.default",
+      "surfaceId": "form.matrix_column",
+      "request": {
+        "operation": "matrix_column",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "matrixBasis",
+          "span": "column",
+          "matrix": [
+            [1, 2],
+            [3, 4]
+          ],
+          "dimension": 2
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_column.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_eigenvalues.default",
+      "surfaceId": "form.matrix_eigenvalues",
+      "request": {
+        "operation": "matrix_eigenvalues",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "eigenvalueMultiset",
+          "expected": [
+            {
+              "value": "(5-sqrt(33))/2",
+              "multiplicity": 1
+            },
+            {
+              "value": "(5+sqrt(33))/2",
+              "multiplicity": 1
+            }
+          ]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_eigenvalues.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_eigenvectors.default",
+      "surfaceId": "form.matrix_eigenvectors",
+      "request": {
+        "operation": "matrix_eigenvectors",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "eigenspaceResidual",
+          "matrix": [
+            [1, 2],
+            [3, 4]
+          ],
+          "expectedEigenvalues": ["(5-sqrt(33))/2", "(5+sqrt(33))/2"],
+          "dimensions": [1, 1]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_eigenvectors.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_lu.default",
+      "surfaceId": "form.matrix_lu",
+      "request": {
+        "operation": "matrix_lu",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "luResidual",
+          "matrix": [
+            [1, 2],
+            [3, 4]
+          ],
+          "atol": 1e-10
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_lu.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_qr.default",
+      "surfaceId": "form.matrix_qr",
+      "request": {
+        "operation": "matrix_qr",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "qrResidual",
+          "matrix": [
+            [1, 2],
+            [3, 4]
+          ],
+          "atol": 1e-10
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_qr.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_svd.default",
+      "surfaceId": "form.matrix_svd",
+      "request": {
+        "operation": "matrix_svd",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "svdResidual",
+          "matrix": [
+            [1, 2],
+            [3, 4]
+          ],
+          "atol": 1e-10
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_svd.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_pinverse.default",
+      "surfaceId": "form.matrix_pinverse",
+      "request": {
+        "operation": "matrix_pinverse",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[-2,1],[Rational(3,2),-Rational(1,2)]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_pinverse.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_trace.default",
+      "surfaceId": "form.matrix_trace",
+      "request": {
+        "operation": "matrix_trace",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "5"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_trace.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_condition.default",
+      "surfaceId": "form.matrix_condition",
+      "request": {
+        "operation": "matrix_condition",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 14.93303437365928,
+          "atol": 1e-10
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_condition.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately",
+        "derivation": "A^T A has trace30, determinant4, eigenvalues15\u00b1sqrt(221); 2-norm condition=sqrt(lambda_max/lambda_min)"
+      }
+    },
+    {
+      "id": "form.matrix_characteristic.default",
+      "surfaceId": "form.matrix_characteristic",
+      "request": {
+        "operation": "matrix_characteristic",
+        "params": {
+          "expression": "[[1,2],[3,4]]",
+          "variable": "x"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "x**2-5*x-2"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_characteristic.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_solve.default",
+      "surfaceId": "form.matrix_solve",
+      "request": {
+        "operation": "matrix_solve",
+        "params": {
+          "expression": "[[1,2],[3,4]]",
+          "rhs": "[[5],[11]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "solutionSet",
+          "variables": ["x_1", "x_2"],
+          "expected": [["1", "2"]]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_solve.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.gradient.default",
+      "surfaceId": "form.gradient",
+      "request": {
+        "operation": "gradient",
+        "params": {
+          "expression": "x^2+y^2",
+          "variables": "[x,y]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([2*x,2*y])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.gradient.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.jacobian.default",
+      "surfaceId": "form.jacobian",
+      "request": {
+        "operation": "jacobian",
+        "params": {
+          "expression": "[x*y,sin(x)]",
+          "variables": "[x,y]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[y,x],[cos(x),0]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.jacobian.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.hessian.default",
+      "surfaceId": "form.hessian",
+      "request": {
+        "operation": "hessian",
+        "params": {
+          "expression": "x^2+y^2",
+          "variables": "[x,y]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "2*eye(2)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.hessian.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.divergence.default",
+      "surfaceId": "form.divergence",
+      "request": {
+        "operation": "divergence",
+        "params": {
+          "expression": "[x,y,z]",
+          "variables": "[x,y,z]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "3"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.divergence.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.curl.default",
+      "surfaceId": "form.curl",
+      "request": {
+        "operation": "curl",
+        "params": {
+          "expression": "[-y,x,0]",
+          "variables": "[x,y,z]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([0,0,2])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.curl.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.jacobian_factor.default",
+      "surfaceId": "form.jacobian_factor",
+      "request": {
+        "operation": "jacobian_factor",
+        "params": {
+          "expression": "[r*cos(t),r*sin(t)]",
+          "variables": "[r,t]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Abs(r)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.jacobian_factor.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.dot.default",
+      "surfaceId": "form.dot",
+      "request": {
+        "operation": "dot",
+        "params": {
+          "expression": "[1,2,3]",
+          "other": "[3,2,1]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "10"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.dot.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.cross.default",
+      "surfaceId": "form.cross",
+      "request": {
+        "operation": "cross",
+        "params": {
+          "expression": "[1,2,3]",
+          "other": "[3,2,1]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([-4,8,-4])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.cross.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.line_integral.default",
+      "surfaceId": "form.line_integral",
+      "request": {
+        "operation": "line_integral",
+        "params": {
+          "expression": "[-y,x,0]",
+          "position": "[cos(t),sin(t),0]",
+          "variables": "[x,y,z]",
+          "bounds": "[(t,0,2*pi)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "2*pi"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.line_integral.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.surface_integral.default",
+      "surfaceId": "form.surface_integral",
+      "request": {
+        "operation": "surface_integral",
+        "params": {
+          "expression": "[0,0,1]",
+          "position": "[u,v,0]",
+          "variables": "[x,y,z]",
+          "bounds": "[(u,0,1),(v,0,1)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.surface_integral.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.contour.default",
+      "surfaceId": "form.contour",
+      "request": {
+        "operation": "contour",
+        "params": {
+          "expression": "1/z",
+          "variable": "z",
+          "path": "exp(I*t)",
+          "bounds": "[(t,0,2*pi)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "2*pi*I"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.contour.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.ode.default",
+      "surfaceId": "form.ode",
+      "request": {
+        "operation": "ode",
+        "params": {
+          "equation": "diff(y(x),x)-y(x)",
+          "function": "y(x)",
+          "conditions": "{y(0):1}"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "odeResidual",
+          "variables": ["x"],
+          "functions": ["y(x)"],
+          "equations": ["Derivative(y(x),x)-y(x)"],
+          "initial": [
+            {
+              "at": 0,
+              "expected": "1"
+            }
+          ],
+          "expected": "exp(x)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.ode.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.ivp.default",
+      "surfaceId": "form.ivp",
+      "request": {
+        "operation": "ivp",
+        "params": {
+          "rhs": "[v,-y]",
+          "variables": "[y,v]",
+          "variable": "t",
+          "initial": "[1,0]",
+          "lower": "0",
+          "upper": "10",
+          "tolerance": "1e-8"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "trajectory",
+          "timePath": ["details", "t"],
+          "valuePath": ["details", "values"],
+          "expected": ["cos(t)", "-sin(t)"],
+          "expectedTime": [0, 10],
+          "samples": 101,
+          "atol": 2e-7
+        }
+      ],
+      "renderedEvidenceId": "browser.form.ivp.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.bvp.default",
+      "surfaceId": "form.bvp",
+      "request": {
+        "operation": "bvp",
+        "params": {
+          "rhs": "[v,0]",
+          "variables": "[y,v]",
+          "variable": "t",
+          "lower": "0",
+          "upper": "1",
+          "conditions": "[[0,0,0],[0,1,1]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "trajectory",
+          "timePath": ["details", "t"],
+          "valuePath": ["details", "values"],
+          "expected": ["t", "1"],
+          "expectedTime": [0, 1],
+          "samples": 101,
+          "atol": 1e-7
+        }
+      ],
+      "renderedEvidenceId": "browser.form.bvp.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.stability.default",
+      "surfaceId": "form.stability",
+      "request": {
+        "operation": "stability",
+        "params": {
+          "rhs": "[y,-x-y]",
+          "variables": "[x,y]",
+          "point": "{x:0,y:0}"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "linearization",
+          "jacobian": [
+            [0, 1],
+            [-1, -1]
+          ],
+          "field": [0, 0],
+          "eigenvalues": ["(-1-I*sqrt(3))/2", "(-1+I*sqrt(3))/2"]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.stability.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.pde.default",
+      "surfaceId": "form.pde",
+      "request": {
+        "operation": "pde",
+        "params": {
+          "equation": "diff(u(x,y),x)+diff(u(x,y),y)",
+          "function": "u(x,y)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "pdeResidual",
+          "variables": ["x", "y"],
+          "function": "u(x,y)",
+          "equation": "Derivative(u(x,y),x)+Derivative(u(x,y),y)",
+          "arbitraryFunctions": 1
+        }
+      ],
+      "renderedEvidenceId": "browser.form.pde.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.heat.default",
+      "surfaceId": "form.heat",
+      "request": {
+        "operation": "heat",
+        "params": {
+          "coefficients": "[1]",
+          "length": "pi",
+          "coefficient": "1",
+          "variable": "x",
+          "time": "t"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "exp(-t)*sin(x)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.heat.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.wave.default",
+      "surfaceId": "form.wave",
+      "request": {
+        "operation": "wave",
+        "params": {
+          "coefficients": "[1]",
+          "velocity": "[0]",
+          "length": "pi",
+          "coefficient": "1",
+          "variable": "x",
+          "time": "t"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "cos(t)*sin(x)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.wave.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.poisson.default",
+      "surfaceId": "form.poisson",
+      "request": {
+        "operation": "poisson",
+        "params": {
+          "forcing": "-2*pi^2*sin(pi*x)*sin(pi*y)",
+          "variables": "[x,y]",
+          "grid": "12"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "poissonSineMode",
+          "grid": 12,
+          "expectedScale": "pi**2*h**2/(4*sin(pi*h/2)**2)",
+          "forcing": "-2*pi**2*sin(pi*x)*sin(pi*y)",
+          "atol": 1e-10,
+          "maxResidual": 1e-10
+        }
+      ],
+      "renderedEvidenceId": "browser.form.poisson.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately",
+        "derivation": "5-point sine-mode eigenvalue=-8 sin(pi*h/2)^2/h^2; forcing=-2 pi^2 mode, quotient scale=pi^2*h^2/(4 sin(pi*h/2)^2)"
+      }
+    },
+    {
+      "id": "form.laplace.default",
+      "surfaceId": "form.laplace",
+      "request": {
+        "operation": "laplace",
+        "params": {
+          "expression": "exp(-t)",
+          "variable": "t",
+          "target": "s"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "transformTuple",
+          "transform": "1/(s+1)",
+          "abscissa": "-1",
+          "condition": true
+        }
+      ],
+      "renderedEvidenceId": "browser.form.laplace.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.inverse_laplace.default",
+      "surfaceId": "form.inverse_laplace",
+      "request": {
+        "operation": "inverse_laplace",
+        "params": {
+          "expression": "1/(s^2+1)",
+          "variable": "s",
+          "target": "t"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "sin(t)*Heaviside(t)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.inverse_laplace.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.fourier.default",
+      "surfaceId": "form.fourier",
+      "request": {
+        "operation": "fourier",
+        "params": {
+          "expression": "exp(-x^2)",
+          "variable": "x",
+          "target": "k"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "sqrt(pi)*exp(-pi**2*k**2)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.fourier.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.inverse_fourier.default",
+      "surfaceId": "form.inverse_fourier",
+      "request": {
+        "operation": "inverse_fourier",
+        "params": {
+          "expression": "exp(-pi*k^2)",
+          "variable": "k",
+          "target": "x"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "exp(-pi*x**2)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.inverse_fourier.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.distribution.default",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-12
+        }
+      ],
+      "renderedEvidenceId": "browser.form.distribution.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.proportion.default",
+      "surfaceId": "form.proportion",
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[40,100]",
+          "action": "one-sample interval",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "proportion": {
+              "$near": 0.4,
+              "atol": 1e-14
+            },
+            "Wilson lower": {
+              "$near": 0.30940128643245896,
+              "atol": 1e-12
+            },
+            "Wilson upper": {
+              "$near": 0.4979974132089382,
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.proportion.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.two_mean_interval.default",
+      "surfaceId": "form.two_mean_interval",
+      "request": {
+        "operation": "two_mean_interval",
+        "params": {
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "level": "0.95",
+          "kind": "Welch"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "lower": {
+              "$near": -3.306004135204166,
+              "atol": 1e-10
+            },
+            "upper": {
+              "$near": 1.306004135204166,
+              "atol": 1e-10
+            },
+            "degrees of freedom": {
+              "$near": 8,
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.two_mean_interval.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately",
+        "derivation": "difference=-1; both sample variances=5/2,n=5; SE=1, Welch df=8,t(.975,8)=2.306004135204166"
+      }
+    },
+    {
+      "id": "form.expectation.default",
+      "surfaceId": "form.expectation",
+      "request": {
+        "operation": "expectation",
+        "params": {
+          "value": "x",
+          "weight": "2*x",
+          "variable": "x",
+          "lower": "0",
+          "upper": "1",
+          "kind": "continuous"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "expectation": {
+              "$math": "2/3"
+            },
+            "variance": {
+              "$math": "1/18"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.expectation.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.describe.default",
+      "surfaceId": "form.describe",
+      "request": {
+        "operation": "describe",
+        "params": {
+          "data": "[1,2,3,4,5]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "n": 5,
+            "sum": {
+              "$near": 15,
+              "atol": 1e-12
+            },
+            "mean": {
+              "$near": 3,
+              "atol": 1e-12
+            },
+            "median": {
+              "$near": 3,
+              "atol": 1e-12
+            },
+            "population variance (\u00f7n)": {
+              "$near": 2,
+              "atol": 1e-12
+            },
+            "sample variance (\u00f7n\u22121)": {
+              "$near": 2.5,
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.describe.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.regression.default",
+      "surfaceId": "form.regression",
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[1,2,3,4]",
+          "y": "[3,5,7,9]",
+          "model": "linear",
+          "degree": "2",
+          "initial": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "2*x+1",
+              "samples": {
+                "x": [0, 1, 2, 4]
+              },
+              "atol": 1e-10
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-12
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-20
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.regression.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.confidence.default",
+      "surfaceId": "form.confidence",
+      "request": {
+        "operation": "confidence",
+        "params": {
+          "data": "[1,2,3,4,5]",
+          "level": "0.95"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 3,
+              "atol": 1e-12
+            },
+            "standard error": {
+              "$near": 0.7071067811865476,
+              "atol": 1e-12
+            },
+            "df": 4,
+            "lower": {
+              "$near": 1.036756838522439,
+              "atol": 1e-10
+            },
+            "upper": {
+              "$near": 4.963243161477561,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.confidence.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately",
+        "derivation": "n=5, mean=3, unbiased variance=5/2, SE=sqrt(1/2), t(.975,4)=2.7764451051977987"
+      }
+    },
+    {
+      "id": "form.test.default",
+      "surfaceId": "form.test",
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "one-sample t",
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 4.242640687119286,
+              "atol": 1e-12
+            },
+            "degrees of freedom": 4,
+            "p-value": {
+              "$near": 0.013235599563682695,
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.test.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately",
+        "derivation": "t=3sqrt(2), df=4; two-sided p\u22480.013235599563682695; independently fixed reference constant"
+      }
+    },
+    {
+      "id": "form.combinatorics.default",
+      "surfaceId": "form.combinatorics",
+      "request": {
+        "operation": "combinatorics",
+        "params": {
+          "n": "10",
+          "k": "3",
+          "kind": "combinations"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "120"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.combinatorics.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.recurrence.default",
+      "surfaceId": "form.recurrence",
+      "request": {
+        "operation": "recurrence",
+        "params": {
+          "equation": "a(n+2)-a(n+1)-a(n)",
+          "function": "a(n)",
+          "conditions": "{a(0):0,a(1):1}"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "recurrenceSequence",
+          "variable": "n",
+          "samples": ["0", "1", "1", "2", "3", "5", "8", "13"],
+          "recurrence": "a(n+2)-a(n+1)-a(n)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.recurrence.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.generating.default",
+      "surfaceId": "form.generating",
+      "request": {
+        "operation": "generating",
+        "params": {
+          "sequence": "n",
+          "variable": "n",
+          "target": "z"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "unresolved",
+      "assertions": [
+        {
+          "kind": "piecewiseAnalytic",
+          "variable": "z",
+          "expression": "z/(1-z)**2",
+          "domain": "Abs(z)<1",
+          "samples": {
+            "z": ["0", "1/4", "1/2", "-1/2"]
+          }
+        },
+        {
+          "kind": "noteContains",
+          "expected": "has not established a complete answer"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.generating.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately",
+        "statusRationale": "docs/COVERAGE_RESEARCH.md:38 requires detecting unevaluated Sum before claiming completion. The closed branch z/(1-z)^2 remains valid for Abs(z)<1; the formal-series fallback leaves the whole Piecewise unresolved."
+      }
+    },
+    {
+      "id": "form.sets.default",
+      "surfaceId": "form.sets",
+      "request": {
+        "operation": "sets",
+        "params": {
+          "left": "[1,2,3]",
+          "right": "[2,3,4]",
+          "operation": "union"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "FiniteSet(1,2,3,4)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.sets.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.logic.default",
+      "surfaceId": "form.logic",
+      "request": {
+        "operation": "logic",
+        "params": {
+          "expression": "Implies(p,q)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "truthTable",
+          "variables": ["p", "q"],
+          "rows": [
+            [false, false, true],
+            [false, true, true],
+            [true, false, false],
+            [true, true, true]
+          ]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.logic.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.relation.default",
+      "surfaceId": "form.relation",
+      "request": {
+        "operation": "relation",
+        "params": {
+          "universe": "[1,2,3]",
+          "pairs": "[(1,1),(2,2),(3,3),(1,2)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "reflexive": true,
+            "symmetric": false,
+            "antisymmetric": true,
+            "transitive": true
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.relation.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.graph_theory.default",
+      "surfaceId": "form.graph_theory",
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "summary",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "nodes": ["0", "1", "2"],
+            "degrees": {
+              "0": 2,
+              "1": 2,
+              "2": 2
+            },
+            "bipartite": false,
+            "planar (underlying graph)": true
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.graph_theory.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.number_theory.default",
+      "surfaceId": "form.number_theory",
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "gcd",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "6"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.number_theory.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.crt.default",
+      "surfaceId": "form.crt",
+      "request": {
+        "operation": "crt",
+        "params": {
+          "moduli": "[3,5]",
+          "residues": "[2,3]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "(8,15)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.crt.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.diophantine.default",
+      "surfaceId": "form.diophantine",
+      "request": {
+        "operation": "diophantine",
+        "params": {
+          "expression": "2*x+3*y-7"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "integerParametricFamily",
+          "variables": ["x", "y"],
+          "equation": "2*x+3*y-7",
+          "knownSolutions": [
+            [2, 1],
+            [5, -1],
+            [-1, 3]
+          ]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.diophantine.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.group.default",
+      "surfaceId": "form.group",
+      "request": {
+        "operation": "group",
+        "params": {
+          "generators": "[[1,0,2],[1,2,0]]",
+          "subgroup": "[[1,0,2]]",
+          "point": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "order": 6,
+            "center_order": 1,
+            "subgroup_normal": false,
+            "quotient_group_exists": false
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.group.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.quotient.default",
+      "surfaceId": "form.quotient",
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "inverse",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "a+1"
+            },
+            "order": 4,
+            "is_field": true
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.quotient.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.polynomial.default",
+      "surfaceId": "form.polynomial",
+      "request": {
+        "operation": "polynomial",
+        "params": {
+          "expression": "x^4-1",
+          "variable": "x",
+          "modulus": "0",
+          "action": "factor",
+          "other": "x^2+1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "(x-1)*(x+1)*(x**2+1)"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.polynomial.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.ideal.default",
+      "surfaceId": "form.ideal",
+      "request": {
+        "operation": "ideal",
+        "params": {
+          "generators": "[x*y-1,y^2-1]",
+          "variables": "[x,y]",
+          "expression": "x-y",
+          "order": "lex"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "Groebner basis": {
+              "$mathList": ["x-y", "y**2-1"]
+            },
+            "remainder": {
+              "$math": "0"
+            },
+            "member of ideal": true
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.ideal.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.homology.default",
+      "surfaceId": "form.homology",
+      "request": {
+        "operation": "homology",
+        "params": {
+          "facets": "[[0,1],[1,2],[0,2]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "betti": [1, 1],
+            "euler_characteristic": 0,
+            "coefficient_field": "Q"
+          }
+        },
+        {
+          "kind": "noteOrDetailContains",
+          "expected": "torsion"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.homology.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.topology.default",
+      "surfaceId": "form.topology",
+      "request": {
+        "operation": "topology",
+        "params": {
+          "universe": "[0,1]",
+          "open_sets": "[[],[1],[0,1]]",
+          "subset": "[1]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "valid_topology": true,
+            "T0": true,
+            "T1": false,
+            "hausdorff": false,
+            "connected": true,
+            "interior": [1],
+            "closure": [0, 1],
+            "boundary": [0]
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.topology.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.topology_map.default",
+      "surfaceId": "form.topology_map",
+      "request": {
+        "operation": "topology_map",
+        "params": {
+          "source": "[0,1]",
+          "source_opens": "[[],[1],[0,1]]",
+          "target": "[0,1]",
+          "target_opens": "[[],[1],[0,1]]",
+          "images": "[0,1]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "continuous": true,
+            "homeomorphism": true
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.topology_map.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.surface_geometry.default",
+      "surfaceId": "form.surface_geometry",
+      "request": {
+        "operation": "surface_geometry",
+        "params": {
+          "position": "[sin(u)*cos(v),sin(u)*sin(v),cos(u)]",
+          "variables": "[u,v]",
+          "point": "{}"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "metric": {
+              "$math": "diag(1,sin(u)**2)"
+            },
+            "gaussian_curvature": {
+              "$math": "1"
+            },
+            "mean_curvature": {
+              "$math": "-sin(u)/Abs(sin(u))"
+            },
+            "metric_determinant": {
+              "$math": "sin(u)**2"
+            },
+            "regular_when": {
+              "$math": "sin(u)**2>0"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.surface_geometry.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.curve_geometry.default",
+      "surfaceId": "form.curve_geometry",
+      "request": {
+        "operation": "curve_geometry",
+        "params": {
+          "position": "[cos(t),sin(t),t]",
+          "variable": "t"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "speed": {
+              "$math": "sqrt(2)"
+            },
+            "curvature": {
+              "$math": "1/2"
+            },
+            "torsion": {
+              "$math": "1/2"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.curve_geometry.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.geometry.default",
+      "surfaceId": "form.geometry",
+      "request": {
+        "operation": "geometry",
+        "params": {
+          "left": "Circle(Point(0,0),1)",
+          "right": "Line(Point(-2,0),Point(2,0))",
+          "action": "intersection"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "pointSet",
+          "expected": [
+            [-1, 0],
+            [1, 0]
+          ]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.geometry.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.root.default",
+      "surfaceId": "form.root",
+      "request": {
+        "operation": "root",
+        "params": {
+          "expression": "x^2-2",
+          "variable": "x",
+          "lower": "0",
+          "upper": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "root": {
+              "$near": 1.4142135623730951,
+              "atol": 1e-10
+            },
+            "residual": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "bracket": [0.0, 2.0]
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.root.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.numeric_integral.default",
+      "surfaceId": "form.numeric_integral",
+      "request": {
+        "operation": "numeric_integral",
+        "params": {
+          "expression": "exp(-x^2)",
+          "variable": "x",
+          "lower": "0",
+          "upper": "oo"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "integral": {
+              "$near": 0.8862269254527579,
+              "atol": 1e-10
+            },
+            "estimated absolute error": {
+              "$between": [0, 1e-8]
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.numeric_integral.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.numeric_derivative.default",
+      "surfaceId": "form.numeric_derivative",
+      "request": {
+        "operation": "numeric_derivative",
+        "params": {
+          "expression": "sin(x)",
+          "variable": "x",
+          "point": "1",
+          "step": "1e-4"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "central difference": {
+              "$near": 0.5403023058681398,
+              "atol": 1e-8
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.numeric_derivative.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.numeric_system.default",
+      "surfaceId": "form.numeric_system",
+      "request": {
+        "operation": "numeric_system",
+        "params": {
+          "equations": "[x^2+y^2-1,x-y]",
+          "variables": "[x,y]",
+          "initial": "[1,1]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "numericSolutionSet",
+          "expected": [[0.7071067811865476, 0.7071067811865476]],
+          "atol": 1e-7,
+          "equations": ["x**2+y**2-1", "x-y"]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.numeric_system.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.minimize.default",
+      "surfaceId": "form.minimize",
+      "request": {
+        "operation": "minimize",
+        "params": {
+          "expression": "(x-2)^2+(y+1)^2",
+          "variables": "[x,y]",
+          "initial": "[0,0]",
+          "bounds": "[(-10,10),(-10,10)]",
+          "constraints": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "point": {
+              "$nearArray": [2, -1],
+              "atol": 1e-5
+            },
+            "success": true,
+            "value": {
+              "$near": 0,
+              "atol": 1e-9
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.minimize.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.linear_program.default",
+      "surfaceId": "form.linear_program",
+      "request": {
+        "operation": "linear_program",
+        "params": {
+          "objective": "[-1,-1]",
+          "A": "[[1,2],[3,1]]",
+          "b": "[4,5]",
+          "Aeq": "[]",
+          "beq": "[]",
+          "bounds": "[(0,oo),(0,oo)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "point": {
+              "$nearArray": [1.2, 1.4],
+              "atol": 1e-10
+            },
+            "minimum": {
+              "$near": -2.6,
+              "atol": 1e-10
+            },
+            "success": true
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.linear_program.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.interpolate.default",
+      "surfaceId": "form.interpolate",
+      "request": {
+        "operation": "interpolate",
+        "params": {
+          "points": "[(0,1),(1,2),(2,5)]",
+          "variable": "x"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "x**2+1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.interpolate.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.spline.default",
+      "surfaceId": "form.spline",
+      "request": {
+        "operation": "spline",
+        "params": {
+          "x": "[0,1,2,3]",
+          "y": "[0,1,0,1]",
+          "points": "[0.5,1.5,2.5]",
+          "kind": "PCHIP"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "x": {
+              "$nearArray": [0.5, 1.5, 2.5],
+              "atol": 1e-12
+            },
+            "y": {
+              "$nearArray": [0.75, 0.5, 0.25],
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.spline.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.fft.default",
+      "surfaceId": "form.fft",
+      "request": {
+        "operation": "fft",
+        "params": {
+          "data": "[1,0,-1,0]",
+          "action": "FFT"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([0,2,0,2])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.fft.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.convolution.default",
+      "surfaceId": "form.convolution",
+      "request": {
+        "operation": "convolution",
+        "params": {
+          "left": "[1,2,1]",
+          "right": "[1,-1]",
+          "mode": "full"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([1,1,-1,-1])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.convolution.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.markov.default",
+      "surfaceId": "form.markov",
+      "request": {
+        "operation": "markov",
+        "params": {
+          "expression": "[[3/4,1/4],[1/4,3/4]]",
+          "steps": "5"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "transition power": {
+              "$math": "Matrix([[Rational(33,64),Rational(31,64)],[Rational(31,64),Rational(33,64)]])"
+            },
+            "stationary distributions": {
+              "$math": "FiniteSet((Rational(1,2),Rational(1,2)))"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.markov.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.units.default",
+      "surfaceId": "form.units",
+      "request": {
+        "operation": "units",
+        "params": {
+          "expression": "3*meter/second",
+          "target": "kilometer/hour"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "unitRatio",
+          "target": "kilometer/hour",
+          "expected": "54/5"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.units.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.finance.default",
+      "surfaceId": "form.finance",
+      "request": {
+        "operation": "finance",
+        "params": {
+          "principal": "1000",
+          "rate": "0.05",
+          "periods": "12",
+          "action": "future value"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1795.8563260221301,
+          "atol": 1e-9
+        }
+      ],
+      "renderedEvidenceId": "browser.form.finance.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.together.default",
+      "surfaceId": "form.together",
+      "request": {
+        "operation": "together",
+        "params": {
+          "expression": "1/x+1/(x+1)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "(2*x+1)/(x*(x+1))"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.together.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.radsimp.default",
+      "surfaceId": "form.radsimp",
+      "request": {
+        "operation": "radsimp",
+        "params": {
+          "expression": "1/(1+sqrt(2))"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "sqrt(2)-1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.radsimp.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.compose.default",
+      "surfaceId": "form.compose",
+      "request": {
+        "operation": "compose",
+        "params": {
+          "expression": "x^2+1",
+          "variable": "x",
+          "inner": "sin(t)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "sin(t)**2+1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.compose.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.piecewise.default",
+      "surfaceId": "form.piecewise",
+      "request": {
+        "operation": "piecewise",
+        "params": {
+          "cases": "[(x^2,x<0),(x,True)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "conditional",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Piecewise((x**2,x<0),(x,True))"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.piecewise.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.matrix_cholesky.default",
+      "surfaceId": "form.matrix_cholesky",
+      "request": {
+        "operation": "matrix_cholesky",
+        "params": {
+          "expression": "[[4,2],[2,3]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[2,0],[1,sqrt(2)]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.matrix_cholesky.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.least_squares.default",
+      "surfaceId": "form.least_squares",
+      "request": {
+        "operation": "least_squares",
+        "params": {
+          "matrix": "[[1,0],[1,1],[1,2]]",
+          "data": "[1,3,5]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "coefficients": {
+              "$mathNear": "Matrix([1,2])",
+              "atol": 1e-10
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-20
+            },
+            "rank": 2
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.least_squares.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.numeric_svd.default",
+      "surfaceId": "form.numeric_svd",
+      "request": {
+        "operation": "numeric_svd",
+        "params": {
+          "expression": "[[1,2],[3,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "\u03a3": {
+              "$mathNear": "diag(sqrt(15+sqrt(221)),sqrt(15-sqrt(221)))",
+              "atol": 1e-10
+            },
+            "reconstruction error": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.numeric_svd.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.ode_system.default",
+      "surfaceId": "form.ode_system",
+      "request": {
+        "operation": "ode_system",
+        "params": {
+          "equations": "[diff(f(t),t)-g(t),diff(g(t),t)+f(t)]",
+          "functions": "[f(t),g(t)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "odeResidual",
+          "variables": ["t"],
+          "functions": ["f(t)", "g(t)"],
+          "equations": ["Derivative(f(t),t)-g(t)", "Derivative(g(t),t)+f(t)"],
+          "freeConstants": 2
+        }
+      ],
+      "renderedEvidenceId": "browser.form.ode_system.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.divisor_count.default",
+      "surfaceId": "form.divisor_count",
+      "request": {
+        "operation": "divisor_count",
+        "params": {
+          "n": "360"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "24"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.divisor_count.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.mobius.default",
+      "surfaceId": "form.mobius",
+      "request": {
+        "operation": "mobius",
+        "params": {
+          "n": "30"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "-1"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.mobius.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.metric.default",
+      "surfaceId": "form.metric",
+      "request": {
+        "operation": "metric",
+        "params": {
+          "metric": "[[1,0],[0,sin(theta)^2]]",
+          "variables": "[theta,phi]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "scalar curvature R": {
+              "$math": "2"
+            },
+            "Ricci tensor": {
+              "$math": "diag(1,sin(theta)**2)"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.metric.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.uncertainty.default",
+      "surfaceId": "form.uncertainty",
+      "request": {
+        "operation": "uncertainty",
+        "params": {
+          "expression": "x*y",
+          "variables": "[x,y]",
+          "values": "[2,3]",
+          "errors": "[0.1,0.2]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "value": {
+              "$math": "6"
+            },
+            "standard uncertainty (first order)": {
+              "$math": "1/2"
+            },
+            "variance (first order)": {
+              "$math": "1/4"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.uncertainty.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.critical_points.default",
+      "surfaceId": "form.critical_points",
+      "request": {
+        "operation": "critical_points",
+        "params": {
+          "expression": "x^3-3*x",
+          "variable": "x",
+          "lower": "-2",
+          "upper": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "criticalPoints",
+          "expected": [
+            {
+              "x": "-1",
+              "y": "2",
+              "classification": "local maximum"
+            },
+            {
+              "x": "1",
+              "y": "-2",
+              "classification": "local minimum"
+            }
+          ],
+          "endpoints": [
+            {
+              "x": "-2",
+              "y": "-2"
+            },
+            {
+              "x": "2",
+              "y": "2"
+            }
+          ]
+        }
+      ],
+      "renderedEvidenceId": "browser.form.critical_points.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.histogram.default",
+      "surfaceId": "form.histogram",
+      "request": {
+        "operation": "histogram",
+        "params": {
+          "data": "[1,2,2,3,3,3,4,5]",
+          "bins": "5"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "counts": [1, 2, 3, 1, 1],
+            "bin lower bounds": {
+              "$nearArray": [1, 1.8, 2.6, 3.4, 4.2],
+              "atol": 1e-12
+            },
+            "bin upper bounds": {
+              "$nearArray": [1.8, 2.6, 3.4, 4.2, 5],
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.histogram.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.boxplot.default",
+      "surfaceId": "form.boxplot",
+      "request": {
+        "operation": "boxplot",
+        "params": {
+          "data": "[1,2,3,4,5,9]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "Q1": 2.25,
+            "median": 3.5,
+            "Q3": 4.75,
+            "lower whisker": 1.0,
+            "upper whisker": 5.0,
+            "outliers": [9.0]
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.boxplot.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.correlation.default",
+      "surfaceId": "form.correlation",
+      "request": {
+        "operation": "correlation",
+        "params": {
+          "x": "[1,2,3]",
+          "y": "[2,4,5]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "Pearson r": {
+              "$near": 0.9819805060619657,
+              "atol": 1e-12
+            },
+            "sample size": 3,
+            "two-sided p-value": {
+              "$near": 0.12103771832367664,
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.correlation.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately",
+        "derivation": "r=3/sqrt(28/3)=sqrt(27/28); df=1 yields p=2 acos(|r|)/pi"
+      }
+    },
+    {
+      "id": "form.finite_expectation.default",
+      "surfaceId": "form.finite_expectation",
+      "request": {
+        "operation": "finite_expectation",
+        "params": {
+          "values": "[1,2,3,4,5,6]",
+          "probabilities": "[1/6,1/6,1/6,1/6,1/6,1/6]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "expected value": {
+              "$math": "7/2"
+            },
+            "variance": {
+              "$math": "35/12"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.finite_expectation.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.symbolic_expectation.default",
+      "surfaceId": "form.symbolic_expectation",
+      "request": {
+        "operation": "symbolic_expectation",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "variable": "X",
+          "expression": "X^2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "expected value": {
+              "$math": "1"
+            },
+            "variance": {
+              "$math": "2"
+            }
+          }
+        }
+      ],
+      "renderedEvidenceId": "browser.form.symbolic_expectation.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "form.surface_area.default",
+      "surfaceId": "form.surface_area",
+      "request": {
+        "operation": "surface_area",
+        "params": {
+          "position": "[sin(u)*cos(v),sin(u)*sin(v),cos(u)]",
+          "variables": "[x,y,z]",
+          "bounds": "[(u,0,pi),(v,0,2*pi)]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "4*pi"
+        }
+      ],
+      "renderedEvidenceId": "browser.form.surface_area.default",
+      "oracleProvenance": {
+        "method": "hand-derived identities/constants, source read solely for serialization/path/convention",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    }
+  ],
+  "assertionKinds": [
+    "criticalPoints",
+    "displayContains",
+    "eigenspaceResidual",
+    "eigenvalueMultiset",
+    "integerParametricFamily",
+    "linearization",
+    "luResidual",
+    "mathEqual",
+    "matrixBasis",
+    "nearScalar",
+    "noteContains",
+    "noteOrDetailContains",
+    "numericSolutionSet",
+    "odeResidual",
+    "partialObject",
+    "pdeResidual",
+    "piecewiseAnalytic",
+    "pointSet",
+    "poissonSineMode",
+    "qrResidual",
+    "recurrenceSequence",
+    "seriesCoefficients",
+    "solutionSet",
+    "svdResidual",
+    "trajectory",
+    "transformTuple",
+    "truthTable",
+    "unitRatio"
+  ]
+}

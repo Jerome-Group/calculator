@@ -1,0 +1,58 @@
+.math-editor math-field::part(container) {
+  /* MathLive disables this part before focus on coarse pointers, swallowing the first menu tap. */
+  pointer-events: auto;
+}
+
+.math-editor math-field::part(menu-toggle) {
+  color: var(--foreground);
+}
+
+.math-entry-tools {
+  position: relative;
+  margin-top: 8px;
+}
+
+.math-entry-tools button,
+.math-editor-recovery button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.math-entry-tools > button {
+  color: var(--muted-foreground);
+}
+
+.math-entry-tools button:focus-visible,
+.math-editor-recovery button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.math-entry-palette {
+  display: grid;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.math-entry-structures,
+.math-entry-commands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.math-entry-commands {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.math-editor-recovery {
+  font-size: 14px;
+}

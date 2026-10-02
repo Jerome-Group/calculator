@@ -82,6 +82,9 @@ assert.equal(values.get(key), "{broken");
 values.delete(backup);
 assert.equal(loadState().state, null);
 assert.equal(values.get(key), "{broken");
+assert.throws(() => persist(second), /unreadable device save is preserved/);
+assert.equal(values.get(key), "{broken");
+values.set(key, JSON.stringify(first));
 globalThis.localStorage = {
   ...storage,
   setItem() {
@@ -89,8 +92,9 @@ globalThis.localStorage = {
   },
 };
 assert.throws(() => persist(second), /Quota/);
-assert.equal(values.get(key), "{broken");
+assert.equal(values.get(key), JSON.stringify(first));
 globalThis.localStorage = storage;
+values.set(key, "{broken");
 forgetAccount();
 assert.throws(() => accountStorage(STORAGE_KEY), /Sign in/);
 assert.equal(values.get(key), "{broken");

@@ -25,6 +25,16 @@ The local preview provides a synthetic sign-in only on loopback. Production iden
 
 ## Verification
 
+Start with [the verification command index](docs/verification.md) and [versioned coverage map](docs/verification-map.json). Local and required CI checks share these entrypoints:
+
+```sh
+pnpm --silent verify --help
+pnpm --silent verify list --json
+pnpm --silent verify run --group core --json
+```
+
+Core checks report browser verification as `not-run`. Rendered mathematics, control interactions, scoped identity and disconnected production reopening require separate current browser captures and `pnpm --silent verify browser validate --evidence FILE --json`; engine/source checks cannot establish them. Individual checks remain available:
+
 ```sh
 pnpm typecheck
 pnpm format:check

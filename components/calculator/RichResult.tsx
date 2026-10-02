@@ -1,9 +1,32 @@
+import { formatDisplayApprox } from "../../lib/calculator/display-format";
 import MathView from "./MathView";
-export default function RichResult({ node }: { node: any }) {
+export default function RichResult({
+  node,
+  displayDecimals,
+  numeric = false,
+}: {
+  node: any;
+  displayDecimals?: number;
+  numeric?: boolean;
+}) {
   if (!node) return null;
-  if (node.type === "math") return <MathView latex={node.latex} block />;
+  if (node.type === "math")
+    return (
+      <MathView
+        latex={node.latex}
+        block
+        displayDecimals={displayDecimals}
+        numeric={numeric}
+      />
+    );
   if (node.type === "text")
-    return <span className="result-text">{node.text}</span>;
+    return (
+      <span className="result-text">
+        {displayDecimals === undefined
+          ? node.text
+          : formatDisplayApprox(node.text, displayDecimals)}
+      </span>
+    );
   if (node.type === "fields")
     return (
       <dl
@@ -28,7 +51,11 @@ export default function RichResult({ node }: { node: any }) {
           <div key={i}>
             <dt>{item.label}</dt>
             <dd>
-              <RichResult node={item.value} />
+              <RichResult
+                node={item.value}
+                displayDecimals={displayDecimals}
+                numeric={numeric}
+              />
             </dd>
           </div>
         ))}
@@ -48,7 +75,11 @@ export default function RichResult({ node }: { node: any }) {
       >
         {node.items.map((item: any, i: number) => (
           <div key={i}>
-            <RichResult node={item} />
+            <RichResult
+              node={item}
+              displayDecimals={displayDecimals}
+              numeric={numeric}
+            />
           </div>
         ))}
       </div>
@@ -69,7 +100,11 @@ export default function RichResult({ node }: { node: any }) {
               <tr key={i}>
                 {row.map((cell, j) => (
                   <td key={j}>
-                    <RichResult node={cell} />
+                    <RichResult
+                      node={cell}
+                      displayDecimals={displayDecimals}
+                      numeric={numeric}
+                    />
                   </td>
                 ))}
               </tr>

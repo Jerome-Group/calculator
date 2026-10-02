@@ -12,7 +12,7 @@ Calculator is a public mathematical notebook with browser-local computation, Cha
 
 ## Getting it running
 
-Use Node 24 and pnpm from package.json. `pnpm install --frozen-lockfile`, `pnpm dev`; checks are `pnpm typecheck`, `pnpm format:check`, `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm test:assets`. Dev/test/build verify or materialize ignored engine dependencies using `scripts/engine-assets.json`; keep these pins, the Pyodide lock and licences tracked. Org administration runs on the mini, application work in this checkout. Keep its original archival history local and preserve Sites' `DB` binding.
+Use Node 24 and pnpm from package.json. `pnpm install --frozen-lockfile`, `pnpm dev`; checks are `pnpm typecheck`, `pnpm format:check`, `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm test:assets`. Dev/test/build verify or materialize ignored engine dependencies using `scripts/engine-assets.json`; keep these pins, the Pyodide lock and licences tracked. The agent command index is [docs/verification.md](docs/verification.md); start with `pnpm --silent verify --help`. Local and CI checks share `pnpm --silent verify run --group core --json`, with browser evidence gated separately. Org administration runs on the mini, application work in this checkout. Keep its original archival history local and preserve Sites' `DB` binding.
 
 ## Conventions
 

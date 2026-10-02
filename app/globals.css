@@ -131,7 +131,7 @@ textarea {
 button {
   cursor: pointer;
   color: inherit;
-  min-height: 40px;
+  min-height: 44px;
 }
 button:disabled {
   opacity: 0.5;
@@ -225,9 +225,9 @@ pre {
   justify-content: space-between;
 }
 .icon-btn {
-  min-width: 42px;
-  width: 42px;
-  height: 42px;
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -461,9 +461,9 @@ pre {
     monospace;
   min-height: 42px;
   padding: 10px 0;
-  border: 1px solid #ffffff23;
+  border: 0;
   border-radius: 8px;
-  color: var(--shell-muted);
+  color: var(--muted-foreground);
   background: transparent;
 }
 .workspace [data-slot="tabs-content"] {
@@ -524,7 +524,7 @@ pre {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 16px;
-  overflow: hidden;
+  overflow: clip;
   box-shadow: 0 8px 28px #162e1808;
 }
 .composer:focus-within {
@@ -553,7 +553,7 @@ pre {
   background: var(--muted);
 }
 .segmented button {
-  min-height: 34px;
+  min-height: 44px;
   padding: 5px 12px;
   border: 0;
   background: transparent;
@@ -639,7 +639,7 @@ pre {
   padding: 7px 10px;
   font-size: 13px;
   color: var(--foreground);
-  min-height: 40px;
+  min-height: 44px;
 }
 .quick-actions button:hover {
   background: var(--secondary);
@@ -860,6 +860,10 @@ pre {
   font-size: 14px;
   line-height: 1.55;
   color: var(--muted-foreground);
+}
+[data-slot="dialog-close"] {
+  min-width: 44px;
+  min-height: 44px;
 }
 [data-slot="dialog-overlay"] {
   background: #111c17aa;
@@ -1251,7 +1255,10 @@ pre {
   white-space: normal;
   overflow-wrap: anywhere;
 }
-.parameter-row > *, .field-grid > * { min-width: 0; }
+.parameter-row > *,
+.field-grid > * {
+  min-width: 0;
+}
 .parameter-row input {
   width: 72px;
   padding: 6px;
@@ -1492,16 +1499,17 @@ footer button {
 @media (max-width: 700px) {
   .workspace {
     margin-left: 0;
-    padding: 0 16px calc(100px + var(--math-keyboard-height));
+    padding: 0 16px max(100px, calc(24px + var(--math-keyboard-height)));
   }
   .workspace > header {
-    height: 64px;
+    height: 48px;
     justify-content: space-between;
   }
   .brand {
     position: static;
     color: var(--foreground);
-    font-size: 22px;
+    font-size: 18px;
+    gap: 6px;
   }
   .brand-mark {
     width: 32px;
@@ -1524,7 +1532,7 @@ footer button {
     gap: 0;
   }
   .toolbar {
-    padding: 13px 0 8px;
+    padding: 6px 0;
     gap: 10px;
   }
   .toolbar > button {
@@ -1552,19 +1560,17 @@ footer button {
   }
   .mode-indicator {
     position: static;
-    align-self: flex-end;
-    margin-left: auto;
-    font-size: 12px;
+    align-self: center;
+    margin-left: 0;
+    font-size: 11px;
     border: 0;
     color: var(--muted-foreground);
-    min-height: 26px;
-    padding: 0;
+    min-height: 44px;
+    padding: 6px;
   }
   .workspace-tabs {
     position: fixed !important;
-    bottom: calc(
-      8px + var(--math-keyboard-height) + env(safe-area-inset-bottom)
-    );
+    bottom: calc(8px + env(safe-area-inset-bottom));
     left: 12px;
     right: 12px;
     width: auto !important;
@@ -1597,17 +1603,17 @@ footer button {
     height: 19px;
   }
   .workspace [data-slot="tabs-content"] {
-    padding: 19px 0;
+    padding: 6px 0;
   }
   .section-heading {
-    margin: 6px 0 20px;
+    margin: 0 0 12px;
   }
   .section-label {
     font-size: 11px;
   }
   h1 {
-    font-size: 32px;
-    letter-spacing: -1.1px;
+    font-size: 28px;
+    letter-spacing: -0.8px;
     max-width: 270px;
   }
   .page-number {
@@ -1622,7 +1628,7 @@ footer button {
   .segmented button {
     font-size: 13px;
     padding: 5px 10px;
-    min-height: 32px;
+    min-height: 44px;
   }
   .math-editor {
     padding: 13px 12px;
@@ -1681,13 +1687,13 @@ footer button {
     font-size: 14px;
   }
   .task-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
   }
   .task-grid button {
-    min-height: 150px;
-    padding: 14px;
-    gap: 7px;
+    min-height: 80px;
+    padding: 12px 14px;
+    gap: 4px;
   }
   .task-grid strong {
     font-size: 15px;
@@ -1785,17 +1791,29 @@ footer button {
   }
   [data-slot="dialog-content"] {
     max-width: calc(100% - 16px) !important;
-    padding: 20px;
-    gap: 17px;
-    border-radius: 15px;
-    max-height: calc(96dvh - var(--math-keyboard-height));
+    position: fixed;
+    left: 0;
+    top: 0;
+    translate: none !important;
+    transform: none;
+    width: 100%;
+    max-width: 100% !important;
+    height: calc(100dvh - var(--math-keyboard-height));
+    max-height: calc(100dvh - var(--math-keyboard-height));
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    border-radius: 0;
+    scroll-padding: 56px 0 80px;
   }
   [data-slot="dialog-title"] {
     font-size: 22px;
   }
   .operation-footer {
-    bottom: -20px;
-    padding-top: 12px;
+    bottom: -16px;
+    margin-top: auto;
+    padding: 12px 0 16px;
   }
   .toast {
     bottom: calc(88px + var(--math-keyboard-height));
@@ -1820,7 +1838,7 @@ footer button {
     font-size: 12px;
   }
   .brand {
-    font-size: 20px;
+    font-size: 16px;
   }
   .task-grid {
     grid-template-columns: 1fr;
@@ -1894,25 +1912,134 @@ footer button {
 }
 
 @media (max-width: 700px) {
-  .workspace-tabs [data-slot="tabs-trigger"] { font-size: 13px !important; }
-  .task-grid span:last-child { font-size: 13px; }
-  .math-placeholder { top: 31px; left: 18px; }
+  .workspace-tabs [data-slot="tabs-trigger"] {
+    font-size: 13px !important;
+  }
+  .task-grid span:last-child {
+    font-size: 13px;
+  }
+  .math-placeholder {
+    top: 31px;
+    left: 18px;
+  }
 }
 @media (max-width: 480px) {
-  [data-slot="dialog-content"] .field-grid, .graph-analysis .field-grid { grid-template-columns: minmax(0, 1fr); }
-  .bound-row { grid-template-columns: minmax(0, 1fr); }
-  .bound-row > button { grid-column: 1; justify-self: end; }
+  [data-slot="dialog-content"] .field-grid,
+  .graph-analysis .field-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bound-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bound-row > button {
+    grid-column: 1;
+    justify-self: end;
+  }
 }
 
-.result-list-simple { gap: 6px; align-items: center; }
-.result-list-simple > div { padding: 2px 7px; }
-.result-list-simple .math-block { padding: 0; }
-.result-list-simple .katex-display { margin: 0.15em 0; }
+.result-list-simple {
+  gap: 6px;
+  align-items: center;
+}
+.result-list-simple > div {
+  padding: 2px 7px;
+}
+.result-list-simple .math-block {
+  padding: 0;
+}
+.result-list-simple .katex-display {
+  margin: 0.15em 0;
+}
 
-.result-fields-compact { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px 16px; }
-.result-fields-compact dd .math-block { padding: 0; }
-.result-fields-compact dd .katex-display { margin: 0.15em 0; }
+.result-fields-compact {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px 16px;
+}
+.result-fields-compact dd .math-block {
+  padding: 0;
+}
+.result-fields-compact dd .katex-display {
+  margin: 0.15em 0;
+}
 
-[data-slot="dialog-header"] { text-align: left; }
-[data-slot="dialog-title"] { padding-right: 24px; line-height: 1.25; }
-body { overflow-x: clip; }
+[data-slot="dialog-header"] {
+  text-align: left;
+}
+[data-slot="dialog-title"] {
+  padding-right: 24px;
+  line-height: 1.25;
+}
+
+/* Keep the input action reachable while the virtual keyboard occupies the viewport. */
+@media (max-width: 700px), (max-height: 500px) and (pointer: coarse) {
+  .composer {
+    overflow: visible;
+  }
+  .composer-bottom {
+    position: sticky;
+    bottom: var(--math-keyboard-height);
+    z-index: 5;
+    border-radius: 0 0 16px 16px;
+  }
+  [data-slot="dialog-content"] > * {
+    flex-shrink: 0;
+  }
+  [data-slot="dialog-content"] > [data-slot="dialog-close"] {
+    width: 44px;
+    height: 44px;
+    right: 8px;
+    top: 8px;
+  }
+  [data-slot="dialog-title"] {
+    padding-right: 44px;
+  }
+  .task-shelf .task-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .task-shelf .task-glyph {
+    display: none;
+  }
+  .graph-toolbar .icon-btn {
+    min-width: 44px;
+    width: 44px;
+  }
+}
+.dialog-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--caution-bg);
+  color: var(--caution);
+  font-size: 14px;
+}
+.dialog-feedback button {
+  flex-shrink: 0;
+  min-width: 44px;
+  border: 0;
+  background: transparent;
+}
+.entry-hints {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin: 8px 2px;
+}
+.source-expression {
+  display: block;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 700px) {
+  .calculate-panel > .section-heading .section-label {
+    display: none;
+  }
+  .calculate-panel > .section-heading {
+    margin-bottom: 12px;
+  }
+  .mode-indicator {
+    min-width: 88px;
+    white-space: nowrap;
+  }
+}

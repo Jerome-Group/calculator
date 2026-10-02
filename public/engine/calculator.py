@@ -276,7 +276,7 @@ class Context:
   return n
 
 def walk_unresolved(r):
- if isinstance(r,dict):return any(walk_unresolved(v) for v in r.values())
+ if isinstance(r,dict):return any(walk_unresolved(k) or walk_unresolved(v) for k,v in r.items())
  if isinstance(r,(list,tuple,S.MatrixBase)):return any(walk_unresolved(v) for v in r)
  return isinstance(r,S.Basic) and (r.has(S.Integral,S.Derivative,S.Sum,S.Product,S.Limit,S.ConditionSet) or any('Transform' in type(a).__name__ for a in S.preorder_traversal(r)))
 def convert(r):
@@ -756,7 +756,7 @@ def compute(request):
  for d in dict.fromkeys(c.denominators):c.notes.append('Original restriction: '+str(d)+' ≠ 0.')
  if c.assumptions:c.notes.append('Assumptions: '+c.settings.get('assumptions',''))
  conditional=conditional or isinstance(r,S.Piecewise)
- unresolved=(walk_unresolved(r) and not isinstance(r,S.Piecewise)) or (isinstance(r,dict) and r.get('success') is False)
+ unresolved=walk_unresolved(r) or (isinstance(r,dict) and r.get('success') is False)
  if unresolved:c.notes.append('Some parts remain unevaluated or conditional. The engine has not established a complete answer; try assumptions, bounds, or numerical evaluation.')
  if not numeric and isinstance(r,S.Basic) and r.has(S.Float):numeric=True;c.notes.append('This result contains approximate floating-point values.')
  latex=S.latex(r) if not isinstance(r,(dict,np.ndarray)) else ''

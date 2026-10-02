@@ -36,4 +36,34 @@ class CurrentDispatchTests(unittest.TestCase):
  def test_degrees_current(self):
   out=self.call('evaluate',settings={'angle':'deg'},input='sin(30)');self.assertEqual(out['text'],'1/2')
   out=self.call('evaluate',settings={'angle':'deg'},input=r'\arcsin(1)',mode='latex');self.assertEqual(out['text'],'90')
+ def test_nested_unresolved_results_keep_conditions_and_diagnostics(self):
+  for expression in ['Integral(f(x),x)', 'Piecewise((Integral(f(x),x),x>0),(0,True))', '[Piecewise((Integral(f(x),x),x>0),(0,True))]', '{"branch":Piecewise((Integral(f(x),x),x>0),(0,True))}']:
+   out=self.call('evaluate',input=expression)
+   self.assertEqual(out['status'],'unresolved',out)
+   self.assertTrue(any('not established a complete answer' in note for note in out['notes']),out)
+   self.assertIn('Integral',out['text'])
+   if expression.startswith('Piecewise'):
+    self.assertEqual(out['display']['headers'],['Value','Condition'])
+    self.assertIn('x > 0',out['display']['rows'][0][1]['text'])
+ def test_generating_retains_valid_branch_and_reports_unevaluated_fallback(self):
+  out=self.call('generating',{'sequence':'n','variable':'n','target':'z'})
+  self.assertEqual(out['status'],'unresolved',out)
+  result=S.sympify(out['text']);z=S.Symbol('z')
+  self.assertIsInstance(result,S.Piecewise)
+  self.assertEqual(S.simplify(result.args[0].expr-z/(1-z)**2),0)
+  self.assertEqual(result.args[0].cond,S.Abs(z)<1)
+  self.assertTrue(result.args[1].expr.has(S.Sum))
+  self.assertTrue(any('not established a complete answer' in note for note in out['notes']),out)
+ def test_complete_piecewise_stays_conditional(self):
+  out=self.call('evaluate',input='Piecewise((x^2,x>0),(0,True))')
+  self.assertEqual(out['status'],'conditional',out)
+  self.assertFalse(any('not established a complete answer' in note for note in out['notes']),out)
+ def test_unresolved_eigenvalue_key_is_not_a_complete_answer(self):
+  out=self.call('matrix_eigenvalues',{'expression':'[[Integral(f(x),x)]]'})
+  self.assertEqual(out['status'],'unresolved',out)
+  self.assertIn('Integral',out['display']['rows'][0][0]['text'])
+ def test_unsolved_recurrence_does_not_claim_exact(self):
+  out=json.loads(compute_json(json.dumps({'operation':'recurrence','params':{'equation':'a(n+1)-a(n)-1/(n+1)','function':'a(n)','conditions':'{}'}})))
+  self.assertEqual(out['status'],'error',out)
+  self.assertIn('does not establish',out['text'])
 if __name__=='__main__':unittest.main()

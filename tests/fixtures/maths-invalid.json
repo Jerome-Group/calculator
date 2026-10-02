@@ -1,0 +1,859 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "invalid-default.distribution.student-t.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "student-t",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "positive"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.chi-square.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "chi-square",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "positive"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.F.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "F",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "positive"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.poisson.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "mean"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.geometric.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "geometric",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "probability"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.hypergeometric.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "hypergeometric",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "missing"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.exponential.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "rate"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.gamma.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "gamma",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "positive"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.beta.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "beta",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "positive"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.negative-binomial.normal-parameters",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "negative-binomial",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "integer"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.ppf.zero-probability",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "ppf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "strictly between"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.distribution.isf.zero-probability",
+      "surfaceId": "form.distribution",
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "isf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "strictly between"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.proportion.two-sample-interval.one-sample-counts",
+      "surfaceId": "form.proportion",
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[40,100]",
+          "action": "two-sample interval",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "Two samples require"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.proportion.two-sample-test.one-sample-counts",
+      "surfaceId": "form.proportion",
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[40,100]",
+          "action": "two-sample test",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "Two samples require"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.test.paired-t.default-data",
+      "surfaceId": "form.test",
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "paired t",
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "undefined"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.test.chi-square-goodness.default-data",
+      "surfaceId": "form.test",
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "chi-square goodness",
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "sum"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.test.ANOVA.default-data",
+      "surfaceId": "form.test",
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "ANOVA",
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "undefined"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.test.binomial.default-data",
+      "surfaceId": "form.test",
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "binomial",
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "requires integer"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.regression.sinusoidal.insufficient-points",
+      "surfaceId": "form.regression",
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[1,2,3,4]",
+          "y": "[3,5,7,9]",
+          "model": "sinusoidal",
+          "degree": "2",
+          "initial": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "more observations"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.number-theory.modular-inverse.non-coprime",
+      "surfaceId": "form.number_theory",
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "modular inverse",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "inverse"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.geometry.distance.unsupported-default-pair",
+      "surfaceId": "form.geometry",
+      "request": {
+        "operation": "geometry",
+        "params": {
+          "left": "Circle(Point(0,0),1)",
+          "right": "Line(Point(-2,0),Point(2,0))",
+          "action": "distance"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "distance"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.graph.spanning-tree.directed",
+      "surfaceId": "form.graph_theory",
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "yes",
+          "action": "spanning tree",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "undirected"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.graph.laplacian.directed",
+      "surfaceId": "form.graph_theory",
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "yes",
+          "action": "laplacian",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "undirected"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.matrix.singular",
+      "surfaceId": "form.matrix_inverse",
+      "request": {
+        "operation": "matrix_inverse",
+        "params": {
+          "expression": "[[1,2],[2,4]]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "invertible"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.quotient.reducible-field",
+      "surfaceId": "form.quotient",
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+1",
+          "structure": "field",
+          "left": "a",
+          "action": "inverse",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "reducible"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.quotient.zero-divisor-inverse",
+      "surfaceId": "form.quotient",
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+1",
+          "structure": "ring",
+          "left": "a+1",
+          "action": "inverse",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "inverse"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "invalid-default.expectation.not-normalized",
+      "surfaceId": "form.expectation",
+      "request": {
+        "operation": "expectation",
+        "params": {
+          "value": "x",
+          "weight": "x",
+          "variable": "x",
+          "lower": "0",
+          "upper": "1",
+          "kind": "continuous"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "normal"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "mathematical input domain/structural constraint; source-read diagnostic fragment",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    }
+  ]
+}

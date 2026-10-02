@@ -1,7 +1,15 @@
-import { currentAccount, syncWorkspace } from "./sync";
+import { currentAccount, syncWorkspace, sessionWorkspace } from "./sync";
+import { validateResult } from "./result-validation";
 import type { SavedState } from "./types";
 export const STORAGE_KEY = "calculator.workspace.v1",
   BACKUP_KEY = "calculator.workspace.previous";
+export function readDeviceSave(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
 export function validateState(v: any): SavedState {
   const str = (x: any, n = 12000) => typeof x === "string" && x.length <= n;
   const settings = (x: any) =>
@@ -11,6 +19,10 @@ export function validateState(v: any): SavedState {
     Number.isInteger(x.precision) &&
     x.precision >= 5 &&
     x.precision <= 200 &&
+    (x.displayDecimals === undefined ||
+      (Number.isInteger(x.displayDecimals) &&
+        x.displayDecimals >= 0 &&
+        x.displayDecimals <= 30)) &&
     str(x.assumptions, 1000);
   const def = (d: any) =>
     d &&
@@ -44,44 +56,55 @@ export function validateState(v: any): SavedState {
       b.definitions.length > 500 ||
       b.history.length > 10000 ||
       b.graphs.length > 100 ||
-      !Number.isInteger(b.revision)
+      !Number.isSafeInteger(b.revision) ||
+      b.revision < 0
     )
       throw Error("Invalid notebook data.");
     ids.add(b.id);
     if (
       !b.definitions.every(def) ||
       new Set(b.definitions.map((d: any) => d.name)).size !==
+        b.definitions.length ||
+      new Set(b.definitions.map((d: { id: unknown }) => d.id)).size !==
         b.definitions.length
     )
       throw Error("Invalid or duplicate definition.");
-    for (const h of b.history)
+    const historyIds = new Set();
+    for (const h of b.history) {
       if (
+        !h ||
         !str(h.id, 100) ||
+        historyIds.has(h.id) ||
         !str(h.input) ||
         !str(h.operation, 100) ||
+        !["text", "math", "latex"].includes(h.mode) ||
+        !Number.isSafeInteger(h.revision) ||
+        h.revision < 0 ||
+        !Number.isSafeInteger(h.time) ||
+        h.time < 0 ||
         !h.params ||
+        typeof h.params !== "object" ||
+        Array.isArray(h.params) ||
         !Object.values(h.params).every((x) => str(x)) ||
         !settings(h.settings) ||
         !Array.isArray(h.definitions) ||
+        h.definitions.length > 500 ||
         !h.definitions.every(def) ||
-        !h.result ||
-        ![
-          "exact",
-          "numeric",
-          "unresolved",
-          "conditional",
-          "divergent",
-          "error",
-        ].includes(h.result.status) ||
-        !str(h.result.text, 100000) ||
-        !str(h.result.latex, 50000) ||
-        !Array.isArray(h.result.notes) ||
-        !h.result.notes.every((x: any) => str(x, 5000))
+        new Set(h.definitions.map((d: { id: unknown }) => d.id)).size !==
+          h.definitions.length ||
+        new Set(h.definitions.map((d: { name: unknown }) => d.name)).size !==
+          h.definitions.length
       )
         throw Error("Invalid history.");
-    for (const g of b.graphs)
+      validateResult(h.result, h.operation);
+      historyIds.add(h.id);
+    }
+    const graphIds = new Set();
+    for (const g of b.graphs) {
       if (
+        !g ||
         !str(g.id, 100) ||
+        graphIds.has(g.id) ||
         !str(g.expression, 4000) ||
         !str(g.second, 4000) ||
         !str(g.min, 100) ||
@@ -111,6 +134,8 @@ export function validateState(v: any): SavedState {
             )))
       )
         throw Error("Invalid graph.");
+      graphIds.add(g.id);
+    }
   }
   if (!ids.has(v.active)) throw Error("Invalid active notebook.");
   return v;
@@ -138,15 +163,21 @@ export function loadState(): { state: SavedState | null; warning: string } {
     }
   } catch {
     return {
-      state: null,
+      state: sessionWorkspace(),
       warning:
         "Browser storage is unavailable. Export a backup before closing.",
     };
   }
 }
 export function persist(state: SavedState) {
-  const text = JSON.stringify(state),
+  const text = JSON.stringify(validateState(state));
+  let old: string | null;
+  try {
     old = localStorage.getItem(accountStorage(STORAGE_KEY));
+  } catch (error) {
+    syncWorkspace(state);
+    throw error;
+  }
   if (text === old) {
     if (localStorage.getItem(accountStorage("dirty")) === "1")
       syncWorkspace(state);
@@ -155,10 +186,22 @@ export function persist(state: SavedState) {
   if (old) {
     try {
       validateState(JSON.parse(old));
+    } catch {
+      syncWorkspace(state);
+      throw Error(
+        "The unreadable device save is preserved. Export a backup of your current work before closing.",
+      );
+    }
+    try {
       localStorage.setItem(accountStorage(BACKUP_KEY), old);
     } catch {}
   }
-  localStorage.setItem(accountStorage(STORAGE_KEY), text);
+  try {
+    localStorage.setItem(accountStorage(STORAGE_KEY), text);
+  } catch (error) {
+    syncWorkspace(state);
+    throw error;
+  }
   syncWorkspace(state);
 }
 export function download(

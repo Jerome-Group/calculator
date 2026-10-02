@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { loadPyodide } from "../public/engine/pyodide.mjs";
 import { operations } from "../lib/calculator/catalog.ts";
+import { validateState } from "../lib/calculator/storage.ts";
+import { DEFAULT_SETTINGS, newNotebook } from "../lib/calculator/types.ts";
 import {
   graphScope,
   graphFunctions,
@@ -58,12 +60,14 @@ assert.deepEqual(cells.details.cells, [
   ["3", "4"],
 ]);
 const results = [];
+const notebook = newNotebook("Release verification");
 for (const op of operations) {
+  const params = Object.fromEntries(op.fields.map((f) => [f.key, f.value]));
   const r = JSON.parse(
     compute(
       JSON.stringify({
         operation: op.id,
-        params: Object.fromEntries(op.fields.map((f) => [f.key, f.value])),
+        params,
         settings: {
           precision: 30,
           angle: "rad",
@@ -76,7 +80,29 @@ for (const op of operations) {
   );
   results.push({ id: op.id, status: r.status });
   assert.notEqual(r.status, "error", op.id + ": " + r.text);
+  notebook.history.push({
+    id: op.id,
+    operation: op.id,
+    input: params.expression || "",
+    params,
+    result: r,
+    settings: { ...DEFAULT_SETTINGS },
+    definitions: [],
+    mode: "text",
+    time: 1,
+    revision: 0,
+  });
 }
+const workspace = {
+  version: 1,
+  notebooks: [notebook],
+  active: notebook.id,
+  settings: { ...DEFAULT_SETTINGS },
+};
+assert.deepEqual(
+  validateState(JSON.parse(JSON.stringify(workspace))),
+  workspace,
+);
 const deg = graphScope([], { angle: "deg" }, 1),
   rad = graphScope([], { angle: "rad" }, 1);
 const graph = (expression, radians = false) => ({
