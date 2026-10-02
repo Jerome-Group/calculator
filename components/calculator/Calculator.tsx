@@ -54,6 +54,7 @@ import {
   sourceToMath,
   mathToSource,
 } from "@/lib/calculator/notation";
+import { initialOperationParams } from "@/lib/calculator/operation-params";
 import { formatDisplayApprox } from "@/lib/calculator/display-format";
 import GraphWorkspace, { makeGraph } from "./GraphWorkspace";
 import { operations, categories } from "@/lib/calculator/catalog";
@@ -547,20 +548,7 @@ export default function Calculator() {
     fieldConversionGeneration.current++;
     setOp(o);
     setParams(
-      Object.fromEntries(
-        o.fields.map((f) => [
-          f.key,
-          f.key === "expression" && expression
-            ? expression
-            : f.key === "expression" &&
-                o.id.startsWith("matrix_") &&
-                book?.definitions.some(
-                  (d) => d.id === selectedObject && d.kind === "matrix",
-                )
-              ? book.definitions.find((d) => d.id === selectedObject)!.name
-              : f.value,
-        ]),
-      ),
+      initialOperationParams(o, expression, book?.definitions, selectedObject),
     );
     setModal("operation");
     hide();

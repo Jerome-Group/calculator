@@ -172,6 +172,7 @@ export function componentHarness(
       newNotebook: (name) => notebook(name || "new"),
     },
     "@/lib/calculator/catalog": { operations: [], categories: [] },
+    "@/lib/calculator/operation-params": require("../lib/calculator/operation-params.ts"),
     "@/lib/calculator/storage": {
       accountStorage: (key) => key,
       readDeviceSave: () => null,

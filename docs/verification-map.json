@@ -8100,7 +8100,7 @@
       "id": "control.001",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 154
+        "line": 155
       },
       "kind": "button",
       "label": "Save value",
@@ -8137,7 +8137,7 @@
       "id": "control.002",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 823
+        "line": 811
       },
       "kind": "button",
       "label": "Dismiss notice",
@@ -8174,7 +8174,7 @@
       "id": "control.003",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 842
+        "line": 830
       },
       "kind": "a",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8211,7 +8211,7 @@
       "id": "control.004",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 857
+        "line": 845
       },
       "kind": "button",
       "label": "· · dp",
@@ -8248,7 +8248,7 @@
       "id": "control.005",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 866
+        "line": 854
       },
       "kind": "button",
       "label": "Help and coverage",
@@ -8285,7 +8285,7 @@
       "id": "control.006",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 873
+        "line": 861
       },
       "kind": "button",
       "label": "Settings and backups",
@@ -8322,7 +8322,7 @@
       "id": "control.007",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 883
+        "line": 871
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8359,7 +8359,7 @@
       "id": "control.008",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 887
+        "line": 875
       },
       "kind": "button",
       "label": "Find an operation",
@@ -8396,7 +8396,7 @@
       "id": "control.009",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 963
+        "line": 951
       },
       "kind": "button",
       "label": "Edit object",
@@ -8433,7 +8433,7 @@
       "id": "control.010",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 979
+        "line": 967
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8470,7 +8470,7 @@
       "id": "control.011",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 993
+        "line": 981
       },
       "kind": "MathEditor",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8507,7 +8507,7 @@
       "id": "control.012",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1000
+        "line": 988
       },
       "kind": "textarea",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8544,7 +8544,7 @@
       "id": "control.013",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1020
+        "line": 1008
       },
       "kind": "button",
       "label": "Math keyboard",
@@ -8581,7 +8581,7 @@
       "id": "control.014",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1030
+        "line": 1018
       },
       "kind": "button",
       "label": "Cancel",
@@ -8618,7 +8618,7 @@
       "id": "control.015",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1037
+        "line": 1025
       },
       "kind": "button",
       "label": "Calculate",
@@ -8655,7 +8655,7 @@
       "id": "control.016",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1049
+        "line": 1037
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8692,7 +8692,7 @@
       "id": "control.017",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1071
+        "line": 1059
       },
       "kind": "button",
       "label": "Matrix",
@@ -8729,7 +8729,7 @@
       "id": "control.018",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1074
+        "line": 1062
       },
       "kind": "button",
       "label": "More",
@@ -8766,7 +8766,7 @@
       "id": "control.019",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1087
+        "line": 1075
       },
       "kind": "button",
       "label": "Retry",
@@ -8803,7 +8803,7 @@
       "id": "control.020",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1100
+        "line": 1088
       },
       "kind": "button",
       "label": "Undo",
@@ -8840,7 +8840,7 @@
       "id": "control.021",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1134
+        "line": 1122
       },
       "kind": "button",
       "label": "Remove calculation",
@@ -8877,7 +8877,7 @@
       "id": "control.022",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1150
+        "line": 1138
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8914,7 +8914,7 @@
       "id": "control.023",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1268
+        "line": 1256
       },
       "kind": "button",
       "label": "Recalculate",
@@ -8951,7 +8951,7 @@
       "id": "control.024",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1281
+        "line": 1269
       },
       "kind": "button",
       "label": "Edit problem",
@@ -8988,7 +8988,7 @@
       "id": "control.025",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1284
+        "line": 1272
       },
       "kind": "button",
       "label": "Use",
@@ -9025,7 +9025,7 @@
       "id": "control.026",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1287
+        "line": 1275
       },
       "kind": "button",
       "label": "Save as",
@@ -9062,7 +9062,7 @@
       "id": "control.027",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1295
+        "line": 1283
       },
       "kind": "button",
       "label": "Graph",
@@ -9099,7 +9099,7 @@
       "id": "control.028",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1308
+        "line": 1296
       },
       "kind": "button",
       "label": "Plot trajectory",
@@ -9136,7 +9136,7 @@
       "id": "control.029",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1312
+        "line": 1300
       },
       "kind": "button",
       "label": "Phase portrait",
@@ -9173,7 +9173,7 @@
       "id": "control.030",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1318
+        "line": 1306
       },
       "kind": "button",
       "label": "Copy LaTeX",
@@ -9210,7 +9210,7 @@
       "id": "control.031",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1346
+        "line": 1334
       },
       "kind": "button",
       "label": "Repeat original settings",
@@ -9247,7 +9247,7 @@
       "id": "control.032",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1354
+        "line": 1342
       },
       "kind": "button",
       "label": "Show earlier calculations",
@@ -9284,7 +9284,7 @@
       "id": "control.033",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1369
+        "line": 1357
       },
       "kind": "GraphWorkspace",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9321,7 +9321,7 @@
       "id": "control.034",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1393
+        "line": 1381
       },
       "kind": "button",
       "label": "New",
@@ -9358,7 +9358,7 @@
       "id": "control.035",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1405
+        "line": 1393
       },
       "kind": "button",
       "label": "New",
@@ -9395,7 +9395,7 @@
       "id": "control.036",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1436
+        "line": 1424
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9432,7 +9432,7 @@
       "id": "control.037",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1462
+        "line": 1450
       },
       "kind": "button",
       "label": "Edit",
@@ -9469,7 +9469,7 @@
       "id": "control.038",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1463
+        "line": 1451
       },
       "kind": "button",
       "label": "Use",
@@ -9506,7 +9506,7 @@
       "id": "control.039",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1472
+        "line": 1460
       },
       "kind": "button",
       "label": "Graph",
@@ -9543,7 +9543,7 @@
       "id": "control.040",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1478
+        "line": 1466
       },
       "kind": "button",
       "label": "Statistics",
@@ -9580,7 +9580,7 @@
       "id": "control.041",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1488
+        "line": 1476
       },
       "kind": "button",
       "label": "Plot / edit",
@@ -9617,7 +9617,7 @@
       "id": "control.042",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1493
+        "line": 1481
       },
       "kind": "button",
       "label": "Remove",
@@ -9654,7 +9654,7 @@
       "id": "control.043",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1517
+        "line": 1505
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9691,7 +9691,7 @@
       "id": "control.044",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1527
+        "line": 1515
       },
       "kind": "button",
       "label": "Dismiss notice",
@@ -9728,7 +9728,7 @@
       "id": "control.045",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1545
+        "line": 1533
       },
       "kind": "CommandInput",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9765,7 +9765,7 @@
       "id": "control.046",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1555
+        "line": 1543
       },
       "kind": "CommandItem",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9802,7 +9802,7 @@
       "id": "control.047",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1586
+        "line": 1574
       },
       "kind": "StructuredFields",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9839,7 +9839,7 @@
       "id": "control.048",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1597
+        "line": 1585
       },
       "kind": "button",
       "label": "Operations",
@@ -9876,7 +9876,7 @@
       "id": "control.049",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1600
+        "line": 1588
       },
       "kind": "button",
       "label": "Calculate",
@@ -9913,7 +9913,7 @@
       "id": "control.050",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1627
+        "line": 1615
       },
       "kind": "MathEditor",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9950,7 +9950,7 @@
       "id": "control.051",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1633
+        "line": 1621
       },
       "kind": "button",
       "label": "Math keyboard",
@@ -9987,7 +9987,7 @@
       "id": "control.052",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1639
+        "line": 1627
       },
       "kind": "button",
       "label": "Use expression",
@@ -10024,7 +10024,7 @@
       "id": "control.053",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1673
+        "line": 1661
       },
       "kind": "input",
       "label": "Object name",
@@ -10061,7 +10061,7 @@
       "id": "control.054",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1681
+        "line": 1669
       },
       "kind": "Choice",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10098,7 +10098,7 @@
       "id": "control.055",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1698
+        "line": 1686
       },
       "kind": "input",
       "label": "Function arguments",
@@ -10135,7 +10135,7 @@
       "id": "control.056",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1710
+        "line": 1698
       },
       "kind": "input",
       "label": "Matrix rows",
@@ -10172,7 +10172,7 @@
       "id": "control.057",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1734
+        "line": 1722
       },
       "kind": "input",
       "label": "Matrix columns",
@@ -10209,7 +10209,7 @@
       "id": "control.058",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1768
+        "line": 1756
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10246,7 +10246,7 @@
       "id": "control.059",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1791
+        "line": 1779
       },
       "kind": "ListInput",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10283,7 +10283,7 @@
       "id": "control.060",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1799
+        "line": 1787
       },
       "kind": "textarea",
       "label": "Object expression",
@@ -10320,7 +10320,7 @@
       "id": "control.061",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1809
+        "line": 1797
       },
       "kind": "button",
       "label": "Cancel",
@@ -10357,7 +10357,7 @@
       "id": "control.062",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1812
+        "line": 1800
       },
       "kind": "button",
       "label": "Save object",
@@ -10394,7 +10394,7 @@
       "id": "control.063",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1836
+        "line": 1824
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10431,7 +10431,7 @@
       "id": "control.064",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1857
+        "line": 1845
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10468,7 +10468,7 @@
       "id": "control.065",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1863
+        "line": 1851
       },
       "kind": "button",
       "label": "Create notebook",
@@ -10505,7 +10505,7 @@
       "id": "control.066",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1886
+        "line": 1874
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10542,7 +10542,7 @@
       "id": "control.067",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1909
+        "line": 1897
       },
       "kind": "Choice",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10579,7 +10579,7 @@
       "id": "control.068",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1929
+        "line": 1917
       },
       "kind": "Choice",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10616,7 +10616,7 @@
       "id": "control.069",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1946
+        "line": 1934
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10653,7 +10653,7 @@
       "id": "control.070",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1970
+        "line": 1958
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10690,7 +10690,7 @@
       "id": "control.071",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1992
+        "line": 1980
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10727,7 +10727,7 @@
       "id": "control.072",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2008
+        "line": 1996
       },
       "kind": "Choice",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10764,7 +10764,7 @@
       "id": "control.073",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2032
+        "line": 2020
       },
       "kind": "button",
       "label": "Import earlier device notebooks",
@@ -10801,7 +10801,7 @@
       "id": "control.074",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2084
+        "line": 2072
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10838,7 +10838,7 @@
       "id": "control.075",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2103
+        "line": 2091
       },
       "kind": "button",
       "label": "Export backup",
@@ -10875,7 +10875,7 @@
       "id": "control.076",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2114
+        "line": 2102
       },
       "kind": "button",
       "label": "Import backup",
@@ -10912,7 +10912,7 @@
       "id": "control.077",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2118
+        "line": 2106
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -10949,7 +10949,7 @@
       "id": "control.078",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2157
+        "line": 2145
       },
       "kind": "button",
       "label": "Restore previous valid save",
@@ -10986,7 +10986,7 @@
       "id": "control.079",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2179
+        "line": 2167
       },
       "kind": "button",
       "label": "Export unreadable recovery data",
@@ -11023,7 +11023,7 @@
       "id": "control.080",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2293
+        "line": 2281
       },
       "kind": "Choice",
       "label": "dynamic/accessibility label requires browser observation",
