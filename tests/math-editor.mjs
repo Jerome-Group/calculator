@@ -2,8 +2,23 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import ts from "typescript";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
+const loaderChecks = spawnSync(
+  process.execPath,
+  [
+    "--experimental-vm-modules",
+    fileURLToPath(new URL("./mathlive-loader.mjs", import.meta.url)),
+  ],
+  { encoding: "utf8" },
+);
+assert.equal(
+  loaderChecks.status,
+  0,
+  loaderChecks.stderr || loaderChecks.stdout,
+);
 const source = fs.readFileSync(
   new URL("../components/calculator/MathEditor.tsx", import.meta.url),
   "utf8",
@@ -83,12 +98,16 @@ function harness({ failImport = false } = {}) {
       if (name === "react") return react;
       if (name === "react/jsx-runtime") return require(name);
       if (name.endsWith(".css")) return {};
-      if (name === "mathlive") {
-        if (importFailure) {
-          importFailure = false;
-          throw Error("Unavailable");
-        }
-        return { MathfieldElement: Field };
+      if (name === "../../lib/calculator/mathlive-loader") {
+        return {
+          async loadMathLive() {
+            if (importFailure) {
+              importFailure = false;
+              throw Error("Unavailable");
+            }
+            return { MathfieldElement: Field };
+          },
+        };
       }
       throw Error(`Unexpected module ${name}`);
     },

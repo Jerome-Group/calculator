@@ -1,4 +1,5 @@
 import { parse } from "mathjs";
+import { loadMathLive } from "./mathlive-loader";
 import type {
   ConstantNode,
   FunctionNode,
@@ -145,7 +146,7 @@ function canonical(node: MathNode): unknown {
 }
 
 export async function mathToSource(latex: string): Promise<string> {
-  const { convertLatexToAsciiMath } = await import("mathlive");
+  const { convertLatexToAsciiMath } = await loadMathLive();
   return convertLatexToAsciiMath(latex).replace(/\bln\s*\(/g, "log(");
 }
 

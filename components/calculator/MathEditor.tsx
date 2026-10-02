@@ -15,6 +15,7 @@ import type {
   VirtualKeyboardName,
 } from "mathlive";
 import "./MathEditor.css";
+import { loadMathLive } from "../../lib/calculator/mathlive-loader";
 const structureTemplates = {
   Fraction: "\\frac{#@}{#?}",
   Power: "#@^{#?}",
@@ -100,7 +101,7 @@ export default forwardRef<
   useEffect(() => {
     let disposed = false;
     let cleanup = () => {};
-    import("mathlive")
+    loadMathLive()
       .then((m) => {
         if (disposed || !host.current) return;
         m.MathfieldElement.fontsDirectory = "/mathfonts";

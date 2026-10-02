@@ -481,7 +481,13 @@ function LogicFields({
           label="Logical relationship"
           value={kind}
           options={names}
-          onChange={(v) => onChange(v === "custom" ? "p" : v + "(p,q)")}
+          onChange={(v) =>
+            onChange(
+              v === "custom"
+                ? "p"
+                : v + "(" + [args[0] || "p", args[1] || "q"].join(",") + ")",
+            )
+          }
         />
       </label>
       {kind !== "custom" ? (

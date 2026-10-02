@@ -35,6 +35,7 @@ new Function("require", "module", "exports", compiled)(
   loadedModule.exports,
 );
 const { Preview, ProblemPreview } = loadedModule.exports;
+const StructuredFields = loadedModule.exports.default;
 function elements(tree, predicate) {
   if (!tree || typeof tree !== "object") return [];
   return [
@@ -115,6 +116,44 @@ const inverse = math(
   }),
 )[0];
 assert(inverse.includes("inverse") && inverse.includes("tail"));
+const logic = operations.find((entry) => entry.id === "logic");
+function switchRelationship(value, relationship) {
+  let changed;
+  const field = StructuredFields({
+    op: logic,
+    params: { expression: value },
+    definitions: [],
+    onMath: () => {},
+    onChange: (key, next) => {
+      assert.equal(key, "expression");
+      changed = next;
+    },
+  });
+  const tree = field.type(field.props);
+  const choice = elements(
+    tree,
+    (node) => node.props?.label === "Logical relationship",
+  )[0];
+  assert(choice, "rendered logical relationship selector exists");
+  choice.props.onChange(relationship);
+  return changed;
+}
+for (const relationship of ["Implies", "And", "Or", "Xor", "Equivalent"]) {
+  assert.equal(
+    switchRelationship("Implies(Not(r),s)", relationship),
+    `${relationship}(Not(r),s)`,
+    "switching relationship preserves nested and named operands",
+  );
+  assert.equal(
+    switchRelationship("And(Or(r,t),Not(s))", relationship),
+    `${relationship}(Or(r,t),Not(s))`,
+    "commas inside nested operands remain scoped",
+  );
+}
+assert.equal(switchRelationship("And(Not(r))", "Or"), "Or(Not(r),q)");
+assert.equal(switchRelationship("And()", "Xor"), "Xor(p,q)");
+assert.equal(switchRelationship("Implies(p,q)", "And"), "And(p,q)");
+assert.equal(switchRelationship("And(Not(r),s)", "custom"), "p");
 console.log(
   `All ${operations.length} default form previews render; grouping, matrix, exact fallback and probability labels passed`,
 );

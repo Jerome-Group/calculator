@@ -639,7 +639,12 @@
       "id": "math-editor",
       "argv": ["node", "tests/math-editor.mjs"],
       "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "reads": [
+        "owned source and controlled async fixtures",
+        "tests/mathlive-loader.mjs",
+        "lib/calculator/mathlive-loader.ts",
+        "locked standalone MathLive bundle"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -678,7 +683,12 @@
     },
     {
       "id": "notation-previews",
-      "argv": ["node", "tests/notation-previews.mjs"],
+      "argv": [
+        "node",
+        "--import",
+        "./tests/resolve-types.mjs",
+        "tests/notation-previews.mjs"
+      ],
       "prerequisites": ["lockedInstall"],
       "reads": ["owned source and controlled async fixtures"],
       "writes": [],
@@ -12540,7 +12550,7 @@
       "id": "control.121",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 274
+        "line": 275
       },
       "kind": "button",
       "label": "Retry editor",
@@ -12577,7 +12587,7 @@
       "id": "control.122",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 287
+        "line": 288
       },
       "kind": "button",
       "label": "Structures & editing",
@@ -12614,7 +12624,7 @@
       "id": "control.123",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 302
+        "line": 303
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -12651,7 +12661,7 @@
       "id": "control.124",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 318
+        "line": 319
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13243,7 +13253,7 @@
       "id": "control.140",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 492
+        "line": 498
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13280,7 +13290,7 @@
       "id": "control.141",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 513
+        "line": 519
       },
       "kind": "input",
       "label": "Proposition",
@@ -13317,7 +13327,7 @@
       "id": "control.142",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 545
+        "line": 551
       },
       "kind": "LogicFields",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13354,7 +13364,7 @@
       "id": "control.143",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 565
+        "line": 571
       },
       "kind": "MatrixInput",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13391,7 +13401,7 @@
       "id": "control.144",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 600
+        "line": 606
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13428,7 +13438,7 @@
       "id": "control.145",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 627
+        "line": 633
       },
       "kind": "button",
       "label": "×",
@@ -13465,7 +13475,7 @@
       "id": "control.146",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 645
+        "line": 651
       },
       "kind": "button",
       "label": "Add outer integral",
@@ -13502,7 +13512,7 @@
       "id": "control.147",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 681
+        "line": 687
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13539,7 +13549,7 @@
       "id": "control.148",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 710
+        "line": 716
       },
       "kind": "button",
       "label": "Add branch",
@@ -13576,7 +13586,7 @@
       "id": "control.149",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 727
+        "line": 733
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13613,7 +13623,7 @@
       "id": "control.150",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 740
+        "line": 746
       },
       "kind": "MatrixInput",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13650,7 +13660,7 @@
       "id": "control.151",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 749
+        "line": 755
       },
       "kind": "ListInput",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13687,7 +13697,7 @@
       "id": "control.152",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 770
+        "line": 776
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13724,7 +13734,7 @@
       "id": "control.153",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 794
+        "line": 800
       },
       "kind": "button",
       "label": "×",
@@ -13761,7 +13771,7 @@
       "id": "control.154",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 808
+        "line": 814
       },
       "kind": "button",
       "label": "Add condition",
@@ -13798,7 +13808,7 @@
       "id": "control.155",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 824
+        "line": 830
       },
       "kind": "Choice",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13835,7 +13845,7 @@
       "id": "control.156",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 832
+        "line": 838
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -13872,7 +13882,7 @@
       "id": "control.157",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 837
+        "line": 843
       },
       "kind": "button",
       "label": "Math",
