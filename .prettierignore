@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.next/
+.vinext/
+.wrangler/
+.sites-runtime/
+outputs/
+public/engine/
+components/ui/
+hooks/use-mobile.ts
+pnpm-lock.yaml
+public/licenses.txt

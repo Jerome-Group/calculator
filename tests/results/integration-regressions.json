@@ -1,0 +1,98 @@
+{
+  "direct_complex": {
+    "status": "numeric",
+    "text": "6.283185307179586476925287*I",
+    "display": {
+      "type": "math",
+      "latex": "6.283185307179586476925287 i",
+      "text": "6.283185307179586476925287*I"
+    },
+    "notes": [
+      "Symbolic branch endpoints contradicted two numerical quadrature passes. Showing an approximation (25-digit panel agreement); use Contour integral for exact circular residue evaluation.",
+      "This result contains approximate floating-point values."
+    ]
+  },
+  "structured_complex": {
+    "status": "numeric",
+    "text": "6.283185307179586476925287*I",
+    "display": {
+      "type": "math",
+      "latex": "6.283185307179586476925287 i",
+      "text": "6.283185307179586476925287*I"
+    },
+    "notes": [
+      "Symbolic branch endpoints contradicted two numerical quadrature passes. Showing an approximation (25-digit panel agreement); use Contour integral for exact circular residue evaluation.",
+      "This result contains approximate floating-point values."
+    ]
+  },
+  "audit_style_method": {
+    "status": "numeric",
+    "text": "6.283185307179586476925287*I",
+    "display": {
+      "type": "math",
+      "latex": "6.283185307179586476925287 i",
+      "text": "6.283185307179586476925287*I"
+    },
+    "notes": [
+      "Symbolic branch endpoints contradicted two numerical quadrature passes. Showing an approximation (25-digit panel agreement); use Contour integral for exact circular residue evaluation.",
+      "Original restriction: z**2 ≠ 0.",
+      "This result contains approximate floating-point values."
+    ]
+  },
+  "contour_exact": {
+    "status": "exact",
+    "text": "2*I*pi",
+    "display": {
+      "type": "math",
+      "latex": "2 i \\pi",
+      "text": "2*I*pi"
+    },
+    "notes": [
+      "Exact residue theorem on a circular contour; signed winding number 1. Avoids principal-branch endpoint cancellation.",
+      "Orientation is the listed parameter direction (surface normal r_u × r_v).",
+      "Original restriction: z**2 ≠ 0."
+    ]
+  },
+  "basic_definite": {
+    "status": "exact",
+    "text": "pi/2",
+    "display": {
+      "type": "math",
+      "latex": "\\frac{\\pi}{2}",
+      "text": "pi/2"
+    },
+    "notes": []
+  },
+  "basic_antiderivative": {
+    "status": "exact",
+    "text": "C + x**3/3",
+    "display": {
+      "type": "math",
+      "latex": "C + \\frac{x^{3}}{3}",
+      "text": "C + x**3/3"
+    },
+    "notes": [
+      "C is an arbitrary integration constant on each connected domain."
+    ]
+  },
+  "method_substitute_valid": {
+    "status": "exact",
+    "text": "1",
+    "display": {
+      "type": "math",
+      "latex": "1",
+      "text": "1"
+    },
+    "notes": [
+      "Original restriction: x ≠ 0."
+    ]
+  },
+  "method_substitute_invalid": {
+    "status": "error",
+    "text": "This input is undefined: an original denominator becomes zero.",
+    "display": null,
+    "notes": [
+      "Input retained. Engine failure does not prove that no mathematical solution exists."
+    ]
+  }
+}

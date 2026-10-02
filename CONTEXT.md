@@ -1,28 +1,12 @@
-# <repository> — context
-
-*(One line: the domain this repository operates in.)*
+# Domain language
 
 ## Language
 
-The ubiquitous language of this repository: the words the code, the issues and the commits all
-use for the same thing. An entry earns its place when two people — or a person and an agent —
-could reasonably mean different things by the same word.
-
-Each entry is the term, what it means **here**, and the near-synonyms to avoid so the wrong one
-does not creep back in.
-
-**\<Term\>**:
-What it means in this repository.
-_Avoid_: the words that mean something adjacent and would blur it
-
-Two terms are Organisation-wide and mean the same thing in every repository:
-
-**Organisation**:
-The `Jerome-Group` GitHub org — the top-level account that owns the repositories.
-_Avoid_: team, group
-
-**Baseline**:
-The configuration every repository in the Organisation inherits — branch protection, the
-security defaults, and the per-repository settings. It is applied from the management hub, not
-from here.
-_Avoid_: template, policy, default
+- **Notebook** — named collection of definitions, history snapshots and graph records.
+- **Workspace** — all notebooks and settings owned by one signed-in user.
+- **Definition** — reusable named expression, function, matrix, dataset or algebraic object.
+- **Revision** — D1's optimistic concurrency counter; a stale write returns a conflict.
+- **Dirty snapshot** — local workspace awaiting an acknowledged cloud save.
+- **Offline copy** — notebook preserved when local and remote revisions diverge.
+- **Account generation** — invalidates asynchronous work after identity changes or sign-out.
+- **Offline readiness** — verified asset closure plus cached signed-in shell; cleared on sign-out.

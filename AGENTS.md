@@ -1,21 +1,18 @@
-# AGENTS.md — <repository>
+# AGENTS.md — calculator
 
 > Canonical instruction file for AI agents (Claude Code and others) working in this repo.
 > `CLAUDE.md` is a symlink to this file, so the two can never drift.
 
 ## What this repo is
 
-*(One paragraph: what this repository is for, and what it is not for. Replace this and the
-heading above before the first pull request.)*
+Calculator is a public mathematical notebook with browser-local computation, ChatGPT sign-in and scoped D1 workspace sync. It does not use a runtime AI or external calculation API.
 
-- **Visibility:** *(private | public)*
+- **Visibility:** public
 - **Organisation:** [Jerome-Group](https://github.com/Jerome-Group)
 
 ## Getting it running
 
-*(The commands an agent could not have guessed — install, run, test, lint — and any constraint
-on where they may be run. Fill this in with the first real code; until then it is honestly
-empty.)*
+Use Node 24 and pnpm from package.json. `pnpm install --frozen-lockfile`, `pnpm dev`; checks are `pnpm typecheck`, `pnpm format:check`, `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm test:assets`. Org administration runs on the mini, application work in this checkout. Keep its original archival history local and preserve Sites' `DB` binding.
 
 ## Conventions
 
@@ -28,7 +25,7 @@ empty.)*
 ## Code standards
 
 `CODING_STANDARDS.md` is the full version: the burden is on the code, not on docs — names,
-placement and small cohesive units carry the *what*, and docs carry only the *why*. `MAP.md` is
+placement and small cohesive units carry the _what_, and docs carry only the _why_. `MAP.md` is
 required at the root and updated in the same pull request as any top-level change.
 
 ## How work flows
@@ -93,4 +90,4 @@ skeleton CI has not earned that.
 
 ## Repository notes
 
-*(Anything with no natural home above. May be empty.)*
+Production identity comes from Sites authenticated headers. The loopback preview identity is synthetic. Do not publish local workspace or tool state.

@@ -50,3 +50,12 @@ updates:
     # update is never held back by it.
     cooldown:
       default-days: 7
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    labels: []
+    rebase-strategy: auto
+    cooldown:
+      default-days: 7

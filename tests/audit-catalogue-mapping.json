@@ -1,0 +1,828 @@
+{
+  "audit_count": 132,
+  "source_count": 128,
+  "missing_count": 0,
+  "operations": [
+    {
+      "audit_index": 1,
+      "audit_operation": "Simplify",
+      "source_id": "simplify",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 2,
+      "audit_operation": "Expand",
+      "source_id": "expand",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 3,
+      "audit_operation": "Factor",
+      "source_id": "factor",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 4,
+      "audit_operation": "Cancel rational factors",
+      "source_id": "cancel",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 5,
+      "audit_operation": "Combine fractions",
+      "source_id": "together",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 6,
+      "audit_operation": "Trigonometric simplify",
+      "source_id": "trigsimp",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 7,
+      "audit_operation": "Rationalize radicals",
+      "source_id": "radsimp",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 8,
+      "audit_operation": "Partial fractions",
+      "source_id": "apart",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 9,
+      "audit_operation": "Substitution",
+      "source_id": "substitute",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 10,
+      "audit_operation": "Function / composition",
+      "source_id": "compose",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 11,
+      "audit_operation": "Piecewise expression",
+      "source_id": "piecewise",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 12,
+      "audit_operation": "Solve equation",
+      "source_id": "solve",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 13,
+      "audit_operation": "Solve inequalities",
+      "source_id": "inequality",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 14,
+      "audit_operation": "Linear system",
+      "source_id": "system",
+      "status": "direct_or_grouped",
+      "source_variant": "system.kind=linear"
+    },
+    {
+      "audit_index": 15,
+      "audit_operation": "Nonlinear system",
+      "source_id": "system",
+      "status": "grouped",
+      "source_variant": "system.kind=nonlinear"
+    },
+    {
+      "audit_index": 16,
+      "audit_operation": "Numerical system",
+      "source_id": "numeric_system",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 17,
+      "audit_operation": "Derivative / partial derivative",
+      "source_id": "differentiate",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 18,
+      "audit_operation": "Indefinite integral",
+      "source_id": "integrate",
+      "status": "direct_or_grouped",
+      "source_variant": "integrate with bounds blank"
+    },
+    {
+      "audit_index": 19,
+      "audit_operation": "Definite integral",
+      "source_id": "integrate",
+      "status": "grouped",
+      "source_variant": "integrate with lower and upper bounds"
+    },
+    {
+      "audit_index": 20,
+      "audit_operation": "Double / triple integral",
+      "source_id": "multiple_integral",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 21,
+      "audit_operation": "Limit",
+      "source_id": "limit",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 22,
+      "audit_operation": "Taylor / Laurent series",
+      "source_id": "series",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 23,
+      "audit_operation": "Summation",
+      "source_id": "sum",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 24,
+      "audit_operation": "Product",
+      "source_id": "product",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 25,
+      "audit_operation": "Series convergence",
+      "source_id": "convergence",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 26,
+      "audit_operation": "Complex residue",
+      "source_id": "residue",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 27,
+      "audit_operation": "Singularities",
+      "source_id": "singularities",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 28,
+      "audit_operation": "Contour integral",
+      "source_id": "contour",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 29,
+      "audit_operation": "Gradient",
+      "source_id": "gradient",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 30,
+      "audit_operation": "Jacobian",
+      "source_id": "jacobian",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 31,
+      "audit_operation": "Hessian",
+      "source_id": "hessian",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 32,
+      "audit_operation": "Divergence",
+      "source_id": "divergence",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 33,
+      "audit_operation": "Curl",
+      "source_id": "curl",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 34,
+      "audit_operation": "Coordinate Jacobian factor",
+      "source_id": "jacobian_factor",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 35,
+      "audit_operation": "Line integral",
+      "source_id": "line_integral",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 36,
+      "audit_operation": "Surface flux",
+      "source_id": "surface_integral",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 37,
+      "audit_operation": "Determinant",
+      "source_id": "matrix_det",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 38,
+      "audit_operation": "Inverse",
+      "source_id": "matrix_inverse",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 39,
+      "audit_operation": "Transpose",
+      "source_id": "matrix_transpose",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 40,
+      "audit_operation": "Cofactor matrix",
+      "source_id": "matrix_cofactors",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 41,
+      "audit_operation": "Classical adjugate",
+      "source_id": "matrix_adjugate",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 42,
+      "audit_operation": "Reduced row echelon form",
+      "source_id": "matrix_rref",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 43,
+      "audit_operation": "Rank",
+      "source_id": "matrix_rank",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 44,
+      "audit_operation": "Null space",
+      "source_id": "matrix_null",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 45,
+      "audit_operation": "Row space",
+      "source_id": "matrix_row",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 46,
+      "audit_operation": "Column space",
+      "source_id": "matrix_column",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 47,
+      "audit_operation": "Eigenvalues",
+      "source_id": "matrix_eigenvalues",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 48,
+      "audit_operation": "Eigenvectors",
+      "source_id": "matrix_eigenvectors",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 49,
+      "audit_operation": "Characteristic polynomial",
+      "source_id": "matrix_characteristic",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 50,
+      "audit_operation": "LU decomposition",
+      "source_id": "matrix_lu",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 51,
+      "audit_operation": "QR decomposition",
+      "source_id": "matrix_qr",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 52,
+      "audit_operation": "Singular values",
+      "source_id": "matrix_svd",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 53,
+      "audit_operation": "Cholesky decomposition",
+      "source_id": "matrix_cholesky",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 54,
+      "audit_operation": "Pseudoinverse",
+      "source_id": "matrix_pinverse",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 55,
+      "audit_operation": "Trace",
+      "source_id": "matrix_trace",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 56,
+      "audit_operation": "Hermitian adjoint",
+      "source_id": "matrix_adjoint",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 57,
+      "audit_operation": "Dot product",
+      "source_id": "dot",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 58,
+      "audit_operation": "Cross product",
+      "source_id": "cross",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 59,
+      "audit_operation": "Numerical SVD",
+      "source_id": "numeric_svd",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 60,
+      "audit_operation": "Condition number",
+      "source_id": "matrix_condition",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 61,
+      "audit_operation": "Least squares",
+      "source_id": "least_squares",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 62,
+      "audit_operation": "Symbolic ODE",
+      "source_id": "ode",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 63,
+      "audit_operation": "Symbolic ODE system",
+      "source_id": "ode_system",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 64,
+      "audit_operation": "Numerical ODE / trajectory",
+      "source_id": "ivp",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 65,
+      "audit_operation": "Linearized stability",
+      "source_id": "stability",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 66,
+      "audit_operation": "First-order symbolic PDE",
+      "source_id": "pde",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 67,
+      "audit_operation": "Heat equation",
+      "source_id": "heat",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 68,
+      "audit_operation": "Laplace transform",
+      "source_id": "laplace",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 69,
+      "audit_operation": "Inverse Laplace transform",
+      "source_id": "inverse_laplace",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 70,
+      "audit_operation": "Fourier transform",
+      "source_id": "fourier",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 71,
+      "audit_operation": "Discrete Fourier transform",
+      "source_id": "fft",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 72,
+      "audit_operation": "Statistics & confidence interval",
+      "source_id": "describe + confidence",
+      "status": "grouped",
+      "gap_or_mapping_note": "Descriptive statistics and mean confidence interval are separate discoverable tasks."
+    },
+    {
+      "audit_index": 73,
+      "audit_operation": "Distribution probability",
+      "source_id": "distribution",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 74,
+      "audit_operation": "Linear regression",
+      "source_id": "regression",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 75,
+      "audit_operation": "Pearson correlation",
+      "source_id": "correlation",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 76,
+      "audit_operation": "One-sample t test",
+      "source_id": "test",
+      "status": "grouped",
+      "source_variant": "one-sample t"
+    },
+    {
+      "audit_index": 77,
+      "audit_operation": "Welch two-sample t test",
+      "source_id": "test",
+      "status": "grouped",
+      "source_variant": "Welch t"
+    },
+    {
+      "audit_index": 78,
+      "audit_operation": "Paired t test",
+      "source_id": "test",
+      "status": "grouped",
+      "source_variant": "paired t"
+    },
+    {
+      "audit_index": 79,
+      "audit_operation": "Chi-square independence test",
+      "source_id": "test",
+      "status": "grouped",
+      "source_variant": "chi-square independence"
+    },
+    {
+      "audit_index": 80,
+      "audit_operation": "One-way ANOVA",
+      "source_id": "test",
+      "status": "grouped",
+      "source_variant": "ANOVA"
+    },
+    {
+      "audit_index": 81,
+      "audit_operation": "Exact binomial test",
+      "source_id": "test",
+      "status": "grouped",
+      "source_variant": "binomial"
+    },
+    {
+      "audit_index": 82,
+      "audit_operation": "Combinations / permutations",
+      "source_id": "combinatorics",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 83,
+      "audit_operation": "Solve recurrence",
+      "source_id": "recurrence",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 84,
+      "audit_operation": "Set operations",
+      "source_id": "sets",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 85,
+      "audit_operation": "Truth table",
+      "source_id": "logic",
+      "status": "grouped",
+      "source_variant": "truth table"
+    },
+    {
+      "audit_index": 86,
+      "audit_operation": "Simplify logic",
+      "source_id": "logic",
+      "status": "grouped",
+      "source_variant": "simplified"
+    },
+    {
+      "audit_index": 87,
+      "audit_operation": "Satisfiability",
+      "source_id": "logic",
+      "status": "grouped",
+      "source_variant": "satisfying assignment"
+    },
+    {
+      "audit_index": 88,
+      "audit_operation": "Graph analysis",
+      "source_id": "graph_theory",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 89,
+      "audit_operation": "Greatest common divisor",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "gcd"
+    },
+    {
+      "audit_index": 90,
+      "audit_operation": "Least common multiple",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "lcm"
+    },
+    {
+      "audit_index": 91,
+      "audit_operation": "B\u00e9zout coefficients",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "B\u00e9zout"
+    },
+    {
+      "audit_index": 92,
+      "audit_operation": "Modular inverse",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "modular inverse"
+    },
+    {
+      "audit_index": 93,
+      "audit_operation": "Primality",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "prime"
+    },
+    {
+      "audit_index": 94,
+      "audit_operation": "Integer factorization",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "factor"
+    },
+    {
+      "audit_index": 95,
+      "audit_operation": "Euler totient",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "totient"
+    },
+    {
+      "audit_index": 96,
+      "audit_operation": "Divisors",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "divisors"
+    },
+    {
+      "audit_index": 97,
+      "audit_operation": "Divisor count",
+      "source_id": "divisor_count",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 98,
+      "audit_operation": "M\u00f6bius function",
+      "source_id": "mobius",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 99,
+      "audit_operation": "Continued fraction",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "continued fraction"
+    },
+    {
+      "audit_index": 100,
+      "audit_operation": "Modular exponentiation",
+      "source_id": "number_theory",
+      "status": "grouped",
+      "source_variant": "modular power"
+    },
+    {
+      "audit_index": 101,
+      "audit_operation": "Chinese remainder theorem",
+      "source_id": "crt",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 102,
+      "audit_operation": "Diophantine equation",
+      "source_id": "diophantine",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 103,
+      "audit_operation": "Finite permutation group",
+      "source_id": "group",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 104,
+      "audit_operation": "Subgroups / cosets",
+      "source_id": "group",
+      "status": "grouped",
+      "source_variant": "group with subgroup generators"
+    },
+    {
+      "audit_index": 105,
+      "audit_operation": "Finite field arithmetic",
+      "source_id": "quotient",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 106,
+      "audit_operation": "Polynomial factorization mod p",
+      "source_id": "polynomial",
+      "status": "grouped",
+      "source_variant": "polynomial.action=factor, prime modulus"
+    },
+    {
+      "audit_index": 107,
+      "audit_operation": "Gr\u00f6bner basis / ideal reduction",
+      "source_id": "ideal",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 108,
+      "audit_operation": "Simplicial homology",
+      "source_id": "homology",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 109,
+      "audit_operation": "Bracketed numerical root",
+      "source_id": "root",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 110,
+      "audit_operation": "Numerical integration",
+      "source_id": "numeric_integral",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 111,
+      "audit_operation": "Polynomial interpolation",
+      "source_id": "interpolate",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 112,
+      "audit_operation": "Cubic spline value",
+      "source_id": "spline",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 113,
+      "audit_operation": "Constrained / unconstrained minimum",
+      "source_id": "minimize",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 114,
+      "audit_operation": "Linear programming",
+      "source_id": "linear_program",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 115,
+      "audit_operation": "Curve geometry",
+      "source_id": "curve_geometry",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 116,
+      "audit_operation": "Metric curvature",
+      "source_id": "metric",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 117,
+      "audit_operation": "Analytic intersection",
+      "source_id": "geometry",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 118,
+      "audit_operation": "Markov chain",
+      "source_id": "markov",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 119,
+      "audit_operation": "Unit conversion",
+      "source_id": "units",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 120,
+      "audit_operation": "Uncertainty propagation",
+      "source_id": "uncertainty",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 121,
+      "audit_operation": "Row reduction with steps",
+      "source_id": "matrix_rref",
+      "status": "grouped",
+      "gap_or_mapping_note": "Row-operation details available for matrices up to 8\u00d710."
+    },
+    {
+      "audit_index": 122,
+      "audit_operation": "Multivariable path limits",
+      "source_id": "multilimit",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 123,
+      "audit_operation": "Stationary points / extrema",
+      "source_id": "critical_points",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 124,
+      "audit_operation": "Wave equation",
+      "source_id": "wave",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 125,
+      "audit_operation": "Poisson equation on a square",
+      "source_id": "poisson",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 126,
+      "audit_operation": "Numerical ODE boundary problem",
+      "source_id": "bvp",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 127,
+      "audit_operation": "Histogram",
+      "source_id": "histogram",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 128,
+      "audit_operation": "Box plot",
+      "source_id": "boxplot",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 129,
+      "audit_operation": "Finite expectation & variance",
+      "source_id": "finite_expectation",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 130,
+      "audit_operation": "Symbolic random variable",
+      "source_id": "symbolic_expectation",
+      "status": "implemented_explicitly"
+    },
+    {
+      "audit_index": 131,
+      "audit_operation": "Generating function",
+      "source_id": "generating",
+      "status": "direct_or_grouped"
+    },
+    {
+      "audit_index": 132,
+      "audit_operation": "Parametric surface area",
+      "source_id": "surface_area",
+      "status": "implemented_explicitly"
+    }
+  ],
+  "partial_count": 6,
+  "grouped_count": 23
+}

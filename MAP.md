@@ -1,17 +1,18 @@
-# Map
+# Calculator map
 
-*(One line: what this repository is.)*
+Calculator is a browser mathematical notebook hosted by ChatGPT Sites.
 
-Start here: `README.md`, then `AGENTS.md`.
+Start with README.md, then app/page.tsx and components/calculator/CalculatorGate.tsx.
 
-| Area | What lives there | Entry point |
-|------|------------------|-------------|
-| Working here | Agent + contributor conventions, commit/attribution rules | `AGENTS.md` (= `CLAUDE.md`) |
-| Contributing | How work flows here — issue first, then a pull request | `CONTRIBUTING.md` |
-| Code standards | How code is written and reviewed | `CODING_STANDARDS.md` |
-| Domain language | The glossary — this repository's ubiquitous language | `CONTEXT.md` |
-| Decisions | Architecture decision records | `docs/adr/` |
-| Agent skills | The routines an agent follows here, one file per skill | `docs/agents/` |
-| Automation | The workflows that run on a pull request or on a new issue, and dependency updates | `.github/` |
-
-Update this file in the same pull request whenever a top-level area is added, moved, or removed.
+| Area                   | What lives there                                          | Entry point                            |
+| ---------------------- | --------------------------------------------------------- | -------------------------------------- |
+| `app/`                 | Routes, sign-in helpers and scoped workspace API          | `app/api/workspace/route.ts`           |
+| `components/`          | Notebook, graphing, editor and vendored UI                | `components/calculator/Calculator.tsx` |
+| `lib/`                 | Catalogue, computation bridge, account sync and storage   | `lib/calculator/sync.ts`               |
+| `public/`              | Offline engine, service worker, coverage and notices      | `public/compute-worker.js`             |
+| `build/`, `scripts/`   | Sites integration, portable tooling and asset preparation | `vite.config.ts`                       |
+| `db/`, `drizzle/`      | Workspace schema and migrations                           | `db/schema.ts`                         |
+| `tests/`, `examples/`  | Release, sync, persistence and asset checks               | `tests/sync.mjs`                       |
+| `docs/`                | Decisions, product scope and validation                   | `docs/VALIDATION.md`                   |
+| `.openai/`, `.github/` | Site binding and organisation CI                          | `.github/workflows/ci.yml`             |
+| `hooks/`, `vendor/`    | Shared UI support and retained third-party notices        | `hooks/`, `vendor/`                    |
