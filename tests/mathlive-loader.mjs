@@ -39,7 +39,10 @@ function inspect(node) {
 }
 inspect(bundle);
 
-async function harness({ evaluationFails = false } = {}) {
+async function harness({
+  evaluationFails = false,
+  browserFileBase = false,
+} = {}) {
   let requests = 0;
   let evaluations = 0;
   let created = 0;
@@ -61,11 +64,14 @@ async function harness({ evaluationFails = false } = {}) {
   const context = vm.createContext({
     URL: AssetURL,
     Blob,
+    window: { location: { origin: "https://calculator.test" } },
     fetch: async (url) => {
       requests++;
       assert.equal(
         url.href,
-        "https://calculator.test/node_modules/mathlive/mathlive.min.mjs",
+        browserFileBase
+          ? "https://calculator.test/_next/static/media/mathlive.min.pinned.mjs"
+          : "https://calculator.test/node_modules/mathlive/mathlive.min.mjs",
       );
       return {
         ok: available,
@@ -77,10 +83,20 @@ async function harness({ evaluationFails = false } = {}) {
       };
     },
   });
-  const loader = new vm.SourceTextModule(compiled, {
+  // Model the observed production rewrite: emitted URL + server import.meta base.
+  const fixture = browserFileBase
+    ? compiled.replace(
+        '"../../node_modules/mathlive/mathlive.min.mjs"',
+        '"/_next/static/media/mathlive.min.pinned.mjs"',
+      )
+    : compiled;
+  if (browserFileBase) assert.notEqual(fixture, compiled);
+  const loader = new vm.SourceTextModule(fixture, {
     context,
     initializeImportMeta(meta) {
-      meta.url = "https://calculator.test/lib/calculator/mathlive-loader.ts";
+      meta.url = browserFileBase
+        ? "file:///ROOT/lib/calculator/mathlive-loader.ts"
+        : "https://calculator.test/lib/calculator/mathlive-loader.ts";
     },
     importModuleDynamically: async () => {
       evaluations++;
@@ -164,6 +180,19 @@ assert.deepEqual(badEvaluation.counts(), {
   created: 1,
   revoked: ["blob:https://calculator.test/1"],
 });
+const builtBrowser = await harness({ browserFileBase: true });
+await assert.rejects(builtBrowser.load(), /download failed/);
+builtBrowser.restore();
+await builtBrowser.load();
+assert.deepEqual(builtBrowser.counts(), {
+  requests: 2,
+  evaluations: 1,
+  created: 1,
+  revoked: ["blob:https://calculator.test/1"],
+});
+assert.deepEqual(await builtBrowser.sources(), [
+  "export const MathfieldElement = class {};\n//# sourceURL=https://calculator.test/_next/static/media/mathlive.min.pinned.mjs",
+]);
 console.log(
   "MathLive download retry, singleton, evaluation failure and standalone bundle checks passed",
 );

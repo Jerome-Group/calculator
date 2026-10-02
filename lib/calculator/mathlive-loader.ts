@@ -4,16 +4,21 @@ export function loadMathLive(): Promise<typeof import("mathlive")> {
   if (pending) return pending;
   let evaluating = false;
   pending = (async () => {
-    const asset = new URL(
+    const emitted = new URL(
       "../../node_modules/mathlive/mathlive.min.mjs",
       import.meta.url,
     );
     // Command-line conversion checks use the pinned package's server entry.
-    if (asset.protocol === "file:") {
+    if (typeof window === "undefined") {
       evaluating = true;
-      const server = new URL("mathlive-ssr.min.mjs", asset).href;
+      const server = new URL("mathlive-ssr.min.mjs", emitted).href;
       return import(/* @vite-ignore */ server);
     }
+    // Vinext can retain a server file base while emitting a browser asset path.
+    const asset = new URL(
+      emitted.pathname + emitted.search,
+      window.location.origin,
+    );
     const response = await fetch(asset);
     if (!response.ok) throw Error("Math editor download failed");
     const source = await response.text();
