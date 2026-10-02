@@ -61,6 +61,15 @@ function harness({ failImport = false } = {}) {
     executeCommand(value) {
       this.command = { value, selection: this.selection };
     }
+    get menuItems() {
+      this.menuInitialized = true;
+      return [];
+    }
+    showMenu(options) {
+      if (!this.menuInitialized) throw TypeError("Menu is not initialized");
+      this.menu = { options, selection: this.selection };
+      return true;
+    }
   }
   const react = {
     forwardRef: (component) => component,
@@ -174,6 +183,44 @@ try {
     { ranges: [[1, 3]], direction: "backward" },
     "insertion restores selection after focus",
   );
+  const loadedTree = editor.render({
+    value: "new",
+    label: "Current field",
+    onChange: (value) => changes.push(value),
+  });
+  const menuButton = nodes(
+    loadedTree,
+    (node) =>
+      node.type === "button" && node.props.children === "Expression menu",
+  )[0];
+  assert(menuButton, "existing context menu has a separate application button");
+  assert.equal(menuButton.props["aria-haspopup"], "menu");
+  let pointerDefaultPrevented = false;
+  menuButton.props.onPointerDown({
+    preventDefault() {
+      pointerDefaultPrevented = true;
+    },
+  });
+  assert(
+    pointerDefaultPrevented,
+    "menu activation must preserve field selection",
+  );
+  menuButton.props.onClick({
+    currentTarget: {
+      getBoundingClientRect: () => ({ left: 29, bottom: 390 }),
+    },
+    altKey: false,
+    ctrlKey: false,
+    shiftKey: true,
+    metaKey: false,
+  });
+  assert.deepEqual(field.menu, {
+    options: {
+      location: { x: 29, y: 390 },
+      modifiers: { alt: false, control: false, shift: true, meta: false },
+    },
+    selection: { ranges: [[1, 3]], direction: "backward" },
+  });
   const enter = new Event("keydown", { cancelable: true });
   Object.defineProperty(enter, "key", { value: "Enter" });
   field.dispatchEvent(enter);

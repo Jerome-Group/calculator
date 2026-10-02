@@ -867,7 +867,7 @@
         "form.simplify.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -896,7 +896,7 @@
         "form.expand.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -925,7 +925,7 @@
         "form.factor.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -959,7 +959,7 @@
         "form.apart.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -988,7 +988,7 @@
         "form.cancel.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1017,7 +1017,7 @@
         "form.trigsimp.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1046,7 +1046,7 @@
         "form.approx.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1080,7 +1080,7 @@
         "form.substitute.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1114,7 +1114,7 @@
         "form.solve.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1178,7 +1178,7 @@
         "form.system.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1212,7 +1212,7 @@
         "form.inequality.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1251,7 +1251,7 @@
         "form.differentiate.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1295,7 +1295,7 @@
         "form.integrate.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1329,7 +1329,7 @@
         "form.multiple_integral.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1409,7 +1409,7 @@
         "form.limit.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1483,7 +1483,7 @@
         "form.series.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1527,7 +1527,7 @@
         "form.sum.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1571,7 +1571,7 @@
         "form.product.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1610,7 +1610,7 @@
         "form.convergence.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1644,7 +1644,7 @@
         "form.sequence_limit.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1693,7 +1693,7 @@
         "form.multilimit.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1732,7 +1732,7 @@
         "form.residue.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1766,7 +1766,7 @@
         "form.singularities.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1800,7 +1800,7 @@
         "form.domain.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1829,7 +1829,7 @@
         "form.matrix_det.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1861,7 +1861,7 @@
         "form.matrix_inverse.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1890,7 +1890,7 @@
         "form.matrix_transpose.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1919,7 +1919,7 @@
         "form.matrix_adjoint.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1948,7 +1948,7 @@
         "form.matrix_adjugate.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -1977,7 +1977,7 @@
         "form.matrix_cofactors.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2006,7 +2006,7 @@
         "form.matrix_rref.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2035,7 +2035,7 @@
         "form.matrix_rank.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2064,7 +2064,7 @@
         "form.matrix_null.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2093,7 +2093,7 @@
         "form.matrix_row.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2122,7 +2122,7 @@
         "form.matrix_column.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2151,7 +2151,7 @@
         "form.matrix_eigenvalues.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2180,7 +2180,7 @@
         "form.matrix_eigenvectors.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2209,7 +2209,7 @@
         "form.matrix_lu.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2238,7 +2238,7 @@
         "form.matrix_qr.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2267,7 +2267,7 @@
         "form.matrix_svd.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2296,7 +2296,7 @@
         "form.matrix_pinverse.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2325,7 +2325,7 @@
         "form.matrix_trace.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2354,7 +2354,7 @@
         "form.matrix_condition.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2388,7 +2388,7 @@
         "form.matrix_characteristic.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2422,7 +2422,7 @@
         "form.matrix_solve.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2456,7 +2456,7 @@
         "form.gradient.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2490,7 +2490,7 @@
         "form.jacobian.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2524,7 +2524,7 @@
         "form.hessian.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2558,7 +2558,7 @@
         "form.divergence.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2592,7 +2592,7 @@
         "form.curl.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2626,7 +2626,7 @@
         "form.jacobian_factor.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2660,7 +2660,7 @@
         "form.dot.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2694,7 +2694,7 @@
         "form.cross.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2738,7 +2738,7 @@
         "form.line_integral.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2782,7 +2782,7 @@
         "form.surface_integral.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2826,7 +2826,7 @@
         "form.contour.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2865,7 +2865,7 @@
         "form.ode.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2924,7 +2924,7 @@
         "form.ivp.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -2978,7 +2978,7 @@
         "form.bvp.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3017,7 +3017,7 @@
         "form.stability.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3051,7 +3051,7 @@
         "form.pde.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3100,7 +3100,7 @@
         "form.heat.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3154,7 +3154,7 @@
         "form.wave.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3175,7 +3175,7 @@
           "required": true
         },
         "grid": {
-          "label": "Interior grid points per side (3\u201335)",
+          "label": "Interior grid points per side (3–35)",
           "choices": [],
           "required": true
         }
@@ -3193,7 +3193,7 @@
         "form.poisson.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3232,7 +3232,7 @@
         "form.laplace.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3271,7 +3271,7 @@
         "form.inverse_laplace.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3310,7 +3310,7 @@
         "form.fourier.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -3349,7 +3349,7 @@
         "form.inverse_fourier.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4280,7 +4280,7 @@
         "form.distribution.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4416,7 +4416,7 @@
         "form.proportion.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4485,7 +4485,7 @@
         "form.two_mean_interval.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4565,7 +4565,7 @@
         "form.expectation.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4594,7 +4594,7 @@
         "form.describe.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4732,7 +4732,7 @@
         "form.regression.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4766,7 +4766,7 @@
         "form.confidence.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -4952,7 +4952,7 @@
         "form.test.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5027,7 +5027,7 @@
         "form.combinatorics.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5066,7 +5066,7 @@
         "form.recurrence.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5077,7 +5077,7 @@
       },
       "fields": {
         "sequence": {
-          "label": "Sequence term a\u2099",
+          "label": "Sequence term aₙ",
           "choices": [],
           "required": true
         },
@@ -5105,7 +5105,7 @@
         "form.generating.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5208,7 +5208,7 @@
         "form.sets.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5237,7 +5237,7 @@
         "form.logic.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5271,7 +5271,7 @@
         "form.relation.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5425,7 +5425,7 @@
         "form.graph_theory.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5450,7 +5450,7 @@
           "choices": [
             "gcd",
             "lcm",
-            "B\u00e9zout",
+            "Bézout",
             "modular inverse",
             "modular power",
             "factor",
@@ -5508,7 +5508,7 @@
           "fixtureId": "choice.number_theory.action.2",
           "choice": {
             "field": "action",
-            "value": "B\u00e9zout",
+            "value": "Bézout",
             "index": 2
           },
           "status": "required"
@@ -5594,7 +5594,7 @@
         "form.number_theory.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5628,7 +5628,7 @@
         "form.crt.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5657,7 +5657,7 @@
         "form.diophantine.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5696,7 +5696,7 @@
         "form.group.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5872,7 +5872,7 @@
         "form.quotient.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -5979,7 +5979,7 @@
         "form.polynomial.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6059,7 +6059,7 @@
         "form.ideal.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6088,7 +6088,7 @@
         "form.homology.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6127,7 +6127,7 @@
         "form.topology.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6176,7 +6176,7 @@
         "form.topology_map.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6215,7 +6215,7 @@
         "form.surface_geometry.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6249,7 +6249,7 @@
         "form.curve_geometry.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6314,7 +6314,7 @@
         "form.geometry.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6358,7 +6358,7 @@
         "form.root.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6402,7 +6402,7 @@
         "form.numeric_integral.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6446,7 +6446,7 @@
         "form.numeric_derivative.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6485,7 +6485,7 @@
         "form.numeric_system.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6516,7 +6516,7 @@
           "required": true
         },
         "constraints": {
-          "label": "Constraints g(x) \u2265 0",
+          "label": "Constraints g(x) ≥ 0",
           "choices": [],
           "required": true
         }
@@ -6534,7 +6534,7 @@
         "form.minimize.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6588,7 +6588,7 @@
         "form.linear_program.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6622,7 +6622,7 @@
         "form.interpolate.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6691,7 +6691,7 @@
         "form.spline.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6750,7 +6750,7 @@
         "form.fft.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6825,7 +6825,7 @@
         "form.convolution.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6859,7 +6859,7 @@
         "form.markov.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6893,7 +6893,7 @@
         "form.units.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6962,7 +6962,7 @@
         "form.finance.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -6991,7 +6991,7 @@
         "form.together.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7020,7 +7020,7 @@
         "form.radsimp.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7059,7 +7059,7 @@
         "form.compose.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7088,7 +7088,7 @@
         "form.piecewise.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7117,7 +7117,7 @@
         "form.matrix_cholesky.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7151,7 +7151,7 @@
         "form.least_squares.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7180,7 +7180,7 @@
         "form.numeric_svd.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7214,7 +7214,7 @@
         "form.ode_system.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7243,7 +7243,7 @@
         "form.divisor_count.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7272,7 +7272,7 @@
         "form.mobius.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7306,7 +7306,7 @@
         "form.metric.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7350,7 +7350,7 @@
         "form.uncertainty.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7394,7 +7394,7 @@
         "form.critical_points.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7428,7 +7428,7 @@
         "form.histogram.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7457,7 +7457,7 @@
         "form.boxplot.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7491,7 +7491,7 @@
         "form.correlation.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7525,7 +7525,7 @@
         "form.finite_expectation.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7605,7 +7605,7 @@
         "form.symbolic_expectation.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     },
     {
@@ -7644,7 +7644,7 @@
         "form.surface_area.default"
       ],
       "limitations": [
-        "Default only; choice variants and invalid/boundary edits require additional fixtures/evidence"
+        "Mapped default, choice and invalid cases have independent fixtures where listed; additional boundary inputs need fixtures, while runtime interactions and physical-input behavior need observed browser evidence. Mappings alone do not establish a pass."
       ]
     }
   ],
@@ -8092,7 +8092,8 @@
       "expression.text-percent-unavailable",
       "worker.cancel-restart",
       "sync.concurrent-recovery",
-      "sync.volatile-leave-guard"
+      "sync.volatile-leave-guard",
+      "editor.external-menu"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -8224,7 +8225,7 @@
         "line": 842
       },
       "kind": "button",
-      "label": "\u00b7 \u00b7 dp",
+      "label": "· · dp",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -12109,7 +12110,7 @@
         "line": 898
       },
       "kind": "button",
-      "label": "Plot integral from x\u2080",
+      "label": "Plot integral from x₀",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -12550,7 +12551,7 @@
       "id": "control.121",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 275
+        "line": 292
       },
       "kind": "button",
       "label": "Retry editor",
@@ -12587,7 +12588,7 @@
       "id": "control.122",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 288
+        "line": 313
       },
       "kind": "button",
       "label": "Structures & editing",
@@ -12624,7 +12625,7 @@
       "id": "control.123",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 303
+        "line": 328
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -12661,7 +12662,7 @@
       "id": "control.124",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 319
+        "line": 344
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -12701,7 +12702,7 @@
         "line": 32
       },
       "kind": "button",
-      "label": "Export copy \u00b7 notebooks",
+      "label": "Export copy · notebooks",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13145,7 +13146,7 @@
         "line": 440
       },
       "kind": "button",
-      "label": "\u00d7",
+      "label": "×",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13441,7 +13442,7 @@
         "line": 633
       },
       "kind": "button",
-      "label": "\u00d7",
+      "label": "×",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13737,7 +13738,7 @@
         "line": 800
       },
       "kind": "button",
-      "label": "\u00d7",
+      "label": "×",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -14025,6 +14026,43 @@
         "independent assertion",
         "current-source browser manifest"
       ]
+    },
+    {
+      "id": "control.161",
+      "source": {
+        "file": "components/calculator/MathEditor.tsx",
+        "line": 305
+      },
+      "kind": "button",
+      "label": "Expression menu",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated local fixture workspace; auth controls need scoped test identity",
+      "run": [
+        "pnpm --silent verify show control.161 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": ["rendered control and resulting DOM/state"],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
     }
   ],
   "routes": [
@@ -14261,7 +14299,8 @@
         "bounds-removal-result",
         "piecewise-branches",
         "dictionary-edit",
-        "editor.logic-relationships"
+        "editor.logic-relationships",
+        "editor.external-menu"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [

@@ -1,14 +1,18 @@
-.math-editor math-field::part(container) {
-  /* MathLive disables this part before focus on coarse pointers, swallowing the first menu tap. */
-  pointer-events: auto;
+.math-editor math-field::part(menu-toggle) {
+  display: none;
 }
 
-.math-editor math-field::part(menu-toggle) {
-  color: var(--foreground);
+.math-editor-field {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
 }
 
 .math-entry-tools {
   position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: 8px;
 }
 
@@ -37,6 +41,7 @@
 
 .math-entry-palette {
   display: grid;
+  flex-basis: 100%;
   gap: 10px;
   padding-top: 10px;
 }

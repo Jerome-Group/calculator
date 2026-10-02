@@ -6,6 +6,7 @@ import {
   useState,
   forwardRef,
   useImperativeHandle,
+  type MouseEvent,
 } from "react";
 import type {
   MathfieldElement,
@@ -84,6 +85,22 @@ export default forwardRef<
     const el = focusSelection();
     if (!el) return;
     el.executeCommand(selector);
+  };
+  const showExpressionMenu = (event: MouseEvent<HTMLButtonElement>) => {
+    const el = focusSelection();
+    if (!el) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    // MathLive 0.110 showMenu assumes its lazy menu has been initialized.
+    void el.menuItems;
+    el.showMenu({
+      location: { x: bounds.left, y: bounds.bottom },
+      modifiers: {
+        alt: event.altKey,
+        control: event.ctrlKey,
+        shift: event.shiftKey,
+        meta: event.metaKey,
+      },
+    });
   };
   useImperativeHandle(ref, () => ({
     keyboard: () => {
@@ -262,7 +279,7 @@ export default forwardRef<
   }, [value, label]);
   return (
     <div className="math-editor">
-      <div ref={host} />
+      <div className="math-editor-field" ref={host} />
       {loaded && !value && (
         <span className="math-placeholder" aria-hidden="true">
           Enter an expression…
@@ -285,6 +302,14 @@ export default forwardRef<
       )}
       {loaded && (
         <div className="math-entry-tools">
+          <button
+            type="button"
+            aria-haspopup="menu"
+            onPointerDown={(event) => event.preventDefault()}
+            onClick={showExpressionMenu}
+          >
+            Expression menu
+          </button>
           <button
             type="button"
             aria-expanded={showTools}
