@@ -20,6 +20,9 @@ overrides:
   fast-uri@3: 3.1.8
   '@esbuild-kit/core-utils>esbuild': 0.25.12
 
+patchedDependencies:
+  mathjs@15.2.0: 1105b473db5eea0933e56cddcdb642be5f6b2b5e2865d7a724e8b73ae8b338ae
+
 importers:
 
   .:
@@ -62,7 +65,7 @@ importers:
         version: 1.31.0(react@19.2.8)
       mathjs:
         specifier: 15.2.0
-        version: 15.2.0
+        version: 15.2.0(patch_hash=1105b473db5eea0933e56cddcdb642be5f6b2b5e2865d7a724e8b73ae8b338ae)
       mathlive:
         specifier: 0.110.0
         version: 0.110.0
@@ -7790,7 +7793,7 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  mathjs@15.2.0:
+  mathjs@15.2.0(patch_hash=1105b473db5eea0933e56cddcdb642be5f6b2b5e2865d7a724e8b73ae8b338ae):
     dependencies:
       '@babel/runtime': 7.29.7
       complex.js: 2.4.3

@@ -8,7 +8,7 @@ The imported lock contained known npm advisories. MathJS evaluates user expressi
 
 ## Decision
 
-Use MathJS 15.2.0, MathLive 0.110.0, aligned React/ReactDOM/RSC 19.2.8, Next and its ESLint config 16.3.6, and Vite 8.0.16. MathJS crosses a major boundary because both parser fixes have no patched 14.x release. Its 15.0 changes affect percent precedence and matrix operations; Calculator's graph parser restricts those operations, and focused tests verify the supported graph and definition semantics.
+Use MathJS 15.2.0, MathLive 0.110.0, aligned React/ReactDOM/RSC 19.2.8, Next and its ESLint config 16.3.6, and Vite 8.0.16. MathJS crosses a major boundary because both parser fixes have no patched 14.x release. Its 15.0 changes alter percent precedence and matrix operations. Calculator accepts percentage expressions in saved graphs and definitions, so a narrow, hash-pinned source patch restores the 14.8.1 percentage grammar in both shipped parsers. Object-property and matrix-index security fixes remain untouched. Regression cases compare legacy percentage/modulus behavior and verify the patched property boundaries alongside supported graph semantics.
 
 Pin compatible transitive advisory fixes in the root pnpm workspace. Scope the legacy Drizzle loader's esbuild override to its consuming package and verify its transform API separately. Retain the seven-day release-age gate and strict build allowlist. Unrelated major dependency upgrades remain separate decisions.
 

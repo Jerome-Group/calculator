@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
 import { all, create } from "mathjs";
 import {
   compileMath,
@@ -36,6 +37,30 @@ const near = (actual, expected) => {
   assert(Number.isFinite(actual), `Expected a finite value, got ${actual}`);
   assert(Math.abs(actual - expected) < 1e-12, `${actual} != ${expected}`);
 };
+// Fixed values from the imported 14.8.1 grammar, without loading that vulnerable
+// dependency. Final percentages on an addition's RHS use relative arithmetic.
+const legacyPercentCases = [
+  ["1/100%", 0.0001],
+  ["100/10%", 0.1],
+  ["100%+2", 3],
+  ["50%+1", 1.5],
+  ["100%-2", -1],
+  ["2+3%+4%", 2.1424],
+  ["2+3%*5%", 2.003],
+  ["2+3%*5%+4%", 2.08312],
+  ["2^3%+4^5%", 0.8992],
+  ["2^3%", 0.08],
+  ["2*3%", 0.06],
+  ["2+3%*5", 2.15],
+  ["2+3% / 4", 2.0075],
+  ["2+3%4", 5],
+  ["10%3+5%", 1.05],
+  ["100%(30)", 10],
+  ["(100%) + 2", 3],
+  ["sin(50%)", Math.sin(0.5)],
+  ["max(100%,2)", 2],
+  ["100%/10", 0.1],
+];
 const results = [];
 function check(name, fn) {
   try {
@@ -86,6 +111,46 @@ check(
 check("graph syntax retains pi and Python-style powers", () => {
   near(numeric(compileMath("π + 2**3"), {}), Math.PI + 8);
 });
+check("graphs retain legacy percent precedence and relative arithmetic", () => {
+  for (const [expression, expected] of legacyPercentCases)
+    near(numeric(compileMath(expression), {}), expected);
+});
+check(
+  "CommonJS retains the same percent grammar and property protections",
+  () => {
+    const { all, create } = createRequire(import.meta.url)("mathjs"),
+      math = create(all),
+      array = [];
+    for (const [expression, expected] of legacyPercentCases)
+      near(math.evaluate(expression), expected);
+    assert.throws(
+      () => math.evaluate("array.map = 7", { array }),
+      /No access to property "map"/,
+    );
+    assert.equal(array.map, Array.prototype.map);
+    assert.throws(
+      () =>
+        math.evaluate(
+          'matrix().get({length:1, reduce:f(callback,a)=callback(cos,"constructor")})',
+        ),
+      /Array expected for index/,
+    );
+  },
+);
+check(
+  "saved percentage definitions retain graph and parameter semantics",
+  () => {
+    const scope = graphScope(
+      [definition("rate", "100/10%"), definition("f", "t+3%+4%", "t")],
+      settings,
+      0,
+    );
+    near(scope.rate, 0.1);
+    near(scope.f(2), 2.1424);
+    near(graphFunctions(graph("f(x)+rate"), scope).f(2), 2.2424);
+    near(graphFunctions(graph("x/100%"), scope).f(5), 0.0005);
+  },
+);
 check(
   "reusable functions resolve scalar dependencies regardless of order",
   () => {

@@ -1,0 +1,234 @@
+diff --git a/lib/esm/expression/parse.js b/lib/esm/expression/parse.js
+--- a/lib/esm/expression/parse.js
++++ b/lib/esm/expression/parse.js
+@@ -955,7 +955,7 @@
+    */
+   function parseAddSubtract(state) {
+     var node, name, fn, params;
+-    node = parseMultiplyDivideModulus(state);
++    node = parseMultiplyDivideModulusPercentage(state);
+     var operators = {
+       '+': 'add',
+       '-': 'subtract'
+@@ -964,7 +964,7 @@
+       name = state.token;
+       fn = operators[name];
+       getTokenSkipNewline(state);
+-      var rightNode = parseMultiplyDivideModulus(state);
++      var rightNode = parseMultiplyDivideModulusPercentage(state);
+       if (rightNode.isPercentage) {
+         params = [node, new OperatorNode('*', 'multiply', [node, rightNode])];
+       } else {
+@@ -976,11 +976,11 @@
+   }
+ 
+   /**
+-   * multiply, divide, modulus
+-   * @return {Node} node
+-   * @private
+-   */
+-  function parseMultiplyDivideModulus(state) {
++   * multiply, divide, modulus, percentage
++   * @return {Node} node
++   * @private
++   */
++  function parseMultiplyDivideModulusPercentage(state) {
+     var node, last, name, fn;
+     node = parseImplicitMultiplication(state);
+     last = node;
+@@ -998,8 +998,23 @@
+         name = state.token;
+         fn = operators[name];
+         getTokenSkipNewline(state);
+-        last = parseImplicitMultiplication(state);
+-        node = new OperatorNode(name, fn, [node, last]);
++        if (name === '%' && state.tokenType === TOKENTYPE.DELIMITER && state.token !== '(') {
++          // If the expression contains only %, then treat that as /100
++          if (state.token !== '' && operators[state.token]) {
++            var left = new OperatorNode('/', 'divide', [node, new ConstantNode(100)], false, true);
++            name = state.token;
++            fn = operators[name];
++            getTokenSkipNewline(state);
++            last = parseImplicitMultiplication(state);
++            node = new OperatorNode(name, fn, [left, last]);
++          } else {
++            node = new OperatorNode('/', 'divide', [node, new ConstantNode(100)], false, true);
++          }
++          // return node
++        } else {
++          last = parseImplicitMultiplication(state);
++          node = new OperatorNode(name, fn, [node, last]);
++        }
+       } else {
+         break;
+       }
+@@ -1042,7 +1057,7 @@
+    * @private
+    */
+   function parseRule2(state) {
+-    var node = parseUnaryPercentage(state);
++    var node = parseUnary(state);
+     var last = node;
+     var tokenStates = [];
+     while (true) {
+@@ -1064,7 +1079,7 @@
+             // Rewind once and build the "number / number" node; the symbol will be consumed later
+             _extends(state, tokenStates.pop());
+             tokenStates.pop();
+-            last = parseUnaryPercentage(state);
++            last = parseUnary(state);
+             node = new OperatorNode('/', 'divide', [node, last]);
+           } else {
+             // Not a match, so rewind
+@@ -1079,34 +1094,6 @@
+         }
+       } else {
+         break;
+-      }
+-    }
+-    return node;
+-  }
+-
+-  /**
+-   * Unary percentage operator (treated as `value / 100`)
+-   * @return {Node} node
+-   * @private
+-   */
+-  function parseUnaryPercentage(state) {
+-    var node = parseUnary(state);
+-    if (state.token === '%') {
+-      var previousState = _extends({}, state);
+-      getTokenSkipNewline(state);
+-      // We need to decide if this is a unary percentage % or binary modulo %
+-      // So we attempt to parse a unary expression at this point.
+-      // If it fails, then the only possibility is that this is a unary percentage.
+-      // If it succeeds, then we presume that this must be binary modulo, since the
+-      // only things that parseUnary can handle are _higher_ precedence than unary %.
+-      try {
+-        parseUnary(state);
+-        // Not sure if we could somehow use the result of that parseUnary? Without
+-        // further analysis/testing, safer just to discard and let the parse proceed
+-        _extends(state, previousState);
+-      } catch (_unused) {
+-        // Not seeing a term at this point, so was a unary %
+-        node = new OperatorNode('/', 'divide', [node, new ConstantNode(100)], false, true);
+       }
+     }
+     return node;
+diff --git a/lib/cjs/expression/parse.js b/lib/cjs/expression/parse.js
+--- a/lib/cjs/expression/parse.js
++++ b/lib/cjs/expression/parse.js
+@@ -962,7 +962,7 @@
+    */
+   function parseAddSubtract(state) {
+     let node, name, fn, params;
+-    node = parseMultiplyDivideModulus(state);
++    node = parseMultiplyDivideModulusPercentage(state);
+     const operators = {
+       '+': 'add',
+       '-': 'subtract'
+@@ -971,7 +971,7 @@
+       name = state.token;
+       fn = operators[name];
+       getTokenSkipNewline(state);
+-      const rightNode = parseMultiplyDivideModulus(state);
++      const rightNode = parseMultiplyDivideModulusPercentage(state);
+       if (rightNode.isPercentage) {
+         params = [node, new OperatorNode('*', 'multiply', [node, rightNode])];
+       } else {
+@@ -983,11 +983,11 @@
+   }
+ 
+   /**
+-   * multiply, divide, modulus
+-   * @return {Node} node
+-   * @private
+-   */
+-  function parseMultiplyDivideModulus(state) {
++   * multiply, divide, modulus, percentage
++   * @return {Node} node
++   * @private
++   */
++  function parseMultiplyDivideModulusPercentage(state) {
+     let node, last, name, fn;
+     node = parseImplicitMultiplication(state);
+     last = node;
+@@ -1005,8 +1005,23 @@
+         name = state.token;
+         fn = operators[name];
+         getTokenSkipNewline(state);
+-        last = parseImplicitMultiplication(state);
+-        node = new OperatorNode(name, fn, [node, last]);
++        if (name === '%' && state.tokenType === TOKENTYPE.DELIMITER && state.token !== '(') {
++          // If the expression contains only %, then treat that as /100
++          if (state.token !== '' && operators[state.token]) {
++            const left = new OperatorNode('/', 'divide', [node, new ConstantNode(100)], false, true);
++            name = state.token;
++            fn = operators[name];
++            getTokenSkipNewline(state);
++            last = parseImplicitMultiplication(state);
++            node = new OperatorNode(name, fn, [left, last]);
++          } else {
++            node = new OperatorNode('/', 'divide', [node, new ConstantNode(100)], false, true);
++          }
++          // return node
++        } else {
++          last = parseImplicitMultiplication(state);
++          node = new OperatorNode(name, fn, [node, last]);
++        }
+       } else {
+         break;
+       }
+@@ -1049,7 +1064,7 @@
+    * @private
+    */
+   function parseRule2(state) {
+-    let node = parseUnaryPercentage(state);
++    let node = parseUnary(state);
+     let last = node;
+     const tokenStates = [];
+     while (true) {
+@@ -1071,7 +1086,7 @@
+             // Rewind once and build the "number / number" node; the symbol will be consumed later
+             (0, _extends2.default)(state, tokenStates.pop());
+             tokenStates.pop();
+-            last = parseUnaryPercentage(state);
++            last = parseUnary(state);
+             node = new OperatorNode('/', 'divide', [node, last]);
+           } else {
+             // Not a match, so rewind
+@@ -1086,34 +1101,6 @@
+         }
+       } else {
+         break;
+-      }
+-    }
+-    return node;
+-  }
+-
+-  /**
+-   * Unary percentage operator (treated as `value / 100`)
+-   * @return {Node} node
+-   * @private
+-   */
+-  function parseUnaryPercentage(state) {
+-    let node = parseUnary(state);
+-    if (state.token === '%') {
+-      const previousState = (0, _extends2.default)({}, state);
+-      getTokenSkipNewline(state);
+-      // We need to decide if this is a unary percentage % or binary modulo %
+-      // So we attempt to parse a unary expression at this point.
+-      // If it fails, then the only possibility is that this is a unary percentage.
+-      // If it succeeds, then we presume that this must be binary modulo, since the
+-      // only things that parseUnary can handle are _higher_ precedence than unary %.
+-      try {
+-        parseUnary(state);
+-        // Not sure if we could somehow use the result of that parseUnary? Without
+-        // further analysis/testing, safer just to discard and let the parse proceed
+-        (0, _extends2.default)(state, previousState);
+-      } catch (_unused) {
+-        // Not seeing a term at this point, so was a unary %
+-        node = new OperatorNode('/', 'divide', [node, new ConstantNode(100)], false, true);
+       }
+     }
+     return node;

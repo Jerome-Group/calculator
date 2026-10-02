@@ -33,3 +33,5 @@ overrides:
   baseline-browser-mapping@2: 2.11.26
   fast-uri@3: 3.1.8
   "@esbuild-kit/core-utils>esbuild": 0.25.12
+patchedDependencies:
+  mathjs@15.2.0: scripts/patches/mathjs-15.2.0-percent.patch
