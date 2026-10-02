@@ -42,6 +42,7 @@ import StructuredFields, {
 } from "./StructuredFields";
 import RichResult from "./RichResult";
 import TaskBrowser from "./TaskBrowser";
+import RecoveryBackups from "./RecoveryBackups";
 import ResultPlot from "./ResultPlot";
 import { accountStorage } from "@/lib/calculator/storage";
 import Choice from "./Choice";
@@ -1782,7 +1783,9 @@ export default function Calculator() {
                             ...old.notebooks.map((b) => ({
                               ...b,
                               id: uid(),
-                              name: b.name + " (imported)",
+                              name:
+                                b.name.slice(0, 100 - " (imported)".length) +
+                                " (imported)",
                             })),
                           ],
                         }),
@@ -1827,6 +1830,7 @@ export default function Calculator() {
                 : "Prepare for offline use"}
             </button>
           </section>
+          <RecoveryBackups />
           <section className="settings-section">
             <h2>Back up your work</h2>
             <p className="small muted">
@@ -1868,7 +1872,9 @@ export default function Calculator() {
                   const books = imported.notebooks.map((b) => ({
                     ...b,
                     id: uid(),
-                    name: b.name + " (imported)",
+                    name:
+                      b.name.slice(0, 100 - " (imported)".length) +
+                      " (imported)",
                   }));
                   change(
                     (s) => ({

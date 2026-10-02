@@ -7,3 +7,5 @@ Browser computation remains bundled and local. Offline preparation verifies asse
 The seeded `checks` job is extended rather than renamed, preserving required contexts. CI performs a locked installation, formatting, lint, typechecking, engine/persistence/sync tests, one production build and asset closure checks within ten minutes. Third-party generated runtimes and vendored UI are excluded from formatter/linter changes; their distribution is verified by hashes and package closure.
 
 The imported CAS and UI use dynamic boundaries and imperative event handlers. Existing explicit-any and React compiler migration diagnostics remain warnings; compiler compatibility is not claimed. Runtime hooks checks, remaining lint errors and TypeScript checking still fail CI. Mathematical engine and browser interaction checks remain separate evidence.
+
+Unsynced snapshots are durable per browser writer and account before submission. Recovery keeps valid notebook limits and names; copies that cannot fit remain separately exportable from Settings. Both save winner orderings and closing a tab before its response are covered.

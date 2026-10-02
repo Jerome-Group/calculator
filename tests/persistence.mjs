@@ -5,6 +5,10 @@ const storage = {
   getItem: (key) => values.get(key) ?? null,
   setItem: (key, value) => values.set(key, String(value)),
   removeItem: (key) => values.delete(key),
+  key: (index) => [...values.keys()][index] ?? null,
+  get length() {
+    return values.size;
+  },
 };
 globalThis.localStorage = storage;
 globalThis.window = { dispatchEvent() {}, addEventListener() {} };

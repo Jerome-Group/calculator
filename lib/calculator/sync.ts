@@ -1,4 +1,12 @@
 import {
+  beginDraftSession,
+  writeDraft,
+  preserveDraft,
+  readDrafts,
+  discardDraft,
+  acknowledgeDraft,
+} from "./drafts";
+import {
   validateState,
   STORAGE_KEY,
   accountStorage,
@@ -37,7 +45,9 @@ function assignAccount(identity: User) {
   user = identity;
 }
 export async function initializeAccount(): Promise<User> {
-  const generation = accountGeneration;
+  const generation = ++accountGeneration;
+  pending = null;
+  beginDraftSession();
   const assertCurrent = () => {
     if (generation !== accountGeneration)
       throw Error("Account changed. Reload before opening saved work.");
@@ -100,22 +110,46 @@ export async function initializeAccount(): Promise<User> {
   // A legacy local workspace has no authenticated owner. Claim it only explicitly.
   const local = loadState().state;
   const dirty = localStorage.getItem(accountStorage("dirty")) === "1";
-  if (remote && !dirty)
-    localStorage.setItem(accountStorage(STORAGE_KEY), JSON.stringify(remote));
-  else if (
-    remote &&
-    local &&
-    dirty &&
-    Number(localStorage.getItem(revKey()) || 0) !== revision
-  ) {
-    const extra = local.notebooks.map((b) => ({
-      ...b,
-      id: uid(),
-      name: b.name + " (offline copy)",
-    }));
-    const merged = { ...remote, notebooks: [...remote.notebooks, ...extra] };
+  if (remote) {
+    let drafts = readDrafts(data.user.id);
+    const localText = local ? JSON.stringify(local) : "";
+    if (
+      local &&
+      dirty &&
+      !drafts.some((draft) => JSON.stringify(draft.state) === localText)
+    ) {
+      preserveDraft(data.user.id, savedRevision(), local);
+      drafts = readDrafts(data.user.id);
+    }
+    const merged = { ...remote, notebooks: [...remote.notebooks] };
+    const seen = new Set([JSON.stringify(remote)]);
+    const incorporated = [];
+    for (const draft of drafts) {
+      const text = JSON.stringify(draft.state);
+      if (seen.has(text)) {
+        incorporated.push(draft);
+        continue;
+      }
+      if (merged.notebooks.length + draft.state.notebooks.length > 100)
+        continue;
+      const suffix = " (offline copy)";
+      merged.notebooks.push(
+        ...draft.state.notebooks.map((book) => ({
+          ...book,
+          id: uid(),
+          name: book.name.slice(0, 100 - suffix.length) + suffix,
+        })),
+      );
+      seen.add(text);
+      incorporated.push(draft);
+    }
     validateState(merged);
     localStorage.setItem(accountStorage(STORAGE_KEY), JSON.stringify(merged));
+    if (merged.notebooks.length > remote.notebooks.length) {
+      writeDraft(data.user.id, revision, merged);
+      localStorage.setItem(accountStorage("dirty"), "1");
+    } else localStorage.removeItem(accountStorage("dirty"));
+    for (const draft of incorporated) discardDraft(draft);
   }
   localStorage.setItem(revKey(), String(revision));
   return user!;
@@ -131,6 +165,7 @@ export function forgetAccount() {
   navigator.serviceWorker?.controller?.postMessage({ type: "SIGN_OUT" });
 }
 export function syncWorkspace(state: SavedState) {
+  writeDraft(currentAccount(), revision, state);
   pending = state;
   localStorage.setItem(revKey(), String(revision));
   localStorage.setItem(accountStorage("dirty"), "1");
@@ -167,6 +202,7 @@ async function drain() {
     if (!Number.isSafeInteger(data.revision) || data.revision <= revision)
       throw Error("The cloud save response is invalid");
     revision = data.revision;
+    acknowledgeDraft(owner, state, revision);
     const storedText = localStorage.getItem(accountStorage(STORAGE_KEY));
     if (storedText === acknowledgedText) {
       localStorage.setItem(revKey(), String(revision));

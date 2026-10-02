@@ -35,3 +35,5 @@ The build emits the Worker in `dist/server` and verified offline assets in `dist
 This repository contains reviewed application source and synthetic examples. Credentials, user notebooks, authenticated browser state, private notes and local tool output stay outside source and history. The original development history is retained only in a local archival ref.
 
 Owned source is [MIT licensed](LICENSE). Dependencies retain their own licences; [shipped notices](public/licenses.txt), engine licence files, the build-plugin notice and vendored shadcn notices are preserved. Pyodide 0.27.7 source is available [upstream](https://github.com/pyodide/pyodide/tree/0.27.7).
+
+Unsynced snapshots are durable per browser writer and account before submission. Recovery keeps valid notebook limits and names; copies that cannot fit remain separately exportable from Settings. Both save winner orderings and closing a tab before its response are covered.

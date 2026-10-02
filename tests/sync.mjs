@@ -79,14 +79,18 @@ async function tab(name, values, server) {
     },
   });
   const modules = {};
-  for (const file of ["sync", "storage", "types"])
+  for (const file of ["sync", "storage", "types", "drafts"])
     modules[file] = new vm.SourceTextModule(
       source(`lib/calculator/${file}.ts`),
       { context, identifier: file },
     );
   await modules.sync.link((specifier) => modules[specifier.replace("./", "")]);
   await modules.sync.evaluate();
-  return { sync: modules.sync.namespace, storage: modules.storage.namespace };
+  return {
+    sync: modules.sync.namespace,
+    storage: modules.storage.namespace,
+    drafts: modules.drafts.namespace,
+  };
 }
 const server = () => ({
   account: "a",
@@ -436,7 +440,7 @@ await check(
       URL,
     });
     const modules = {};
-    for (const file of ["sync", "storage", "types"])
+    for (const file of ["sync", "storage", "types", "drafts"])
       modules[file] = new vm.SourceTextModule(
         source(`lib/calculator/${file}.ts`),
         { context, identifier: file },
@@ -501,6 +505,203 @@ await check(
       ).status,
       401,
     );
+  },
+);
+
+await check(
+  "reverse two-tab winner preserves a conflicted draft after another edit and reload",
+  async () => {
+    const values = new Map(),
+      cloud = server();
+    const a = await tab("A", values, cloud),
+      b = await tab("B", values, cloud);
+    await a.sync.initializeAccount();
+    await b.sync.initializeAccount();
+    a.storage.persist(initial("A unsynced draft"));
+    b.storage.persist(initial("B workspace"));
+    cloud.state = initial("B workspace");
+    cloud.revision = 2;
+    cloud.calls[1].resolve(Response.json({ revision: 2 }));
+    await flush();
+    cloud.calls[0].resolve(
+      Response.json({ error: "Conflict" }, { status: 409 }),
+    );
+    await flush();
+    b.storage.persist(initial("B next edit"));
+    cloud.state = initial("B next edit");
+    cloud.revision = 3;
+    cloud.calls[2].resolve(Response.json({ revision: 3 }));
+    await flush();
+    const reopened = await tab("reopened A", values, cloud);
+    await reopened.sync.initializeAccount();
+    const saved = JSON.parse(values.get("calculator.workspace.v1:a"));
+    assert(
+      saved.notebooks.some((book) => book.name.includes("A unsynced draft")),
+      "Reload discarded the losing tab's draft",
+    );
+    assert(
+      saved.notebooks.some((book) => book.name.includes("B next edit")),
+      "Recovery discarded the winning workspace",
+    );
+  },
+);
+
+await check(
+  "reload preserves an overwritten tab draft before its network response arrives",
+  async () => {
+    const values = new Map(),
+      cloud = server();
+    const a = await tab("A", values, cloud),
+      b = await tab("B", values, cloud);
+    await a.sync.initializeAccount();
+    await b.sync.initializeAccount();
+    a.storage.persist(initial("A draft before response"));
+    b.storage.persist(initial("B workspace"));
+    cloud.state = initial("B workspace");
+    cloud.revision = 2;
+    cloud.calls[1].resolve(Response.json({ revision: 2 }));
+    await flush();
+    // A closes here; its unresolved PUT never executes a conflict handler.
+    b.storage.persist(initial("B next edit"));
+    cloud.state = initial("B next edit");
+    cloud.revision = 3;
+    cloud.calls[2].resolve(Response.json({ revision: 3 }));
+    await flush();
+    const reopened = await tab("reopened A", values, cloud);
+    await reopened.sync.initializeAccount();
+    const saved = JSON.parse(values.get("calculator.workspace.v1:a"));
+    assert(
+      saved.notebooks.some((book) =>
+        book.name.includes("A draft before response"),
+      ),
+      "Draft depended on the closed tab's response handler",
+    );
+    assert(
+      saved.notebooks.some((book) => book.name.includes("B next edit")),
+      "Recovery discarded the winning workspace",
+    );
+  },
+);
+
+await check(
+  "capacity recovery opens cloud work and preserves an exportable draft across new edits",
+  async () => {
+    const many = (name) => {
+      const state = initial(name);
+      state.notebooks = Array.from({ length: 60 }, (_, i) => ({
+        ...state.notebooks[0],
+        id: name + i,
+        name: name + i,
+      }));
+      state.active = state.notebooks[0].id;
+      return state;
+    };
+    const values = new Map(),
+      cloud = server();
+    cloud.state = many("Remote");
+    const a = await tab("A", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(many("Local"));
+    cloud.revision = 2;
+    cloud.calls[0].resolve(
+      Response.json({ error: "Conflict" }, { status: 409 }),
+    );
+    await flush();
+    const reopened = await tab("reopened", values, cloud);
+    await reopened.sync.initializeAccount();
+    assert.equal(
+      JSON.parse(values.get("calculator.workspace.v1:a")).notebooks.length,
+      60,
+    );
+    assert(
+      reopened.drafts
+        .readDrafts("a")
+        .some((draft) =>
+          draft.state.notebooks.some((book) => book.name.startsWith("Local")),
+        ),
+    );
+    reopened.storage.persist(initial("New work"));
+    cloud.calls[1].resolve(Response.json({ revision: 3 }));
+    await flush();
+    assert(
+      reopened.drafts
+        .readDrafts("a")
+        .some((draft) =>
+          draft.state.notebooks.some((book) => book.name.startsWith("Local")),
+        ),
+      "New edit overwrote preserved capacity draft",
+    );
+  },
+);
+await check(
+  "recovered notebook names remain valid at the 100-character boundary",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      a = await tab("A", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("x".repeat(100)));
+    cloud.revision = 2;
+    cloud.calls[0].resolve(
+      Response.json({ error: "Conflict" }, { status: 409 }),
+    );
+    await flush();
+    const reopened = await tab("reopened", values, cloud);
+    await reopened.sync.initializeAccount();
+    const saved = JSON.parse(values.get("calculator.workspace.v1:a"));
+    reopened.storage.validateState(saved);
+    assert(
+      saved.notebooks.some(
+        (book) =>
+          book.name.endsWith(" (offline copy)") && book.name.length === 100,
+      ),
+    );
+  },
+);
+
+await check(
+  "dirty legacy workspace survives reload with the same cloud base revision",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      a = await tab("A", values, cloud);
+    await a.sync.initializeAccount();
+    values.set(
+      "calculator.workspace.v1:a",
+      JSON.stringify(initial("Legacy unsynced")),
+    );
+    values.set("dirty:a", "1");
+    values.set("revision:a", "1");
+    const reopened = await tab("reopened", values, cloud);
+    await reopened.sync.initializeAccount();
+    assert(
+      JSON.parse(values.get("calculator.workspace.v1:a")).notebooks.some(
+        (book) => book.name.includes("Legacy unsynced"),
+      ),
+    );
+  },
+);
+await check("signed-out save never writes an unowned draft", async () => {
+  const values = new Map(),
+    cloud = server(),
+    a = await tab("A", values, cloud);
+  assert.throws(() => a.sync.syncWorkspace(initial("Private")), /Sign in/);
+  assert.equal(values.size, 0);
+});
+await check(
+  "recovery enumeration remains usable when browser storage reads fail",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      a = await tab("A", values, cloud);
+    assert.equal(a.drafts.readDrafts("a").length, 0);
+    values.set("calculator.pending.v1:a:test", '{"revision":1,"state":null}');
+    const original = values.get;
+    values.get = () => {
+      throw Error("Storage disabled");
+    };
+    assert.equal(a.drafts.readDrafts("a").length, 0);
+    values.get = original;
   },
 );
 
