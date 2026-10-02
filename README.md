@@ -19,6 +19,8 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
+Development, tests and builds prepare the engine first. Runtime files come from the locked Pyodide npm dependency; Python wheels come from pinned upstream URLs. Every existing or downloaded artifact is verified against reviewed SHA-256 pins. The first preparation needs network access; later preparations reuse verified local assets. Generated runtime assets stay outside Git and are fully bundled in deployments, so calculation and prepared offline reopening do not depend on those upstream services.
+
 The local preview provides a synthetic sign-in only on loopback. Production identity comes from Sites' authenticated request headers. `.openai/hosting.json` binds this checkout to its Site; keep the logical D1 binding `DB`. Fresh registration creates a new account-scoped database: moving source does not transfer records from the old Site.
 
 ## Verification

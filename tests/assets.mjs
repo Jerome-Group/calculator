@@ -38,6 +38,14 @@ function closure(name) {
 }
 closure("sympy");
 closure("scipy");
+const pins = JSON.parse(
+  await fs.readFile("scripts/engine-assets.json", "utf8"),
+);
+for (const pin of pins.assets) {
+  const asset = assets.get("/engine/" + pin.file);
+  assert(asset, "Missing pinned engine artifact " + pin.file);
+  assert.equal(asset.sha256, pin.sha256, "Changed engine artifact " + pin.file);
+}
 for (const asset of assets.values()) {
   const data = await fs.readFile(root + asset.url);
   assert.equal(

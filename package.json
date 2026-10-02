@@ -7,15 +7,16 @@
   },
   "scripts": {
     "install:ci": "bash scripts/install-pnpm.sh",
-    "dev": "node scripts/run-framework.mjs dev",
-    "build": "node scripts/run-framework.mjs build && node scripts/offline-manifest.mjs dist/client",
+    "dev": "node scripts/prepare-engine.mjs && node scripts/run-framework.mjs dev",
+    "build": "node scripts/prepare-engine.mjs && node scripts/run-framework.mjs build && node scripts/offline-manifest.mjs dist/client",
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit",
-    "test": "node --import ./tests/resolve-types.mjs tests/release.mjs && node --import ./tests/resolve-types.mjs tests/persistence.mjs && node --experimental-vm-modules tests/sync.mjs",
+    "test": "node tests/engine-preparation.mjs && node scripts/prepare-engine.mjs && node --import ./tests/resolve-types.mjs tests/release.mjs && node --import ./tests/resolve-types.mjs tests/persistence.mjs && node --experimental-vm-modules tests/sync.mjs",
     "test:assets": "node tests/assets.mjs",
-    "format:check": "prettier --check \"app/**/*.{ts,tsx}\" \"components/calculator/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"build/*.ts\" \"scripts/*.mjs\" \"tests/*.mjs\" \"public/{compute-worker,sw}.js\" \"*.json\" \"*.mjs\" \"*.ts\" \".openai/*.json\" \".github/**/*.yml\" README.md AGENTS.md MAP.md CONTEXT.md docs/adr/0002-public-mit-source.md docs/adr/0003-sites-runtime-and-verification.md docs/PRODUCT_BRIEF.md docs/VALIDATION.md"
+    "format:check": "prettier --check \"app/**/*.{ts,tsx}\" \"components/calculator/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"build/*.ts\" \"scripts/*.{mjs,json}\" \"tests/*.mjs\" \"public/{compute-worker,sw}.js\" \"*.json\" \"*.mjs\" \"*.ts\" \".openai/*.json\" \".github/**/*.yml\" README.md AGENTS.md MAP.md CONTEXT.md docs/adr/0002-public-mit-source.md docs/adr/0003-sites-runtime-and-verification.md docs/PRODUCT_BRIEF.md docs/VALIDATION.md docs/adr/0004-generated-engine-artifacts.md",
+    "prepare:engine": "node scripts/prepare-engine.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

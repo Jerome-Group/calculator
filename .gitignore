@@ -63,3 +63,11 @@ next-env.d.ts
 # Python tooling artifacts, never application assets.
 __pycache__/
 *.pyc
+
+# Generated from reviewed upstream pins before dev, tests and build.
+/public/engine/pyodide.js
+/public/engine/pyodide.mjs
+/public/engine/pyodide.asm.js
+/public/engine/pyodide.asm.wasm
+/public/engine/*.whl
+/public/engine/*.zip

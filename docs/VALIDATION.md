@@ -2,6 +2,8 @@
 
 The pinned WebAssembly engine is executed with fetching disabled before initialization: 41 focused Python checks and all 128 catalogue defaults pass, with zero fetch attempts. Graph assertions cover degree semantics, reciprocal trigonometry and gaps across undefined segments. Catalogue breadth does not prove arbitrary inputs are solvable.
 
+Build preparation materializes twelve reviewed engine artifacts from locked Pyodide/npm and upstream wheel pins, then verifies every cached or downloaded byte against SHA-256. Generated artifacts are ignored by Git but remain bundled at the same deployment URLs. Focused preparation tests cover corrupt caches, invalid pins, verified copies/downloads and interrupted or invalid downloads. Preparation may use the network; deployed calculation does not.
+
 Account-scoped persistence checks exercise valid round trips, duplicate rejection, previous-save recovery, corrupt-original preservation, quota failures and sign-out. Eighteen focused source regressions cover cross-tab acknowledgements, queued saves, stale accounts, delayed initialization, verified outages versus authentication failure, and sign-out racing both shell and readiness writes.
 
 TypeScript checking, Prettier check mode, ESLint, production build and the content-hashed asset/package closure are reproducible in CI. The Worker manifest, Site identity, D1 binding and database migration travel with the build. Legacy React compiler/dynamic-type diagnostics remain visible warnings; no compiler compatibility claim is made.
