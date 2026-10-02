@@ -32,17 +32,6 @@ def latex_expression(source):
   return S.Matrix([[latex_expression(c) for c in row.split('&')] for row in inner.split(r'\\')])
 
  source=source.replace(r'\left','').replace(r'\right','');source=re.sub(r'\\\s+', ' ',source)
- def group(i):
-  while i<len(source) and source[i].isspace():i+=1
-  if source[i]!='{':raise ValueError('expected argument group')
-  level=1;j=i+1
-  while level:
-   if source[j]=='{':level+=1
-   elif source[j]=='}':level-=1
-   j+=1
-  return latex_expression_text(source[i+1:j-1]),j
- def latex_expression_text(text):
-  return translate(text)
  def translate(text):
   # Deliberately limited independent parser for generated TeX arithmetic, not
   # the application's parser. TeX's explicit fraction groups preserve binding.

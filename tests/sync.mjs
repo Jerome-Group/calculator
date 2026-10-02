@@ -46,7 +46,7 @@ const storage = (values) => ({
     return values.size;
   },
 });
-async function tab(name, values, server) {
+async function tab(name, values, server, rewriteStorageWarnings = false) {
   const listeners = {},
     messages = [];
   const context = vm.createContext({
@@ -136,7 +136,17 @@ async function tab(name, values, server) {
     "workspace-request",
   ])
     modules[file] = new vm.SourceTextModule(
-      source(`lib/calculator/${file}.ts`),
+      file === "storage" && rewriteStorageWarnings
+        ? source(`lib/calculator/${file}.ts`)
+            .replace(
+              "Browser storage is unavailable. Export a backup before closing.",
+              "Device reads failed. Keep this session open.",
+            )
+            .replace(
+              "Saved data could not be read. It is preserved; automatic saving is paused.",
+              "",
+            )
+        : source(`lib/calculator/${file}.ts`),
       { context, identifier: file },
     );
   await modules.sync.link((specifier) => modules[specifier.replace("./", "")]);
@@ -842,9 +852,11 @@ for (const failure of ["reads", "writes"]) {
       assert.equal(cloud.calls.length, 0);
       const loaded = a.storage.loadState();
       if (failure === "reads") {
+        assert.equal(loaded.readable, false);
         assert.equal(loaded.state.notebooks[0].name, "initial");
         assert.match(loaded.warning, /storage is unavailable/);
       } else {
+        assert.equal(loaded.readable, true);
         assert.equal(loaded.state, null);
         assert.equal(loaded.warning, "");
         assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "initial");
@@ -979,7 +991,7 @@ await check(
 );
 
 await check(
-  "unreadable storage is never overwritten by cloud hydration",
+  "unreadable storage is never overwritten regardless of warning wording",
   async () => {
     class Unreadable extends Map {
       blocked = false;
@@ -990,12 +1002,22 @@ await check(
     }
     const values = new Unreadable(),
       cloud = server(),
-      a = await tab("reads preserved", values, cloud);
+      a = await tab("reads preserved", values, cloud, true);
     await a.sync.initializeAccount();
     a.storage.persist(initial("unreadable private work"));
     const text = values.get("calculator.workspace.v1:a"),
       base = values.get("revision:a");
     values.blocked = true;
+    const inaccessible = a.storage.loadState();
+    assert.equal(inaccessible.readable, false);
+    assert.equal(
+      inaccessible.state.notebooks[0].name,
+      "unreadable private work",
+    );
+    assert.equal(
+      inaccessible.warning,
+      "Device reads failed. Keep this session open.",
+    );
     cloud.state = initial("verified cloud");
     cloud.revision = 5;
     await a.sync.initializeAccount();
@@ -1022,7 +1044,7 @@ await check(
       cloud = server();
     cloud.state = initial("verified remote work");
     cloud.revision = 7;
-    const a = await tab("malformed preserved", values, cloud);
+    const a = await tab("malformed preserved", values, cloud, true);
     await a.sync.initializeAccount();
     assert.equal(
       a.sync.sessionWorkspace().notebooks[0].name,
@@ -1030,7 +1052,8 @@ await check(
     );
     const loaded = a.storage.loadState();
     assert.equal(loaded.state, null);
-    assert.match(loaded.warning, /preserved/);
+    assert.equal(loaded.warning, "");
+    assert.equal(loaded.readable, false);
     assert.equal(values.get("calculator.workspace.v1:a"), malformed);
     assert.equal(values.get("revision:a"), "3");
     assert.equal(values.get("dirty:a"), "1");

@@ -140,23 +140,34 @@ export function validateState(v: any): SavedState {
   if (!ids.has(v.active)) throw Error("Invalid active notebook.");
   return v;
 }
-export function loadState(): { state: SavedState | null; warning: string } {
+export type DeviceWorkspaceLoad = {
+  state: SavedState | null;
+  warning: string;
+  readable: boolean;
+};
+export function loadState(): DeviceWorkspaceLoad {
   try {
     const raw = localStorage.getItem(accountStorage(STORAGE_KEY));
-    if (!raw) return { state: null, warning: "" };
+    if (!raw) return { state: null, warning: "", readable: true };
     try {
-      return { state: validateState(JSON.parse(raw)), warning: "" };
+      return {
+        state: validateState(JSON.parse(raw)),
+        warning: "",
+        readable: true,
+      };
     } catch {
       try {
         const previous = localStorage.getItem(accountStorage(BACKUP_KEY));
         if (previous)
           return {
             state: validateState(JSON.parse(previous)),
+            readable: true,
             warning: "Recovered the previous valid save. Export a backup now.",
           };
       } catch {}
       return {
         state: null,
+        readable: false,
         warning:
           "Saved data could not be read. It is preserved; automatic saving is paused.",
       };
@@ -164,6 +175,7 @@ export function loadState(): { state: SavedState | null; warning: string } {
   } catch {
     return {
       state: sessionWorkspace(),
+      readable: false,
       warning:
         "Browser storage is unavailable. Export a backup before closing.",
     };

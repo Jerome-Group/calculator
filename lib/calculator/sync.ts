@@ -192,10 +192,7 @@ export async function initializeAccount(): Promise<User> {
   // A legacy local workspace has no authenticated owner. Claim it only explicitly.
   const loaded = loadState(),
     local = loaded.state;
-  if (
-    loaded.warning.includes("storage is unavailable") ||
-    (loaded.warning && !local)
-  ) {
+  if (!loaded.readable) {
     storageReadable = false;
     storageUnavailable = true;
   }

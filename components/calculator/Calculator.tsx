@@ -241,10 +241,7 @@ export default function Calculator() {
     const listener = (event: Event) =>
       setSyncStatus((event as CustomEvent).detail);
     window.addEventListener("calculator-sync", listener);
-    let t = "light";
-    try {
-      t = readDeviceSave("calculator.theme") || "light";
-    } catch {}
+    const t = readDeviceSave("calculator.theme") || "light";
     setTheme(t);
     document.documentElement.classList.toggle("dark", t === "dark");
     return () => window.removeEventListener("calculator-sync", listener);
