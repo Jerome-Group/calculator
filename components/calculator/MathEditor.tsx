@@ -220,7 +220,7 @@ export default forwardRef<
           );
           k.layouts = k.normalizedLayouts.map((layout, index) => ({
             ...layout,
-            label: ["123", "∑∞", "abc", "Templates"][index],
+            label: ["123", "∑∞", "abc", "{}"][index],
             labelClass: "",
             tooltip: ["Numbers", "Symbols", "Letters", "Structures"][index],
           }));
