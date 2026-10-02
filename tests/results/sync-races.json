@@ -1,0 +1,8 @@
+{
+  "passed": [
+    "failure preserves B",
+    "409 preserves B and dirty",
+    "signout 200 isolates B",
+    "signout 503 isolates B"
+  ]
+}

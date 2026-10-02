@@ -1,0 +1,38 @@
+[
+  {
+    "check": "Anonymous cannot read",
+    "passed": true
+  },
+  {
+    "check": "New account starts empty",
+    "passed": true
+  },
+  {
+    "check": "Owner saves",
+    "passed": true
+  },
+  {
+    "check": "Other account has no copy",
+    "passed": true
+  },
+  {
+    "check": "Account A reads its own notebook",
+    "passed": true
+  },
+  {
+    "check": "Wrong account identity rejected",
+    "passed": true
+  },
+  {
+    "check": "Stale revision does not overwrite",
+    "passed": true
+  },
+  {
+    "check": "Cross-origin write rejected",
+    "passed": true
+  },
+  {
+    "check": "Owner update succeeds",
+    "passed": true
+  }
+]

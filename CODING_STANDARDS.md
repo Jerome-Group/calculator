@@ -99,14 +99,9 @@ Two shapes are settled, so no repository re-argues them:
 
 ## 6. Repo-specific standards
 
-*(Each repository fills this in and owns it.)* Language and framework conventions, the seams
-where tests are written, naming or layout rules particular to this codebase, and anything the
-core leaves open. Add them here; they evolve through this repository's normal pull-request flow.
+Use TypeScript for app/runtime code and Python for the bundled mathematical engine. Prettier checks owned JS/TS and deployment metadata; ESLint and TypeScript check the application. Keep vendored UI and generated Pyodide runtimes intact, preserving notices. Dynamic CAS boundaries and legacy React compiler diagnostics remain visible warnings during this migration; runtime hooks rules stay enforced.
 
-This section is empty because this repository is newly generated. Fill it in with the first
-change that has an opinion worth holding the next one to — the formatter and linter that run in
-CI, where the tests live, and the one or two layout rules a newcomer would otherwise guess
-wrong.
+Tests live in `tests/`: bundled no-fetch mathematics, account-scoped persistence, async identity/cache regressions and built asset closure. Preserve server authentication, origin/size validation and optimistic concurrency. Acknowledgements may update only their persisted snapshot; stale account work and sign-out cannot restore private data or readiness. See ADR-0003 for the runtime and verification tradeoff.
 
 ## 7. Evolution — what is rigid, what moves
 
