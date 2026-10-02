@@ -6,6 +6,10 @@ Computation runs on the device in a cancellable browser worker using bundled Pyo
 
 ChatGPT Sites serves the application through a Worker. Sign in with ChatGPT identifies each workspace; D1 stores revision-checked, per-user cloud saves. Local browser saves continue when disconnected or when the server confirms the same account during a database outage. Conflicting local notebooks are retained as copies. Export backups for durable copies outside browser storage.
 
+## Status
+
+The application is ready for ChatGPT Sites deployment. Verification evidence and computational limits are recorded in [validation](docs/VALIDATION.md).
+
 ## Development
 
 Use Node 24 and the pinned pnpm version in package.json:

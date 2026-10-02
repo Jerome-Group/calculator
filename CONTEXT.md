@@ -1,5 +1,7 @@
 # Domain language
 
+## Language
+
 - **Notebook** — named collection of definitions, history snapshots and graph records.
 - **Workspace** — all notebooks and settings owned by one signed-in user.
 - **Definition** — reusable named expression, function, matrix, dataset or algebraic object.
