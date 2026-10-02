@@ -61,3 +61,9 @@
 .math-editor-recovery {
   font-size: 14px;
 }
+
+@media (max-width: 480px) {
+  body {
+    --keyboard-toolbar-font-size: 14px;
+  }
+}

@@ -33,6 +33,17 @@ class CurrentDispatchTests(unittest.TestCase):
   for latex,expected in samples:
    out=self.call('evaluate',input=latex,mode='latex')
    self.assertEqual(S.simplify(S.sympify(out['text'])-S.sympify(expected)),0,latex)
+ def test_compact_tex_argument_boundaries(self):
+  samples=[(r'\int_1^02\,\mathrm{d}x','-2'),(r'\int_0^12\,\mathrm{d}x','2'),(r'\sum_{n=1}^32','6'),(r'\prod_{n=1}^32','8'),(r'x^23','3*x**2'),(r'2^34','32'),(r'2^{34}','17179869184'),(r'\frac123','3/2'),(r'\frac1234','17'),(r'\frac1{23}','1/23'),(r'\frac{12}3','4'),(r'2^3\frac12','4'),(r'2^\frac123','3*sqrt(2)'),(r'\sqrt{x^23}','sqrt(3*x**2)'),(r'\int_0^\pi2\,\mathrm{d}x','2*pi'),(r'\int_0^{12}2\,\mathrm{d}x','24'),(r'\sum_{n=1}^{32}2','64'),(r'\sin^230','sin(30)**2'),(r'\left(x^2\right)','x**2'),(r'x^2\cdot3','3*x**2'),(r'x^2{3}','3*x**2'),(r'x^2\times3','3*x**2'),(r'\int_0^1x^2\mathrm{d}x','1/3'),(r'\int_0^1x^2dx','1/3'),(r'\mathit{x}^23','3*x**2'),(r'\operatorname{sin}^230','sin(30)**2'),(r'x^2dy','x**2*d*y'),(r'\int_0^1x^2dx+x^2dy','1/3+x**2*d*y'),(r'\int_0^1x^2\mathrm{d}x+x^2dy','1/3+x**2*d*y'),(r'\int_0^1x^2dx+d^2y','1/3+d**2*y')]
+  for latex,expected in samples:
+   with self.subTest(latex=latex):
+    out=self.call('evaluate',input=latex,mode='latex')
+    self.assertEqual(S.simplify(S.sympify(out['text'])-S.sympify(expected)),0)
+ def test_compact_tex_missing_arguments(self):
+  for latex in [r'x^',r'\frac1',r'\int_1^',r'x^{2',r'\sqrt' * 70 + '2']:
+   with self.subTest(latex=latex):
+    out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':latex,'mode':'latex'})))
+    self.assertEqual(out['status'],'error')
  def test_degrees_current(self):
   out=self.call('evaluate',settings={'angle':'deg'},input='sin(30)');self.assertEqual(out['text'],'1/2')
   out=self.call('evaluate',settings={'angle':'deg'},input=r'\arcsin(1)',mode='latex');self.assertEqual(out['text'],'90')

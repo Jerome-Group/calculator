@@ -220,7 +220,9 @@ export default forwardRef<
           );
           k.layouts = k.normalizedLayouts.map((layout, index) => ({
             ...layout,
-            label: ["Numbers", "Symbols", "Letters", "Structures"][index],
+            label: ["123", "∑∞", "abc", "Templates"][index],
+            labelClass: "",
+            tooltip: ["Numbers", "Symbols", "Letters", "Structures"][index],
           }));
           let frame = 0;
           const geometry = () => {

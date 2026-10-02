@@ -62,11 +62,11 @@ def _split_top(text, separator):
     if brace or env:raise LatexInputError('Mismatched braces or environments.')
     parts.append(text[start:]);return parts
 
-def normalize_compact_roots(source, max_depth=64):
-    """Add TeX-equivalent braces around one-token radical arguments.
+def normalize_compact_arguments(source, max_depth=64):
+    """Add TeX-equivalent braces around one-token mathematical arguments.
 
-    This preserves TeX token boundaries: sqrt17 means sqrt(1)*7. It also handles
-    nested radicals, control-sequence symbols and fixed-arity fraction/style
+    This preserves TeX token boundaries: sqrt17 means sqrt(1)*7 and x^23
+    means x^2*3. It handles scripts, nested radicals and fixed-arity fraction/style
     macros. It does not infer the meaning of incomplete mathematical notation.
     """
     if len(source)>8000:
@@ -76,6 +76,25 @@ def normalize_compact_roots(source, max_depth=64):
     def skip_space(text,i):
         while i<len(text) and text[i].isspace():i+=1
         return i
+    function_names=('sin','cos','tan','csc','sec','cot','sinh','cosh','tanh','arcsin','arccos','arctan','ln','log','exp')
+    integral_names=('int','iint','iiint','oint')
+    def differential_at(text,i):
+        return re.match(r'(?:\\mathrm\s*\{\s*d\s*\}|d)\s*(?:[A-Za-z]|\\[A-Za-z]+)',text[i:])
+    def operand_at(text,i,pending_integrals):
+        i=skip_space(text,i)
+        # Only an integral still awaiting its differential owns this token.
+        if pending_integrals and differential_at(text,i):return False
+        if i<len(text) and (text[i].isalnum() or text[i] in ('(','{')):return True
+        command=re.match(r'\\([A-Za-z]+)',text[i:])
+        return bool(command and command.group(1) in ('pi','alpha','beta','gamma','delta','epsilon','theta','lambda','mu','nu','xi','rho','sigma','tau','phi','chi','psi','omega','sqrt','frac','dfrac','tfrac','left','mathrm','mathit','operatorname')+function_names)
+    def adjacent_factor(text,i,pending_integrals):
+        if not operand_at(text,i,pending_integrals):return '',i
+        j=skip_space(text,i)
+        # Lark tokenizes adjacent dy as a differential even outside an integral.
+        # Preserve ordinary-symbol multiplication once that integral is complete.
+        if not pending_integrals and text[j]=='d' and differential_at(text,j):
+            return r'\cdot d\cdot ',j+1
+        return r'\cdot ',i
     def group(text,i,opening,closing):
         depth=1;j=i+1
         while j<len(text):
@@ -88,52 +107,80 @@ def normalize_compact_roots(source, max_depth=64):
                 depth-=1
                 if depth==0:return text[i+1:j],j+1
             j+=1
-        raise LatexInputError('A radical contains an unclosed '+opening+' group.')
+        raise LatexInputError('A mathematical argument contains an unclosed '+opening+' group.')
     def braced(value):
         return value if value.startswith('{') and value.endswith('}') else '{'+value+'}'
     def atom(text,i,depth):
-        if depth>max_depth:raise LatexInputError('Radicals are limited to 64 nested structures.')
+        if depth>max_depth:raise LatexInputError('Mathematical arguments are limited to 64 nested structures.')
         i=skip_space(text,i)
-        if i>=len(text):raise LatexInputError('A radical needs a radicand.')
+        if i>=len(text):raise LatexInputError('A mathematical argument is missing.')
         if text[i]=='{':
             body,end=group(text,i,'{','}')
-            if not body.strip():raise LatexInputError('A radical needs a radicand.')
+            if not body.strip():raise LatexInputError('A mathematical argument is missing.')
             return '{'+scan(body,depth+1)+'}',end
         if root_at(text,i):return radical(text,i,depth+1)
         if text[i]=='\\':
             match=re.match(r'\\([A-Za-z]+|.)',text[i:])
-            if not match:raise LatexInputError('Incomplete control sequence in a radical.')
+            if not match:raise LatexInputError('Incomplete control sequence in a mathematical argument.')
             name=match.group(1);value=match.group(0);end=i+len(value)
             arity=2 if name in ('frac','dfrac','tfrac','binom','dbinom','tbinom') else 1 if name in ('mathrm','mathit','mathbf','mathsf','mathtt','operatorname') else 0
             for _ in range(arity):
                 argument,end=atom(text,end,depth+1);value+=braced(argument)
             return value,end
         if text[i].isalnum():return text[i],i+1
-        raise LatexInputError('Put the radical expression inside braces, for example \\sqrt{x+1}.')
+        raise LatexInputError('Put the mathematical argument inside braces, for example x^{-1} or \\sqrt{x+1}.')
     def radical(text,i,depth):
-        if depth>max_depth:raise LatexInputError('Radicals are limited to 64 nested structures.')
+        if depth>max_depth:raise LatexInputError('Mathematical arguments are limited to 64 nested structures.')
         end=skip_space(text,i+5);index=''
         if end<len(text) and text[end]=='[':
             body,end=group(text,end,'[',']');index='['+scan(body,depth+1)+']'
         radicand,end=atom(text,end,depth+1)
         return r'\sqrt'+index+braced(radicand),end
     def scan(text,depth):
-        if depth>max_depth:raise LatexInputError('Radicals are limited to 64 nested structures.')
-        result=[];i=0
+        if depth>max_depth:raise LatexInputError('Mathematical arguments are limited to 64 nested structures.')
+        result=[];i=0;pending_integrals=0
         while i<len(text):
+            differential=differential_at(text,i) if pending_integrals else None
+            if differential:
+                result.append(differential.group(0));i+=len(differential.group(0));pending_integrals-=1
+                continue
             if root_at(text,i):
                 value,i=radical(text,i,depth+1);result.append(value)
-                j=skip_space(text,i)
                 # The base grammar omits adjacency after a radical; retain TeX
                 # multiplication when the next token visibly starts an operand.
-                follows=j<len(text) and (text[j].isalnum() or text[j]=='(')
-                command=re.match(r'\\([A-Za-z]+)',text[j:])
-                if command and command.group(1) in ('pi','alpha','beta','gamma','delta','epsilon','theta','lambda','mu','nu','xi','rho','sigma','tau','phi','chi','psi','omega','sqrt','frac','dfrac','tfrac','sin','cos','tan','log','ln','exp','left','mathrm','mathit'):
-                    follows=True
-                if follows:result.append(r'\cdot ')
+                factor,i=adjacent_factor(text,i,pending_integrals);result.append(factor)
 
+            elif text[i] in ('^','_'):
+                script=text[i];argument,i=atom(text,i+1,depth+1)
+                result.append(script+braced(argument))
+                # Lark requires explicit multiplication after a scripted operand.
+                factor,i=adjacent_factor(text,i,pending_integrals);result.append(factor)
+            elif text[i]=='{':
+                body,i=group(text,i,'{','}')
+                result.append('{'+scan(body,depth+1)+'}')
             elif text[i]=='\\':
-                match=re.match(r'\\(?:[A-Za-z]+|.)',text[i:]);value=match.group(0) if match else text[i];result.append(value);i+=len(value)
+                match=re.match(r'\\([A-Za-z]+|.)',text[i:])
+                name=match.group(1) if match else ''
+                if name in integral_names:pending_integrals+=1
+                if name in ('frac','dfrac','tfrac','binom','dbinom','tbinom'):
+                    value,i=atom(text,i,depth+1);result.append(value)
+                else:
+                    value=match.group(0) if match else text[i];i+=len(value)
+                    styled_function=False
+                    j=skip_space(text,i)
+                    if name=='operatorname' and j<len(text) and text[j]=='{':
+                        body,end=group(text,j,'{','}')
+                        if body in function_names:
+                            value+='{'+body+'}';i=end;styled_function=True
+                    # These scripts are operator limits or function powers. Their
+                    # following expression is an argument, not a separate factor.
+                    if styled_function or name in integral_names+('sum','prod','lim')+function_names:
+                        while True:
+                            j=skip_space(text,i)
+                            if j>=len(text) or text[j] not in ('^','_'):break
+                            script=text[j];argument,i=atom(text,j+1,depth+1)
+                            value+=script+braced(argument)
+                    result.append(value)
             else:result.append(text[i]);i+=1
         return ''.join(result)
     return scan(source,0)
@@ -149,7 +196,7 @@ def parse_math_latex(source, *, symbols=None, functions=None, max_length=8000, a
     if len(source)>max_length:raise LatexInputError('The LaTeX input exceeds the 8,000-character limit.')
     if '\\partial' in source:raise LatexInputError('Partial-derivative LaTeX is not accepted by this parser. Use the derivative operation with explicit variables and orders.')
     original_source=source
-    source=normalize_compact_roots(source)
+    source=normalize_compact_arguments(source)
     symbols={} if symbols is None else symbols
     functions={} if functions is None else functions
     if any(not isinstance(f,sp.Lambda) for f in functions.values()):raise LatexInputError('Named functions must be mathematical Lambda definitions.')

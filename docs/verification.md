@@ -32,6 +32,8 @@ Phone dialogs require `modalBounds` records for `finder`, `settings`, `object`, 
 
 Unavailable physical-input/CDP observations may be disclosed separately as `limitations: [{ id, status: "unsupported", kind: "physical-input" | "cdp-unavailable", reason }]`. These disclosures cannot replace any required fixture, scenario or control. Essential production reload and scoped identity checks still require observed passing evidence. Synthetic contract-mutation tests only test ingestion rules; they are never browser runtime evidence.
 
+The editor additionally requires `keyboard-toolbar-fit` at 320px and 390px, with visible layout/Undo/Redo/Paste target bounds, and `editor.compact-arguments` with actual rich-entry/LaTeX integral, sum, power and fraction results. TeX's unbraced scripts consume one token: `\int_1^02\,\mathrm{d}x` means the integral from 1 to 0 of 2, with result −2. A correct form calculation cannot certify this separate rich-entry path.
+
 Graph resource regressions run under a 128 MB Node heap. The graph expression guard limits cumulative allocation to 10,000 elements per evaluation across five constructors and multiplication outputs, including nested calls; dynamic definitions and shadowed user functions retain their semantics. This graph-local bound does not restrict mathematical engine operation sizes.
 
 Unused vendored controls and their dependency closure were removed to keep installed code aligned with the imported feature set. Verification retains engine pins, offline assets, licences, Sites DB migrations and required framework peers. A frozen install and the shared core checks verify the pruned closure; browser evidence must use its newly built styles and assets.

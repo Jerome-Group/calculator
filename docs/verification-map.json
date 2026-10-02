@@ -8093,7 +8093,9 @@
       "worker.cancel-restart",
       "sync.concurrent-recovery",
       "sync.volatile-leave-guard",
-      "editor.external-menu"
+      "editor.external-menu",
+      "keyboard-toolbar-fit",
+      "editor.compact-arguments"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -12551,7 +12553,7 @@
       "id": "control.121",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 292
+        "line": 294
       },
       "kind": "button",
       "label": "Retry editor",
@@ -12588,7 +12590,7 @@
       "id": "control.122",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 313
+        "line": 315
       },
       "kind": "button",
       "label": "Structures & editing",
@@ -12625,7 +12627,7 @@
       "id": "control.123",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 328
+        "line": 330
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -12662,7 +12664,7 @@
       "id": "control.124",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 344
+        "line": 346
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -14031,7 +14033,7 @@
       "id": "control.161",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 305
+        "line": 307
       },
       "kind": "button",
       "label": "Expression menu",
@@ -14276,7 +14278,8 @@
       "id": "feature.editor",
       "source": [
         "components/calculator/MathEditor.tsx",
-        "components/calculator/StructuredFields.tsx"
+        "components/calculator/StructuredFields.tsx",
+        "public/engine/latex_adapter.py"
       ],
       "browserScenarioIds": [
         "math-fractions-entry",
@@ -14300,7 +14303,9 @@
         "piecewise-branches",
         "dictionary-edit",
         "editor.logic-relationships",
-        "editor.external-menu"
+        "editor.external-menu",
+        "keyboard-toolbar-fit",
+        "editor.compact-arguments"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
