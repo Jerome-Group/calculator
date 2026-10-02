@@ -103,7 +103,12 @@ function instrument(source, component, actions) {
   }).outputText;
 }
 
-export function componentHarness(component, actions, initialState = {}) {
+export function componentHarness(
+  component,
+  actions,
+  initialState = {},
+  moduleOverrides = {},
+) {
   const state = new Map(Object.entries(initialState)),
     refs = [],
     requests = [],
@@ -209,7 +214,7 @@ export function componentHarness(component, actions, initialState = {}) {
     "localStorage",
     instrument(source, component, actions),
   )(
-    (specifier) => modules[specifier] || ui,
+    (specifier) => moduleOverrides[specifier] || modules[specifier] || ui,
     loadedModule,
     loadedModule.exports,
     auditState,

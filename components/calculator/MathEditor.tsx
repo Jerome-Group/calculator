@@ -15,18 +15,19 @@ import type {
   VirtualKeyboardName,
 } from "mathlive";
 import "./MathEditor.css";
-const structures = [
-  { label: "Fraction", latex: "\\frac{#@}{#?}" },
-  { label: "Power", latex: "#@^{#?}" },
-  { label: "Root", latex: "\\sqrt{#?}" },
-  { label: "Integral", latex: "\\int_{#?}^{#?} #? \\,\\mathrm{d}x" },
-  { label: "Sum", latex: "\\sum_{n=#?}^{#?} #?" },
-  { label: "Matrix", latex: "\\begin{pmatrix}#?&#?\\\\#?&#?\\end{pmatrix}" },
-  {
-    label: "Cases",
-    latex: "\\begin{cases}#?&#?\\\\#?&\\text{otherwise}\\end{cases}",
-  },
-];
+const structureTemplates = {
+  Fraction: "\\frac{#@}{#?}",
+  Power: "#@^{#?}",
+  Root: "\\sqrt{#?}",
+  Integral: "\\int_{#?}^{#?} #? \\,\\mathrm{d}x",
+  Sum: "\\sum_{n=#?}^{#?} #?",
+  Matrix: "\\begin{pmatrix}#?&#?\\\\#?&#?\\end{pmatrix}",
+  Cases: "\\begin{cases}#?&#?\\\\#?&\\text{otherwise}\\end{cases}",
+};
+const structures = Object.entries(structureTemplates).map(([label, latex]) => ({
+  label,
+  latex,
+}));
 const editingCommands: { label: string; command: Selector }[] = [
   { label: "Undo", command: "undo" },
   { label: "Redo", command: "redo" },
@@ -140,17 +141,17 @@ export default forwardRef<
               label: "Structures",
               rows: [
                 [
-                  "\\frac{#@}{#?}",
-                  "#@^{#?}",
-                  "\\sqrt{#?}",
+                  structureTemplates.Fraction,
+                  structureTemplates.Power,
+                  structureTemplates.Root,
                   {
                     label: "∫",
-                    insert: "\\int_{#?}^{#?} #? \\,\\mathrm{d}x",
+                    insert: structureTemplates.Integral,
                     tooltip: "Definite integral",
                   },
                   {
                     label: "Σ",
-                    insert: "\\sum_{n=#?}^{#?} #?",
+                    insert: structureTemplates.Sum,
                     tooltip: "Sum",
                   },
                 ],
@@ -158,13 +159,12 @@ export default forwardRef<
                 [
                   {
                     label: "Matrix",
-                    insert: "\\begin{pmatrix}#?&#?\\\\#?&#?\\end{pmatrix}",
+                    insert: structureTemplates.Matrix,
                     tooltip: "2 by 2 matrix",
                   },
                   {
                     label: "Cases",
-                    insert:
-                      "\\begin{cases}#?&#?\\\\#?&\\text{otherwise}\\end{cases}",
+                    insert: structureTemplates.Cases,
                     tooltip: "Piecewise function",
                   },
                   "\\le",

@@ -1,5 +1,5 @@
 "use client";
-import { sourceToLatex } from "@/lib/calculator/notation";
+import { sourceToLatex, matrixRowsToLatex } from "@/lib/calculator/notation";
 import Choice from "./Choice";
 import MathView from "./MathView";
 import type { Definition, Operation } from "@/lib/calculator/types";
@@ -51,16 +51,7 @@ export function Preview({
   block?: boolean;
 }) {
   const rows = matrixRows(source);
-  let latex = sourceToLatex(source);
-  if (rows) {
-    const cells = rows.map((row) => row.map(sourceToLatex));
-    if (cells.every((row) => row.every((cell) => cell !== null)))
-      latex =
-        "\\begin{pmatrix}" +
-        cells.map((row) => row.join("&")).join("\\\\") +
-        "\\end{pmatrix}";
-    else latex = null;
-  }
+  const latex = rows ? matrixRowsToLatex(rows) : sourceToLatex(source);
   return latex ? (
     <MathView latex={latex} block={block} />
   ) : (

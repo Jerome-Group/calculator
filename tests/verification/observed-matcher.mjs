@@ -17,11 +17,13 @@ export async function createObservedMatcher(root = process.cwd()) {
   } finally {
     globalThis.fetch = previousFetch;
   }
-  const source = fs.readFileSync(
-    path.join(root, "tests/maths-oracle.py"),
-    "utf8",
+  py.FS.writeFile(
+    "/home/pyodide/maths_assertions.py",
+    fs.readFileSync(path.join(root, "tests/maths-assertions.py")),
   );
-  await py.runPythonAsync(source.slice(0, source.lastIndexOf("\nresults=[]")));
+  await py.runPythonAsync(
+    "import json; from maths_assertions import assert_fixture",
+  );
   const matchObserved = async function (fixture, observedResult) {
     py.globals.set("observed_fixture_json", JSON.stringify(fixture));
     py.globals.set("observed_result_json", JSON.stringify(observedResult));

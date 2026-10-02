@@ -3,7 +3,10 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import ts from "typescript";
 import { operations } from "../lib/calculator/catalog.ts";
-import { sourceToLatex } from "../lib/calculator/notation.ts";
+import {
+  sourceToLatex,
+  matrixRowsToLatex,
+} from "../lib/calculator/notation.ts";
 const require = createRequire(import.meta.url);
 const compiled = ts.transpileModule(
   fs.readFileSync(
@@ -22,7 +25,8 @@ const MathView = () => null;
 new Function("require", "module", "exports", compiled)(
   (name) => {
     if (name === "react/jsx-runtime") return require(name);
-    if (name === "@/lib/calculator/notation") return { sourceToLatex };
+    if (name === "@/lib/calculator/notation")
+      return { sourceToLatex, matrixRowsToLatex };
     if (name === "./MathView") return { default: MathView };
     if (name === "./Choice") return { default: () => null };
     throw Error(`Unexpected import ${name}`);

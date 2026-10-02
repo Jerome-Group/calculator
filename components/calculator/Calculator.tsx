@@ -50,7 +50,7 @@ import Choice from "./Choice";
 import MathEditor, { MathEditorHandle } from "./MathEditor";
 import MathView from "./MathView";
 import {
-  sourceToLatex,
+  matrixRowsToLatex,
   sourceToMath,
   mathToSource,
 } from "@/lib/calculator/notation";
@@ -211,6 +211,7 @@ export default function Calculator() {
     busyRef = useRef(false),
     objectGeneration = useRef(0),
     objectModal = useRef(modal),
+    fieldConversionGeneration = useRef(0),
     conversionGeneration = useRef(0),
     editingSource = useRef({
       mode,
@@ -222,6 +223,7 @@ export default function Calculator() {
     });
   useLayoutEffect(() => {
     current.current = state;
+    if (objectModal.current !== modal) fieldConversionGeneration.current++;
     objectModal.current = modal;
     editingSource.current = {
       mode,
@@ -395,6 +397,7 @@ export default function Calculator() {
     }
   }, [keyboardRequested, mode]);
   const closeModal = () => {
+    fieldConversionGeneration.current++;
     if (objectModal.current === "object") {
       objectGeneration.current++;
       setMatrixLoading(false);
@@ -541,6 +544,7 @@ export default function Calculator() {
     return () => lifecycle.abort();
   }, []);
   const choose = (o: Operation, expression?: string) => {
+    fieldConversionGeneration.current++;
     setOp(o);
     setParams(
       Object.fromEntries(
@@ -561,16 +565,41 @@ export default function Calculator() {
     setModal("operation");
     hide();
   };
+  const openMathField = async (key: string, label: string) => {
+    const snapshot = editingSource.current,
+      source = params[key] || "",
+      generation = ++fieldConversionGeneration.current;
+    const stillEditing = () => {
+      const latest = editingSource.current;
+      return (
+        generation === fieldConversionGeneration.current &&
+        objectModal.current === "operation" &&
+        snapshot.active === latest.active &&
+        snapshot.op === latest.op &&
+        (latest.params[key] || "") === source
+      );
+    };
+    try {
+      const converted = source ? await sourceToMath(source) : { latex: "" };
+      if (!stillEditing()) return;
+      if (converted.latex === undefined) {
+        setNotice(converted.reason || "Keep the original text.");
+        return;
+      }
+      setMathField({ key, label, latex: converted.latex });
+    } catch {
+      if (stillEditing())
+        setNotice(
+          "Math editor could not load. Your field is preserved. Try again.",
+        );
+    }
+  };
   const reuse = (s: string) => {
     setInput(s);
     const rows = matrixRows(s),
-      cells = rows?.map((row) => row.map(sourceToLatex));
-    if (cells && cells.every((row) => row.every((cell) => cell !== null))) {
-      setLatex(
-        "\\begin{pmatrix}" +
-          cells.map((row) => row.join("&")).join("\\\\") +
-          "\\end{pmatrix}",
-      );
+      matrixLatex = rows ? matrixRowsToLatex(rows) : null;
+    if (matrixLatex !== null) {
+      setLatex(matrixLatex);
       setMode("math");
     } else setMode("text");
     setView("calculate");
@@ -1559,33 +1588,7 @@ export default function Calculator() {
                   params={params}
                   definitions={book.definitions}
                   onChange={(k, v) => setParams((p) => ({ ...p, [k]: v }))}
-                  onMath={async (key, label) => {
-                    const snapshot = editingSource.current,
-                      source = params[key] || "";
-                    try {
-                      const converted = source
-                        ? await sourceToMath(source)
-                        : { latex: "" };
-                      const latest = editingSource.current;
-                      if (
-                        snapshot.active !== latest.active ||
-                        snapshot.op !== latest.op ||
-                        latest.params[key] !== source
-                      )
-                        return;
-                      if (converted.latex === undefined) {
-                        setNotice(
-                          converted.reason || "Keep the original text.",
-                        );
-                        return;
-                      }
-                      setMathField({ key, label, latex: converted.latex });
-                    } catch {
-                      setNotice(
-                        "Math editor could not load. Your field is preserved. Try again.",
-                      );
-                    }
-                  }}
+                  onMath={openMathField}
                 />
               </div>
             </>

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { abs, parse, subtract } from "mathjs";
 import {
   mathToSource,
-  sourcePreview,
+  matrixRowsToLatex,
   sourceToLatex,
   sourceToMath,
 } from "../lib/calculator/notation.ts";
@@ -23,9 +23,8 @@ const grouped = [
   "sin(x)/x",
 ];
 for (const original of grouped) {
-  const preview = sourcePreview(original);
-  assert.equal(preview.source, original);
-  assert(preview.latex, `${original} should have grouped mathematical display`);
+  const preview = sourceToLatex(original);
+  assert(preview, `${original} should have grouped mathematical display`);
   const editor = await sourceToMath(original);
   assert(editor.latex, `${original} should safely enter the editor`);
   const restored = await mathToSource(editor.latex);
@@ -49,10 +48,7 @@ for (const original of [
   "integrate(x,x)",
   "x.subs({x:2})",
 ]) {
-  assert.deepEqual(sourcePreview(original), {
-    source: original,
-    latex: undefined,
-  });
+  assert.equal(sourceToLatex(original), null);
   const editor = await sourceToMath(original);
   assert.equal(
     editor.latex,
@@ -71,9 +67,9 @@ for (const original of [
   "1e-999",
   "0x20000000000001",
 ]) {
-  assert.deepEqual(
-    sourcePreview(original),
-    { source: original, latex: undefined },
+  assert.equal(
+    sourceToLatex(original),
+    null,
     `${original} must retain exact digits`,
   );
   assert.equal(
@@ -109,3 +105,12 @@ assert.equal(sourceToLatex("x".repeat(4001)), null);
 console.log(
   "Source grouping, exact fallback and editor round-trip regressions passed",
 );
+
+assert(
+  matrixRowsToLatex([
+    ["sin(x^2)", "1/(x+1)"],
+    ["2", "3"],
+  ]),
+);
+assert.equal(matrixRowsToLatex([["9007199254740993"]]), null);
+assert.equal(matrixRowsToLatex([["f(x)"]]), null);

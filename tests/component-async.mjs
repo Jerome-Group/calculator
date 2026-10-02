@@ -271,5 +271,103 @@ await check(
     }
   },
 );
+function fieldEditor() {
+  const conversions = [];
+  const operation = {
+    id: "differentiate",
+    name: "Differentiate",
+    fields: [
+      { key: "expression", label: "Expression", value: "x^2" },
+      { key: "variable", label: "Variable", value: "x" },
+    ],
+  };
+  const harness = componentHarness(
+    "Calculator",
+    ["openMathField", "closeModal", "choose"],
+    {
+      state: workspace([notebook("A")]),
+      modal: "operation",
+      op: operation,
+      params: { expression: "x^2", variable: "x" },
+    },
+    {
+      "@/lib/calculator/notation": {
+        sourceToMath: (source) =>
+          new Promise((resolve, reject) =>
+            conversions.push({ source, resolve, reject }),
+          ),
+      },
+    },
+  );
+  return { harness, conversions, operation };
+}
+await check("closing a form invalidates its pending field editor", async () => {
+  for (const reject of [false, true]) {
+    const { harness, conversions } = fieldEditor();
+    const actions = harness.render().actions;
+    const pending = actions.openMathField("expression", "Expression");
+    actions.closeModal();
+    // Closure invalidation is synchronous, before a subsequent render.
+    if (reject) conversions[0].reject(Error("Import failed"));
+    else conversions[0].resolve({ latex: "x^{2}" });
+    await pending;
+    assert.equal(harness.state.get("mathField"), null);
+    assert.equal(harness.state.get("notice"), "");
+  }
+});
+await check(
+  "reopening the same operation discards its old conversion",
+  async () => {
+    const { harness, conversions, operation } = fieldEditor();
+    const actions = harness.render().actions;
+    const pending = actions.openMathField("expression", "Expression");
+    actions.closeModal();
+    actions.choose(operation);
+    harness.render();
+    conversions[0].resolve({ latex: "x^{2}" });
+    await pending;
+    assert.equal(harness.state.get("modal"), "operation");
+    assert.equal(harness.state.get("mathField"), null);
+    const current = harness
+      .render()
+      .actions.openMathField("expression", "Expression");
+    conversions[1].resolve({ latex: "x^{2}" });
+    await current;
+    assert.equal(harness.state.get("mathField").key, "expression");
+  },
+);
+await check(
+  "the latest requested field wins out-of-order conversion",
+  async () => {
+    const { harness, conversions } = fieldEditor();
+    const actions = harness.render().actions;
+    const older = actions.openMathField("expression", "Expression");
+    const newer = actions.openMathField("variable", "Variable");
+    conversions[1].resolve({ latex: "x" });
+    await newer;
+    conversions[0].resolve({ latex: "x^{2}" });
+    await older;
+    assert.deepEqual(harness.state.get("mathField"), {
+      key: "variable",
+      label: "Variable",
+      latex: "x",
+    });
+  },
+);
+await check(
+  "leaving the operation invalidates conversion notices",
+  async () => {
+    const { harness, conversions } = fieldEditor();
+    const pending = harness
+      .render()
+      .actions.openMathField("expression", "Expression");
+    harness.state.set("modal", "search");
+    harness.render();
+    conversions[0].resolve({ reason: "Unsupported notation" });
+    await pending;
+    assert.equal(harness.state.get("mathField"), null);
+    assert.equal(harness.state.get("notice"), "");
+  },
+);
 console.log(JSON.stringify(results, null, 2));
 if (results.some((entry) => !entry.passed)) process.exitCode = 1;

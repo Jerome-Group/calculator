@@ -96,6 +96,7 @@ export function mathContractFingerprint(root) {
     "tests/fixtures/maths-choices.json",
     "tests/fixtures/maths-invalid.json",
     "tests/maths-oracle.py",
+    "tests/maths-assertions.py",
     "tests/verification/observed-matcher.mjs",
     "tests/verification/latex-observed.py",
     "tests/verification/observed-display.py",

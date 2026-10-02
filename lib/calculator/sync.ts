@@ -26,8 +26,6 @@ let user: User | null = null,
   pending: SavedState | null = null;
 const REQUEST_TIMEOUT = 15000;
 type SaveRequest = {
-  owner: string;
-  generation: number;
   controller: AbortController;
   timer: ReturnType<typeof setTimeout>;
 };
@@ -359,8 +357,6 @@ async function drain() {
   pending = null;
   const controller = new AbortController();
   const request: SaveRequest = {
-    owner,
-    generation,
     controller,
     timer: setTimeout(() => controller.abort(), REQUEST_TIMEOUT),
   };

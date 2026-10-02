@@ -113,11 +113,14 @@ export function sourceToLatex(source: string): string | null {
   }
 }
 
-export function sourcePreview(source: string): {
-  source: string;
-  latex?: string;
-} {
-  return { source, latex: sourceToLatex(source) ?? undefined };
+export function matrixRowsToLatex(rows: string[][]): string | null {
+  const cells = rows.map((row) => row.map(sourceToLatex));
+  if (!cells.every((row) => row.every((cell) => cell !== null))) return null;
+  return (
+    "\\begin{pmatrix}" +
+    cells.map((row) => row.join("&")).join("\\\\") +
+    "\\end{pmatrix}"
+  );
 }
 
 function canonical(node: MathNode): unknown {

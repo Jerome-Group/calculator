@@ -17,4 +17,4 @@ Start with README.md, then app/page.tsx and components/calculator/CalculatorGate
 | `.openai/`, `.github/` | Site binding and organisation CI                          | `.github/workflows/ci.yml`             |
 | `vendor/`              | Retained third-party notices                              | `vendor/`                              |
 
-Verification starts at `pnpm --silent verify --help`, [the command contract](docs/verification.md) and [versioned map](docs/verification-map.json). Local and CI checks share `pnpm --silent verify run --group core --json`; browser evidence remains separate. The vendored UI retains only the eight imported primitives; unused UI support hooks were removed.
+Verification starts at `pnpm --silent verify --help`, [the command contract](docs/verification.md) and [versioned map](docs/verification-map.json). Local and CI checks share `pnpm --silent verify run --group core --json`; browser evidence remains separate.

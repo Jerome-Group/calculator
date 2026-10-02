@@ -40,6 +40,10 @@ if (selected >= 0) {
   fixtures = fixtures.filter((f) => f.id === id);
   if (!fixtures.length) throw Error("Unknown fixture " + id);
 }
+py.FS.writeFile(
+  "/home/pyodide/maths_assertions.py",
+  fs.readFileSync(path.join(root, "tests/maths-assertions.py")),
+);
 await py.runPythonAsync("from calculator import compute_json as compute");
 py.globals.set("fixture_json", JSON.stringify(fixtures));
 py.globals.set("mutation", process.env.CALCULATOR_MUTATE_RESULT || "");
