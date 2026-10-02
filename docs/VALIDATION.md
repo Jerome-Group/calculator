@@ -15,3 +15,9 @@ No old-account cloud-record transfer is claimed. The new Site starts with its ow
 Computational limits remain finite algebra/topology, rational homology without torsion, restricted symbolic PDEs, bounded numerical searches and sampled graphs. Engine failure is not proof that a closed form does not exist.
 
 Unsynced snapshots are durable per browser writer and account before submission. Recovery keeps valid notebook limits and names; copies that cannot fit remain separately exportable from Settings. Both save winner orderings and closing a tab before its response are covered.
+
+The patched lock reports zero findings from the npm advisory audit on 2026-10-02. Imported dependency advisories were patched without relaxing pnpm's seven-day release-age gate. Focused library and application graph regressions cover patched property boundaries, reusable definitions, degrees/radians and supported graph modes. ADR-0005 records the MathJS major-version compatibility decision and the tooling override scope.
+
+Ten graph/security checks and three MathLive escaping/conversion checks pass. Baseline probes reproduce the vulnerable library behavior; patched probes stop before invoking escaped JavaScript. MathLive’s shipped fonts remain byte-identical to the local copies.
+
+The scoped legacy esbuild replacement also loaded the Drizzle TypeScript config and generated the current SQLite schema into a disposable output directory. Both old-loader replacement versions were exercised through the actual transform wrapper for TypeScript, sourcemaps, dynamic imports and TSX.
