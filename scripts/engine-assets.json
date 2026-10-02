@@ -1,0 +1,66 @@
+{
+  "pyodideVersion": "0.27.7",
+  "lockSha256": "9c45b916001a750f4102fc287494f3eab215909c7535c626a20db80fd6333e2c",
+  "assets": [
+    {
+      "file": "pyodide.js",
+      "sha256": "b4cb23a53aba19c221659b9fb40a2f18281d685691dc06647fb0afd0681baf98",
+      "npm": "pyodide.js"
+    },
+    {
+      "file": "pyodide.mjs",
+      "sha256": "04c052c815abb0bf2981fa38c2dfa58e3120ee5288c956df2b2a15e301782c5f",
+      "npm": "pyodide.mjs"
+    },
+    {
+      "file": "pyodide.asm.js",
+      "sha256": "6b4c90de5b7172873f04f21884d0e9d2274e305fe32116558fe3e4fbe3618d51",
+      "npm": "pyodide.asm.js"
+    },
+    {
+      "file": "pyodide.asm.wasm",
+      "sha256": "a50dd1843f805a0b7c45b61037ee0d7b26dfe85efe0e18ef95a34ad24e401f5f",
+      "npm": "pyodide.asm.wasm"
+    },
+    {
+      "file": "python_stdlib.zip",
+      "sha256": "16611534726e5d8ac2bd8f926410b2dcb8d6f49aa24913463533b457a2115c16",
+      "npm": "python_stdlib.zip"
+    },
+    {
+      "file": "sympy-1.13.3-py3-none-any.whl",
+      "sha256": "f36c07ec53e3992f8d02ea833e4e277c51138791f07b508677dd37ef5c2965dd",
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/sympy-1.13.3-py3-none-any.whl"
+    },
+    {
+      "file": "mpmath-1.3.0-py3-none-any.whl",
+      "sha256": "5c8b3c27ea61c54b90c56a5adf9ddb07d7c3591b80e9f83d4f03009bba6f5ac5",
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/mpmath-1.3.0-py3-none-any.whl"
+    },
+    {
+      "file": "scipy-1.14.1-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "sha256": "997c50a61564a8ce6a56ea98a42e7f4427e5eb98475a73233e83df6a184f415c",
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/scipy-1.14.1-cp312-cp312-pyodide_2024_0_wasm32.whl"
+    },
+    {
+      "file": "numpy-2.0.2-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "sha256": "ebb61241d962b98b21597d7ce43b67668a6d5bab3acec4fbe958657320d7cd08",
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/numpy-2.0.2-cp312-cp312-pyodide_2024_0_wasm32.whl"
+    },
+    {
+      "file": "openblas-0.3.26.zip",
+      "sha256": "787ea9a8a5cd160204388d03324b3b7ce5c9aea14b5680cec987f837e76c5198",
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/openblas-0.3.26.zip"
+    },
+    {
+      "file": "networkx-3.4.2-py3-none-any.whl",
+      "sha256": "fc86ae678fdbab25783d543290dfd2fea8f9cc5161cdb4e61ce2687de57665bb",
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/networkx-3.4.2-py3-none-any.whl"
+    },
+    {
+      "file": "lark-1.2.2-py3-none-any.whl",
+      "sha256": "c2276486b02f0f1b90be155f2c8ba4a8e194d42775786db622faccd652d8e80c",
+      "url": "https://files.pythonhosted.org/packages/2d/00/d90b10b962b4277f5e64a78b6609968859ff86889f5b898c1a778c06ec00/lark-1.2.2-py3-none-any.whl"
+    }
+  ]
+}
