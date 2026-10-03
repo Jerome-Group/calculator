@@ -1916,6 +1916,10 @@ footer button {
   --keyboard-toolbar-text-active: #d8ef77;
   --keyboard-toolbar-background-selected: #344432;
 }
+.ML__keyboard [data-tooltip]::after {
+  /* The vendor's invisible tooltip otherwise inherits an interactive hit area. */
+  pointer-events: none;
+}
 .workspace-tabs {
   justify-content: flex-start !important;
   flex-shrink: 0;

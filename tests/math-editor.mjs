@@ -69,6 +69,12 @@ const actionRow = {
   ),
 };
 assert.deepEqual(checkKeyboardActionRow(actionRow), []);
+const invisibleTooltipRow = structuredClone(actionRow);
+invisibleTooltipRow.buttons.Calculate.hits[3] = false;
+assert.equal(invisibleTooltipRow.buttons.Calculate.hits[8], true);
+assert.deepEqual(checkKeyboardActionRow(invisibleTooltipRow), [
+  "Calculate interior8px/edge-midpoint/center hits are not all correct",
+]);
 const coveredRow = structuredClone(actionRow);
 coveredRow.tools = { x: 216, y: 47, width: 612, height: 44 };
 coveredRow.buttons["Expression menu"].rect = {
