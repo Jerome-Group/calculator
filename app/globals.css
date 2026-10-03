@@ -2140,3 +2140,9 @@ footer button {
     );
   }
 }
+
+@media (max-width: 360px) {
+  .ML__keyboard .MLK__toolbar > div > div {
+    margin-inline: 0;
+  }
+}

@@ -158,6 +158,113 @@ assert.deepEqual(
   ["Virtual keyboard target observation is incomplete"],
 );
 
+const narrowToolbarKeyboard = {
+  plate: {
+    x: 0,
+    y: 327,
+    width: 304,
+    height: 242,
+  },
+  viewport: {
+    width: 320,
+    height: 568,
+  },
+  targets: {
+    Numbers: {
+      rect: {
+        x: 2,
+        y: 327,
+        width: 42,
+        height: 34,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Symbols: {
+      rect: {
+        x: 48,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Letters: {
+      rect: {
+        x: 94,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Structures: {
+      rect: {
+        x: 140,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Undo: {
+      rect: {
+        x: 186,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Redo: {
+      rect: {
+        x: 232,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    "Paste from Clipboard": {
+      rect: {
+        x: 278,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+  },
+};
+assert(
+  checkVirtualKeyboardTargets(narrowToolbarKeyboard).includes(
+    "Paste from Clipboard target is outside interactive keyboard/viewport bounds",
+  ),
+);
+assert(
+  checkVirtualKeyboardTargets(narrowToolbarKeyboard).includes(
+    "Paste from Clipboard interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const fittedToolbarKeyboard = structuredClone(narrowToolbarKeyboard);
+Object.values(fittedToolbarKeyboard.targets).forEach((target, index) => {
+  target.rect.x = index < 4 ? index * 42 : 178 + (index - 4) * 42;
+  target.hits.fill(true);
+});
+assert.equal(Object.keys(fittedToolbarKeyboard.targets).length, 7);
+assert(
+  Object.values(fittedToolbarKeyboard.targets).every(
+    (target) => target.rect.width === 42,
+  ),
+);
+assert.deepEqual(checkVirtualKeyboardTargets(fittedToolbarKeyboard), []);
+const fittedToolbarEdgeCovered = structuredClone(fittedToolbarKeyboard);
+fittedToolbarEdgeCovered.targets["Paste from Clipboard"].hits[7] = false;
+assert(
+  checkVirtualKeyboardTargets(fittedToolbarEdgeCovered).includes(
+    "Paste from Clipboard interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+
 const phoneMenuGeometry = {
   context: "composer",
   field: { bottom: 333 },
