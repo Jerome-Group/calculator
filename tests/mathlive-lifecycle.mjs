@@ -39,20 +39,36 @@ function vendorHarness(file) {
   )();
   const methods = mathfield.members
     .filter((member) =>
-      ["dispose", "onFocus", "onBlur", "hasFocus", "disabled"].includes(
-        member.name?.getText(ast),
-      ),
+      [
+        "dispose",
+        "onFocus",
+        "onBlur",
+        "hasFocus",
+        "disabled",
+        "readOnly",
+        "toggleContextMenu",
+      ].includes(member.name?.getText(ast)),
     )
     .map((member) => member.getText(ast))
     .join("\n");
   const validity = methods.match(/if\s*\(!([\w$]+)\(this\)\)/)?.[1];
   assert(validity, "actual vendor disposal validity guard exists");
   const timers = [];
+  const scrim = { state: "closed" };
+  const scrimName = methods.match(
+    /([\w$]+)\.state\s*!==?\s*["']closed["']/,
+  )?.[1];
+  const infoName = methods.match(
+    /([\w$]+)\(this,\s*this\.model\.position\)/,
+  )?.[1];
+  assert(infoName, "actual command reads its current element bounds");
   const noop = () => {};
   noop.unsubscribe = noop;
   const environment = new Proxy(
     {
       [validity]: (field) => field.element?.mathfield === field,
+      ...(scrimName ? { [scrimName]: scrim } : {}),
+      [infoName]: () => ({ bounds: { right: 30, bottom: 290 } }),
       setTimeout: (callback) => timers.push(callback),
       window: { mathVirtualKeyboard: { removeEventListener: noop } },
       Event,
@@ -74,9 +90,10 @@ function vendorHarness(file) {
     const value = new Field();
     let disposed = false;
     const model = {
+      value: "x^2",
       getValue() {
         if (disposed) throw Error("Disposed model read");
-        return "x^2";
+        return this.value;
       },
       dispose() {
         events.push("model.dispose");
@@ -86,22 +103,36 @@ function vendorHarness(file) {
     Object.assign(value, {
       blurred: true,
       focusBlurInProgress: false,
-      element: { mathfield: value },
-      host: { dispatchEvent: noop },
+      programmaticFocusInProgress: false,
+      element: { mathfield: value, focus: noop },
+      dispatched: [],
+      host: { dispatchEvent: (event) => value.dispatched.push(event.type) },
       model,
-      keyboardDelegate: { dispose: noop, focus: noop },
+      options: {},
+      sinkFocusCalls: 0,
+      connections: 0,
+      disconnections: 0,
+      keyboardDelegate: { dispose: noop, focus: () => value.sinkFocusCalls++ },
       eventController: { abort: noop },
       resizeObserver: { disconnect: noop },
-      disconnectFromVirtualKeyboard: noop,
-      connectToVirtualKeyboard: noop,
+      disconnectFromVirtualKeyboard: () => value.disconnections++,
+      connectToVirtualKeyboard: () => value.connections++,
       stopCoalescingUndo: noop,
     });
     if (menu)
       value._menu = {
+        visible: true,
         state: "open",
+        show(options) {
+          this.state = "open";
+          this._onDismiss = options.onDismiss;
+        },
         hide() {
           this.state = "closed";
           events.push("menu.dispose");
+          const dismiss = this._onDismiss;
+          this._onDismiss = undefined;
+          dismiss?.();
         },
         _element: {
           remove() {
@@ -116,18 +147,170 @@ function vendorHarness(file) {
         _menuItems: [],
         dispose: menuDispose,
       };
+    value.element.querySelector = () => ({});
+    Object.defineProperty(value, "menu", { get: () => value._menu });
     return value;
   }
-  return { Field, field, timers, events };
+  return { Field, field, timers, events, scrim };
 }
 
-for (const name of ["mathlive.mjs", "mathlive.min.mjs"]) {
+for (const name of [
+  "mathlive.mjs",
+  "mathlive.js",
+  "mathlive.min.mjs",
+  "mathlive.min.js",
+]) {
   const file = process.env.CALCULATOR_MATHLIVE_LIFECYCLE_DIRECTORY
     ? process.env.CALCULATOR_MATHLIVE_LIFECYCLE_DIRECTORY + "/" + name
     : fileURLToPath(
         new URL("../node_modules/mathlive/" + name, import.meta.url),
       );
-  const { Field, field, timers, events } = vendorHarness(file);
+  const { Field, field, timers, events, scrim } = vendorHarness(file);
+  const flush = () => {
+    while (timers.length) timers.shift()();
+  };
+  for (const pending of [false, true]) {
+    const owner = field(true);
+    owner._menu.state = "closed";
+    if (pending) owner.onFocus();
+    assert.equal(owner.toggleContextMenu(), true);
+    assert.equal(
+      owner.sinkFocusCalls,
+      0,
+      "menu opening does not focus the sink",
+    );
+    flush();
+    assert.equal(
+      owner.sinkFocusCalls,
+      0,
+      "pending focus cannot steal menu keyboard input",
+    );
+    assert.equal(owner.focusBlurInProgress, false);
+    assert.equal(owner.programmaticFocusInProgress, false);
+    owner._menu.hide();
+    assert.equal(
+      owner.sinkFocusCalls,
+      1,
+      "first-use dismissal restores the actual keyboard sink",
+    );
+    assert.equal(Field._globallyFocusedMathfield, owner);
+    assert.equal(owner.blurred, false);
+    assert(owner.connections > 0, "dismissal reconnects the keyboard owner");
+    flush();
+    owner.dispose();
+  }
+  const early = field(true);
+  early._menu.state = "closed";
+  early.onFocus();
+  early.toggleContextMenu();
+  early._menu.hide();
+  assert.equal(
+    early.sinkFocusCalls,
+    1,
+    "dismissal before60ms restores the sink immediately",
+  );
+  flush();
+  assert.equal(early.focusBlurInProgress, false);
+  assert.equal(Field._globallyFocusedMathfield, early);
+  early.dispose();
+  const readonly = field(true);
+  readonly.options.readOnly = true;
+  assert.equal(readonly.readOnly, true);
+  readonly._menu.state = "closed";
+  readonly.toggleContextMenu();
+  readonly._menu.hide();
+  assert.equal(
+    readonly.sinkFocusCalls,
+    1,
+    "readonly selection/copy retains keyboard focus",
+  );
+  flush();
+  readonly.dispose();
+  const old = field();
+  old.onFocus();
+  const otherMenu = field(true);
+  scrim.state = "open";
+  flush();
+  assert.equal(
+    old.sinkFocusCalls,
+    0,
+    "another editor's menu blocks stale sink focus without changing logical owner",
+  );
+  assert.equal(old.focusBlurInProgress, false);
+  scrim.state = "closed";
+  otherMenu._menu.state = "closed";
+  otherMenu.toggleContextMenu();
+  otherMenu._menu.hide();
+  assert.equal(
+    Field._globallyFocusedMathfield,
+    otherMenu,
+    "first use claims ownership from an earlier live editor",
+  );
+  flush();
+  old.dispose();
+  otherMenu.dispose();
+  const stale = field();
+  stale.onFocus();
+  const nextOwner = field();
+  Field._globallyFocusedMathfield = nextOwner;
+  flush();
+  assert.equal(
+    stale.sinkFocusCalls,
+    0,
+    "stale timer cannot steal a newer editor's focus",
+  );
+  assert.equal(stale.focusBlurInProgress, false);
+  stale.dispose();
+  nextOwner.dispose();
+  const returning = field();
+  returning.onFocus();
+  returning.model.value = "x^2+1";
+  const newOwner = field();
+  newOwner.onFocus();
+  flush();
+  assert.equal(
+    returning.blurred,
+    true,
+    "lost pending owner completes its deferred blur",
+  );
+  assert.equal(returning.sinkFocusCalls, 0);
+  assert.equal(Field._globallyFocusedMathfield, newOwner);
+  assert.deepEqual(
+    returning.dispatched,
+    ["change", "blur", "focusout"],
+    "deferred blur preserves normal change and focus events",
+  );
+  assert.equal(returning.disconnections, 1);
+  returning.onFocus();
+  flush();
+  assert.equal(
+    Field._globallyFocusedMathfield,
+    returning,
+    "returning field can reclaim focus after a rapid transfer",
+  );
+  assert.equal(returning.sinkFocusCalls, 1);
+  assert.equal(returning.blurred, false);
+  assert.equal(newOwner.blurred, true);
+  returning.dispose();
+  newOwner.dispose();
+  for (const teardown of [true, false]) {
+    const owner = field(true);
+    owner._menu.state = "closed";
+    owner.onFocus();
+    owner.toggleContextMenu();
+    if (teardown) owner.dispose();
+    else {
+      Object.defineProperty(owner, "disabled", { value: true });
+      owner._menu.hide();
+    }
+    assert.equal(
+      owner.sinkFocusCalls,
+      0,
+      "disabled or disposing menu owners cannot reclaim the sink",
+    );
+    flush();
+    if (!teardown) owner.dispose();
+  }
   for (const duringFocus of [true, false]) {
     const original = field(true);
     const originalMenu = original._menu;

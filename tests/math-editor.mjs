@@ -231,8 +231,10 @@ for (const bundle of ["mathlive.mjs", "mathlive.js"]) {
     model: { position: 0 },
     element: {
       querySelector: () => target,
-      focus: () => focusCalls++,
     },
+    keyboardDelegate: { focus: () => focusCalls++ },
+    onFocus() {},
+    connectToVirtualKeyboard() {},
     menu: {
       visible: true,
       state: "closed",
@@ -241,12 +243,16 @@ for (const bundle of ["mathlive.mjs", "mathlive.js"]) {
   };
   const toggleMenu = new Function(
     "getElementInfo",
+    "isValidMathfield",
     `return ({${menuMethod}}).toggleContextMenu`,
-  )((field, offset) => {
-    assert.equal(field, context);
-    assert.equal(offset, 0);
-    return { bounds: { right: 30, bottom: 290 } };
-  });
+  )(
+    (field, offset) => {
+      assert.equal(field, context);
+      assert.equal(offset, 0);
+      return { bounds: { right: 30, bottom: 290 } };
+    },
+    () => true,
+  );
   assert.equal(toggleMenu.call(context), true);
   assert.equal(focusCalls, 0, bundle + " opens without delayed field focus");
   assert.equal(options.target, target);
