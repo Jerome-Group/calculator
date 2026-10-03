@@ -452,7 +452,10 @@
       "id": "assets",
       "argv": ["pnpm", "test:assets"],
       "prerequisites": ["pnpm", "productionBuild"],
-      "reads": ["repo source/fixtures/locked dependencies"],
+      "reads": [
+        "repo source/fixtures/locked dependencies",
+        "built coverage local href targets and offline manifest"
+      ],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -8095,7 +8098,8 @@
       "sync.volatile-leave-guard",
       "editor.external-menu",
       "keyboard-toolbar-fit",
-      "editor.compact-arguments"
+      "editor.compact-arguments",
+      "help-licences"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -14037,7 +14041,7 @@
       },
       "kind": "button",
       "label": "Expression menu",
-      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "verification": "Record editor.external-menu at 320px and 390px before and after field focus: hidden vendor menu-toggle, external button at least 44px in both dimensions with a successful hit test, below and outside every expression-box frame, and one activation opens the vendor menu; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
         "pnpm --silent verify show control.161 --json",
@@ -14122,6 +14126,74 @@
       },
       "evidence": [
         "genuine route outcome",
+        "revision + source + build fingerprints"
+      ]
+    },
+    {
+      "path": "/coverage.html",
+      "file": "public/coverage.html",
+      "id": "route.coverage",
+      "verification": "Open Help and coverage, follow the coverage page and activate Dependency licences; help-licences requires the actual bundled licence document",
+      "run": [
+        "pnpm --silent verify run --suite assets --json",
+        "pnpm --silent verify show route.coverage --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "production build",
+        "actual browser automation",
+        "current revision and source/build fingerprints"
+      ],
+      "reads": [
+        "built coverage page, local link target and offline manifest",
+        "actual licence route response"
+      ],
+      "writes": ["external evidence directory"],
+      "network": "local production origin; no external calculation API",
+      "risk": "read-only public coverage/licence documents",
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "help-licences ordered activation and actual readable licence content",
+        "revision + source + build fingerprints"
+      ]
+    },
+    {
+      "path": "/licenses.txt",
+      "file": "public/licenses.txt",
+      "id": "route.licences",
+      "verification": "Follow Dependency licences from the coverage page and observe readable bundled dependency notices, not a missing route",
+      "run": [
+        "pnpm --silent verify run --suite assets --json",
+        "pnpm --silent verify show route.licences --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "production build",
+        "actual browser automation",
+        "current revision and source/build fingerprints"
+      ],
+      "reads": [
+        "built coverage page, local link target and offline manifest",
+        "actual licence route response"
+      ],
+      "writes": ["external evidence directory"],
+      "network": "local production origin; no external calculation API",
+      "risk": "read-only public coverage/licence documents",
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "help-licences ordered activation and actual readable licence content",
         "revision + source + build fingerprints"
       ]
     }
@@ -14334,26 +14406,35 @@
         "ordered UI steps",
         "independent assertions",
         "semantic DOM/screenshot artifacts",
+        "editor.external-menu: actual field/button rectangles, enclosing Math composer border/shadow and vendor-toggle computed styles, hit-test and one-activation observations at 320px/390px before/after field focus",
         "revision + dirty source + built asset fingerprints"
       ]
     },
     {
       "id": "feature.navigation",
-      "source": ["components/calculator/TaskBrowser.tsx"],
+      "source": [
+        "components/calculator/TaskBrowser.tsx",
+        "public/coverage.html",
+        "public/licenses.txt"
+      ],
       "browserScenarioIds": [
         "help-reference",
+        "help-licences",
         "explore-empty",
         "explore-search",
         "finder-empty"
       ],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "run": [
+        "pnpm --silent verify run --suite assets --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
         "current revision and dirty fingerprint",
         "browser automation capability"
       ],
-      "risk": "reads catalogue",
+      "risk": "reads catalogue, coverage and bundled dependency licences",
       "statusPolicy": "Missing/blocked/failed interaction remains non-pass; catalogue/math execution cannot substitute",
       "reads": [
         "rendered semantic DOM",

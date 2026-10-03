@@ -1,11 +1,12 @@
-.math-editor math-field::part(menu-toggle) {
-  display: none;
-}
-
 .math-editor-field {
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--card);
+}
+
+.math-editor-field:focus-within {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 10%, transparent);
 }
 
 .math-entry-tools {

@@ -957,7 +957,9 @@ export default function Calculator() {
                 </button>
               </div>
             )}
-            <section className="composer">
+            <section
+              className={`composer${mode === "math" ? " composer--math" : ""}`}
+            >
               <div className="composer-top">
                 <div className="segmented">
                   {["math", "text", "latex"].map((s) => (

@@ -4,6 +4,47 @@ import { createRequire } from "node:module";
 import ts from "typescript";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { checkExternalMenuGeometry } from "./verification/editor-geometry.mjs";
+
+const phoneMenuGeometry = {
+  context: "composer",
+  field: { bottom: 333 },
+  menu: { top: 341, left: 29, right: 159, width: 130, height: 44 },
+  internalMenu: { display: "none", width: 0, height: 0 },
+  composer: { borderWidth: 0, boxShadow: "none" },
+  hitTarget: true,
+  viewport: { width: 390 },
+};
+assert.deepEqual(checkExternalMenuGeometry(phoneMenuGeometry), []);
+for (const missing of [
+  { composer: undefined },
+  { context: undefined },
+  { field: { bottom: NaN } },
+])
+  assert.deepEqual(
+    checkExternalMenuGeometry({ ...phoneMenuGeometry, ...missing }),
+    ["Expression menu geometry observation is incomplete"],
+  );
+for (const [property, value, message] of [
+  [
+    "composer",
+    { borderWidth: 1, boxShadow: "none" },
+    "Expression-box framing still encloses the menu action bar",
+  ],
+  [
+    "internalMenu",
+    { display: "flex", width: 24, height: 24 },
+    "The internal expression menu toggle is still visible",
+  ],
+  ["hitTarget", false, "Another element intercepts the expression menu target"],
+])
+  assert(
+    checkExternalMenuGeometry({
+      ...phoneMenuGeometry,
+      [property]: value,
+    }).includes(message),
+    "Browser geometry detector must reject " + message,
+  );
 
 const require = createRequire(import.meta.url);
 const loaderChecks = spawnSync(
