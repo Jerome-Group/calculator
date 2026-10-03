@@ -871,7 +871,10 @@ const media = {
   },
 };
 globalThis.matchMedia = (query) => {
-  assert.equal(query, "(max-width: 480px)");
+  assert.equal(
+    query,
+    "(max-width: 480px), (max-height: 500px) and (pointer: coarse)",
+  );
   return media;
 };
 globalThis.MathfieldElement = { computeEngine: null };
@@ -1117,6 +1120,29 @@ try {
     desktop,
     "Resize restores same adapted desktop tree",
   );
+  // MatchMedia supplies the real layout/capability decision; no touch API guesses.
+  for (const context of [
+    { width: 844, height: 390, coarse: true, flat: true },
+    { width: 844, height: 390, coarse: false, flat: false },
+    { width: 844, height: 844, coarse: true, flat: false },
+    { width: 480, height: 844, coarse: false, flat: true },
+    { width: 481, height: 844, coarse: true, flat: false },
+  ]) {
+    media.matches = context.flat;
+    for (const listener of mediaListeners) listener();
+    assert.equal(
+      mf.menuItems.some((item) => "submenu" in item),
+      !context.flat,
+      JSON.stringify(context),
+    );
+    assert.equal(
+      leaves(mf.menuItems).length,
+      115,
+      "Responsive transitions preserve every action",
+    );
+  }
+  media.matches = false;
+  for (const listener of mediaListeners) listener();
   const restored = mf.menuItems;
   cleanupPhone();
   assert.equal(mediaListeners.size, 0, "Media listener disposed");

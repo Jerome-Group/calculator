@@ -88,6 +88,7 @@ export default forwardRef<
     el.executeCommand(selector);
   };
   const showExpressionMenu = (event: MouseEvent<HTMLButtonElement>) => {
+    if (window.mathVirtualKeyboard?.visible) window.mathVirtualKeyboard.hide();
     // Menu dismissal must return focus to the field, including its first use.
     const el = focusSelection();
     if (!el) return;
@@ -342,7 +343,14 @@ export default forwardRef<
           <button
             type="button"
             aria-expanded={showTools}
-            onClick={() => setShowTools((shown) => !shown)}
+            onClick={() => {
+              if (!showTools) {
+                if (window.mathVirtualKeyboard?.visible)
+                  window.mathVirtualKeyboard.hide();
+                focusSelection();
+              }
+              setShowTools((shown) => !shown);
+            }}
           >
             Structures & editing
           </button>

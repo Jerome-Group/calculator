@@ -409,6 +409,14 @@ try {
   );
   const focusCalls = field.focusCalls;
   const priorValue = field.value;
+  globalThis.window.mathVirtualKeyboard = {
+    visible: true,
+    hide() {
+      field.events.push("hideKeyboard");
+      this.visible = false;
+      field.selection = { ranges: [[0, 0]] };
+    },
+  };
   field.selection = { ranges: [[0, 0]] };
   field.events.length = 0;
   menuButton.props.onClick({
@@ -430,8 +438,8 @@ try {
   );
   assert.deepEqual(
     field.events,
-    ["focus", "bounds", "menuItems", "showMenu"],
-    "focus precedes geometry, lazy menu initialization and vendor focus capture",
+    ["hideKeyboard", "focus", "bounds", "menuItems", "showMenu"],
+    "hide keyboard before restoring selection, geometry and menu focus capture",
   );
   assert.equal(field.value, priorValue, "menu opening preserves expression");
   assert.deepEqual(field.menu, {
@@ -441,6 +449,40 @@ try {
     },
     selection: { ranges: [[1, 3]], direction: "backward" },
   });
+  const toolsButton = nodes(
+    loadedTree,
+    (node) =>
+      node.type === "button" && node.props.children === "Structures & editing",
+  )[0];
+  globalThis.window.mathVirtualKeyboard.visible = true;
+  field.events.length = 0;
+  toolsButton.props.onClick();
+  assert.deepEqual(
+    field.events,
+    ["hideKeyboard", "focus"],
+    "opening structures hides keyboard before focus",
+  );
+  assert.deepEqual(
+    field.selection,
+    { ranges: [[1, 3]], direction: "backward" },
+    "opening structures retains selected expression",
+  );
+  assert.equal(field.value, priorValue);
+  const expandedTree = editor.render({ value: "new", onChange() {} });
+  const closeTools = nodes(
+    expandedTree,
+    (node) =>
+      node.type === "button" && node.props.children === "Structures & editing",
+  )[0];
+  assert.equal(closeTools.props["aria-expanded"], true);
+  field.events.length = 0;
+  closeTools.props.onClick();
+  assert.deepEqual(
+    field.events,
+    [],
+    "closing structures does not refocus or toggle keyboard",
+  );
+  delete globalThis.window.mathVirtualKeyboard;
   const enter = new Event("keydown", { cancelable: true });
   Object.defineProperty(enter, "key", { value: "Enter" });
   field.dispatchEvent(enter);

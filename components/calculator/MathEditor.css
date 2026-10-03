@@ -63,7 +63,16 @@
   font-size: 14px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 700px), (max-height: 500px) and (pointer: coarse) {
+  .math-entry-tools {
+    position: sticky;
+    bottom: calc(var(--math-keyboard-height, 0px) + 64px);
+    z-index: 6;
+    background: var(--card);
+  }
+}
+
+@media (max-width: 480px), (max-height: 500px) and (pointer: coarse) {
   body {
     --keyboard-toolbar-font-size: 14px;
   }

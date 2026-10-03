@@ -118,7 +118,9 @@ export function prepareMathLiveMenu(field: MathfieldElement) {
     });
   }
   const desktop = adapt(field.menuItems);
-  const media = globalThis.matchMedia?.("(max-width: 480px)");
+  const media = globalThis.matchMedia?.(
+    "(max-width: 480px), (max-height: 500px) and (pointer: coarse)",
+  );
   const update = () => {
     field.menuItems = media?.matches ? phoneMenu(desktop) : desktop;
   };
