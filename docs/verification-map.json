@@ -8202,7 +8202,11 @@
       "editor.integral-shortcut",
       "editor.scalar-notation-roundtrip",
       "editor.vendor-presentation",
-      "editor.vendor-touch-targets"
+      "editor.vendor-touch-targets",
+      "graph.resource-recovery",
+      "graph.fit-drawability",
+      "editor.inline-latex-commit",
+      "sync.initialization-timeout"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -11412,7 +11416,7 @@
       "id": "control.085",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 666,
+        "line": 675,
         "signature": "cb3b50e8462a9a7595c3db25eeee0c8519156cc34b49809d230b2a4bb36d55dc"
       },
       "kind": "button",
@@ -11450,7 +11454,7 @@
       "id": "control.086",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 673,
+        "line": 682,
         "signature": "60caddbb8a88c671fa6274a145def41f25456a91403e3f9f31540b4f9db0cfef"
       },
       "kind": "button",
@@ -11488,7 +11492,7 @@
       "id": "control.087",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 680,
+        "line": 689,
         "signature": "1fb19097468171a476f921a57720dd6f9e675748a470e6bf68f050a795283288"
       },
       "kind": "button",
@@ -11526,7 +11530,7 @@
       "id": "control.088",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 692,
+        "line": 701,
         "signature": "240fdd4b6455f3e445ebd02178067d819aa72c314eed3e5ff44df8d98011e975"
       },
       "kind": "button",
@@ -11564,7 +11568,7 @@
       "id": "control.089",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 699,
+        "line": 708,
         "signature": "26e9b05b985b2e79cc50d859ecd574e439f4e53139abdacd3abd7c407dbfec77"
       },
       "kind": "button",
@@ -11602,7 +11606,7 @@
       "id": "control.090",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 706,
+        "line": 715,
         "signature": "84c906ea6111186e8c988e33e45aafb5ff7e38d925ff4602a7185da5165f633e"
       },
       "kind": "button",
@@ -11640,7 +11644,7 @@
       "id": "control.091",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 709,
+        "line": 718,
         "signature": "418ded7fa61ac685e1db6b13d2599075568915a147e136affea5e7e10c10435e"
       },
       "kind": "button",
@@ -11678,7 +11682,7 @@
       "id": "control.092",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 719,
+        "line": 728,
         "signature": "c7f42460eed081ba1a995238c67d465276a1a6fc949b0cd55cd7eb3aabdd81b4"
       },
       "kind": "canvas",
@@ -11716,7 +11720,7 @@
       "id": "control.093",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 736,
+        "line": 745,
         "signature": "ed73e949eea7a564ab24d406a454102fcb7a3314c7c4a0d88112f4060f957462"
       },
       "kind": "button",
@@ -11754,7 +11758,7 @@
       "id": "control.094",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 754,
+        "line": 763,
         "signature": "1c02fde1625b02cd2e76c8257b813e45886123cd86bd0cd1d4da678840b054ce"
       },
       "kind": "button",
@@ -11792,7 +11796,7 @@
       "id": "control.095",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 761,
+        "line": 770,
         "signature": "bd5f4c94379277f8416009d4430ca2213f64aa6cf22629a0f7934efaa8ce7673"
       },
       "kind": "Slider",
@@ -11830,7 +11834,7 @@
       "id": "control.096",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 769,
+        "line": 778,
         "signature": "0eff355260d1eaad7fa32aac367ef973976cb515773c140c0543fcec6be11bfa"
       },
       "kind": "input",
@@ -11868,7 +11872,7 @@
       "id": "control.097",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 784,
+        "line": 793,
         "signature": "15821a2d83fa65e4a5ff5a3891bca004db7333398be107cc45705a9fe673dec3"
       },
       "kind": "div",
@@ -11906,7 +11910,7 @@
       "id": "control.098",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 792,
+        "line": 801,
         "signature": "be9192860eda2be077844da7b8f955c38f49aed77248c310e965fe80d7c06532"
       },
       "kind": "button",
@@ -11944,7 +11948,7 @@
       "id": "control.099",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 801,
+        "line": 810,
         "signature": "ccde511792ebb1fd8f8e2b64ac8f46027ec6d61a80402bd875ce10ea1297579f"
       },
       "kind": "Choice",
@@ -11982,7 +11986,7 @@
       "id": "control.100",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 825,
+        "line": 834,
         "signature": "ffa776c5a276df728319e52975554bd8f3e5a9af5a189bb62e6fbbc27cd785a2"
       },
       "kind": "input",
@@ -12020,7 +12024,7 @@
       "id": "control.101",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 832,
+        "line": 841,
         "signature": "b806560cf3b20d81a9ff0f35df2cfbe447b5e573cb095c17107153fb233c93e9"
       },
       "kind": "button",
@@ -12058,7 +12062,7 @@
       "id": "control.102",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 843,
+        "line": 852,
         "signature": "f48c8d0eb91c2a579aa63da2a476f2ddf97d394e26821ff7f95afd63c6473abe"
       },
       "kind": "input",
@@ -12096,7 +12100,7 @@
       "id": "control.103",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 848,
+        "line": 857,
         "signature": "beb6b06f8d1ccfb95ae7d0d0d81b2858c14caa7a55f26448ae8bf9ff3795597c"
       },
       "kind": "button",
@@ -12134,7 +12138,7 @@
       "id": "control.104",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 858,
+        "line": 867,
         "signature": "dd408096196ad36298827c63606bc31cb553e4dbd08a0797bc76e310cbf8ce72"
       },
       "kind": "input",
@@ -12172,7 +12176,7 @@
       "id": "control.105",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 864,
+        "line": 873,
         "signature": "dc495b482834212563ef41be5ab464326fecb82bc0eb7c6401daeed6be55f3ca"
       },
       "kind": "input",
@@ -12210,7 +12214,7 @@
       "id": "control.106",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 877,
+        "line": 886,
         "signature": "a49f6546663dd193718c9ea9ba3b869a5575af5389adb834480ace0913b04e75"
       },
       "kind": "button",
@@ -12248,7 +12252,7 @@
       "id": "control.107",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 902,
+        "line": 911,
         "signature": "36bc7cf0cee742dab032fb8af1c81fc84cdb0dc2536436737d92d8318ee0ccf6"
       },
       "kind": "button",
@@ -12286,7 +12290,7 @@
       "id": "control.108",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 907,
+        "line": 916,
         "signature": "cdf1a4d3b97c8f860356be8ac47245a76bb8e758b5024022a1cc452b4c79a858"
       },
       "kind": "button",
@@ -12324,7 +12328,7 @@
       "id": "control.109",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 918,
+        "line": 927,
         "signature": "16b44d9d277498e1fbf475b31323ab0fe271cd36f2218d182b281af6ad4a9267"
       },
       "kind": "button",
@@ -12362,7 +12366,7 @@
       "id": "control.110",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 933,
+        "line": 942,
         "signature": "59a20d26221407542c49a2dcfe5fe3a9726c37ad143d75de2db7b68f73668300"
       },
       "kind": "Choice",
@@ -12400,7 +12404,7 @@
       "id": "control.111",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 952,
+        "line": 961,
         "signature": "bd64f7159f56c2bc29e97e507136d51e1a766467f1934837639c9552c97c1cd9"
       },
       "kind": "input",
@@ -12438,7 +12442,7 @@
       "id": "control.112",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 960,
+        "line": 969,
         "signature": "edab9773bb979012fcdb4fc1f6d2ace267637bcc8ab672f934bf050a9f7249c9"
       },
       "kind": "input",
@@ -12476,7 +12480,7 @@
       "id": "control.113",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 964,
+        "line": 973,
         "signature": "21425269c0387a47686090c89511083dcd8a9ee76e8fa0653b3ab3f5fe71754b"
       },
       "kind": "input",
@@ -12514,7 +12518,7 @@
       "id": "control.114",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 970,
+        "line": 979,
         "signature": "d08354b0bba0212a2da83fbf4ef4075c800341221bf1cd2c7f42c92765d118bb"
       },
       "kind": "Choice",
@@ -12552,7 +12556,7 @@
       "id": "control.115",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 987,
+        "line": 996,
         "signature": "32a5ba8a14ae88ef5f2204a6caf1b2a29d355eb7dacafb08db7c906faf089f88"
       },
       "kind": "Checkbox",
@@ -12590,7 +12594,7 @@
       "id": "control.116",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 993,
+        "line": 1002,
         "signature": "cec9e8e4c786a935562792fede8623dd15abe34b3af78c04cd39ceb6cb7b3d3b"
       },
       "kind": "button",
@@ -12628,7 +12632,7 @@
       "id": "control.117",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1031,
+        "line": 1040,
         "signature": "e12776a15010c7264e0ae1a3579c4341369f6feafa5dc3853d08bc7bcf5aef1f"
       },
       "kind": "button",
@@ -12666,7 +12670,7 @@
       "id": "control.118",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1073,
+        "line": 1082,
         "signature": "34805ce268e632a44c26245ad43293a1250ee69f67ff6c732e8fd26d5c949e11"
       },
       "kind": "MathEditor",
@@ -12704,7 +12708,7 @@
       "id": "control.119",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1079,
+        "line": 1088,
         "signature": "8b0fd7e63069dd523096355dad2c8f26e5725d5214cd7828fef9715641ef3964"
       },
       "kind": "button",
@@ -12742,7 +12746,7 @@
       "id": "control.120",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1085,
+        "line": 1094,
         "signature": "875e65024101d4d487dc351c4f3753850e23574d3f9d8ae3f7a575e443a4939a"
       },
       "kind": "button",
@@ -12780,7 +12784,7 @@
       "id": "control.121",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 312,
+        "line": 319,
         "signature": "c3567a336c8370a31889f7b4bd73e419c78da75ab77e70bf4906a5dfbbfb6e2a"
       },
       "kind": "button",
@@ -12818,7 +12822,7 @@
       "id": "control.122",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 333,
+        "line": 340,
         "signature": "b6a02e5763e84e153ee4d681a997caeb337e3992a51840a63b4e839921b37dd3"
       },
       "kind": "button",
@@ -12856,7 +12860,7 @@
       "id": "control.123",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 348,
+        "line": 355,
         "signature": "72296f0af9931b794392e69955b610b45848d720077d52b2ad48addcbbb9dc1a"
       },
       "kind": "button",
@@ -12894,7 +12898,7 @@
       "id": "control.124",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 364,
+        "line": 371,
         "signature": "ee94840c391383d973b57dd5c90f60afd6cdf640644851a24be2c6366f0c5b22"
       },
       "kind": "button",
@@ -14300,7 +14304,7 @@
       "id": "control.161",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 325,
+        "line": 332,
         "signature": "ea30bf3086fa5b1a65d4870f5b3a3c4b137d26a62c4399ba40daa9d973008f48"
       },
       "kind": "button",
@@ -14498,7 +14502,9 @@
         "graph.analysis.area",
         "graph.analysis.domain",
         "graph.analysis.singularities",
-        "graph-table.invalid-bounds"
+        "graph-table.invalid-bounds",
+        "graph.resource-recovery",
+        "graph.fit-drawability"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14528,7 +14534,9 @@
         "independent assertions",
         "semantic DOM/screenshot artifacts",
         "revision + dirty source + built asset fingerprints",
-        "graph-table.invalid-bounds: actual open Table shared lower/upper blank, pi and Infinity show accessible finite-number warning; restore numeric/scientific/negative bounds and independently check all 11 sin/curve samples; parametric/polar/data graphs exempt from shared interval warnings; symbolic Analysis bounds remain supported"
+        "graph-table.invalid-bounds: actual open Table shared lower/upper blank, pi and Infinity show accessible finite-number warning; restore numeric/scientific/negative bounds and independently check all 11 sin/curve samples; parametric/polar/data graphs exempt from shared interval warnings; symbolic Analysis bounds remain supported",
+        "graph.resource-recovery: Actual Graphs entry rejects oversized kron, offset diag, resizing subset, concat/broadcast and nonfinite primality before allocation/hang; restore small corresponding expressions and verify visible samples and usable controls. Never execute the hanging baseline in the browser.",
+        "graph.fit-drawability: Extreme Cartesian Fit preserves the preceding finite viewport and shows a readable range diagnostic; finite endpoints with overflowing span also reject; ordinary Fit, zoom and pan recover with positive finite spans."
       ]
     },
     {
@@ -14631,7 +14639,9 @@
         "tests/mathlive-lifecycle.mjs",
         "components/calculator/MathEditor.css",
         "components/calculator/MathView.tsx",
-        "tests/notation.mjs"
+        "tests/notation.mjs",
+        "lib/calculator/mathlive-menu.ts",
+        "tests/mathlive-menu.mjs"
       ],
       "browserScenarioIds": [
         "math-fractions-entry",
@@ -14667,7 +14677,8 @@
         "editor.integral-shortcut",
         "editor.scalar-notation-roundtrip",
         "editor.vendor-presentation",
-        "editor.vendor-touch-targets"
+        "editor.vendor-touch-targets",
+        "editor.inline-latex-commit"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14703,11 +14714,12 @@
         "structured.logic-mode-preservation: notation-previews regression; actual logical relationship operands a,b, calculate Equivalent(a,b), Edit problem then Advanced proposition retains complete Equivalent(a,b); edit And(a,b,c) and keep all operands as raw input; switching back to supported two-argument relation retains a,b",
         "structured.points-grid: notation-previews regression; actual Exact polynomial interpolation Points [(0,1),(1,2),(2,5)], resize rows 3 to 4 to 3 and columns 2 to 3 to 2, edit a cell then restore; captured point input retains tuple rows and calculation independently equals x^2+1; single-column/mixed rows and matrix list shapes checked separately by rendering regression",
         "editor.repeated-transition: actual focused nested editor Use expression/Close/Escape transitions, including immediate closure after focus; alternate Text/Math and open Graph expression editor; one activation opens external Expression menu, keyboard remains usable and edited x^2+1 derivative independently equals 2*x; no disposed-model or disconnected-popover console errors",
-        "editor.vendor-insertions: actual vendor template activation, completed operands, exact serialized LaTeX and semantic rendered outcomes independently matched; static TSX controls do not enumerate or certify vendor menu controls; at 320px/390px, first insertion from an unfocused empty field restores field focus and selected-placeholder typing; repeated insertion after clearing remains usable; real pointer presses on leaves overlapping the mathfield select exactly once without field pointer capture; ordinary caret pointer selection still works; independently match degree-mode calculus and saved-function fixtures, and bound-point positive/nonzero assumption rejection with a valid positive-assumption control",
+        "editor.vendor-insertions: actual vendor template activation, completed operands, exact serialized LaTeX and semantic rendered outcomes independently matched; static TSX controls do not enumerate or certify vendor menu controls; at 320px/390px, first insertion from an unfocused empty field restores field focus and selected-placeholder typing; repeated insertion after clearing remains usable; real pointer presses on leaves overlapping the mathfield select exactly once without field pointer capture; ordinary caret pointer selection still works; independently match degree-mode calculus and saved-function fixtures, and bound-point positive/nonzero assumption rejection with a valid positive-assumption control; typing a Greek command into an integral variable and Return commits temporary LaTeX mode without submitting an incomplete calculation; subsequent math-mode Enter submits the completed source",
         "editor.integral-shortcut: completed root integral 3 to 4 of 1 transferred into existing integrand/variable/bounds fields with one integral in preview, independently calculated result 1, generic manual integration semantics retained",
         "editor.scalar-notation-roundtrip: generic scalar inputs hide internal latex marker while preserving encoded source through edits and clear/retype; actual Math editor and reopened problem retain notation and mathematical meaning; at 320px/390px, encoded scalar fields show a visible LaTeX hint associated through aria-describedby, retained after clearing/retyping, while ordinary text fields have no notation hint",
-        "editor.vendor-presentation: actual vendor foreground red, background blue, boxed, bbox red and dashed border activation; capture exact serialized LaTeX, visible input colour/background/enclosure and semantic DOM/screenshots, then independently match each calculated result 4; broader vendor style variants remain unverified until explicitly inventoried and observed; actual Calculation card bbox previews render readable mathematical bodies inside the retained red-solid/black-dashed enclosures without visible padding/border metadata; copy retains exact original LaTeX annotation and saved serialization",
-        "editor.vendor-touch-targets: at 320px/390px, actual root and submenu interactive item bounds at least 44px by 44px, including colour swatches and matrix grid; keyboard-visible menu bounds fit the keyboard-free viewport, top-layer submenus remain visible, real pointer activation changes source/style, and scrolling reveals/reaches remaining items with working focus/dismissal recovery; AX click alone cannot establish pointer activation"
+        "editor.vendor-presentation: actual vendor foreground red, background blue, boxed, bbox red and dashed border activation; capture exact serialized LaTeX, visible input colour/background/enclosure and semantic DOM/screenshots, then independently match each calculated result 4; broader vendor style variants remain unverified until explicitly inventoried and observed; actual Calculation card bbox previews render readable mathematical bodies inside the retained red-solid/black-dashed enclosures without visible padding/border metadata; copy retains exact original LaTeX annotation and saved serialization; Decoration has distinct accessible names Boxed expression, Red solid border and Black dashed border; visible font/accent preview choices have descriptive accessible names without changing their previews or commands",
+        "editor.vendor-touch-targets: at 320px/390px, actual root and submenu interactive item bounds at least 44px by 44px, including colour swatches and matrix grid; keyboard-visible menu bounds fit the keyboard-free viewport, top-layer submenus remain visible, real pointer activation changes source/style, and scrolling reveals/reaches remaining items with working focus/dismissal recovery; AX click alone cannot establish pointer activation; matrix cells have accessible row-by-column size names, and actual 2x2 insertion selects the first placeholder: type1, Tab2, Tab3, Tab4 without replacing the matrix or leaving the editor, then independently check retained matrix entries",
+        "editor.inline-latex-commit: Actual integral differential placeholder enters LaTeX command theta; Return commits to math mode without a calculation or stale-input error; the next math Enter creates exactly one result1. Menu-consumed Enter also must not submit."
       ],
       "fixtures": [
         "editor.menu.abs",
@@ -14840,7 +14852,8 @@
       ],
       "browserScenarioIds": [
         "sync.concurrent-recovery",
-        "sync.volatile-leave-guard"
+        "sync.volatile-leave-guard",
+        "sync.initialization-timeout"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14869,7 +14882,8 @@
         "ordered UI steps",
         "independent assertions",
         "semantic DOM/screenshot artifacts",
-        "revision + dirty source + built asset fingerprints"
+        "revision + dirty source + built asset fingerprints",
+        "sync.initialization-timeout: Private proxy holds GET or its body past the real 15-second deadline. Cached verified identity recovers local work; uncached/unknown identity stays recoverably blocked; no late owner/data may overwrite or trigger writes. Retry after restoration succeeds."
       ]
     },
     {

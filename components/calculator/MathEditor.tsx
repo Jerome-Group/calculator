@@ -17,6 +17,7 @@ import type {
 } from "mathlive";
 import "./MathEditor.css";
 import { loadMathLive } from "../../lib/calculator/mathlive-loader";
+import { prepareMathLiveMenu } from "../../lib/calculator/mathlive-menu";
 const structureTemplates = {
   Fraction: "\\frac{#@}{#?}",
   Power: "#@^{#?}",
@@ -159,12 +160,18 @@ export default forwardRef<
           callbacks.current.onChange(el.value),
         );
         el.addEventListener("keydown", (e: KeyboardEvent) => {
-          if (e.key === "Enter" && callbacks.current.onSubmit) {
+          if (
+            e.key === "Enter" &&
+            !e.defaultPrevented &&
+            el.mode !== "latex" &&
+            callbacks.current.onSubmit
+          ) {
             e.preventDefault();
             callbacks.current.onSubmit?.();
           }
         });
         host.current.replaceChildren(el);
+        prepareMathLiveMenu(el);
         mf.current = el;
         const k = window.mathVirtualKeyboard;
         if (k) {

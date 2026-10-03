@@ -84,7 +84,7 @@ async function tab(name, values, server, rewriteStorageWarnings = false) {
     localStorage: storage(values),
     sessionStorage: storage(new Map()),
     fetch: async (_url, options) => {
-      if (!options?.method && server.get) return await server.get();
+      if (!options?.method && server.get) return await server.get(options);
       if (!options?.method)
         return Response.json(
           server.status === 200
@@ -1282,6 +1282,176 @@ await check(
       a.sync.sessionWorkspace().notebooks[0].name,
       "Only local copy",
     );
+  },
+);
+await check(
+  "held initialization GET aborts and opens only the cached owner",
+  async () => {
+    const values = new Map([
+      ["calculator.signed-in-account", JSON.stringify({ id: "a", name: "a" })],
+      [
+        "calculator.workspace.v1:a",
+        JSON.stringify(initial("Offline original")),
+      ],
+    ]);
+    const cloud = server(),
+      timers = new Map();
+    cloud.clock = {
+      setTimeout(fn, ms) {
+        timers.set(fn, ms);
+        return fn;
+      },
+      clearTimeout(fn) {
+        timers.delete(fn);
+      },
+    };
+    let signal;
+    cloud.get = (options) => {
+      signal = options.signal;
+      return new Promise(() => {});
+    };
+    const a = await tab("held-get", values, cloud);
+    const initializing = a.sync.initializeAccount();
+    await flush();
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(timers.size, 1);
+    assert.equal([...timers.values()][0], 15000);
+    [...timers.keys()][0]();
+    assert.equal((await initializing).id, "a");
+    assert.equal(signal.aborted, true);
+    assert.equal(timers.size, 0);
+    assert.equal(
+      a.sync.sessionWorkspace().notebooks[0].name,
+      "Offline original",
+    );
+    assert.equal(
+      cloud.calls.length,
+      0,
+      "Opening a cached workspace wrote cloud data",
+    );
+  },
+);
+await check(
+  "held GET cannot create an unknown offline identity or act on late data",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      timers = new Map();
+    cloud.clock = {
+      setTimeout(fn) {
+        timers.set(fn, true);
+        return fn;
+      },
+      clearTimeout(fn) {
+        timers.delete(fn);
+      },
+    };
+    let release;
+    cloud.get = () =>
+      new Promise((resolve) => {
+        release = resolve;
+      });
+    const a = await tab("unknown-held-get", values, cloud);
+    const initializing = a.sync.initializeAccount();
+    const outcome = initializing.then(
+      (value) => ({ value }),
+      (error) => ({ error }),
+    );
+    await flush();
+    [...timers.keys()][0]();
+    assert.match((await outcome).error.message, /timed out/);
+    release(
+      Response.json({
+        user: { id: "b", name: "b" },
+        state: initial("Private B"),
+        revision: 1,
+      }),
+    );
+    await flush();
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(a.sync.sessionWorkspace(), null);
+    assert.equal(values.size, 0);
+    assert.equal(cloud.calls.length, 0);
+  },
+);
+await check(
+  "initialization body deadline preserves authentication and stale-owner checks",
+  async () => {
+    for (const status of [200, 401, 503]) {
+      const values = new Map([
+        [
+          "calculator.signed-in-account",
+          JSON.stringify({ id: "a", name: "a" }),
+        ],
+        ["calculator.workspace.v1:a", JSON.stringify(initial("Private A"))],
+      ]);
+      const cloud = server(),
+        timers = new Map();
+      cloud.clock = {
+        setTimeout(fn) {
+          timers.set(fn, true);
+          return fn;
+        },
+        clearTimeout(fn) {
+          timers.delete(fn);
+        },
+      };
+      let signal;
+      cloud.get = async (options) => {
+        signal = options.signal;
+        return {
+          status,
+          ok: status === 200,
+          json: () => new Promise(() => {}),
+        };
+      };
+      const a = await tab("held-body", values, cloud);
+      const initializing = a.sync.initializeAccount();
+      // Attach before the immediate 401 rejection to avoid an unhandled promise.
+      const outcome = initializing.then(
+        (value) => ({ value }),
+        (error) => ({ error }),
+      );
+      await flush();
+      if (status !== 401) [...timers.keys()][0]();
+      const result = await outcome;
+      if (status === 200) assert.equal(result.value.id, "a");
+      else assert(result.error);
+      if (status === 401) {
+        assert.equal(a.sync.currentAccount(), "");
+        assert.equal(a.sync.sessionWorkspace(), null);
+        assert.equal(values.has("calculator.signed-in-account"), false);
+      } else assert(signal.aborted);
+      assert.equal(timers.size, 0);
+      assert.equal(cloud.calls.length, 0);
+    }
+    const values = new Map([
+      ["calculator.signed-in-account", JSON.stringify({ id: "a", name: "a" })],
+    ]);
+    const cloud = server(),
+      timers = new Map();
+    cloud.clock = {
+      setTimeout(fn) {
+        timers.set(fn, true);
+        return fn;
+      },
+      clearTimeout(fn) {
+        timers.delete(fn);
+      },
+    };
+    cloud.get = () => new Promise(() => {});
+    const a = await tab("stale-held-get", values, cloud);
+    const initializing = a.sync.initializeAccount();
+    const outcome = initializing.then(
+      (value) => ({ value }),
+      (error) => ({ error }),
+    );
+    await flush();
+    a.sync.forgetAccount();
+    [...timers.keys()][0]();
+    assert.match((await outcome).error.message, /Account changed/);
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(a.sync.sessionWorkspace(), null);
   },
 );
 console.log(JSON.stringify(results, null, 2));

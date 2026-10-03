@@ -58,6 +58,25 @@ check("cli.show.group", () => {
   assert.equal(report.id, "core");
   assert(report.suites.includes("build"));
 });
+check("cli.show.fixture-group", () => {
+  const map = readJson(root + "docs/verification-map.json");
+  const grouped = cli(["show", "editor.menu"], 0);
+  assert.equal(grouped.id, "editor.menu");
+  assert.equal(grouped.kind, "fixture-group");
+  assert.deepEqual(
+    grouped.fixtures,
+    readFixtures(root)
+      .filter((fixture) => fixture.surfaceId === grouped.id)
+      .map((fixture) => fixture.id),
+  );
+  assert(grouped.fixtures.includes("editor.menu.integral"));
+  assert.deepEqual(grouped.featureIds, ["feature.editor"]);
+  assert.deepEqual(
+    cli(["show", "form.integrate"], 0).fixtures,
+    map.surfaces.find((surface) => surface.id === "form.integrate").fixtures,
+  );
+  assert.equal(cli(["show", "editor.menu.missing"], 2).status, "error");
+});
 check("cli.menu.fixture.discovery", () => {
   const fixture = cli(["show", "editor.menu.integral"], 0);
   assert.equal(fixture.request.input, "\\int_3^41\\,\\mathrm{dx}");

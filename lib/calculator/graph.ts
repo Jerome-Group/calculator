@@ -176,6 +176,15 @@ export function finiteSegment(a: number, m: number, b: number, span: number) {
 }
 
 export const MAX_GRAPHS = 100;
+export function drawableGraphRange(range: number[]): boolean {
+  return (
+    range.length === 4 &&
+    range.every(Number.isFinite) &&
+    [range[1] - range[0], range[3] - range[2]].every(
+      (span) => Number.isFinite(span) && span > 0,
+    )
+  );
+}
 export function graphDataRange(graphs: GraphSpec[]): number[] | null {
   let left = Infinity,
     right = -Infinity,
@@ -203,11 +212,7 @@ export function graphDataRange(graphs: GraphSpec[]): number[] | null {
     Math.max(Math.abs(bottom), Math.abs(top)) * Number.EPSILON * 8,
   );
   const range = [left - xp, right + xp, bottom - yp, top + yp];
-  if (
-    !range.every(Number.isFinite) ||
-    !Number.isFinite(right - left) ||
-    !Number.isFinite(top - bottom)
-  )
+  if (!drawableGraphRange(range))
     throw Error("Data coordinates exceed the drawable range.");
   return range;
 }

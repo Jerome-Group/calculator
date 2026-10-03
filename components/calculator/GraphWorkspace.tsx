@@ -35,6 +35,7 @@ import {
   numeric,
   finiteSegment,
   graphDataRange,
+  drawableGraphRange,
   graphTable,
   MAX_GRAPHS,
 } from "@/lib/calculator/graph";
@@ -174,14 +175,15 @@ export default function GraphWorkspace({
   }, []);
   const zoom = (f: number) =>
     setRange((r) => {
-      const x = (r[0] + r[1]) / 2,
-        y = (r[2] + r[3]) / 2;
-      return [
+      const x = r[0] + (r[1] - r[0]) / 2,
+        y = r[2] + (r[3] - r[2]) / 2;
+      const next = [
         x - ((r[1] - r[0]) * f) / 2,
         x + ((r[1] - r[0]) * f) / 2,
         y - ((r[3] - r[2]) * f) / 2,
         y + ((r[3] - r[2]) * f) / 2,
       ];
+      return drawableGraphRange(next) ? next : r;
     });
   const fit = () => {
     try {
@@ -204,7 +206,13 @@ export default function GraphWorkspace({
     const l = ys[Math.floor(ys.length * 0.05)],
       h = ys[Math.floor(ys.length * 0.95)],
       pad = Math.max(1, (h - l) * 0.15);
-    setRange([-6, 6, l - pad, h + pad]);
+    const next = [-6, 6, l - pad, h + pad];
+    if (!drawableGraphRange(next)) {
+      setError("Data coordinates exceed the drawable range.");
+      return;
+    }
+    setRange(next);
+    setError("");
   };
   useEffect(() => {
     const c = canvas.current;
@@ -520,12 +528,13 @@ export default function GraphWorkspace({
     }
     const dx = ((p.x - d.p.x) / size.w) * (d.range[1] - d.range[0]),
       dy = ((p.y - d.p.y) / size.h) * (d.range[3] - d.range[2]);
-    setRange([
+    const next = [
       d.range[0] - dx,
       d.range[1] - dx,
       d.range[2] + dy,
       d.range[3] + dy,
-    ]);
+    ];
+    if (drawableGraphRange(next)) setRange(next);
   };
   const derived = async (operation: string) => {
     if (

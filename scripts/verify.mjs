@@ -96,6 +96,24 @@ async function main() {
       ].find((row) => row.id === id) ||
       fixtures.find((row) => row.id === id) ||
       (Object.hasOwn(map.groups, id) ? { id, suites: map.groups[id] } : null);
+    if (!report) {
+      const groupedFixtures = fixtures
+        .filter((fixture) => fixture.surfaceId === id)
+        .map((fixture) => fixture.id);
+      if (groupedFixtures.length)
+        report = {
+          id,
+          kind: "fixture-group",
+          fixtures: groupedFixtures,
+          featureIds: (map.features || [])
+            .filter((feature) =>
+              feature.fixtures?.some((fixture) =>
+                groupedFixtures.includes(fixture),
+              ),
+            )
+            .map((feature) => feature.id),
+        };
+    }
     if (!report) failure(`Unknown ID ${id}`);
   } else if (command === "doctor") {
     if (

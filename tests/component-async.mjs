@@ -345,6 +345,83 @@ await check(
   },
 );
 await check(
+  "Cartesian Fit retains finite bounds after extreme samples",
+  async () => {
+    const harness = componentHarness("GraphWorkspace", ["fit"]);
+    const graph = {
+      ...harness.exports.makeGraph("1e308*x", "cartesian"),
+      visible: true,
+    };
+    const props = {
+      graphs: [graph],
+      onChange() {},
+      definitions: [],
+      settings,
+      onAnalyze() {},
+      onReuse() {},
+    };
+    harness.render(props);
+    const previous = [...harness.state.get("range")];
+    harness.render(props).actions.fit();
+    assert.deepEqual(harness.state.get("range"), previous);
+    assert.match(harness.state.get("error"), /drawable range/);
+    harness
+      .render({ ...props, graphs: [{ ...graph, expression: "1.4e307*x" }] })
+      .actions.fit();
+    assert.deepEqual(harness.state.get("range"), previous);
+    assert.match(harness.state.get("error"), /drawable range/);
+    harness
+      .render({ ...props, graphs: [{ ...graph, expression: "x^2" }] })
+      .actions.fit();
+    assert(harness.state.get("range").every(Number.isFinite));
+    assert(harness.state.get("range")[2] < harness.state.get("range")[3]);
+    assert.equal(harness.state.get("error"), "");
+  },
+);
+await check(
+  "graph viewport stays drawable through extreme zoom and data Fit",
+  async () => {
+    const harness = componentHarness("GraphWorkspace", ["zoom", "fit"], {
+      range: [1e308 - 1e293, 1e308 + 1e293, -1, 1],
+    });
+    const props = {
+      graphs: [],
+      onChange() {},
+      definitions: [],
+      settings,
+      onAnalyze() {},
+      onReuse() {},
+    };
+    harness.render(props).actions.zoom(0.67);
+    const next = [...harness.state.get("range")];
+    assert(next.every(Number.isFinite), "Finite large midpoint overflowed");
+    assert(next[1] > next[0]);
+    harness.render(props).actions.zoom(1e300);
+    assert.deepEqual(
+      harness.state.get("range"),
+      next,
+      "Overflowing zoom replaced drawable range",
+    );
+    const graph = {
+      ...harness.exports.makeGraph("Data", "data"),
+      points: [
+        [-8e307, 0],
+        [8e307, 1],
+      ],
+    };
+    harness.render({ ...props, graphs: [graph] }).actions.fit();
+    assert.deepEqual(
+      harness.state.get("range"),
+      next,
+      "Padded data span overflowed",
+    );
+    assert.match(harness.state.get("error"), /drawable range/);
+    harness.state.set("range", [-6, 6, -4, 4]);
+    harness.render(props).actions.zoom(0.5);
+    assert.deepEqual(harness.state.get("range"), [-3, 3, -2, 2]);
+  },
+);
+await check(
   "graph derivation ignores an unmounted notebook and respects the graph cap",
   async () => {
     for (const unmount of [true, false]) {

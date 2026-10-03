@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import ts from "typescript";
+import { prepareMathLiveMenu } from "../lib/calculator/mathlive-menu.ts";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { checkExternalMenuGeometry } from "./verification/editor-geometry.mjs";
@@ -65,6 +66,12 @@ const lifecycleChecks = spawnSync(
   [fileURLToPath(new URL("./mathlive-lifecycle.mjs", import.meta.url))],
   { encoding: "utf8" },
 );
+const menuChecks = spawnSync(
+  process.execPath,
+  [fileURLToPath(new URL("./mathlive-menu.mjs", import.meta.url))],
+  { encoding: "utf8" },
+);
+assert.equal(menuChecks.status, 0, menuChecks.stderr || menuChecks.stdout);
 assert.equal(
   lifecycleChecks.status,
   0,
@@ -96,6 +103,9 @@ function harness({ failImport = false } = {}) {
     removed = false;
     focusCalls = 0;
     events = [];
+    menuEntries = [];
+    menuAdaptations = 0;
+    mode = "math";
     constructor() {
       super();
       fields.push(this);
@@ -118,9 +128,17 @@ function harness({ failImport = false } = {}) {
       this.command = { value, selection: this.selection };
     }
     get menuItems() {
+      assert(
+        this.mounted,
+        "Public menu API is used only after mounting the field",
+      );
       this.events.push("menuItems");
       this.menuInitialized = true;
-      return [];
+      return this.menuEntries;
+    }
+    set menuItems(items) {
+      this.menuEntries = items;
+      this.menuAdaptations++;
     }
     showMenu(options) {
       this.events.push("showMenu");
@@ -169,6 +187,8 @@ function harness({ failImport = false } = {}) {
       if (name === "react") return react;
       if (name === "react/jsx-runtime") return require(name);
       if (name.endsWith(".css")) return {};
+      if (name === "../../lib/calculator/mathlive-menu")
+        return { prepareMathLiveMenu };
       if (name === "../../lib/calculator/mathlive-loader") {
         return {
           async loadMathLive() {
@@ -188,7 +208,11 @@ function harness({ failImport = false } = {}) {
   const render = (props) => {
     refIndex = stateIndex = effectIndex = 0;
     const tree = loadedModule.exports.default(props, {});
-    refs[0].current ??= { replaceChildren() {} };
+    refs[0].current ??= {
+      replaceChildren(field) {
+        field.mounted = true;
+      },
+    };
     for (const effect of effects)
       if (effect.pending) {
         effect.pending = false;
@@ -337,6 +361,11 @@ try {
     "late import must initialize latest supplied value",
   );
   assert.equal(field.attributes.get("aria-label"), "Current field");
+  assert.equal(
+    field.menuAdaptations,
+    1,
+    "Actual editor prepares its public menu once after mounting",
+  );
   field.selection = { ranges: [[1, 3]], direction: "backward" };
   field.dispatchEvent(new Event("selection-change"));
   editor.handle().insert("\\frac{#@}{#?}");
@@ -441,6 +470,126 @@ try {
     "subsequent editing still explicitly focuses the field",
   );
   unfocused.unmount();
+
+  const inline = harness();
+  const submitted = [];
+  const committed = [];
+  let inlineField;
+  inline.render({
+    value: String.raw`\int_3^41\,\mathrm{d}`,
+    onChange: (value) => committed.push(value),
+    onSubmit: () => submitted.push(inlineField.value),
+  });
+  await flush();
+  inlineField = inline.fields[0];
+  inlineField.mode = "latex";
+  const commandEnter = new Event("keydown", { cancelable: true });
+  Object.defineProperty(commandEnter, "key", { value: "Enter" });
+  inlineField.dispatchEvent(commandEnter);
+  assert.equal(
+    submitted.length,
+    0,
+    "Temporary LaTeX Return must not submit incomplete mathematical source",
+  );
+  assert.equal(
+    commandEnter.defaultPrevented,
+    false,
+    "Return remains available to the vendor command completer",
+  );
+
+  const vendorSource = fs.readFileSync(
+    new URL("../node_modules/mathlive/mathlive.mjs", import.meta.url),
+    "utf8",
+  );
+  const vendorAst = ts.createSourceFile(
+    "mathlive.mjs",
+    vendorSource,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  let complete;
+  const commitKeys = [];
+  function inspectVendor(node) {
+    if (ts.isFunctionDeclaration(node) && node.name?.text === "complete")
+      complete = node.getText(vendorAst);
+    if (ts.isObjectLiteralExpression(node)) {
+      const properties = new Map(
+        node.properties
+          .filter(ts.isPropertyAssignment)
+          .map((property) => [
+            property.name.getText(vendorAst),
+            property.initializer,
+          ]),
+      );
+      if (
+        properties.get("ifMode")?.getText(vendorAst) === '"latex"' &&
+        properties.get("command")?.getText(vendorAst) ===
+          '["complete", "accept-all"]'
+      )
+        commitKeys.push(properties.get("key").text);
+    }
+    ts.forEachChild(node, inspectVendor);
+  }
+  inspectVendor(vendorAst);
+  assert(commitKeys.includes("[Enter]") && commitKeys.includes("[Return]"));
+  assert(complete);
+  const group = { leftSibling: {}, parent: { removeChild() {} } };
+  const commandBody = [...String.raw`\theta`].map((value) => ({ value }));
+  let insertion;
+  const pinnedComplete = new Function(
+    "environment",
+    `with(environment){${complete};return complete;}`,
+  )({
+    hideSuggestionPopover() {},
+    getLatexGroup: () => group,
+    getLatexGroupBody: () => commandBody,
+    __spreadValues: Object.assign,
+    computeInsertStyle: () => ({}),
+    ModeEditor: {
+      insert(model, latex, options) {
+        insertion = { latex, options };
+        inlineField.value += latex;
+        inlineField.dispatchEvent(new Event("input"));
+      },
+    },
+  });
+  assert.equal(
+    pinnedComplete(
+      {
+        model: { offsetOf: () => 0, announce() {} },
+        switchMode: (mode) => {
+          inlineField.mode = mode;
+        },
+        snapshot() {},
+        styleBias: "none",
+      },
+      "accept-all",
+    ),
+    true,
+  );
+  assert.equal(insertion.latex, String.raw`\theta`);
+  assert.equal(insertion.options.selectionMode, "placeholder");
+  assert.equal(inlineField.mode, "math");
+  assert.equal(committed.at(-1), String.raw`\int_3^41\,\mathrm{d}\theta`);
+  // The vendor keyboard sink consumes completion in capture phase, before the
+  // host's bubbling handler sees the same Enter with the field back in math mode.
+  commandEnter.preventDefault();
+  inlineField.dispatchEvent(commandEnter);
+  assert.equal(
+    submitted.length,
+    0,
+    "Vendor-consumed completion Enter must not calculate the stale React draft",
+  );
+  const calculateEnter = new Event("keydown", { cancelable: true });
+  Object.defineProperty(calculateEnter, "key", { value: "Enter" });
+  inlineField.dispatchEvent(calculateEnter);
+  assert.deepEqual(
+    submitted,
+    [inlineField.value],
+    "A subsequent math-mode Enter submits the completed source once",
+  );
+  assert.equal(calculateEnter.defaultPrevented, true);
+  inline.unmount();
 
   const retry = harness({ failImport: true });
   const props = { value: "x^2", onChange() {} };

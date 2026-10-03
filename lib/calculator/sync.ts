@@ -149,17 +149,43 @@ export async function initializeAccount(): Promise<User> {
       throw Error("Connect and sign in once before using this device offline.");
     return restoreLocal(cached);
   }
-  let response: Response;
+  let response: Response | undefined;
+  let data: any;
+  const controller = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    response = await fetch("/api/workspace", { cache: "no-store" });
+    await Promise.race([
+      (async () => {
+        response = await fetch("/api/workspace", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        // An authentication refusal takes effect even if its body stalls.
+        if (response.status === 401 || response.status === 403) return;
+        data = await response.json().catch(() => null);
+      })(),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          controller.abort();
+          reject(
+            Error(
+              "Opening your workspace timed out. Try again; your local work is preserved.",
+            ),
+          );
+        }, REQUEST_TIMEOUT);
+      }),
+    ]);
   } catch (error) {
-    if (!cached) throw error;
+    if (!cached || (response && !response.ok)) throw error;
     return restoreLocal(cached);
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
   }
   assertCurrent();
+  if (!response) throw Error("The saved workspace response is invalid.");
   if (!response.ok) {
     if (response.status >= 500 && cached) {
-      const unavailable = (await response.json().catch(() => null)) as {
+      const unavailable = data as {
         user?: unknown;
       } | null;
       assertCurrent();
@@ -174,9 +200,8 @@ export async function initializeAccount(): Promise<User> {
         : "Cloud saves are temporarily unavailable. Try again; your local work is preserved.",
     );
   }
-  const data = (await response.json()) as any;
-  assertCurrent();
   if (
+    !data ||
     !validUser(data.user) ||
     !Number.isSafeInteger(data.revision) ||
     data.revision < 0
