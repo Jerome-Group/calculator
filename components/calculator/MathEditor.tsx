@@ -262,6 +262,33 @@ export default forwardRef<
                 if (el.matches(":focus-within"))
                   el.scrollIntoView({ block: "nearest" });
               }
+              const navigationElement =
+                document.querySelector(".workspace-tabs");
+              const navigation =
+                navigationElement &&
+                window.getComputedStyle(navigationElement).position ===
+                  "fixed" &&
+                !document.querySelector(
+                  '[data-slot="dialog-content"][data-state="open"]',
+                )
+                  ? navigationElement.getBoundingClientRect()
+                  : undefined;
+              const navigationClearance =
+                navigation &&
+                [navigation.top, navigation.height].every(Number.isFinite) &&
+                navigation.height > 0
+                  ? Math.max(
+                      0,
+                      window.innerHeight -
+                        (k.visible ? k.boundingRect?.height || 0 : 0) -
+                        navigation.top +
+                        8,
+                    )
+                  : 0;
+              document.documentElement.style.setProperty(
+                "--math-navigation-clearance",
+                `${navigationClearance}px`,
+              );
               const owned =
                 k.visible &&
                 (composer
@@ -304,7 +331,8 @@ export default forwardRef<
                 const bounds = editor.getBoundingClientRect();
                 left = Math.max(8, bounds.left);
                 width = Math.min(bounds.width, window.innerWidth - 8 - left);
-                bottom = (k.boundingRect?.height || 0) + 8;
+                bottom =
+                  (k.boundingRect?.height || 0) + navigationClearance + 8;
               }
               if (
                 buttons.length !== 2 ||
@@ -367,6 +395,9 @@ export default forwardRef<
           geometry();
           cleanup = () => {
             cleanupMenu();
+            document.documentElement.style.removeProperty(
+              "--math-navigation-clearance",
+            );
             cancelAnimationFrame(frame);
             k.removeEventListener("geometrychange", geometry);
             el.removeEventListener("selection-change", geometry);

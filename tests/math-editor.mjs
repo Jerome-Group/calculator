@@ -7,11 +7,56 @@ import { fileURLToPath } from "node:url";
 import {
   checkExternalMenuGeometry,
   checkKeyboardActionRow,
+  checkWorkspaceNavigation,
 } from "./verification/editor-geometry.mjs";
 
 await import("./resolve-types.mjs");
 const { prepareMathLiveMenu } = await import(
   "../lib/calculator/mathlive-menu.ts"
+);
+
+const navigationGeometry = {
+  tabs: Object.fromEntries(
+    ["Calculate", "Explore", "Graphs", "Objects"].map((name, index) => [
+      name,
+      {
+        rect: { x: 12 + index * 90, y: 514, width: 86, height: 52 },
+        hits: Array(9).fill(true),
+      },
+    ]),
+  ),
+  keyboardPaintTop: 603,
+  viewport: { width: 390, height: 844 },
+  obstacles: [{ x: 16, y: 460, width: 358, height: 44 }],
+};
+assert.deepEqual(checkWorkspaceNavigation(navigationGeometry), []);
+const coveredNavigation = structuredClone(navigationGeometry);
+for (const tab of Object.values(coveredNavigation.tabs)) {
+  tab.rect.y = 778;
+  tab.hits[8] = false;
+}
+assert(
+  checkWorkspaceNavigation(coveredNavigation).includes(
+    "Graphs target is outside keyboard-free viewport",
+  ),
+);
+assert(
+  checkWorkspaceNavigation(coveredNavigation).includes(
+    "Graphs interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const interceptedNavigation = structuredClone(navigationGeometry);
+interceptedNavigation.tabs.Graphs.hits[0] = false;
+assert(
+  checkWorkspaceNavigation(interceptedNavigation).includes(
+    "Graphs interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+assert(
+  checkWorkspaceNavigation({
+    ...navigationGeometry,
+    obstacles: [{ x: 16, y: 520, width: 358, height: 44 }],
+  }).includes("Graphs overlaps editor controls or caret"),
 );
 
 const phoneMenuGeometry = {
@@ -302,6 +347,13 @@ function geometryHarness({
   visible = true,
   mediaMatches = true,
   calculateLeft = 698,
+  viewportWidth = 844,
+  viewportHeight = 390,
+  modal = standalone,
+  navigationTop,
+  keyboardRight = 336,
+  actionBottom = 115,
+  buttonWidths = [129, 147],
 } = {}) {
   class Surface extends EventTarget {
     listeners = new Set();
@@ -337,7 +389,7 @@ function geometryHarness({
   composer.querySelector = (selector) => ({
     getBoundingClientRect: () =>
       selector.includes("first-child")
-        ? { right: 336, bottom: 115 }
+        ? { right: keyboardRight, bottom: actionBottom }
         : { left: calculateLeft },
   });
   const editor = new Surface();
@@ -347,16 +399,16 @@ function geometryHarness({
       ? standalone
         ? null
         : composer
-      : standalone
+      : modal
         ? dialog
         : null;
   editor.setAttribute = (name, value) => attributes.set(name, value);
   editor.removeAttribute = (name) => attributes.delete(name);
   editor.getBoundingClientRect = () => ({ left: 16, width: 812 });
-  editor.querySelectorAll = () => [
-    { getBoundingClientRect: () => ({ width: 129, height: 44 }) },
-    { getBoundingClientRect: () => ({ width: 147, height: 44 }) },
-  ];
+  editor.querySelectorAll = () =>
+    buttonWidths.map((width) => ({
+      getBoundingClientRect: () => ({ width, height: 44 }),
+    }));
   editor.style = {
     setProperty: (name, value) => styles.set(name, value),
     removeProperty: (name) => styles.delete(name),
@@ -379,14 +431,35 @@ function geometryHarness({
   };
   el.scrollIntoView = () => {};
   const win = new Surface();
-  win.innerWidth = 844;
-  win.innerHeight = 390;
+  win.innerWidth = viewportWidth;
+  win.innerHeight = viewportHeight;
+  win.getComputedStyle = () => ({
+    position: viewportWidth <= 700 ? "fixed" : "static",
+  });
   const media = new Surface();
   media.matches = mediaMatches;
   const doc = new Surface();
+  const rootStyles = new Map();
   Object.assign(doc, {
+    querySelector: (selector) =>
+      selector.includes("dialog-content")
+        ? modal
+          ? dialog
+          : null
+        : navigationTop === undefined
+          ? null
+          : {
+              getBoundingClientRect: () => ({
+                top: keyboard.visible ? navigationTop : viewportHeight - 72,
+                height: 64,
+              }),
+            },
     documentElement: {
-      style: { getPropertyValue: () => "266px", setProperty() {} },
+      style: {
+        getPropertyValue: () => "266px",
+        setProperty: (name, value) => rootStyles.set(name, value),
+        removeProperty: (name) => rootStyles.delete(name),
+      },
     },
     scrollingElement: page,
   });
@@ -425,6 +498,7 @@ function geometryHarness({
     keyboard,
     attributes,
     styles,
+    rootStyles,
     caret,
     scrolls,
     commands,
@@ -433,6 +507,77 @@ function geometryHarness({
     position,
     value,
   };
+}
+{
+  for (const modal of [false, true]) {
+    const phone = geometryHarness({
+      standalone: true,
+      modal,
+      viewportWidth: 390,
+      viewportHeight: 844,
+      navigationTop: 506,
+    });
+    phone.flushFrames();
+    assert.equal(
+      phone.rootStyles.get("--math-navigation-clearance"),
+      modal ? "0px" : "80px",
+    );
+    assert.equal(
+      phone.styles.get("--math-tools-bottom"),
+      modal ? "274px" : "354px",
+    );
+    phone.keyboard.hide();
+    phone.flushFrames();
+    assert.equal(
+      phone.rootStyles.get("--math-navigation-clearance"),
+      modal ? "0px" : "80px",
+    );
+    phone.cleanup();
+  }
+  const phoneComposer = geometryHarness({
+    viewportWidth: 390,
+    viewportHeight: 844,
+    navigationTop: 506,
+    keyboardRight: 60,
+    calculateLeft: 300,
+    actionBottom: 498,
+    buttonWidths: [44, 44],
+  });
+  phoneComposer.flushFrames();
+  assert.equal(
+    phoneComposer.rootStyles.get("--math-navigation-clearance"),
+    "80px",
+  );
+  assert.equal(phoneComposer.styles.get("--math-tools-bottom"), "346px");
+  phoneComposer.keyboard.hide();
+  phoneComposer.flushFrames();
+  assert.equal(
+    phoneComposer.rootStyles.get("--math-navigation-clearance"),
+    "80px",
+  );
+  phoneComposer.cleanup();
+  const inactivePhone = geometryHarness({
+    focused: false,
+    viewportWidth: 320,
+    viewportHeight: 568,
+    navigationTop: 230,
+  });
+  inactivePhone.flushFrames();
+  assert.equal(
+    inactivePhone.rootStyles.get("--math-navigation-clearance"),
+    "80px",
+  );
+  assert.equal(inactivePhone.attributes.has("data-keyboard-tools"), false);
+  inactivePhone.cleanup();
+  assert.equal(
+    inactivePhone.rootStyles.has("--math-navigation-clearance"),
+    false,
+    "unmount restores CSS clearance fallback",
+  );
+  const desktop = geometryHarness({ navigationTop: 50 });
+  desktop.flushFrames();
+  assert.equal(desktop.rootStyles.get("--math-navigation-clearance"), "0px");
+  desktop.cleanup();
 }
 {
   const main = geometryHarness();

@@ -102,3 +102,54 @@ export function checkKeyboardActionRow(observation) {
     failures.push("Tall expression caret is not visible above action row");
   return failures;
 }
+
+// Supply rendered tab bounds and nine native hit samples; fixtures only test detection.
+export function checkWorkspaceNavigation({
+  tabs,
+  keyboardPaintTop,
+  viewport,
+  obstacles = [],
+}) {
+  const names = ["Calculate", "Explore", "Graphs", "Objects"];
+  const valid = (rect) =>
+    rect && [rect.x, rect.y, rect.width, rect.height].every(Number.isFinite);
+  if (
+    !names.every((name) => valid(tabs?.[name]?.rect)) ||
+    !obstacles.every(valid) ||
+    ![keyboardPaintTop, viewport?.width, viewport?.height].every(
+      Number.isFinite,
+    )
+  )
+    return ["Workspace navigation observation is incomplete"];
+  const failures = [];
+  const overlap = (a, b) =>
+    Math.min(a.x + a.width, b.x + b.width) > Math.max(a.x, b.x) &&
+    Math.min(a.y + a.height, b.y + b.height) > Math.max(a.y, b.y);
+  for (const name of names) {
+    const { rect, hits } = tabs[name];
+    if (rect.width < 44 || rect.height < 44)
+      failures.push(name + " navigation target is smaller than44px");
+    if (
+      rect.x < 0 ||
+      rect.y < 0 ||
+      rect.x + rect.width > viewport.width ||
+      rect.y + rect.height > keyboardPaintTop
+    )
+      failures.push(name + " target is outside keyboard-free viewport");
+    if (
+      !Array.isArray(hits) ||
+      hits.length !== 9 ||
+      hits.some((hit) => hit !== true)
+    )
+      failures.push(
+        name + " interior8px/edge-midpoint/center hits are not all correct",
+      );
+    if (obstacles.some((obstacle) => overlap(rect, obstacle)))
+      failures.push(name + " overlaps editor controls or caret");
+  }
+  for (let i = 0; i < names.length; i++)
+    for (let j = i + 1; j < names.length; j++)
+      if (overlap(tabs[names[i]].rect, tabs[names[j]].rect))
+        failures.push(names[i] + " overlaps " + names[j]);
+  return failures;
+}
