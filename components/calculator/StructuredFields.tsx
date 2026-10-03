@@ -358,7 +358,9 @@ export function DistributionFields({
 }) {
   const name = params.distribution || "normal",
     spec = distributions[name] || distributions.normal,
-    values = listItems(params.parameters) || [],
+    parameters = params.parameters ?? "[0,1]",
+    values = listItems(parameters),
+    rawParameters = values === null || values.length > spec.fields.length,
     action = params.action || "cdf";
   return (
     <>
@@ -378,30 +380,40 @@ export function DistributionFields({
         />
       </label>
       <p className="definition-note">{spec.definition}</p>
-      <div className="field-grid">
-        {spec.fields.map(([label, defaultValue, hint], i) => (
-          <label key={label}>
-            {label}
-            <input
-              aria-label={label}
-              value={values[i] ?? defaultValue}
-              onChange={(e) =>
-                set(
-                  "parameters",
-                  "[" +
-                    spec.fields
-                      .map((f, j) =>
-                        i === j ? e.target.value : (values[j] ?? f[1]),
-                      )
-                      .join(",") +
-                    "]",
-                )
-              }
-            />
-            <span className="field-hint">{hint}</span>
-          </label>
-        ))}
-      </div>
+      {rawParameters ? (
+        <label>
+          Parameters
+          <input
+            aria-label="Parameters"
+            value={parameters}
+            onChange={(e) => set("parameters", e.target.value)}
+          />
+          <span className="field-hint">
+            {spec.fields
+              .map(([label, , hint]) => `${label}: ${hint}`)
+              .join("; ")}
+          </span>
+        </label>
+      ) : (
+        <div className="field-grid">
+          {spec.fields.map(([label, , hint], i) => (
+            <label key={label}>
+              {label}
+              <input
+                aria-label={label}
+                value={values[i] ?? ""}
+                onChange={(e) => {
+                  const next = [...values];
+                  while (next.length < spec.fields.length) next.push("");
+                  next[i] = e.target.value;
+                  set("parameters", "[" + next.join(",") + "]");
+                }}
+              />
+              <span className="field-hint">{hint}</span>
+            </label>
+          ))}
+        </div>
+      )}
       <label>
         Find
         <Choice
@@ -936,11 +948,19 @@ export function ProblemPreview({
       ? ""
       : tex(params.expression || params.equation || "");
     if (op.id === "distribution") {
-      const pv = listItems(params.parameters) || [];
+      const name = params.distribution || "normal",
+        pv = listItems(params.parameters ?? "[0,1]");
+      if (
+        pv === null ||
+        !distributions[name] ||
+        pv.length !== distributions[name].fields.length ||
+        pv.some((value) => !value)
+      )
+        throw Error("Use the exact parameter source");
       const symbol =
-        params.distribution === "normal"
+        name === "normal"
           ? `X\\sim N(${tex(pv[0])},\\left(${tex(pv[1])}\\right)^{2})`
-          : `X\\sim \\operatorname{${params.distribution}}\\left(${pv.map(tex).join(",")}\\right)`;
+          : `X\\sim \\operatorname{${name}}\\left(${pv.map(tex).join(",")}\\right)`;
       const action = params.action;
       const question =
         action === "cdf"
@@ -956,7 +976,7 @@ export function ProblemPreview({
                     "geometric",
                     "hypergeometric",
                     "negative-binomial",
-                  ].includes(params.distribution)
+                  ].includes(name)
                   ? `P(X=${tex(params.value)})`
                   : `f(${tex(params.value)})`
                 : action === "isf"
@@ -1032,6 +1052,10 @@ export function ProblemPreview({
               <span>{f.label}</span>
               {f.choices ? (
                 <span>{params[f.key] ?? f.value}</span>
+              ) : op.id === "distribution" && f.key === "parameters" ? (
+                <code className="source-expression">
+                  {params[f.key] ?? f.value}
+                </code>
               ) : (
                 <Preview source={params[f.key] ?? f.value} />
               )}

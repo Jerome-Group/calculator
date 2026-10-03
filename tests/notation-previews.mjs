@@ -46,6 +46,7 @@ const {
   ProblemPreview,
   ListInput,
   MatrixInput,
+  DistributionFields,
   listItems,
   matrixRows,
 } = loadedModule.exports;
@@ -461,6 +462,194 @@ const matrix = Preview({ source: "[[sin(x^2),1/(x+1)],[2,3]]" });
 assert(math(matrix)[0].includes("\\begin{pmatrix}"));
 assert(math(matrix)[0].includes(sourceToLatex("sin(x^2)")));
 const distribution = operations.find((entry) => entry.id === "distribution");
+{
+  const defaults = {
+    normal: "[0,1]",
+    "student-t": "[5]",
+    "chi-square": "[3]",
+    F: "[5,10]",
+    binomial: "[10,0.5]",
+    poisson: "[3]",
+    geometric: "[0.5]",
+    hypergeometric: "[20,7,5]",
+    uniform: "[0,1]",
+    exponential: "[1]",
+    gamma: "[2,1]",
+    beta: "[2,3]",
+    "negative-binomial": "[3,0.5]",
+  };
+  const initial = Object.fromEntries(
+    distribution.fields.map((field) => [field.key, field.value]),
+  );
+  for (const [name, expected] of Object.entries(defaults)) {
+    const params = { ...initial };
+    const tree = DistributionFields({
+      params,
+      set: (key, value) => (params[key] = value),
+    });
+    const choice = elements(
+      tree,
+      (node) => node.props?.label === "Distribution",
+    )[0];
+    choice.props.onChange(name);
+    assert.equal(params.parameters, expected);
+    assert.equal(params.distribution, name);
+    const displayed = elements(
+      DistributionFields({
+        params,
+        set: () => assert.fail("Render wrote params"),
+      }),
+      (node) => node.type === "input" && node.props["aria-label"] !== "Value x",
+    ).map((node) => node.props.value);
+    assert.deepEqual(displayed, listItems(expected));
+  }
+  for (const [parameters, expected] of [
+    ["[0,1]", ["0", "1", ""]],
+    ["[20]", ["20", "", ""]],
+    ["[]", ["", "", ""]],
+    ["[20,7,]", ["20", "7", ""]],
+    ["[20,,5]", ["20", "", "5"]],
+    [undefined, ["0", "1", ""]],
+  ]) {
+    const params = {
+      distribution: "hypergeometric",
+      action: "cdf",
+      value: "0",
+    };
+    if (parameters !== undefined) params.parameters = parameters;
+    const before = structuredClone(params),
+      changes = [];
+    const tree = DistributionFields({
+      params,
+      set: (...args) => changes.push(args),
+    });
+    const inputs = elements(tree, (node) => node.type === "input");
+    assert.deepEqual(
+      inputs.slice(0, 3).map((node) => node.props.value),
+      expected,
+    );
+    assert.deepEqual(params, before);
+    assert.equal(changes.length, 0);
+    inputs[0].props.onChange({ target: { value: "21" } });
+    assert.deepEqual(changes, [
+      ["parameters", `[21,${expected.slice(1).join(",")}]`],
+    ]);
+  }
+  for (const [name, parameters] of [
+    ["hypergeometric", "[20,7,5,99]"],
+    ["hypergeometric", "[20,7"],
+    ["hypergeometric", ""],
+    ["student-t", "[5,2]"],
+    ["normal", "[0,1,99]"],
+  ]) {
+    const params = { ...initial, distribution: name, parameters },
+      changes = [];
+    const tree = DistributionFields({
+      params,
+      set: (...args) => changes.push(args),
+    });
+    const fields = elements(tree, (node) => node.type === "input");
+    assert.equal(
+      fields.length,
+      2,
+      "Only exact raw Parameters and Value x appear",
+    );
+    assert.equal(fields[0].props["aria-label"], "Parameters");
+    assert.equal(fields[0].props.value, parameters);
+    assert.equal(changes.length, 0);
+    fields[0].props.onChange({ target: { value: parameters + " " } });
+    assert.deepEqual(changes, [["parameters", parameters + " "]]);
+    const preview = ProblemPreview({ op: distribution, params });
+    assert.equal(math(preview).length, 0);
+    assert(
+      elements(preview, (node) => node.type === "code").some(
+        (node) => node.props.children === parameters,
+      ),
+    );
+  }
+  const params = {
+    ...initial,
+    distribution: "hypergeometric",
+    parameters: "[20]",
+  };
+  for (const [label, value] of [
+    ["Successes in population K", "7"],
+    ["Draws n", "5"],
+  ]) {
+    const tree = DistributionFields({
+      params,
+      set: (key, next) => (params[key] = next),
+    });
+    elements(
+      tree,
+      (node) => node.type === "input" && node.props["aria-label"] === label,
+    )[0].props.onChange({ target: { value } });
+  }
+  assert.equal(
+    params.parameters,
+    "[20,7,5]",
+    "Explicit fills recover the complete tuple",
+  );
+  for (const source of ["[20,7", "[20,7,5,99]"]) {
+    const recovering = {
+      ...initial,
+      distribution: "hypergeometric",
+      parameters: source,
+    };
+    const tree = DistributionFields({
+      params: recovering,
+      set: (key, value) => (recovering[key] = value),
+    });
+    elements(
+      tree,
+      (node) =>
+        node.type === "input" && node.props["aria-label"] === "Parameters",
+    )[0].props.onChange({ target: { value: "[20,7,5]" } });
+    assert.equal(recovering.parameters, "[20,7,5]");
+    assert.deepEqual(
+      elements(
+        DistributionFields({
+          params: recovering,
+          set: () => assert.fail("Recovered render wrote params"),
+        }),
+        (node) => node.type === "input",
+      ).map((node) => node.props.value),
+      ["20", "7", "5", "0"],
+    );
+  }
+  const absentNormal = { distribution: "normal", action: "cdf", value: "0" };
+  assert.deepEqual(
+    elements(
+      DistributionFields({
+        params: absentNormal,
+        set: () => assert.fail("Absent render wrote a key"),
+      }),
+      (node) => node.type === "input",
+    ).map((node) => node.props.value),
+    ["0", "1", "0"],
+  );
+  assert(
+    math(
+      ProblemPreview({ op: distribution, params: absentNormal }),
+    )[0].includes("N(0,"),
+  );
+  const absentFamily = { action: "pdf/pmf", value: "0" };
+  assert.deepEqual(
+    elements(
+      DistributionFields({
+        params: absentFamily,
+        set: () => assert.fail("Absent family render wrote params"),
+      }),
+      (node) => node.type === "input",
+    ).map((node) => node.props.value),
+    ["0", "1", "0"],
+  );
+  const absentPreview = math(
+    ProblemPreview({ op: distribution, params: absentFamily }),
+  )[0];
+  assert(absentPreview.includes("N(0,") && absentPreview.includes("f(0)"));
+  assert(!absentPreview.includes("undefined"));
+}
 assert(
   math(
     ProblemPreview({

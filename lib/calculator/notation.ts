@@ -1,5 +1,6 @@
 import { parse } from "mathjs";
 import { loadMathLive } from "./mathlive-loader";
+import { latexStructure } from "./latex-structure";
 import type {
   ConstantNode,
   FunctionNode,
@@ -145,9 +146,53 @@ function canonical(node: MathNode): unknown {
   throw Error("Keep the original structured expression");
 }
 
+function sourceStructure(source: string): unknown {
+  const equality = source.match(/^([^=<>!]+)=([^=]+)$/);
+  return equality
+    ? [
+        "equality",
+        ...equality.slice(1).map((part) => canonical(expression(part))),
+      ]
+    : canonical(expression(source));
+}
+
 export async function mathToSource(latex: string): Promise<string> {
-  const { convertLatexToAsciiMath } = await loadMathLive();
-  return convertLatexToAsciiMath(latex).replace(/\bln\s*\(/g, "log(");
+  if (!latex.trim()) return latex;
+  let original: ReturnType<typeof latexStructure>;
+  try {
+    original = latexStructure(latex);
+  } catch {
+    return "latex:" + latex;
+  }
+  const { convertLatexToAsciiMath, convertAsciiMathToLatex } =
+    await loadMathLive();
+  try {
+    const source = convertLatexToAsciiMath(latex).replace(/\bln\s*\(/g, "log(");
+    const equality = source.match(/^([^=<>!]+)=([^=]+)$/);
+    for (const part of equality ? equality.slice(1) : [source]) {
+      const node = expression(part);
+      canonical(node);
+      node.traverse((child, _path, parent) => {
+        if (
+          child.type === "SymbolNode" &&
+          !(
+            parent?.type === "FunctionNode" &&
+            (parent as FunctionNode).fn === child
+          ) &&
+          !/^(?:[A-Za-z]|pi)$/.test((child as SymbolNode).name)
+        )
+          throw Error("Keep the original symbol binding");
+        if (child.type === "OperatorNode" && (child as OperatorNode).implicit)
+          throw Error("Keep implicit multiplication in its original notation");
+      });
+    }
+    if (
+      JSON.stringify(original) ===
+      JSON.stringify(latexStructure(convertAsciiMathToLatex(source)))
+    )
+      return source;
+  } catch {}
+  return "latex:" + latex;
 }
 
 export async function sourceToMath(
@@ -160,8 +205,8 @@ export async function sourceToMath(
     try {
       const restored = await mathToSource(latex);
       if (
-        JSON.stringify(canonical(expression(source))) ===
-        JSON.stringify(canonical(expression(restored)))
+        JSON.stringify(sourceStructure(source)) ===
+        JSON.stringify(sourceStructure(restored))
       )
         return { latex };
     } catch {}

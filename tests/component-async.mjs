@@ -33,6 +33,78 @@ async function check(name, action) {
   }
 }
 await check(
+  "protected mode conversion retains source and explains its Text notation",
+  async () => {
+    const latex = String.raw`\begin{vmatrix}1&2\\3&4\end{vmatrix}`;
+    const harness = componentHarness(
+      "Calculator",
+      ["switchMode"],
+      {
+        state: workspace([notebook("A")]),
+        mode: "math",
+        latex,
+        input: "",
+      },
+      {
+        "@/lib/calculator/notation": {
+          mathToSource: async () => "latex:" + latex,
+        },
+      },
+    );
+    assert.equal(await harness.render().actions.switchMode("text"), true);
+    assert.equal(harness.state.get("input"), "latex:" + latex);
+    assert.equal(harness.state.get("mode"), "text");
+    assert.equal(
+      harness.state.get("notice"),
+      "Original LaTeX retained to preserve this expression.",
+    );
+  },
+);
+await check(
+  "stale protected conversion cannot replace a new draft or another notebook",
+  async () => {
+    for (const change of ["draft", "notebook", "newer conversion"]) {
+      const pending = [],
+        latex = String.raw`\lvert x\rvert`;
+      const harness = componentHarness(
+        "Calculator",
+        ["switchMode"],
+        {
+          state: workspace([notebook("A"), notebook("B")]),
+          mode: "math",
+          latex,
+          input: "original",
+        },
+        {
+          "@/lib/calculator/notation": {
+            mathToSource: () => new Promise((resolve) => pending.push(resolve)),
+          },
+        },
+      );
+      const first = harness.render().actions.switchMode("text");
+      if (change === "draft") harness.state.set("latex", "x+2");
+      if (change === "notebook")
+        harness.state.set("state", {
+          ...harness.state.get("state"),
+          active: "B",
+        });
+      const latest = harness.render().actions;
+      const second =
+        change === "newer conversion" ? latest.switchMode("text") : null;
+      pending[0]("latex:" + latex);
+      assert.equal(await first, false);
+      assert.equal(harness.state.get("input"), "original");
+      assert.equal(harness.state.get("mode"), "math");
+      assert(!harness.state.get("notice"));
+      if (second) {
+        pending[1]("latex:" + latex);
+        assert.equal(await second, true);
+        assert.equal(harness.state.get("input"), "latex:" + latex);
+      }
+    }
+  },
+);
+await check(
   "object validation cannot overwrite a different notebook",
   async () => {
     const original = definition("B", "2");

@@ -768,7 +768,11 @@ export default function Calculator() {
         return false;
       }
       if (converted) setLatex(converted.latex!);
-      if (text !== null) setInput(text);
+      if (text !== null) {
+        setInput(text);
+        if (text.startsWith("latex:"))
+          setNotice("Original LaTeX retained to preserve this expression.");
+      }
       setMode(s);
       if (s !== "math") hide();
       return true;

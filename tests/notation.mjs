@@ -11,6 +11,78 @@ import {
   sourceToLatex,
   sourceToMath,
 } from "../lib/calculator/notation.ts";
+import { convertLatexToAsciiMath } from "mathlive";
+
+assert.equal(await mathToSource(""), "");
+assert.equal(await mathToSource("  "), "  ");
+
+for (const latex of [
+  "3+1",
+  String.raw`\frac{12}{3+1}`,
+  String.raw`\frac{x}{x}`,
+  String.raw`x^{2}`,
+  String.raw`x^{-1}`,
+  String.raw`\sqrt{x^{2}}`,
+  String.raw`2\cdot x`,
+  String.raw`\sin\left(x\right)`,
+  "x=2",
+]) {
+  const text = await mathToSource(latex);
+  assert.equal(
+    text,
+    convertLatexToAsciiMath(latex),
+    "Proved scalar bindings retain ordinary Text",
+  );
+  assert(!text.startsWith("latex:"));
+}
+assert.equal(
+  await mathToSource(String.raw`\frac{x}{x}`),
+  "(x)/(x)",
+  "A denominator is retained without cancellation",
+);
+assert(
+  (await sourceToMath("x=2")).latex,
+  "A proved scalar equality can return to Math",
+);
+for (const latex of [
+  String.raw`\begin{vmatrix}1&2\\3&4\end{vmatrix}`,
+  String.raw`\begin{pmatrix}1&2\\3&4\end{pmatrix}`,
+  String.raw`\begin{matrix}1&2\\3&4\end{matrix}`,
+  String.raw`\lvert x\rvert`,
+  String.raw`\int_0^1x\,\mathrm{d}x`,
+  String.raw`\dfrac{\mathrm{d}}{\mathrm{d}x}x^2`,
+  String.raw`\Re\left(x\right)`,
+  String.raw`\textcolor{red}{\frac{x}{x}}`,
+  String.raw`\mathbf{x}`,
+  String.raw`\alpha`,
+  String.raw`x^23`,
+  String.raw`\frac123`,
+  String.raw`\sqrt17`,
+  String.raw`f(x)`,
+  String.raw`\left|x\right|`,
+  String.raw`\boxed{x+1}`,
+  String.raw`{\sin}(x)`,
+  "xy",
+  "2x",
+  "50\\%",
+  "1.2345678901234567890123456789",
+  String.raw`\left x`,
+  "(".repeat(70) + "x" + ")".repeat(70),
+  "x".repeat(4001),
+  "  \\begin{cases}x&x>0\\\\0&\\text{otherwise}\\end{cases}  ",
+]) {
+  const text = await mathToSource(latex);
+  assert.equal(
+    text,
+    "latex:" + latex,
+    "Unproved notation retains every source byte",
+  );
+  assert.deepEqual(
+    await sourceToMath(text),
+    { latex },
+    "Protected Text reconverts without loss",
+  );
+}
 
 const require = createRequire(import.meta.url);
 const viewModule = { exports: {} };
