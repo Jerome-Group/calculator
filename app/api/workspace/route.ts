@@ -1,6 +1,10 @@
 import { env } from "cloudflare:workers";
 import { getChatGPTUser } from "@/app/chatgpt-auth";
 import { validateState } from "@/lib/calculator/storage";
+import {
+  MAX_WORKSPACE_REQUEST_BYTES,
+  WORKSPACE_SIZE_ERROR,
+} from "@/lib/calculator/workspace-request";
 export const dynamic = "force-dynamic";
 const reply = (value: unknown, status = 200) =>
   Response.json(value, {
@@ -52,12 +56,11 @@ export async function PUT(request: Request) {
       const { done, value } = await reader.read();
       if (done) break;
       length += value.byteLength;
-      if (length > 1_800_000) {
+      if (length > MAX_WORKSPACE_REQUEST_BYTES) {
         await reader.cancel();
         return reply(
           {
-            error:
-              "Cloud save exceeds 1.8 MB. Export a backup and split large notebooks.",
+            error: WORKSPACE_SIZE_ERROR,
           },
           413,
         );

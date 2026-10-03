@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Sigma,
   Compass,
@@ -38,6 +38,7 @@ import StructuredFields, {
   Preview,
   ProblemPreview,
   matrixRows,
+  listItems,
   ListInput,
 } from "./StructuredFields";
 import RichResult from "./RichResult";
@@ -45,9 +46,17 @@ import TaskBrowser from "./TaskBrowser";
 import RecoveryBackups from "./RecoveryBackups";
 import ResultPlot from "./ResultPlot";
 import { accountStorage } from "@/lib/calculator/storage";
+import { sessionWorkspace } from "@/lib/calculator/sync";
 import Choice from "./Choice";
 import MathEditor, { MathEditorHandle } from "./MathEditor";
 import MathView from "./MathView";
+import {
+  matrixRowsToLatex,
+  sourceToMath,
+  mathToSource,
+} from "@/lib/calculator/notation";
+import { initialOperationParams } from "@/lib/calculator/operation-params";
+import { formatDisplayApprox } from "@/lib/calculator/display-format";
 import GraphWorkspace, { makeGraph } from "./GraphWorkspace";
 import { operations, categories } from "@/lib/calculator/catalog";
 import {
@@ -68,6 +77,7 @@ import type {
 import {
   persist,
   loadState,
+  readDeviceSave,
   validateState,
   download,
   STORAGE_KEY,
@@ -126,9 +136,11 @@ function Details({
   data,
   sources,
   onSave,
+  displayDecimals,
 }: {
   data: any;
   sources?: Record<string, string>;
+  displayDecimals: number;
   onSave: (s: string) => void;
 }) {
   return (
@@ -139,7 +151,7 @@ function Details({
             <tr key={key}>
               <th>{key}</th>
               <td>
-                <pre>{pretty(value)}</pre>
+                <pre>{formatDisplayApprox(pretty(value), displayDecimals)}</pre>
                 {value !== null && sources?.[key] && (
                   <button onClick={() => onSave(sources[key])}>
                     Save value
@@ -168,6 +180,7 @@ export default function Calculator() {
     [input, setInput] = useState(""),
     [latex, setLatex] = useState(""),
     [mode, setMode] = useState("math"),
+    [keyboardRequested, setKeyboardRequested] = useState(false),
     [modal, setModal] = useState(""),
     [op, setOp] = useState<Operation | null>(null),
     [params, setParams] = useState<Record<string, string>>({}),
@@ -197,24 +210,53 @@ export default function Calculator() {
     file = useRef<HTMLInputElement>(null),
     undo = useRef<SavedState[]>([]),
     current = useRef(state),
-    busyRef = useRef(false);
-  current.current = state;
+    busyRef = useRef(false),
+    objectGeneration = useRef(0),
+    objectModal = useRef(modal),
+    fieldConversionGeneration = useRef(0),
+    conversionGeneration = useRef(0),
+    editingSource = useRef({
+      mode,
+      input,
+      latex,
+      active: state?.active,
+      op: op?.id,
+      params,
+    });
+  useLayoutEffect(() => {
+    current.current = state;
+    if (objectModal.current !== modal) fieldConversionGeneration.current++;
+    objectModal.current = modal;
+    editingSource.current = {
+      mode,
+      input,
+      latex,
+      active: state?.active,
+      op: op?.id,
+      params,
+    };
+  }, [state, modal, mode, input, latex, op, params]);
   const book = state?.notebooks.find((b) => b.id === state.active),
     settings = state?.settings || DEFAULT_SETTINGS;
   useEffect(() => {
     const listener = (event: Event) =>
       setSyncStatus((event as CustomEvent).detail);
     window.addEventListener("calculator-sync", listener);
-    const t = localStorage.getItem("calculator.theme") || "light";
+    const t = readDeviceSave("calculator.theme") || "light";
     setTheme(t);
     document.documentElement.classList.toggle("dark", t === "dark");
     return () => window.removeEventListener("calculator-sync", listener);
   }, []);
   useEffect(() => {
     const s = loadState();
-    setState(s.state || initial());
-    setWarning(s.warning);
-    if (s.warning && !s.state) setPaused(true);
+    const hydrated = sessionWorkspace();
+    setState(hydrated || s.state || initial());
+    setWarning(
+      hydrated && s.warning && !s.state
+        ? "The unreadable device save is preserved. Your signed-in workspace is available; export a backup before closing."
+        : s.warning,
+    );
+    if (s.warning && !s.state && !hydrated) setPaused(true);
     startEngine(setStatus);
     const key = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -230,6 +272,12 @@ export default function Calculator() {
     const t = setTimeout(() => {
       try {
         persist(state);
+        setWarning((current) =>
+          current ===
+          "The latest changes could not be saved. Export a backup before closing."
+            ? ""
+            : current,
+        );
       } catch {
         setWarning(
           "The latest changes could not be saved. Export a backup before closing.",
@@ -297,6 +345,8 @@ export default function Calculator() {
       saveUndo,
     );
   const openObject = (d: Partial<Definition> = {}) => {
+    const generation = ++objectGeneration.current;
+    objectModal.current = "object";
     setObj(d);
     setName(d.name || "");
     setKind(d.kind || "expression");
@@ -309,24 +359,66 @@ export default function Calculator() {
     setMatrixLoading(false);
     setModal("object");
     hide();
-    if (d.kind === "matrix" && d.expression) {
-      setMatrixLoading(true);
-      calculate({
-        operation: "matrix_cells",
-        params: { expression: d.expression },
-        definitions: book?.definitions || [],
-        settings,
+    if (d.kind === "matrix" && d.expression)
+      readObjectMatrix(d.expression, generation);
+  };
+  const readObjectMatrix = (expression: string, generation: number) => {
+    const stillEditing = () =>
+      generation === objectGeneration.current &&
+      objectModal.current === "object";
+    setMatrixLoading(true);
+    calculate({
+      operation: "matrix_cells",
+      params: { expression },
+      definitions: book?.definitions || [],
+      settings,
+    })
+      .then((r) => {
+        if (!stillEditing()) return;
+        if (r.status === "error" || !r.details?.cells) {
+          setKind("expression");
+          setNotice("The original matrix expression is preserved for editing.");
+        } else setGrid(r.details.cells);
       })
-        .then((r) => {
-          if (r.status === "error" || !r.details?.cells) {
-            setKind("expression");
-            setNotice(
-              "The original matrix expression is preserved for editing.",
-            );
-          } else setGrid(r.details.cells);
-        })
-        .finally(() => setMatrixLoading(false));
+      .catch((e) => {
+        if (!stillEditing()) return;
+        setKind("expression");
+        setNotice("The original matrix is preserved. " + String(e));
+      })
+      .finally(() => {
+        if (generation === objectGeneration.current) setMatrixLoading(false);
+      });
+  };
+  const changeObjectKind = (next: Definition["kind"]) => {
+    if (next === kind) return;
+    const generation = ++objectGeneration.current,
+      source =
+        kind === "matrix" && !matrixLoading
+          ? "Matrix([" +
+            grid.map((r) => "[" + r.join(",") + "]").join(",") +
+            "])"
+          : body;
+    setMatrixLoading(false);
+    setBody(next === "dataset" && !source.trim() ? "[]" : source);
+    setKind(next);
+    if (next === "matrix" && source.trim())
+      readObjectMatrix(source, generation);
+  };
+  useEffect(() => {
+    if (keyboardRequested && mode === "math" && math.current) {
+      math.current.keyboard();
+      setKeyboardRequested(false);
     }
+  }, [keyboardRequested, mode]);
+  const closeModal = () => {
+    fieldConversionGeneration.current++;
+    if (objectModal.current === "object") {
+      objectGeneration.current++;
+      setMatrixLoading(false);
+    }
+    objectModal.current = "";
+    setModal("");
+    hide();
   };
   const run = async (
     operation = "evaluate",
@@ -338,6 +430,12 @@ export default function Calculator() {
     const s = current.current;
     if (!s || busyRef.current) return;
     const b = s.notebooks.find((b) => b.id === s.active)!;
+    if (b.history.length >= 10000) {
+      setNotice(
+        "This notebook has 10,000 calculations. Export a backup, then use another notebook or remove a calculation.",
+      );
+      return;
+    }
     const source = override?.input ?? (mode === "text" ? input : latex),
       format = override?.mode || mode;
     if (operation === "evaluate" && !source.trim()) {
@@ -394,7 +492,9 @@ export default function Calculator() {
     return result;
   };
   const runRef = useRef(run);
-  runRef.current = run;
+  useLayoutEffect(() => {
+    runRef.current = run;
+  }, [run]);
   useEffect(() => {
     const context = (document as any).modelContext;
     if (!context?.registerTool) return;
@@ -457,47 +557,69 @@ export default function Calculator() {
     } catch {}
     return () => lifecycle.abort();
   }, []);
-  const choose = (o: Operation, expression?: string) => {
+  const choose = (o: Operation, expression?: string, shortcut = false) => {
+    fieldConversionGeneration.current++;
     setOp(o);
     setParams(
-      Object.fromEntries(
-        o.fields.map((f) => [
-          f.key,
-          f.key === "expression" && expression
-            ? expression
-            : f.key === "expression" &&
-                o.id.startsWith("matrix_") &&
-                book?.definitions.some(
-                  (d) => d.id === selectedObject && d.kind === "matrix",
-                )
-              ? book.definitions.find((d) => d.id === selectedObject)!.name
-              : f.value,
-        ]),
+      initialOperationParams(
+        o,
+        expression,
+        book?.definitions,
+        selectedObject,
+        shortcut,
       ),
     );
     setModal("operation");
     hide();
   };
-  const reuse = async (s: string) => {
-    setInput(s);
-    const rows = matrixRows(s);
-    if (rows) {
-      const m = await import("mathlive");
-      setLatex(
-        "\\begin{pmatrix}" +
-          rows
-            .map((row) =>
-              row.map((cell) => m.convertAsciiMathToLatex(cell)).join("&"),
-            )
-            .join("\\\\") +
-          "\\end{pmatrix}",
+  const openMathField = async (key: string, label: string) => {
+    const snapshot = editingSource.current,
+      source = params[key] || "",
+      generation = ++fieldConversionGeneration.current;
+    const stillEditing = () => {
+      const latest = editingSource.current;
+      return (
+        generation === fieldConversionGeneration.current &&
+        objectModal.current === "operation" &&
+        snapshot.active === latest.active &&
+        snapshot.op === latest.op &&
+        (latest.params[key] || "") === source
       );
+    };
+    try {
+      const converted = source ? await sourceToMath(source) : { latex: "" };
+      if (!stillEditing()) return;
+      if (converted.latex === undefined) {
+        setNotice(converted.reason || "Keep the original text.");
+        return;
+      }
+      setMathField({ key, label, latex: converted.latex });
+    } catch {
+      if (stillEditing())
+        setNotice(
+          "Math editor could not load. Your field is preserved. Try again.",
+        );
+    }
+  };
+  const reuse = (s: string) => {
+    setInput(s);
+    const rows = matrixRows(s),
+      matrixLatex = rows ? matrixRowsToLatex(rows) : null;
+    if (matrixLatex !== null) {
+      setLatex(matrixLatex);
       setMode("math");
     } else setMode("text");
     setView("calculate");
+    hide();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const graphResult = (s: string, radians = false) => {
+    if (!book || book.graphs.length >= 100) {
+      setNotice(
+        "This notebook has 100 graphs. Export a backup, then use another notebook or remove a graph.",
+      );
+      return;
+    }
     patch(
       (b) => ({
         ...b,
@@ -531,12 +653,29 @@ export default function Calculator() {
             (t: number, i: number) => [t, row[i]] as [number, number],
           ),
         }));
+    if (book!.graphs.length + graphs.length > 100) {
+      setNotice(
+        "These trajectories would exceed 100 graphs. Export a backup, then use another notebook or remove a graph.",
+      );
+      return;
+    }
     patch((b) => ({ ...b, graphs: [...b.graphs, ...graphs] }), true);
     setView("graphs");
     setNotice("Trajectory added. Use Fit to see its full range.");
   };
   const saveObject = async () => {
     if (!book || busyRef.current || matrixLoading) return;
+    const target = book.id,
+      generation = objectGeneration.current;
+    if (
+      book.definitions.length >= 500 &&
+      !book.definitions.some((d) => d.id === obj?.id)
+    ) {
+      setNotice(
+        "This notebook has 500 objects. Export a backup, then use another notebook or remove an object.",
+      );
+      return;
+    }
     if (!/^[A-Za-z][A-Za-z0-9_]{0,23}$/.test(name)) {
       setNotice("Use a name beginning with a letter, up to 24 characters.");
       return;
@@ -572,13 +711,28 @@ export default function Calculator() {
         setNotice(r.text);
         return;
       }
+      if (generation !== objectGeneration.current) return;
+      const latest = current.current?.notebooks.find((b) => b.id === target);
+      if (!latest || latest.revision !== book.revision) {
+        setNotice(
+          "This notebook changed during validation. Check the object and save again.",
+        );
+        return;
+      }
       patch(
-        (b) => ({ ...b, definitions: defs, revision: b.revision + 1 }),
+        (b) => ({
+          ...b,
+          definitions: [...b.definitions.filter((x) => x.id !== d.id), d],
+          revision: b.revision + 1,
+        }),
         true,
+        target,
       );
-      setSelectedObject(d.id);
-      setView("objects");
-      setModal("");
+      if (current.current?.active === target) {
+        setSelectedObject(d.id);
+        setView("objects");
+        setModal("");
+      }
       setNotice(
         name + " saved. Previous results retain their original definitions.",
       );
@@ -589,28 +743,45 @@ export default function Calculator() {
       setBusy(false);
     }
   };
-  const switchMode = async (s: string) => {
-    if (s === mode) return;
-    if (
-      mode === "text" &&
-      s !== "text" &&
-      /Matrix|\.subs|\.inv|\[|\{|:=|diff\(|integrate\(/.test(input)
-    ) {
+  const switchMode = async (s: string): Promise<boolean> => {
+    if (s === mode) return true;
+    const snapshot = editingSource.current,
+      generation = ++conversionGeneration.current;
+    try {
+      const converted =
+        mode === "text" && s !== "text" ? await sourceToMath(input) : null;
+      const text =
+        mode !== "text" && s === "text" ? await mathToSource(latex) : null;
+      const latest = editingSource.current;
+      if (
+        generation !== conversionGeneration.current ||
+        snapshot.mode !== latest.mode ||
+        snapshot.input !== latest.input ||
+        snapshot.latex !== latest.latex ||
+        snapshot.active !== latest.active
+      )
+        return false;
+      if (converted && converted.latex === undefined) {
+        setNotice(
+          converted.reason || "Keep this expression in its original notation.",
+        );
+        return false;
+      }
+      if (converted) setLatex(converted.latex!);
+      if (text !== null) {
+        setInput(text);
+        if (text.startsWith("latex:"))
+          setNotice("Original LaTeX retained to preserve this expression.");
+      }
+      setMode(s);
+      if (s !== "math") hide();
+      return true;
+    } catch {
       setNotice(
-        "This expert expression cannot be converted reliably. Your text is preserved. Use a structured operation to edit it visually.",
+        "Notation conversion could not load. Your input is preserved. Try again.",
       );
-      return;
+      return false;
     }
-    const m = await import("mathlive");
-    if (mode === "text" && s !== "text")
-      setLatex(m.convertAsciiMathToLatex(input));
-    if (mode !== "text" && s === "text")
-      setInput(m.convertLatexToAsciiMath(latex));
-    setMode(s);
-    if (s !== "math") hide();
-    setNotice(
-      "Check the converted notation before calculating complex structures.",
-    );
   };
   const edit = (h: Entry) => {
     setInput(h.input);
@@ -631,14 +802,44 @@ export default function Calculator() {
         throw Error(
           "Offline reopening is unavailable in this browser context.",
         );
-      const reg = await navigator.serviceWorker.ready;
-      reg.active?.postMessage({ type: "PREPARE" });
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const reg = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () =>
+              reject(
+                Error(
+                  "Offline preparation could not start. Reload and try again while connected.",
+                ),
+              ),
+            10000,
+          );
+        }),
+      ]).finally(() => clearTimeout(timer));
+      if (!reg.active)
+        throw Error(
+          "Offline preparation is unavailable until the app worker is active. Reload and try again.",
+        );
+      reg.active.postMessage({ type: "PREPARE" });
       setOffline({ state: "Preparing", done: 0, total: 0 });
       navigator.storage?.persist?.().catch(() => {});
     } catch (e) {
       setNotice(String(e));
     }
   };
+  const feedback = notice ? (
+    <div role="status" className="dialog-feedback">
+      <span>{notice}</span>
+      <button
+        type="button"
+        aria-label="Dismiss notice"
+        onClick={() => setNotice("")}
+      >
+        ×
+      </button>
+    </div>
+  ) : null;
   if (!state || !book)
     return (
       <main className="loading-screen">
@@ -664,6 +865,15 @@ export default function Calculator() {
         </a>
         <div className="row">
           <span className="device-label small muted">{syncStatus}</span>
+          <button
+            className="mode-indicator"
+            title={`Calculation precision: ${settings.precision} digits`}
+            onClick={() => setModal("settings")}
+          >
+            {settings.angle.toUpperCase()} ·{" "}
+            {settings.domain === "real" ? "ℝ" : "ℂ"} ·{" "}
+            {settings.displayDecimals ?? 9} dp
+          </button>
           <button
             className="icon-btn"
             aria-label="Help and coverage"
@@ -735,14 +945,6 @@ export default function Calculator() {
               />
             </svg>
           </div>
-          <button
-            className="mode-indicator"
-            onClick={() => setModal("settings")}
-          >
-            {settings.angle.toUpperCase()} ·{" "}
-            {settings.domain === "real" ? "ℝ" : "ℂ"} · {settings.precision}{" "}
-            digits
-          </button>
         </div>
         <TabsContent value="calculate" className="calculate-panel">
           <div className="section-heading">
@@ -781,7 +983,9 @@ export default function Calculator() {
                 </button>
               </div>
             )}
-            <section className="composer">
+            <section
+              className={`composer${mode === "math" ? " composer--math" : ""}`}
+            >
               <div className="composer-top">
                 <div className="segmented">
                   {["math", "text", "latex"].map((s) => (
@@ -827,14 +1031,15 @@ export default function Calculator() {
               )}
               <div className="composer-bottom">
                 <button
-                  onClick={() => {
-                    if (mode !== "math") {
-                      setMode("math");
-                      setTimeout(() => math.current?.keyboard(), 100);
-                    } else math.current?.keyboard();
+                  aria-label="Math keyboard"
+                  onClick={async () => {
+                    if (mode === "math") math.current?.keyboard();
+                    else if (await switchMode("math"))
+                      setKeyboardRequested(true);
                   }}
                 >
-                  <Keyboard size={16} /> Math keyboard
+                  <Keyboard size={16} />{" "}
+                  <span className="math-keyboard-label">Math keyboard</span>
                 </button>
                 {busy ? (
                   <button
@@ -868,6 +1073,7 @@ export default function Calculator() {
                           : latex
                             ? "latex:" + latex
                             : undefined,
+                        true,
                       );
                   }}
                 >
@@ -883,6 +1089,10 @@ export default function Calculator() {
               </button>
               <button onClick={() => setModal("search")}>More</button>
             </div>
+            <p className="entry-hints">
+              {mode === "math" ? "Enter calculates · " : ""}⌘ / Ctrl K finds an
+              operation · Structures & editing has templates and undo
+            </p>
             <div className="engine-line">
               {busy
                 ? "Calculating locally…"
@@ -979,42 +1189,69 @@ export default function Calculator() {
                       {h.result.status === "error" ? (
                         <p>{h.result.text}</p>
                       ) : h.result.display ? (
-                        <RichResult node={h.result.display} />
+                        <RichResult
+                          node={h.result.display}
+                          displayDecimals={settings.displayDecimals ?? 9}
+                          numeric={h.result.status === "numeric"}
+                        />
                       ) : h.result.latex ? (
-                        <MathView latex={h.result.latex} block />
+                        <MathView
+                          latex={h.result.latex}
+                          block
+                          displayDecimals={settings.displayDecimals ?? 9}
+                          numeric={h.result.status === "numeric"}
+                        />
                       ) : h.result.details ? (
                         <Details
                           data={h.result.details}
                           sources={h.result.detailSources}
+                          displayDecimals={settings.displayDecimals ?? 9}
                           onSave={(s) =>
                             openObject({ expression: s, kind: "object" })
                           }
                         />
                       ) : (
-                        <pre>{h.result.text}</pre>
+                        <pre>
+                          {formatDisplayApprox(
+                            h.result.text,
+                            settings.displayDecimals ?? 9,
+                          )}
+                        </pre>
                       )}
                     </div>
                     {h.result.approx && (
                       <details className="approximation">
                         <summary>Decimal approximation</summary>
-                        <Preview source={h.result.approx} block />
+                        <Preview
+                          source={formatDisplayApprox(
+                            h.result.approx,
+                            settings.displayDecimals ?? 9,
+                          )}
+                          block
+                        />
                       </details>
                     )}
                     {h.result.details && (
                       <ResultPlot
                         operation={h.operation}
                         data={h.result.details}
+                        displayDecimals={settings.displayDecimals ?? 9}
                       />
                     )}
                     {h.result.latex && h.result.details && (
                       <details>
                         <summary>Calculation details</summary>
                         {h.result.detailDisplay ? (
-                          <RichResult node={h.result.detailDisplay} />
+                          <RichResult
+                            node={h.result.detailDisplay}
+                            displayDecimals={settings.displayDecimals ?? 9}
+                            numeric={h.result.status === "numeric"}
+                          />
                         ) : (
                           <Details
                             data={h.result.details}
                             sources={h.result.detailSources}
+                            displayDecimals={settings.displayDecimals ?? 9}
                             onSave={(s) =>
                               openObject({ expression: s, kind: "object" })
                             }
@@ -1146,8 +1383,17 @@ export default function Calculator() {
         </TabsContent>
         <TabsContent value="graphs">
           <GraphWorkspace
+            key={book.id}
             graphs={book.graphs}
-            onChange={(graphs) => patch((b) => ({ ...b, graphs }))}
+            onChange={(graphs) => {
+              if (graphs.length > 100) {
+                setNotice(
+                  "This notebook has 100 graphs. Export a backup, then use another notebook or remove a graph.",
+                );
+                return;
+              }
+              patch((b) => ({ ...b, graphs }), true, book.id);
+            }}
             definitions={book.definitions}
             settings={settings}
             onAnalyze={run}
@@ -1291,7 +1537,7 @@ export default function Calculator() {
         </button>
         <span>{syncStatus}</span>
       </footer>
-      {notice && (
+      {notice && !modal && !mathField && (
         <div role="status" className="toast">
           {notice}
           <button aria-label="Dismiss notice" onClick={() => setNotice("")}>
@@ -1301,9 +1547,10 @@ export default function Calculator() {
       )}
       <Dialog
         open={modal === "search"}
-        onOpenChange={(o) => !o && setModal("")}
+        onOpenChange={(o) => !o && closeModal()}
       >
         <DialogContent className="operation-search">
+          {feedback}
           <DialogHeader>
             <DialogTitle>Find an operation</DialogTitle>
             <DialogDescription>
@@ -1340,9 +1587,10 @@ export default function Calculator() {
       </Dialog>
       <Dialog
         open={modal === "operation"}
-        onOpenChange={(o) => !o && setModal("")}
+        onOpenChange={(o) => !o && closeModal()}
       >
         <DialogContent className="operation-dialog">
+          {feedback}
           <DialogHeader>
             <DialogTitle>{op?.name}</DialogTitle>
             <DialogDescription>{op?.description}</DialogDescription>
@@ -1356,17 +1604,7 @@ export default function Calculator() {
                   params={params}
                   definitions={book.definitions}
                   onChange={(k, v) => setParams((p) => ({ ...p, [k]: v }))}
-                  onMath={async (key, label) =>
-                    setMathField({
-                      key,
-                      label,
-                      latex: params[key]?.startsWith("latex:")
-                        ? params[key].slice(6)
-                        : (await import("mathlive")).convertAsciiMathToLatex(
-                            params[key] || "",
-                          ),
-                    })
-                  }
+                  onMath={openMathField}
                 />
               </div>
             </>
@@ -1395,6 +1633,7 @@ export default function Calculator() {
         }}
       >
         <DialogContent>
+          {feedback}
           <DialogHeader>
             <DialogTitle>{mathField?.label}</DialogTitle>
             <DialogDescription>
@@ -1432,9 +1671,10 @@ export default function Calculator() {
       </Dialog>
       <Dialog
         open={modal === "object"}
-        onOpenChange={(o) => !o && setModal("")}
+        onOpenChange={(o) => !o && closeModal()}
       >
         <DialogContent>
+          {feedback}
           <DialogHeader>
             <DialogTitle>
               {obj?.id ? "Edit object" : "Save a named object"}
@@ -1464,7 +1704,7 @@ export default function Calculator() {
                   "dataset",
                   "object",
                 ]}
-                onChange={(s) => setKind(s as Definition["kind"])}
+                onChange={(s) => changeObjectKind(s as Definition["kind"])}
               />
             </label>
           </div>
@@ -1563,9 +1803,9 @@ export default function Calculator() {
                 Exact fractions and symbols work in each cell.
               </p>
             </>
-          ) : kind === "dataset" ? (
+          ) : kind === "dataset" && (!body.trim() || listItems(body)) ? (
             <ListInput
-              value={body.startsWith("[") ? body : "[]"}
+              value={body.trim() ? body : "[]"}
               onChange={setBody}
               label="Data values"
             />
@@ -1582,7 +1822,7 @@ export default function Calculator() {
           )}
           {kind === "dataset" && <DataPlot source={body} />}
           <div className="row spread">
-            <button className="subtle" onClick={() => setModal("")}>
+            <button className="subtle" onClick={closeModal}>
               Cancel
             </button>
             <button
@@ -1597,9 +1837,10 @@ export default function Calculator() {
       </Dialog>
       <Dialog
         open={modal === "notebooks"}
-        onOpenChange={(o) => !o && setModal("")}
+        onOpenChange={(o) => !o && closeModal()}
       >
         <DialogContent>
+          {feedback}
           <DialogHeader>
             <DialogTitle>Your notebooks</DialogTitle>
             <DialogDescription>
@@ -1637,7 +1878,7 @@ export default function Calculator() {
           </label>
           <button
             className="primary"
-            disabled={!bookName.trim()}
+            disabled={!bookName.trim() || state.notebooks.length >= 100}
             onClick={() => {
               const b = newNotebook(bookName.trim());
               change(
@@ -1650,6 +1891,12 @@ export default function Calculator() {
           >
             Create notebook
           </button>
+          {state.notebooks.length >= 100 && (
+            <p className="field-hint">
+              This workspace has 100 notebooks. Export a backup before
+              reorganising it.
+            </p>
+          )}
           <label>
             Rename current notebook
             <input
@@ -1662,9 +1909,10 @@ export default function Calculator() {
       </Dialog>
       <Dialog
         open={modal === "settings"}
-        onOpenChange={(o) => !o && setModal("")}
+        onOpenChange={(o) => !o && closeModal()}
       >
         <DialogContent>
+          {feedback}
           <DialogHeader>
             <DialogTitle>Settings & saved work</DialogTitle>
             <DialogDescription>
@@ -1710,7 +1958,31 @@ export default function Calculator() {
               />
             </label>
             <label>
-              Decimal precision
+              Display decimal places
+              <input
+                type="number"
+                min={0}
+                max={30}
+                value={settings.displayDecimals ?? 9}
+                onChange={(e) =>
+                  change((s) => ({
+                    ...s,
+                    settings: {
+                      ...s.settings,
+                      displayDecimals: Math.max(
+                        0,
+                        Math.min(30, Math.round(Number(e.target.value))),
+                      ),
+                    },
+                  }))
+                }
+              />
+              <span className="field-hint">
+                Up to 30. Exact answers and calculation precision are preserved.
+              </span>
+            </label>
+            <label>
+              Calculation precision
               <input
                 type="number"
                 min={5}
@@ -1755,54 +2027,59 @@ export default function Calculator() {
               options={["light", "dark"]}
               onChange={(v) => {
                 setTheme(v);
-                localStorage.setItem("calculator.theme", v);
+                try {
+                  localStorage.setItem("calculator.theme", v);
+                } catch {
+                  setNotice(
+                    "Theme applied for this session. Browser storage is unavailable.",
+                  );
+                }
                 document.documentElement.classList.toggle("dark", v === "dark");
               }}
             />
           </section>
-          {typeof window !== "undefined" &&
-            localStorage.getItem(STORAGE_KEY) && (
-              <section className="settings-section">
-                <h2>Existing device notebooks</h2>
-                <p>
-                  Import the earlier, unassigned notebooks on this browser into
-                  your signed-in account. The original copy stays intact.
-                </p>
-                <button
-                  className="subtle"
-                  onClick={() => {
-                    try {
-                      const old = validateState(
-                        JSON.parse(localStorage.getItem(STORAGE_KEY)!),
-                      );
-                      change(
-                        (s) => ({
-                          ...s,
-                          notebooks: [
-                            ...s.notebooks,
-                            ...old.notebooks.map((b) => ({
-                              ...b,
-                              id: uid(),
-                              name:
-                                b.name.slice(0, 100 - " (imported)".length) +
-                                " (imported)",
-                            })),
-                          ],
-                        }),
-                        true,
-                      );
-                      setNotice(
-                        "Earlier notebooks imported; original device copy preserved.",
-                      );
-                    } catch (e) {
-                      setNotice(String(e));
-                    }
-                  }}
-                >
-                  Import earlier device notebooks
-                </button>
-              </section>
-            )}
+          {typeof window !== "undefined" && readDeviceSave(STORAGE_KEY) && (
+            <section className="settings-section">
+              <h2>Existing device notebooks</h2>
+              <p>
+                Import the earlier, unassigned notebooks on this browser into
+                your signed-in account. The original copy stays intact.
+              </p>
+              <button
+                className="subtle"
+                onClick={() => {
+                  try {
+                    const old = validateState(
+                      JSON.parse(readDeviceSave(STORAGE_KEY)!),
+                    );
+                    change(
+                      (s) => ({
+                        ...s,
+                        notebooks: [
+                          ...s.notebooks,
+                          ...old.notebooks.map((b) => ({
+                            ...b,
+                            id: uid(),
+                            name:
+                              b.name.slice(0, 100 - " (imported)".length) +
+                              " (imported)",
+                          })),
+                        ],
+                      }),
+                      true,
+                    );
+                    setNotice(
+                      "Earlier notebooks imported; original device copy preserved.",
+                    );
+                  } catch (e) {
+                    setNotice(String(e));
+                  }
+                }}
+              >
+                Import earlier device notebooks
+              </button>
+            </section>
+          )}
           <section className="settings-section">
             <h2>Offline preparation</h2>
             <p>
@@ -1897,7 +2174,7 @@ export default function Calculator() {
               className="text-action"
               onClick={() => {
                 try {
-                  const old = localStorage.getItem(accountStorage(BACKUP_KEY));
+                  const old = readDeviceSave(accountStorage(BACKUP_KEY));
                   if (!old) throw Error("No previous save is available.");
                   const restored = validateState(JSON.parse(old));
                   undo.current.push(state);
@@ -1919,7 +2196,7 @@ export default function Calculator() {
                 onClick={() =>
                   download(
                     "Calculator-recovery.txt",
-                    localStorage.getItem(accountStorage(STORAGE_KEY)) || "",
+                    readDeviceSave(accountStorage(STORAGE_KEY)) || "",
                     "text/plain",
                   )
                 }
@@ -1930,8 +2207,9 @@ export default function Calculator() {
           </section>
         </DialogContent>
       </Dialog>
-      <Dialog open={modal === "help"} onOpenChange={(o) => !o && setModal("")}>
+      <Dialog open={modal === "help"} onOpenChange={(o) => !o && closeModal()}>
         <DialogContent>
+          {feedback}
           <DialogHeader>
             <DialogTitle>Calculator reference</DialogTitle>
             <DialogDescription>Scope, input and safeguards.</DialogDescription>

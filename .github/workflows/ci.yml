@@ -61,15 +61,14 @@ jobs:
         run: npm install --global pnpm@11.25.0
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
-      - name: Check formatting
-        run: pnpm format:check
-      - name: Lint the application
-        run: pnpm lint
-      - name: Check types
-        run: pnpm typecheck
-      - name: Test the application
-        run: pnpm test
-      - name: Build the application
-        run: pnpm build
-      - name: Verify built assets and Worker metadata
-        run: pnpm test:assets
+      - name: Verify application and failure detectors
+        run: pnpm --silent verify run --group core --evidence-dir "${RUNNER_TEMP}/calculator-verification" --json
+      - name: Retain verification evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verification-${{ github.sha }}
+          path: ${{ runner.temp }}/calculator-verification
+          if-no-files-found: warn
+          retention-days: 14

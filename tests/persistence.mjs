@@ -68,6 +68,7 @@ second.notebooks[0].definitions.push({
 });
 persist(second);
 assert.deepEqual(loadState().state, second);
+assert.equal(loadState().readable, true);
 assert.deepEqual(validateState(JSON.parse(JSON.stringify(second))), second);
 const invalid = structuredClone(second);
 invalid.notebooks[0].definitions.push({
@@ -78,10 +79,15 @@ values.set(key, "{broken");
 const recovered = loadState();
 assert.deepEqual(recovered.state, first);
 assert(recovered.warning);
+assert.equal(recovered.readable, true);
 assert.equal(values.get(key), "{broken");
 values.delete(backup);
 assert.equal(loadState().state, null);
+assert.equal(loadState().readable, false);
 assert.equal(values.get(key), "{broken");
+assert.throws(() => persist(second), /unreadable device save is preserved/);
+assert.equal(values.get(key), "{broken");
+values.set(key, JSON.stringify(first));
 globalThis.localStorage = {
   ...storage,
   setItem() {
@@ -89,8 +95,9 @@ globalThis.localStorage = {
   },
 };
 assert.throws(() => persist(second), /Quota/);
-assert.equal(values.get(key), "{broken");
+assert.equal(values.get(key), JSON.stringify(first));
 globalThis.localStorage = storage;
+values.set(key, "{broken");
 forgetAccount();
 assert.throws(() => accountStorage(STORAGE_KEY), /Sign in/);
 assert.equal(values.get(key), "{broken");

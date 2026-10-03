@@ -51,6 +51,7 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  onEscapeKeyDown,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -65,6 +66,18 @@ function DialogContent({
           className
         )}
         {...props}
+        onEscapeKeyDown={(event) => {
+          onEscapeKeyDown?.(event)
+          // Radix captures Escape before MathLive's menu can close in bubbling.
+          if (
+            event.composedPath().some(
+              (target) =>
+                target instanceof Element &&
+                target.matches('.ui-menu-container[role="menu"]')
+            )
+          )
+            event.preventDefault()
+        }}
       >
         {children}
         {showCloseButton && (

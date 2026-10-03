@@ -1,10 +1,13 @@
 "use client";
+import { formatDisplayApprox } from "../../lib/calculator/display-format";
 export default function ResultPlot({
   operation,
   data,
+  displayDecimals = 9,
 }: {
   operation: string;
   data: any;
+  displayDecimals?: number;
 }) {
   if (operation === "histogram") {
     const counts = (data.counts || []).map(Number),
@@ -89,15 +92,15 @@ export default function ResultPlot({
             />
           ))}
           {[
-            ["Min", lo],
-            ["Q1", Number(data.Q1)],
-            ["Median", Number(data.median)],
-            ["Q3", Number(data.Q3)],
-            ["Max", hi],
+            ["Min", data.minimum],
+            ["Q1", data.Q1],
+            ["Median", data.median],
+            ["Q3", data.Q3],
+            ["Max", data.maximum],
           ].map(([label, value]) => (
             <g key={label as string}>
               <text x={x(value as number)} y="125" textAnchor="middle">
-                {value}
+                {formatDisplayApprox(String(value), displayDecimals)}
               </text>
             </g>
           ))}
@@ -111,7 +114,8 @@ export default function ResultPlot({
   if (operation === "poisson") {
     const grid = data["interior solution"];
     if (!Array.isArray(grid)) return null;
-    const values = grid.flat().map(Number),
+    const rawValues = grid.flat(),
+      values = rawValues.map(Number),
       min = Math.min(...values),
       max = Math.max(...values),
       n = grid.length;
@@ -136,8 +140,17 @@ export default function ResultPlot({
           )}
         </svg>
         <figcaption>
-          Unit square · solution range {min.toPrecision(4)} to{" "}
-          {max.toPrecision(4)} · zero boundary
+          Unit square · solution range{" "}
+          {formatDisplayApprox(
+            String(rawValues[values.indexOf(min)]),
+            displayDecimals,
+          )}{" "}
+          to{" "}
+          {formatDisplayApprox(
+            String(rawValues[values.indexOf(max)]),
+            displayDecimals,
+          )}{" "}
+          · zero boundary
         </figcaption>
       </figure>
     );

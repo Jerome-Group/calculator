@@ -1,8 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
+import { sourceToLatex, matrixRowsToLatex } from "@/lib/calculator/notation";
 import Choice from "./Choice";
 import MathView from "./MathView";
 import type { Definition, Operation } from "@/lib/calculator/types";
+export function scalarFieldText(source: string): string {
+  return source.startsWith("latex:") ? source.slice(6) : source;
+}
+export function scalarFieldSource(previous: string, text: string): string {
+  return previous.startsWith("latex:") && text ? "latex:" + text : text;
+}
 export function splitMath(source: string): string[] {
   let depth = 0,
     quote = "",
@@ -30,9 +37,39 @@ export function splitMath(source: string): string[] {
 }
 export function listItems(value: string) {
   const s = value.trim();
-  return /^[\[(]/.test(s) && /[\])]$/.test(s)
-    ? splitMath(s.slice(1, -1))
-    : null;
+  if (s[0] !== "[" && s[0] !== "(") return null;
+  const closing: string[] = [],
+    items: string[] = [];
+  let quote = "",
+    start = 1,
+    comma = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (quote) {
+      if (c === "\\") i++;
+      else if (c === quote) quote = "";
+      continue;
+    }
+    if (c === '"' || c === "'") {
+      quote = c;
+      continue;
+    }
+    const bracket = "([{".indexOf(c);
+    if (bracket !== -1) closing.push(")]}"[bracket]);
+    else if (")]}".includes(c)) {
+      if (closing.pop() !== c) return null;
+      if (!closing.length && i !== s.length - 1) return null;
+    } else if (c === "," && closing.length === 1) {
+      items.push(s.slice(start, i).trim());
+      start = i + 1;
+      comma = true;
+    }
+  }
+  if (quote || closing.length) return null;
+  const last = s.slice(start, -1).trim();
+  if (s[0] === "(" && !comma && last) return null;
+  if (last) items.push(last);
+  return items;
 }
 export function matrixRows(value: string) {
   const v = value.trim().replace(/^(?:Immutable)?Matrix\(([\s\S]*)\)$/, "$1"),
@@ -50,39 +87,12 @@ export function Preview({
   source: string;
   block?: boolean;
 }) {
-  const [latex, setLatex] = useState("");
-  useEffect(() => {
-    let active = true;
-    import("mathlive")
-      .then((m) => {
-        if (active) {
-          const rows = matrixRows(source);
-          setLatex(
-            source.startsWith("latex:")
-              ? source.slice(6)
-              : rows
-                ? "\\begin{pmatrix}" +
-                  rows
-                    .map((r) =>
-                      r.map((x) => m.convertAsciiMathToLatex(x)).join("&"),
-                    )
-                    .join("\\\\") +
-                  "\\end{pmatrix}"
-                : m
-                    .convertAsciiMathToLatex(source)
-                    .replace(/\\lbrack(?=[A-Za-z])/g, "\\lbrack "),
-          );
-        }
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, [source]);
+  const rows = matrixRows(source);
+  const latex = rows ? matrixRowsToLatex(rows) : sourceToLatex(source);
   return latex ? (
     <MathView latex={latex} block={block} />
   ) : (
-    <span>{source}</span>
+    <code className="source-expression">{source}</code>
   );
 }
 export function MatrixInput({
@@ -100,6 +110,27 @@ export function MatrixInput({
       (d) => d.name === value && d.kind === "matrix",
     ),
     rows = matrixRows(selected?.expression || value);
+  const source = (selected?.expression || value).trim(),
+    constructor = source.match(/^(ImmutableMatrix|Matrix)\(/)?.[1],
+    contents = constructor ? source.slice(constructor.length + 1, -1) : source,
+    rowSources = listItems(contents) || [];
+  const enclose = (items: string[], tuple: boolean) =>
+    (tuple ? "(" : "[") +
+    items.join(",") +
+    (tuple && items.length === 1 ? "," : "") +
+    (tuple ? ")" : "]");
+  const writeRows = (next: string[][]) => {
+    const contents = enclose(
+      next.map((row, i) =>
+        enclose(
+          row,
+          !constructor && !!(rowSources[i] || rowSources[0])?.startsWith("("),
+        ),
+      ),
+      !constructor && source.startsWith("("),
+    );
+    onChange(constructor ? constructor + "(" + contents + ")" : contents);
+  };
   return (
     <fieldset className="structured-field">
       <legend>{label}</legend>
@@ -146,21 +177,13 @@ export function MatrixInput({
                 max={12}
                 value={rows.length}
                 onChange={(e) =>
-                  onChange(
-                    "[" +
-                      Array.from(
-                        {
-                          length: Math.max(
-                            1,
-                            Math.min(12, +e.target.value || 1),
-                          ),
-                        },
-                        (_, i) =>
-                          "[" +
-                          (rows[i] || rows[0].map(() => "0")).join(",") +
-                          "]",
-                      ).join(",") +
-                      "]",
+                  writeRows(
+                    Array.from(
+                      {
+                        length: Math.max(1, Math.min(12, +e.target.value || 1)),
+                      },
+                      (_, i) => rows[i] || rows[0].map(() => "0"),
+                    ),
                   )
                 }
               />
@@ -174,25 +197,18 @@ export function MatrixInput({
                 max={12}
                 value={rows[0].length}
                 onChange={(e) =>
-                  onChange(
-                    "[" +
-                      rows
-                        .map(
-                          (r) =>
-                            "[" +
-                            Array.from(
-                              {
-                                length: Math.max(
-                                  1,
-                                  Math.min(12, +e.target.value || 1),
-                                ),
-                              },
-                              (_, j) => r[j] || "0",
-                            ).join(",") +
-                            "]",
-                        )
-                        .join(",") +
-                      "]",
+                  writeRows(
+                    rows.map((r) =>
+                      Array.from(
+                        {
+                          length: Math.max(
+                            1,
+                            Math.min(12, +e.target.value || 1),
+                          ),
+                        },
+                        (_, j) => r[j] || "0",
+                      ),
+                    ),
                   )
                 }
               />
@@ -211,21 +227,12 @@ export function MatrixInput({
                   aria-label={`${label} row ${i + 1} column ${j + 1}`}
                   value={x}
                   onChange={(e) =>
-                    onChange(
-                      "[" +
-                        rows
-                          .map(
-                            (r, a) =>
-                              "[" +
-                              r
-                                .map((x, b) =>
-                                  a === i && b === j ? e.target.value : x,
-                                )
-                                .join(",") +
-                              "]",
-                          )
-                          .join(",") +
-                        "]",
+                    writeRows(
+                      rows.map((r, a) =>
+                        r.map((x, b) =>
+                          a === i && b === j ? e.target.value : x,
+                        ),
+                      ),
                     )
                   }
                 />
@@ -256,7 +263,7 @@ const distributions: Record<
   },
   "student-t": {
     definition:
-      "Student t distribution, centered at 0. Scale 1; it is not a standard deviation.",
+      "Student t distribution. The one-parameter form is centered at 0 with scale 1; scale is not a standard deviation.",
     fields: [
       [
         "Degrees of freedom ν",
@@ -351,7 +358,9 @@ export function DistributionFields({
 }) {
   const name = params.distribution || "normal",
     spec = distributions[name] || distributions.normal,
-    values = listItems(params.parameters) || [],
+    parameters = params.parameters ?? "[0,1]",
+    values = listItems(parameters),
+    rawParameters = values === null || values.length > spec.fields.length,
     action = params.action || "cdf";
   return (
     <>
@@ -371,30 +380,40 @@ export function DistributionFields({
         />
       </label>
       <p className="definition-note">{spec.definition}</p>
-      <div className="field-grid">
-        {spec.fields.map(([label, defaultValue, hint], i) => (
-          <label key={label}>
-            {label}
-            <input
-              aria-label={label}
-              value={values[i] ?? defaultValue}
-              onChange={(e) =>
-                set(
-                  "parameters",
-                  "[" +
-                    spec.fields
-                      .map((f, j) =>
-                        i === j ? e.target.value : (values[j] ?? f[1]),
-                      )
-                      .join(",") +
-                    "]",
-                )
-              }
-            />
-            <span className="field-hint">{hint}</span>
-          </label>
-        ))}
-      </div>
+      {rawParameters ? (
+        <label>
+          Parameters
+          <input
+            aria-label="Parameters"
+            value={parameters}
+            onChange={(e) => set("parameters", e.target.value)}
+          />
+          <span className="field-hint">
+            {spec.fields
+              .map(([label, , hint]) => `${label}: ${hint}`)
+              .join("; ")}
+          </span>
+        </label>
+      ) : (
+        <div className="field-grid">
+          {spec.fields.map(([label, , hint], i) => (
+            <label key={label}>
+              {label}
+              <input
+                aria-label={label}
+                value={values[i] ?? ""}
+                onChange={(e) => {
+                  const next = [...values];
+                  while (next.length < spec.fields.length) next.push("");
+                  next[i] = e.target.value;
+                  set("parameters", "[" + next.join(",") + "]");
+                }}
+              />
+              <span className="field-hint">{hint}</span>
+            </label>
+          ))}
+        </div>
+      )}
       <label>
         Find
         <Choice
@@ -489,9 +508,10 @@ function LogicFields({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const [advanced, setAdvanced] = useState(false);
   const match = value.match(/^(Implies|And|Or|Xor|Equivalent)\((.*)\)$/),
     args = match ? splitMath(match[2]) : [],
-    kind = match?.[1] || "custom";
+    kind = !advanced && args.length === 2 ? match?.[1] || "custom" : "custom";
   const names = [
     { value: "Implies", label: "Implication · p ⇒ q" },
     { value: "And", label: "Both true · p ∧ q" },
@@ -508,7 +528,14 @@ function LogicFields({
           label="Logical relationship"
           value={kind}
           options={names}
-          onChange={(v) => onChange(v === "custom" ? "p" : v + "(p,q)")}
+          onChange={(v) => {
+            setAdvanced(v === "custom");
+            onChange(
+              v === "custom"
+                ? value
+                : v + "(" + [args[0] || "p", args[1] || "q"].join(",") + ")",
+            );
+          }}
         />
       </label>
       {kind !== "custom" ? (
@@ -567,6 +594,7 @@ export default function StructuredFields({
   definitions: Definition[];
   onMath: (key: string, label: string) => void;
 }) {
+  const scalarNotation = useRef(new Set<string>());
   if (op.id === "logic")
     return (
       <LogicFields
@@ -844,6 +872,11 @@ export default function StructuredFields({
             </fieldset>
           );
         }
+        const notationKey = op.id + "." + f.key;
+        if (value.startsWith("latex:")) scalarNotation.current.add(notationKey);
+        else if (value) scalarNotation.current.delete(notationKey);
+        const latexNotation = scalarNotation.current.has(notationKey);
+        const notationHintId = "scalar-notation-" + op.id + "-" + f.key;
         return (
           <label key={f.key}>
             {f.label}
@@ -858,17 +891,33 @@ export default function StructuredFields({
               <div className="math-field-row">
                 <input
                   aria-label={f.label}
-                  value={value}
-                  onChange={(e) => onChange(f.key, e.target.value)}
+                  aria-describedby={latexNotation ? notationHintId : undefined}
+                  value={scalarFieldText(value)}
+                  onChange={(e) =>
+                    onChange(
+                      f.key,
+                      scalarFieldSource(
+                        scalarNotation.current.has(notationKey)
+                          ? "latex:"
+                          : value,
+                        e.target.value,
+                      ),
+                    )
+                  }
                 />
                 <button
                   className="subtle"
                   aria-label={"Math editor for " + f.label}
                   onClick={() => onMath(f.key, f.label)}
                 >
-                  ƒx
+                  Math
                 </button>
               </div>
+            )}
+            {!f.choices && latexNotation && (
+              <span id={notationHintId} className="field-hint">
+                LaTeX · Use Math to edit visually
+              </span>
             )}
             {f.hint && <span className="field-hint">{f.hint}</span>}
           </label>
@@ -886,99 +935,111 @@ export function ProblemPreview({
   params: Record<string, string>;
   compact?: boolean;
 }) {
-  const [latex, setLatex] = useState("");
-  useEffect(() => {
-    let active = true;
-    import("mathlive")
-      .then((m) => {
-        const tex = (s: string) =>
-          s?.startsWith("latex:")
-            ? s.slice(6)
-            : m
-                .convertAsciiMathToLatex(s || "")
-                .replace(/\\lbrack(?=[A-Za-z])/g, "\\lbrack ");
-        let l = "";
-        const e = tex(params.expression || params.equation || "");
-        if (op.id === "distribution") {
-          const pv = listItems(params.parameters) || [];
-          const symbol =
-            params.distribution === "normal"
-              ? `X\\sim N(${tex(pv[0])},${tex(pv[1])}^{2})`
-              : `X\\sim \\operatorname{${params.distribution}}`;
-          const action = params.action;
-          const question =
-            action === "cdf"
-              ? `P(X\\le ${tex(params.value)})`
-              : action === "sf"
-                ? `P(X>${tex(params.value)})`
-                : action === "moments"
-                  ? "E[X],\\; \\operatorname{Var}(X)"
-                  : action === "pdf/pmf"
-                    ? `f(${tex(params.value)})`
-                    : `\\operatorname{quantile}(${tex(params.value)})`;
-          l = symbol + "\\qquad " + question;
-        } else if (op.id === "graph_analysis") {
-          l = `y=${e}\\qquad x\\in[${tex(params.lower)},${tex(params.upper)}]`;
-        } else if (op.id.startsWith("matrix_")) {
-          const ex = tex(params.expression);
-          l =
-            op.id === "matrix_inverse"
-              ? ex + "^{-1}"
-              : op.id === "matrix_det"
-                ? "\\det(" + ex + ")"
-                : ex;
-        } else if (op.id === "integrate")
-          l = `\\int${params.lower ? "_{" + tex(params.lower) + "}^{" + tex(params.upper) + "}" : ""} ${e}\\,d${tex(params.variable)}`;
-        else if (op.id === "multiple_integral") {
-          const b = (listItems(params.bounds) || []).map(
-            (x) => listItems(x) || [],
-          );
-          l =
-            [...b]
-              .reverse()
-              .map((x) => `\\int_{${tex(x[1])}}^{${tex(x[2])}}`)
-              .join("") +
-            e +
-            b.map((x) => "\\,d" + tex(x[0])).join("");
-        } else if (op.id === "differentiate")
-          l = `\\frac{d^{${params.order || 1}}}{d${tex(params.variable)}^{${params.order || 1}}}\\left(${e}\\right)`;
-        else if (["system", "numeric_system"].includes(op.id))
-          l =
-            "\\begin{cases}" +
-            (listItems(params.equations) || [])
-              .map((x) => tex(x) + (x.includes("=") ? "" : "=0"))
-              .join("\\\\") +
-            "\\end{cases}";
-        else if (op.id === "logic") {
-          const match = (params.expression || "").match(
-              /^(Implies|And|Or|Xor|Equivalent)\((.*)\)$/,
-            ),
-            a = match ? splitMath(match[2]) : [];
-          l = match
-            ? tex(a[0]) +
-              " " +
-              (
-                {
-                  Implies: "\\implies",
-                  And: "\\land",
-                  Or: "\\lor",
-                  Xor: "\\oplus",
-                  Equivalent: "\\iff",
-                } as Record<string, string>
-              )[match[1]] +
-              " " +
-              tex(a[1])
-            : e;
-        } else if (op.id === "apart")
-          l = `\\operatorname{apart}_{${tex(params.variable || "x")}}\\left(${e}\\right)`;
-        else l = e;
-        if (active) setLatex(l);
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
+  let latex = "";
+  try {
+    const tex = (source: string) => {
+      if (!source) return "";
+      const value = sourceToLatex(source);
+      if (value === null) throw Error("Use the exact source preview");
+      return value;
     };
-  }, [op, params]);
+    let l = "";
+    const e = ["logic", "distribution"].includes(op.id)
+      ? ""
+      : tex(params.expression || params.equation || "");
+    if (op.id === "distribution") {
+      const name = params.distribution || "normal",
+        pv = listItems(params.parameters ?? "[0,1]");
+      if (
+        pv === null ||
+        !distributions[name] ||
+        pv.length !== distributions[name].fields.length ||
+        pv.some((value) => !value)
+      )
+        throw Error("Use the exact parameter source");
+      const symbol =
+        name === "normal"
+          ? `X\\sim N(${tex(pv[0])},\\left(${tex(pv[1])}\\right)^{2})`
+          : `X\\sim \\operatorname{${name}}\\left(${pv.map(tex).join(",")}\\right)`;
+      const action = params.action;
+      const question =
+        action === "cdf"
+          ? `P(X\\le ${tex(params.value)})`
+          : action === "sf"
+            ? `P(X>${tex(params.value)})`
+            : action === "moments"
+              ? "E[X],\\; \\operatorname{Var}(X)"
+              : action === "pdf/pmf"
+                ? [
+                    "binomial",
+                    "poisson",
+                    "geometric",
+                    "hypergeometric",
+                    "negative-binomial",
+                  ].includes(name)
+                  ? `P(X=${tex(params.value)})`
+                  : `f(${tex(params.value)})`
+                : action === "isf"
+                  ? `\\operatorname{inverse\\ upper\\ tail}(${tex(params.value)})`
+                  : `\\operatorname{quantile}(${tex(params.value)})`;
+      l = symbol + "\\qquad " + question;
+    } else if (op.id === "graph_analysis") {
+      l = `y=${e}\\qquad x\\in[${tex(params.lower)},${tex(params.upper)}]`;
+    } else if (op.id.startsWith("matrix_")) {
+      const ex = tex(params.expression);
+      l =
+        op.id === "matrix_inverse"
+          ? "\\left(" + ex + "\\right)^{-1}"
+          : op.id === "matrix_det"
+            ? "\\det(" + ex + ")"
+            : ex;
+    } else if (op.id === "integrate")
+      l = `\\int${params.lower ? "_{" + tex(params.lower) + "}^{" + tex(params.upper) + "}" : ""} ${e}\\,d${tex(params.variable)}`;
+    else if (op.id === "multiple_integral") {
+      const b = (listItems(params.bounds) || []).map((x) => listItems(x) || []);
+      l =
+        [...b]
+          .reverse()
+          .map((x) => `\\int_{${tex(x[1])}}^{${tex(x[2])}}`)
+          .join("") +
+        e +
+        b.map((x) => "\\,d" + tex(x[0])).join("");
+    } else if (op.id === "differentiate")
+      l = `\\frac{d^{${tex(params.order || "1")}}}{d${tex(params.variable)}^{${tex(params.order || "1")}}}\\left(${e}\\right)`;
+    else if (["system", "numeric_system"].includes(op.id))
+      l =
+        "\\begin{cases}" +
+        (listItems(params.equations) || [])
+          .map((x) => tex(x) + (x.includes("=") ? "" : "=0"))
+          .join("\\\\") +
+        "\\end{cases}";
+    else if (op.id === "logic") {
+      const match = (params.expression || "").match(
+          /^(Implies|And|Or|Xor|Equivalent)\((.*)\)$/,
+        ),
+        a = match ? splitMath(match[2]) : [];
+      l = match
+        ? tex(a[0]) +
+          " " +
+          (
+            {
+              Implies: "\\implies",
+              And: "\\land",
+              Or: "\\lor",
+              Xor: "\\oplus",
+              Equivalent: "\\iff",
+            } as Record<string, string>
+          )[match[1]] +
+          " " +
+          tex(a[1])
+        : e;
+    } else if (op.id === "apart")
+      l = `\\operatorname{apart}_{${tex(params.variable || "x")}}\\left(${e}\\right)`;
+    else l = e;
+    latex = l;
+  } catch {
+    latex = "";
+  }
   return (
     <div className="problem-preview">
       {!compact && <span className="section-label">PROBLEM</span>}
@@ -986,18 +1047,20 @@ export function ProblemPreview({
         <MathView latex={latex} block />
       ) : (
         <div className="problem-summary">
-          {op.fields
-            .filter((f) => f.key !== "parameters")
-            .map((f) => (
-              <div key={f.key}>
-                <span>{f.label}</span>
-                {f.choices ? (
-                  <span>{params[f.key] ?? f.value}</span>
-                ) : (
-                  <Preview source={params[f.key] ?? f.value} />
-                )}
-              </div>
-            ))}
+          {op.fields.map((f) => (
+            <div key={f.key}>
+              <span>{f.label}</span>
+              {f.choices ? (
+                <span>{params[f.key] ?? f.value}</span>
+              ) : op.id === "distribution" && f.key === "parameters" ? (
+                <code className="source-expression">
+                  {params[f.key] ?? f.value}
+                </code>
+              ) : (
+                <Preview source={params[f.key] ?? f.value} />
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

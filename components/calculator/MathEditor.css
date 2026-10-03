@@ -1,0 +1,126 @@
+.math-editor-field {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.math-editor-field:focus-within {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 10%, transparent);
+}
+
+.math-entry-tools {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.math-entry-tools button,
+.math-editor-recovery button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.math-entry-tools > button {
+  color: var(--muted-foreground);
+}
+
+.math-entry-tools button:focus-visible,
+.math-editor-recovery button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.math-entry-palette {
+  display: grid;
+  flex-basis: 100%;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.math-entry-structures,
+.math-entry-commands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.math-entry-commands {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.math-editor-recovery {
+  font-size: 14px;
+}
+
+.math-entry-compact-label {
+  display: none;
+}
+
+@media (max-width: 700px), (max-height: 500px) and (pointer: coarse) {
+  .composer:focus-within
+    .math-editor[data-keyboard-tools="composer"]
+    .math-entry-tools,
+  .math-editor:focus-within[data-keyboard-tools="standalone"]
+    .math-entry-tools {
+    position: fixed;
+    left: var(--math-tools-left);
+    bottom: var(--math-tools-bottom);
+    width: var(--math-tools-width);
+    margin: 0;
+    flex-wrap: nowrap;
+    z-index: 6;
+    background: var(--card);
+  }
+  .math-editor[data-keyboard-tools] .math-entry-tools > button {
+    min-width: 44px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .math-editor[data-keyboard-tools] .math-entry-full-label {
+    display: none;
+  }
+  .math-editor[data-keyboard-tools] .math-entry-compact-label {
+    display: inline;
+  }
+}
+
+@media (max-width: 480px), (max-height: 500px) and (pointer: coarse) {
+  body {
+    --keyboard-toolbar-font-size: 14px;
+  }
+
+  .math-editor-field math-field::part(menu-item) {
+    box-sizing: border-box;
+    min-width: 44px;
+    min-height: 44px;
+    width: calc(100% - 12px);
+  }
+
+  .math-editor-field math-field::part(ui-menu-container) {
+    box-sizing: border-box;
+    /* The phone menu is a single list, with no overlapping child popovers. */
+    position: fixed !important;
+    left: 8px !important;
+    top: 8px !important;
+    right: auto !important;
+    bottom: auto !important;
+    min-width: 236px;
+    max-height: calc(100dvh - var(--math-keyboard-height, 0px) - 16px);
+    max-width: calc(100vw - 16px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}

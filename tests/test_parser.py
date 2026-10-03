@@ -4,6 +4,57 @@ x,t=S.symbols('x t')
 class ParserTests(unittest.TestCase):
  def context(self,defs=None,**settings):return Context({'settings':settings,'definitions':defs or []})
  def assertmath(self,got,want):self.assertEqual(S.simplify(got-want),0)
+ def test_latex_unary_plus_identity_and_precedence(self):
+  from latex_adapter import parse_math_latex
+  samples=[('+2',2),('+x',x),('+2+3*4',14),('+2^3',8),('(+2)^3',8),(r'\frac{+2}{+4}',S.Rational(1,2)),(r'\frac{1}{2}+3',S.Rational(7,2)),(r'\frac{1}{2}+3+4',S.Rational(15,2)),(r'\frac{1}{2}3',S.Rational(3,2)),(r'x^{+2}',x**2),(r'\sqrt{+4}',2),(r'2\cdot(+3)',6),(r'2+(+3)',5),(r'\left(+2\right)',2),(r'\sin(+x)',S.sin(x))]
+  for source,expected in samples:
+   with self.subTest(source=source):
+    parsed=parse_math_latex(source)
+    self.assertEqual(parsed.original,source)
+    self.assertmath(parsed.expression.doit(),expected)
+  matrix=r'\begin{pmatrix}+2&+x\\3&+4\end{pmatrix}'
+  for source in [matrix,'+'+matrix]:
+   parsed=parse_math_latex(source)
+   self.assertEqual(parsed.original,source)
+   self.assertEqual(parsed.expression,S.ImmutableMatrix([[2,x],[3,4]]))
+ def test_latex_unary_plus_strict_signs_and_limits(self):
+  from latex_adapter import parse_math_latex,AmbiguousLatex
+  for source in ['++2','+-2','-+2','--2','2++3','2+-3',r'2\cdot+3','+','2+','x^+2',r'\pm2',r'x^{+}',r'\lim_{x\to0^+}x']:
+   with self.subTest(source=source),self.assertRaises(ValueError):parse_math_latex(source)
+  # A directional plus is not an identity operator or a missing operand.
+  self.assertEqual(parse_math_latex(r'\lim_{x\to0^{+}}\frac{1}{x}').expression.doit(),S.oo)
+  self.assertEqual(parse_math_latex(r'\lim_{x\to0^{-}}\frac{1}{x}').expression.doit(),-S.oo)
+  with self.assertRaises(AmbiguousLatex):parse_math_latex(r'\sin +x^2')
+  with self.assertRaises(AmbiguousLatex):parse_math_latex(r'+\frac{1}{2}+3')
+ def test_latex_unary_plus_fallback_preserves_original_parser(self):
+  from unittest.mock import patch
+  from latex_adapter import parse_math_latex,AmbiguousLatex
+  with patch('latex_adapter._unary_plus_parser',side_effect=AssertionError('Only syntax failures may retry.')):
+   for source,expected in [(r'\frac{1}{2}+3',S.Rational(7,2)),(r'\frac{1}{2}+3+4',S.Rational(15,2)),(r'\frac{1}{2}3',S.Rational(3,2)),('2+3*4',14)]:
+    self.assertmath(parse_math_latex(source).expression.doit(),expected)
+   with self.assertRaises(AmbiguousLatex):parse_math_latex(r'\frac{1}{2}-1')
+   with self.assertRaises(AmbiguousLatex):parse_math_latex('f(x)')
+   self.assertTrue(isinstance(parse_math_latex('x=2+3').expression,S.Equality))
+ def test_latex_unary_plus_keeps_denominator_and_case_guards(self):
+  from latex_adapter import parse_math_latex
+  for source in [r'\frac{x}{+x}',r'+\frac{1}{x}',r'x^{+(-1)}']:
+   parsed=parse_math_latex(source)
+   self.assertEqual(parsed.original,source)
+   self.assertEqual(parsed.excluded_denominators,[x])
+  source=r'\begin{cases}+\frac{1}{+x}&x>0\\+0&\text{otherwise}\end{cases}'
+  parsed=parse_math_latex(source)
+  self.assertEqual(parsed.original,source)
+  self.assertEqual(parsed.expression.subs(x,0),0)
+  self.assertTrue(parsed.excluded_denominators)
+  self.assertTrue(all(d.subs(x,0)!=0 for d in parsed.excluded_denominators))
+ def test_latex_unary_plus_saved_references_and_degrees(self):
+  defs=[{'name':'f','args':'t','expression':'(t^2-1)/(t-1)'},{'name':'A','expression':'1/x'}]
+  c=self.context(defs)
+  self.assertmath(c.parse('+f(+2)',latex=True).doit(),3)
+  with self.assertRaisesRegex(ValueError,'denominator becomes zero'):self.context(defs).parse('+f(+1)',latex=True)
+  c=self.context(defs);self.assertmath(c.parse('+A',latex=True),1/x);self.assertEqual(c.denominators,[x])
+  self.assertmath(self.context(angle='deg').parse(r'+\sin(+30)',latex=True).doit(),S.Rational(1,2))
+  self.assertmath(self.context(angle='deg').parse(r'\arcsin(+1)',latex=True).doit(),90)
  def test_degrees(self):
   c=self.context(angle='deg')
   self.assertmath(c.parse('sin(30)').doit(),S.Rational(1,2));self.assertmath(c.parse('asin(1)').doit(),90);self.assertmath(c.parse('atan2(1,1)').doit(),45)
