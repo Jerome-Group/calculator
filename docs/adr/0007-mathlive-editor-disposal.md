@@ -10,6 +10,8 @@ Repeated nested editor closure and graph editor opening exposed a disposed Mathf
 
 Public blur is insufficient during MathLive's 60ms focus transition. Disabling before removal is also insufficient: the disposed field's disabled getter falls back to false after its host is cleared. Delaying or transferring focus in application code would introduce hidden fields, timers and keyboard side effects. Releasing ownership inside disposal handles both ordinary and immediate teardown without changing mathematical behaviour or exposing vendor internals to the application.
 
+The external Expression menu restores the retained selection without focusing the field first. MathLive schedules its keyboard sink focus after 60ms, while the menu scrim immediately saves the current DOM focus. Starting both operations together can restore focus outside the field while MathLive still considers it focused. Menu commands already belong to the field; opening its menu needs no editor focus transition. Insertion, editing commands and keyboard activation retain their explicit focus behavior.
+
 ## Verification boundary
 
 `tests/mathlive-lifecycle.mjs` executes actual methods extracted from both shipped bundles with controlled DOM dependencies and timers. It checks focused/inactive ownership, teardown within the focus transition, menu cleanup before model destruction and the next editor. The unpatched artifact fails the focused-owner assertion. These checks do not certify rendered browser focus or popover behaviour; `editor.repeated-transition` requires fresh production browser observations across nested Use/Close/Escape, Text/Math and graph editor transitions.

@@ -71,7 +71,8 @@ assert.equal(
   lifecycleChecks.stderr || lifecycleChecks.stdout,
 );
 const source = fs.readFileSync(
-  new URL("../components/calculator/MathEditor.tsx", import.meta.url),
+  process.env.CALCULATOR_MATH_EDITOR_SOURCE ??
+    new URL("../components/calculator/MathEditor.tsx", import.meta.url),
   "utf8",
 );
 const compiled = ts.transpileModule(source, {
@@ -93,6 +94,7 @@ function harness({ failImport = false } = {}) {
     selection = { ranges: [[0, 0]] };
     attributes = new Map();
     removed = false;
+    focusCalls = 0;
     constructor() {
       super();
       fields.push(this);
@@ -104,6 +106,7 @@ function harness({ failImport = false } = {}) {
       this.removed = true;
     }
     focus() {
+      this.focusCalls++;
       this.selection = { ranges: [[0, 0]] };
     }
     insert(value) {
@@ -356,6 +359,9 @@ try {
     pointerDefaultPrevented,
     "menu activation must preserve field selection",
   );
+  const focusCalls = field.focusCalls;
+  const priorValue = field.value;
+  field.selection = { ranges: [[0, 0]] };
   menuButton.props.onClick({
     currentTarget: {
       getBoundingClientRect: () => ({ left: 29, bottom: 390 }),
@@ -365,6 +371,12 @@ try {
     shiftKey: true,
     metaKey: false,
   });
+  assert.equal(
+    field.focusCalls,
+    focusCalls,
+    "opening the external menu must not start a delayed editor focus transition",
+  );
+  assert.equal(field.value, priorValue, "menu opening preserves expression");
   assert.deepEqual(field.menu, {
     options: {
       location: { x: 29, y: 390 },
@@ -382,6 +394,36 @@ try {
   );
   editor.unmount();
   assert.equal(field.removed, true);
+
+  const unfocused = harness();
+  const unfocusedProps = { value: "x^2+1", onChange() {} };
+  unfocused.render(unfocusedProps);
+  await flush();
+  const unfocusedField = unfocused.fields[0];
+  const unfocusedMenu = nodes(
+    unfocused.render(unfocusedProps),
+    (node) =>
+      node.type === "button" && node.props.children === "Expression menu",
+  )[0];
+  unfocusedMenu.props.onClick({
+    currentTarget: {
+      getBoundingClientRect: () => ({ left: 29, bottom: 390 }),
+    },
+  });
+  assert.equal(
+    unfocusedField.focusCalls,
+    0,
+    "menu opened before field focus must leave focus ownership unchanged",
+  );
+  assert(unfocusedField.menu, "an unfocused field still opens its owned menu");
+  assert.equal(unfocusedField.value, "x^2+1");
+  unfocused.handle().insert("x");
+  assert.equal(
+    unfocusedField.focusCalls,
+    1,
+    "subsequent editing still explicitly focuses the field",
+  );
+  unfocused.unmount();
 
   const retry = harness({ failImport: true });
   const props = { value: "x^2", onChange() {} };
