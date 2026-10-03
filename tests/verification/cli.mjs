@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { pnpmInvocation } from "../../scripts/verification-runner.mjs";
 import { browserContractChecks } from "./browser-contract.mjs";
+import { controlCoverageChecks } from "./control-coverage.mjs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { validateMap } from "../../scripts/verification-contract.mjs";
@@ -105,6 +106,7 @@ for (const [id, args, expected] of [
     assert.equal(result.stderr, "");
   });
 checks.push(...browserContractChecks(root));
+checks.push(...controlCoverageChecks(root));
 console.log(
   JSON.stringify({
     schemaVersion: 1,

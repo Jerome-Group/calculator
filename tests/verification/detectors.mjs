@@ -74,6 +74,11 @@ if (!chosen || chosen === "catalogue.mapping") {
       fs.copyFileSync(root + "/" + file, temp + "/" + file);
     const mapFile = temp + "/docs/verification-map.json",
       map = JSON.parse(fs.readFileSync(mapFile, "utf8"));
+    fs.symlinkSync(root + "/node_modules", temp + "/node_modules", "dir");
+    for (const file of new Set(map.controls.map((row) => row.source.file))) {
+      fs.mkdirSync(path.dirname(temp + "/" + file), { recursive: true });
+      fs.copyFileSync(root + "/" + file, temp + "/" + file);
+    }
     const original = run(temp + "/scripts/verify.mjs", ["coverage", "--json"], {
       CALCULATOR_ROOT: temp,
     });
@@ -97,6 +102,29 @@ if (!chosen || chosen === "catalogue.mapping") {
       mutant,
     );
     add("mapping.restored", restored.exitCode === 0, restored);
+    const control = map.controls.find((row) => row.id === "control.009");
+    const originalLine = control.source.line;
+    control.source.line = 948;
+    fs.writeFileSync(mapFile, JSON.stringify(map));
+    const stale = run(temp + "/scripts/verify.mjs", ["coverage", "--json"], {
+      CALCULATOR_ROOT: temp,
+    });
+    add(
+      "control-location.mutant",
+      stale.exitCode === 1 &&
+        stale.result?.checks.some(
+          (check) =>
+            check.id === "source.control.control.009" &&
+            check.status === "fail",
+        ),
+      stale,
+    );
+    control.source.line = originalLine;
+    fs.writeFileSync(mapFile, JSON.stringify(map));
+    const current = run(temp + "/scripts/verify.mjs", ["coverage", "--json"], {
+      CALCULATOR_ROOT: temp,
+    });
+    add("control-location.restored", current.exitCode === 0, current);
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }

@@ -1,5 +1,118 @@
 import path from "node:path";
+import fs from "node:fs";
+import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
+import ts from "typescript";
+
+const interactiveKinds = new Set([
+  "button",
+  "input",
+  "select",
+  "textarea",
+  "a",
+  "Choice",
+  "MathEditor",
+  "ListInput",
+  "MatrixInput",
+  "GraphWorkspace",
+  "CommandInput",
+  "CommandItem",
+  "StructuredFields",
+  "canvas",
+  "Slider",
+  "div",
+  "Checkbox",
+  "LogicFields",
+]);
+
+export function controlSourceSites(file, source) {
+  const ast = ts.createSourceFile(
+    file,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+  if (ast.parseDiagnostics.length) {
+    throw new Error("Invalid TSX source: " + file);
+  }
+  const printer = ts.createPrinter({ removeComments: true });
+  const sites = [];
+  function visit(node) {
+    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+      const kind = node.tagName.getText(ast);
+      const attributes = node.attributes.properties.filter(ts.isJsxAttribute);
+      if (
+        interactiveKinds.has(kind) &&
+        (kind === "CommandInput" ||
+          attributes.some((attribute) =>
+            /^on[A-Z]/.test(attribute.name.getText(ast)),
+          ))
+      ) {
+        const canonical = printer.printNode(ts.EmitHint.Unspecified, node, ast);
+        sites.push({
+          line: ast.getLineAndCharacterOfPosition(node.getStart(ast)).line + 1,
+          kind,
+          signature: createHash("sha256").update(canonical).digest("hex"),
+        });
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(ast);
+  return sites;
+}
+
+export function checkControlCoverage(root, controls) {
+  const checks = [];
+  const add = (id, passed, message) =>
+    checks.push({ id, status: passed ? "pass" : "fail", message });
+  const ids = controls.map((control) => control.id);
+  add(
+    "source.controls.ids",
+    ids.every((id) => /^control\.\d{3}$/.test(id)) &&
+      new Set(ids).size === ids.length,
+    "Stable control IDs must be valid and unique",
+  );
+  const directory = path.join(root, "components/calculator");
+  const sourceFiles = fs
+    .readdirSync(directory, { recursive: true })
+    .filter((file) => file.endsWith(".tsx"))
+    .map((file) => "components/calculator/" + file.split(path.sep).join("/"));
+  for (const file of new Set([
+    ...sourceFiles,
+    ...controls.map((control) => control.source.file),
+  ])) {
+    const rows = controls.filter((control) => control.source.file === file);
+    let sites = [];
+    try {
+      sites = controlSourceSites(
+        file,
+        fs.readFileSync(path.join(root, file), "utf8"),
+      );
+      add("source.controls.read." + file, true, "Readable, valid TSX source");
+    } catch (error) {
+      add("source.controls.read." + file, false, error.message);
+    }
+    add(
+      "source.controls.inventory." + file,
+      rows.length === sites.length &&
+        new Set(rows.map((row) => row.source.line)).size === rows.length,
+      "Each current AST control site has one mapping",
+    );
+    for (const row of rows) {
+      const site = sites.find((site) => site.line === row.source.line);
+      add(
+        "source.control." + row.id,
+        !!site &&
+          site.kind === row.kind &&
+          site.signature === row.source.signature,
+        "Current JSX location, kind and semantic signature",
+      );
+    }
+  }
+  return checks;
+}
 export async function checkCoverage(root, map, fixtures) {
   const { operations } = await import(
     pathToFileURL(path.join(root, "lib/calculator/catalog.ts"))
@@ -55,6 +168,7 @@ export async function checkCoverage(root, map, fixtures) {
       }
     }
   }
+  checks.push(...checkControlCoverage(root, map.controls));
   return {
     status: checks.every((check) => check.status === "pass") ? "pass" : "fail",
     checks,
