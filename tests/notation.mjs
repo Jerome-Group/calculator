@@ -3,6 +3,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import ts from "typescript";
 import * as displayFormat from "../lib/calculator/display-format.ts";
+import * as displayColors from "../lib/calculator/display-colors.ts";
 import { abs, parse, subtract } from "mathjs";
 import {
   mathToSource,
@@ -31,9 +32,11 @@ new Function(
   (name) =>
     name === "../../lib/calculator/display-format"
       ? displayFormat
-      : name === "katex"
-        ? { default: require(name) }
-        : require(name),
+      : name === "../../lib/calculator/display-colors"
+        ? displayColors
+        : name === "katex"
+          ? { default: require(name) }
+          : require(name),
   viewModule,
   viewModule.exports,
 );
@@ -98,6 +101,96 @@ assert(
     '<a href="javascript:',
   ),
   "The display adaptation retains KaTeX trust:false",
+);
+
+const vendorSource = fs.readFileSync(
+  new URL("../node_modules/mathlive/mathlive.mjs", import.meta.url),
+  "utf8",
+);
+for (const [constant, command] of [
+  ["FOREGROUND_COLORS", "textcolor"],
+  ["BACKGROUND_COLORS", "colorbox"],
+]) {
+  const declaration = new RegExp(
+    "var " + constant + " = (\\{[\\s\\S]*?\\n\\});",
+  ).exec(vendorSource);
+  assert(declaration, "Pinned vendor palette remains available");
+  const palette = new Function("return " + declaration[1])();
+  assert.equal(Object.keys(palette).length, 16);
+  for (const [name, hex] of Object.entries(palette)) {
+    const source =
+      "\\" +
+      command +
+      "{" +
+      name +
+      "}{" +
+      (command === "colorbox" ? "$3+1$" : "3+1") +
+      "}";
+    const rendered = viewModule.exports.default({ latex: source });
+    const html = rendered.props.dangerouslySetInnerHTML.__html;
+    assert(!html.includes("katex-error"), source);
+    assert(
+      html.includes(hex),
+      "History uses the exact pinned vendor shade: " + source,
+    );
+    assert(
+      html.includes(
+        `<annotation encoding="application/x-tex">${source}</annotation>`,
+      ),
+      "Original palette source remains copyable",
+    );
+  }
+}
+for (const source of [
+  String.raw`\colorbox{light-grey}{$\textcolor{dark-grey}{3+1}$}`,
+  String.raw`\fcolorbox{dark-grey}{light-grey}{$3+1$}`,
+  String.raw`\bbox[5px,border: 2px solid red]{\textcolor{dark-grey}{a<b}}`,
+]) {
+  const rendered = viewModule.exports.default({ latex: source });
+  const html = (rendered.props.children ?? rendered).props
+    .dangerouslySetInnerHTML.__html;
+  assert(!html.includes("katex-error"));
+  assert(html.includes("#666"));
+  assert(
+    html.includes(
+      `<annotation encoding="application/x-tex">${source.replaceAll("<", "&lt;")}</annotation>`,
+    ),
+  );
+}
+for (const source of [
+  String.raw`\textcolor{rebeccapurple}{3+1}`,
+  String.raw`\textcolor{#abcdef}{3+1}`,
+  String.raw`\colorbox{#abc}{$3+1$}`,
+  String.raw`\text{dark-grey light-grey}`,
+  String.raw`\\textcolor{dark-grey}{3+1}`,
+  String.raw`\verb|\textcolor{dark-grey}{3+1}|`,
+  String.raw`% \textcolor{dark-grey}{3+1}`,
+  String.raw`\textcolor{__proto__}{3+1}`,
+  String.raw`\textcolor{red;background:url(x)}{3+1}`,
+  String.raw`\textcolor{dark-grey}{3+1`,
+  String.raw`\textcolor{dark-grey}{3+1}}`,
+  "{".repeat(65) + String.raw`\textcolor{dark-grey}{3+1}` + "}".repeat(65),
+  String.raw`\textcolor{dark-grey}{` + "x".repeat(8000) + "}",
+]) {
+  assert.equal(
+    displayColors.formatDisplayColors(source),
+    source,
+    "Unrelated, malformed or bounded-out source is unchanged",
+  );
+}
+assert.equal(
+  displayColors.formatDisplayColors(String.raw`\color{ dark-grey }3+1`),
+  String.raw`\color{#666}3+1`,
+);
+const untrustedColorSource = String.raw`\textcolor{dark-grey}{\href{javascript:alert(1)}{a<b\&c}}`;
+const untrustedColorHtml = viewModule.exports.default({
+  latex: untrustedColorSource,
+}).props.dangerouslySetInnerHTML.__html;
+assert(!untrustedColorHtml.includes('<a href="javascript:'));
+assert(
+  untrustedColorHtml.includes(
+    untrustedColorSource.replaceAll("&", "&amp;").replaceAll("<", "&lt;"),
+  ),
 );
 
 const grouped = [

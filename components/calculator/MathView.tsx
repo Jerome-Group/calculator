@@ -1,5 +1,6 @@
 "use client";
 import katex from "katex";
+import { formatDisplayColors } from "../../lib/calculator/display-colors";
 import {
   formatDisplayMath,
   formatNumericAssignmentMath,
@@ -56,16 +57,17 @@ export default function MathView({
         ? formatNumericAssignmentMath(latex, displayDecimals)
         : formatDisplayMath(latex, displayDecimals);
   let html = "";
-  const box = displayBox(displayLatex);
+  const renderLatex = formatDisplayColors(displayLatex);
+  const box = displayBox(renderLatex);
   try {
-    html = katex.renderToString(box?.body ?? displayLatex, {
+    html = katex.renderToString(box?.body ?? renderLatex, {
       displayMode: block,
       throwOnError: false,
       trust: false,
       strict: "ignore",
       output: "htmlAndMathml",
     });
-    if (box)
+    if (box || renderLatex !== displayLatex)
       html = html.replace(
         /(<annotation encoding="application\/x-tex">)[\s\S]*?(<\/annotation>)/,
         (_, start, end) => start + annotationText(latex) + end,

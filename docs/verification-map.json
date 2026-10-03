@@ -8206,7 +8206,9 @@
       "graph.resource-recovery",
       "graph.fit-drawability",
       "editor.inline-latex-commit",
-      "sync.initialization-timeout"
+      "sync.initialization-timeout",
+      "editor.vendor-menu-coverage",
+      "editor.menu-clipboard-safety"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -14641,7 +14643,9 @@
         "components/calculator/MathView.tsx",
         "tests/notation.mjs",
         "lib/calculator/mathlive-menu.ts",
-        "tests/mathlive-menu.mjs"
+        "tests/mathlive-menu.mjs",
+        "lib/calculator/display-colors.ts",
+        "lib/calculator/mathlive-cut.ts"
       ],
       "browserScenarioIds": [
         "math-fractions-entry",
@@ -14678,7 +14682,9 @@
         "editor.scalar-notation-roundtrip",
         "editor.vendor-presentation",
         "editor.vendor-touch-targets",
-        "editor.inline-latex-commit"
+        "editor.inline-latex-commit",
+        "editor.vendor-menu-coverage",
+        "editor.menu-clipboard-safety"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14717,9 +14723,11 @@
         "editor.vendor-insertions: actual vendor template activation, completed operands, exact serialized LaTeX and semantic rendered outcomes independently matched; static TSX controls do not enumerate or certify vendor menu controls; at 320px/390px, first insertion from an unfocused empty field restores field focus and selected-placeholder typing; repeated insertion after clearing remains usable; real pointer presses on leaves overlapping the mathfield select exactly once without field pointer capture; ordinary caret pointer selection still works; independently match degree-mode calculus and saved-function fixtures, and bound-point positive/nonzero assumption rejection with a valid positive-assumption control; typing a Greek command into an integral variable and Return commits temporary LaTeX mode without submitting an incomplete calculation; subsequent math-mode Enter submits the completed source",
         "editor.integral-shortcut: completed root integral 3 to 4 of 1 transferred into existing integrand/variable/bounds fields with one integral in preview, independently calculated result 1, generic manual integration semantics retained",
         "editor.scalar-notation-roundtrip: generic scalar inputs hide internal latex marker while preserving encoded source through edits and clear/retype; actual Math editor and reopened problem retain notation and mathematical meaning; at 320px/390px, encoded scalar fields show a visible LaTeX hint associated through aria-describedby, retained after clearing/retyping, while ordinary text fields have no notation hint",
-        "editor.vendor-presentation: actual vendor foreground red, background blue, boxed, bbox red and dashed border activation; capture exact serialized LaTeX, visible input colour/background/enclosure and semantic DOM/screenshots, then independently match each calculated result 4; broader vendor style variants remain unverified until explicitly inventoried and observed; actual Calculation card bbox previews render readable mathematical bodies inside the retained red-solid/black-dashed enclosures without visible padding/border metadata; copy retains exact original LaTeX annotation and saved serialization; Decoration has distinct accessible names Boxed expression, Red solid border and Black dashed border; visible font/accent preview choices have descriptive accessible names without changing their previews or commands",
+        "editor.vendor-presentation: actual vendor foreground red, background blue, boxed, bbox red and dashed border activation; capture exact serialized LaTeX, visible input colour/background/enclosure and semantic DOM/screenshots, then independently match each calculated result 4; the separate editor.vendor-menu-coverage scenario requires the complete pinned vendor inventory; actual Calculation card bbox previews render readable mathematical bodies inside the retained red-solid/black-dashed enclosures without visible padding/border metadata; copy retains exact original LaTeX annotation and saved serialization; Decoration has distinct accessible names Boxed expression, Red solid border and Black dashed border; visible font/accent preview choices have descriptive accessible names without changing their previews or commands",
         "editor.vendor-touch-targets: at 320px/390px, actual root and submenu interactive item bounds at least 44px by 44px, including colour swatches and matrix grid; keyboard-visible menu bounds fit the keyboard-free viewport, top-layer submenus remain visible, real pointer activation changes source/style, and scrolling reveals/reaches remaining items with working focus/dismissal recovery; AX click alone cannot establish pointer activation; matrix cells have accessible row-by-column size names, and actual 2x2 insertion selects the first placeholder: type1, Tab2, Tab3, Tab4 without replacing the matrix or leaving the editor, then independently check retained matrix entries",
-        "editor.inline-latex-commit: Actual integral differential placeholder enters LaTeX command theta; Return commits to math mode without a calculation or stale-input error; the next math Enter creates exactly one result1. Menu-consumed Enter also must not submit."
+        "editor.inline-latex-commit: Actual integral differential placeholder enters LaTeX command theta; Return commits to math mode without a calculation or stale-input error; the next math Enter creates exactly one result1. Menu-consumed Enter also must not submit.",
+        "editor.vendor-menu-coverage: retain a hashed private inventory of all 115 MathLive 0.110.0 menu leaves with leaf ID, group, eligible context, command and expected source/semantic effect; link each of the 112 ordinary leaves to actual current-build UI action records: 13 Insert templates, 25 matrix sizes, 6 matrix edits, 5 borders, 16 foreground plus 16 background colours, 6 fonts, 12 accents, 3 decorations, 3 modes and 7 clipboard/selection actions. Record current runtime public MathfieldElement.computeEngine and actual menu observations in eligible contexts for the 3 conditional compute-engine leaves; only observed null/unavailable and absent leaves permit an explicitly reasoned not-applicable classification. Never install a compute engine or fabricate conditional activation. Retain selected/caret/editable matrix contexts, minimum-shape delete availability and actual shape/cell effects. Matrix/pmatrix/bmatrix/Bmatrix preserve [[1,2],[3,4]]; vmatrix independently calculates determinant -2. All 32 palette calculations independently equal 4; rendered foreground/background match the pinned MathLive hex values and original source annotations survive preview/history/copy. Font/accent source preservation is distinct from computational success: retain explicit existing engine errors for the 17 unsupported forms and supported overline conjugation, without stripping notation or inventing semantics. Grouped pass flags alone cannot prove complete leaf execution; use original action, source, result, target and screenshot records linked to each leaf. Source tests do not substitute for IAB activation.",
+        "editor.menu-clipboard-safety: preserve user clipboard around isolated synthetic checks. Set an owned sentinel; select actual 3+1 and activate the vendor Cut leaf. Observe successful clipboard copy before selected input removal, then actual Paste and Calculate independently equal 4. Retain actual source/clipboard and menu action order; pending clipboard write keeps input until success, denied/rejected write keeps selected input and sentinel without data loss. Exercise Undo/Redo, repeated Cut/Paste, and interruption or field/selection change while write is pending; completion must not delete a newer draft or another selection. A stale clipboard containing the sentinel plus an empty input is a failure, even if native keyboard Cut works. Run real IAB menu interactions; mathlive-cut/mathlive-menu source regressions and CLI/CI results cannot replace browser evidence."
       ],
       "fixtures": [
         "editor.menu.abs",
@@ -14848,12 +14856,16 @@
       "id": "feature.identity-sync",
       "source": [
         "components/calculator/CalculatorGate.tsx",
-        "app/api/workspace/route.ts"
+        "app/api/workspace/route.ts",
+        "app/chatgpt-auth.ts",
+        "lib/calculator/sync.ts"
       ],
       "browserScenarioIds": [
         "sync.concurrent-recovery",
         "sync.volatile-leave-guard",
-        "sync.initialization-timeout"
+        "sync.initialization-timeout",
+        "identity.sites-vs-loopback",
+        "sync.scoped-browser-roundtrip"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14883,13 +14895,19 @@
         "independent assertions",
         "semantic DOM/screenshot artifacts",
         "revision + dirty source + built asset fingerprints",
-        "sync.initialization-timeout: Private proxy holds GET or its body past the real 15-second deadline. Cached verified identity recovers local work; uncached/unknown identity stays recoverably blocked; no late owner/data may overwrite or trigger writes. Retry after restoration succeeds."
+        "sync.initialization-timeout: Private proxy holds GET or its body past the real 15-second deadline. Cached verified identity recovers local work; uncached/unknown identity stays recoverably blocked; no late owner/data may overwrite or trigger writes. Retry after restoration succeeds.",
+        "identity.sites-vs-loopback: current Sites authenticated-header identity remains distinct from the explicitly synthetic loopback preview identity; capture actual private runtime responses and owner-scoped workspace behavior without exposing credentials or production workspace data.",
+        "sync.scoped-browser-roundtrip: actual synthetic owner A save/reload restores A work; owner B opens only B work, and returning to A restores A without cross-owner history/definition leakage; retain actual navigation, identity, save acknowledgement and source/build observations."
       ]
     },
     {
       "id": "feature.offline",
-      "source": ["scripts/offline-manifest.mjs"],
-      "browserScenarioIds": [],
+      "source": [
+        "scripts/offline-manifest.mjs",
+        "public/sw.js",
+        "components/calculator/Calculator.tsx"
+      ],
+      "browserScenarioIds": ["offline.production-disconnected-reload"],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
@@ -14917,7 +14935,8 @@
         "ordered UI steps",
         "independent assertions",
         "semantic DOM/screenshot artifacts",
-        "revision + dirty source + built asset fingerprints"
+        "revision + dirty source + built asset fingerprints",
+        "offline.production-disconnected-reload: prepare and verify the current built offline manifest through actual UI, genuinely disconnect browser/origin, reload the cached app, and calculate a fresh bundled-engine input never previously evaluated; retain navigator/service-worker state and independent semantic result, not an earlier online answer."
       ]
     },
     {

@@ -113,6 +113,50 @@ export function checkControlCoverage(root, controls) {
   }
   return checks;
 }
+export function checkScenarioCoverage(map) {
+  const required = map?.evidenceSchema?.requiredBrowserScenarioIds;
+  const features = map?.features;
+  const validInventory =
+    Array.isArray(required) &&
+    required.length > 0 &&
+    Array.isArray(features) &&
+    features.length > 0 &&
+    features.every(
+      (feature) =>
+        feature && typeof feature.id === "string" && feature.id.trim(),
+    );
+  const checks = [
+    {
+      id: "source.scenarios.inventory",
+      status: validInventory ? "pass" : "fail",
+      message: "Nonempty required scenario and feature arrays must be present",
+    },
+  ];
+  if (!validInventory) return checks;
+  checks.push({
+    id: "source.scenarios.ids",
+    status:
+      required.every((id) => typeof id === "string" && id.trim()) &&
+      new Set(required).size === required.length
+        ? "pass"
+        : "fail",
+    message: "Required browser scenario IDs must be nonempty and unique",
+  });
+  for (const id of new Set(required)) {
+    const owners = features.filter(
+      (feature) =>
+        typeof feature.id === "string" &&
+        feature.id.trim() &&
+        feature.browserScenarioIds?.includes(id),
+    );
+    checks.push({
+      id: "source.scenario.owner." + id,
+      status: owners.length ? "pass" : "fail",
+      message: "Required browser scenario has an existing mapped feature owner",
+    });
+  }
+  return checks;
+}
 export async function checkCoverage(root, map, fixtures) {
   const { operations } = await import(
     pathToFileURL(path.join(root, "lib/calculator/catalog.ts"))
@@ -169,6 +213,7 @@ export async function checkCoverage(root, map, fixtures) {
     }
   }
   checks.push(...checkControlCoverage(root, map.controls));
+  checks.push(...checkScenarioCoverage(map));
   return {
     status: checks.every((check) => check.status === "pass") ? "pass" : "fail",
     checks,

@@ -2,10 +2,14 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import ts from "typescript";
-import { prepareMathLiveMenu } from "../lib/calculator/mathlive-menu.ts";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { checkExternalMenuGeometry } from "./verification/editor-geometry.mjs";
+
+await import("./resolve-types.mjs");
+const { prepareMathLiveMenu } = await import(
+  "../lib/calculator/mathlive-menu.ts"
+);
 
 const phoneMenuGeometry = {
   context: "composer",

@@ -1,8 +1,14 @@
 import type { MathfieldElement } from "mathlive";
+import { cutMathLiveSelection } from "./mathlive-cut";
 
 type MenuItem = MathfieldElement["menuItems"][number];
 
 const accessibleLabels: Record<string, string> = {
+  "environment-no-border": "No border",
+  "environment-parentheses": "Parentheses",
+  "environment-brackets": "Square brackets",
+  "environment-bar": "Determinant bars",
+  "environment-braces": "Braces",
   "decoration-boxed": "Boxed expression",
   "decoration-red-box": "Red solid border",
   "decoration-dashed-black-box": "Black dashed border",
@@ -25,6 +31,8 @@ export function prepareMathLiveMenu(field: MathfieldElement) {
     return items.map((item) => {
       if ("submenu" in item) return { ...item, submenu: adapt(item.submenu) };
       if (!("id" in item) || typeof item.id !== "string") return item;
+      if (item.id === "cut")
+        return { ...item, onMenuSelect: () => cutMathLiveSelection(field) };
       const label = accessibleLabels[item.id];
       if (label) return { ...item, ariaLabel: label };
       if (/^variant-(?:style-)?/.test(item.id) && item.tooltip)
