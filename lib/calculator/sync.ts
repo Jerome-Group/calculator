@@ -5,6 +5,8 @@ import {
   readDrafts,
   discardDraft,
   acknowledgeDraft,
+  recoveryNotebooks,
+  type Draft,
 } from "./drafts";
 import {
   validateState,
@@ -12,7 +14,7 @@ import {
   accountStorage,
   loadState,
 } from "./storage";
-import { uid, type SavedState } from "./types";
+import { type SavedState } from "./types";
 import {
   serializeWorkspaceRequest,
   workspaceRequestFits,
@@ -34,6 +36,38 @@ let sessionOwner = "",
   sessionState: SavedState | null = null;
 let cloudAcknowledgedText = "",
   durableDraftText = "";
+type RecoveryReceipt = {
+  draft: Draft;
+  notebooks: SavedState["notebooks"];
+  settings: SavedState["settings"];
+  localText: string | null;
+};
+let recoveryReceipts: RecoveryReceipt[] = [];
+function acknowledgeRecovery(state: SavedState) {
+  recoveryReceipts = recoveryReceipts.filter((receipt) => {
+    if (
+      JSON.stringify(receipt.settings) !== JSON.stringify(state.settings) ||
+      !receipt.notebooks.every((book) =>
+        state.notebooks.some(
+          (saved) => JSON.stringify(saved) === JSON.stringify(book),
+        ),
+      )
+    )
+      return true;
+    try {
+      if (receipt.draft.key) discardDraft(receipt.draft);
+      if (
+        receipt.localText !== null &&
+        localStorage.getItem(accountStorage(STORAGE_KEY)) === receipt.localText
+      )
+        localStorage.removeItem(accountStorage("dirty"));
+      return false;
+    } catch {
+      storageUnavailable = true;
+      return true;
+    }
+  });
+}
 let storageUnavailable = false,
   storageReadable = true;
 function readLocal(key: string) {
@@ -109,7 +143,6 @@ function savedRevision() {
 }
 function assignAccount(identity: User) {
   if (user && user.id !== identity.id) {
-    accountGeneration++;
     stopSave();
     pending = null;
     sessionOwner = "";
@@ -127,6 +160,7 @@ export async function initializeAccount(): Promise<User> {
   storageUnavailable = false;
   storageReadable = true;
   beginDraftSession();
+  recoveryReceipts = [];
   const assertCurrent = () => {
     if (generation !== accountGeneration)
       throw Error("Account changed. Reload before opening saved work.");
@@ -246,29 +280,35 @@ export async function initializeAccount(): Promise<User> {
     }
     const merged = { ...remote, notebooks: [...remote.notebooks] };
     const seen = new Set([JSON.stringify(remote)]);
-    const incorporated = [];
+    const incorporated: RecoveryReceipt[] = [];
     let keepOnlyLocalCopy = false;
     for (const draft of drafts) {
       const text = JSON.stringify(draft.state);
       if (seen.has(text)) {
-        incorporated.push(draft);
+        incorporated.push({
+          draft,
+          notebooks: draft.state.notebooks,
+          settings: draft.state.settings,
+          localText: text === localText ? localText : null,
+        });
         continue;
       }
-      if (merged.notebooks.length + draft.state.notebooks.length > 100) {
+      const copies = await recoveryNotebooks(
+        data.user.id,
+        draft.state,
+        merged.notebooks,
+      );
+      assertCurrent();
+      const additions = copies.filter(
+        (copy) => !merged.notebooks.some((book) => book.id === copy.id),
+      );
+      if (merged.notebooks.length + additions.length > 100) {
         if (!draft.key) keepOnlyLocalCopy = true;
         continue;
       }
-      const suffix = " (offline copy)";
       const candidate = {
         ...merged,
-        notebooks: [
-          ...merged.notebooks,
-          ...draft.state.notebooks.map((book) => ({
-            ...book,
-            id: uid(),
-            name: book.name.slice(0, 100 - suffix.length) + suffix,
-          })),
-        ],
+        notebooks: [...merged.notebooks, ...additions],
       };
       if (
         !workspaceRequestFits(
@@ -280,7 +320,12 @@ export async function initializeAccount(): Promise<User> {
       }
       merged.notebooks = candidate.notebooks;
       seen.add(text);
-      incorporated.push(draft);
+      incorporated.push({
+        draft,
+        notebooks: copies,
+        settings: draft.state.settings,
+        localText: text === localText ? localText : null,
+      });
     }
     if (keepOnlyLocalCopy && local) {
       rememberWorkspace(data.user.id, local);
@@ -306,10 +351,17 @@ export async function initializeAccount(): Promise<User> {
       }
       if (storageReadable) writeLocal(accountStorage("dirty"), "1");
     } else if (storageReadable) removeLocal(accountStorage("dirty"));
-    for (const draft of incorporated) {
-      if (!draft.key || !cachedWorkspace || !cachedDraft) continue;
+    recoveryReceipts = incorporated;
+    for (const receipt of incorporated) {
+      if (
+        !receipt.draft.key ||
+        !cachedWorkspace ||
+        !cachedDraft ||
+        JSON.stringify(receipt.settings) !== JSON.stringify(merged.settings)
+      )
+        continue;
       try {
-        discardDraft(draft);
+        discardDraft(receipt.draft);
       } catch {
         storageUnavailable = true;
       }
@@ -330,6 +382,7 @@ export function forgetAccount() {
   sessionState = null;
   cloudAcknowledgedText = "";
   durableDraftText = "";
+  recoveryReceipts = [];
   removeLocal(IDENTITY);
   navigator.serviceWorker?.controller?.postMessage({ type: "SIGN_OUT" });
 }
@@ -344,7 +397,10 @@ export function syncWorkspace(state: SavedState) {
     storageUnavailable = true;
   }
   pending = state;
-  if (storageReadable) {
+  if (
+    storageReadable &&
+    readLocal(accountStorage(STORAGE_KEY)) === JSON.stringify(state)
+  ) {
     writeLocal(revKey(), String(revision));
     writeLocal(accountStorage("dirty"), "1");
   }
@@ -402,6 +458,7 @@ async function drain() {
       throw Error("The cloud save response is invalid");
     revision = data.revision;
     cloudAcknowledgedText = acknowledgedText;
+    acknowledgeRecovery(state);
     try {
       acknowledgeDraft(owner, state, revision);
     } catch {
