@@ -150,6 +150,111 @@ const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
 }).outputText;
 
+for (const bundle of ["mathlive.mjs", "mathlive.js"]) {
+  const vendorSource = fs.readFileSync(
+    new URL("../node_modules/mathlive/" + bundle, import.meta.url),
+    "utf8",
+  );
+  const vendorAST = ts.createSourceFile(
+    bundle,
+    vendorSource,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.JS,
+  );
+  let menuMethod;
+  function findMenuMethod(node) {
+    if (
+      ts.isMethodDeclaration(node) &&
+      node.name.getText(vendorAST) === "toggleContextMenu"
+    )
+      menuMethod = node.getText(vendorAST);
+    ts.forEachChild(node, findMenuMethod);
+  }
+  findMenuMethod(vendorAST);
+  assert(menuMethod, bundle + " contains the pinned menu command");
+  const menuBuilders = new Set([
+    "getDefaultMenuItems",
+    "getVariantSubmenu",
+    "getAccentSubmenu",
+    "getDecorationSubmenu",
+    "getBackgroundColorSubmenu",
+    "getColorSubmenu",
+    "getInsertMatrixSubmenu",
+    "variantMenuItem",
+    "variantStyleMenuItem",
+    "insertMenu",
+  ]);
+  const dynamicProperties = new Set([
+    "visible",
+    "enabled",
+    "checked",
+    "label",
+    "class",
+    "tooltip",
+    "ariaLabel",
+    "onMenuSelect",
+  ]);
+  let menuCallbacks = 0;
+  function checkMenuCallback(node) {
+    if (
+      ts.isPropertyAssignment(node) &&
+      dynamicProperties.has(node.name.getText(vendorAST)) &&
+      (ts.isArrowFunction(node.initializer) ||
+        ts.isFunctionExpression(node.initializer))
+    ) {
+      menuCallbacks++;
+      assert.equal(
+        node.initializer.parameters.length,
+        0,
+        bundle + " pinned menu semantics must not depend on opening modifiers",
+      );
+      assert(!/\barguments\b/.test(node.initializer.getText(vendorAST)));
+    }
+    ts.forEachChild(node, checkMenuCallback);
+  }
+  function checkMenuBuilders(node) {
+    if (ts.isFunctionDeclaration(node) && menuBuilders.has(node.name?.text))
+      checkMenuCallback(node);
+    else ts.forEachChild(node, checkMenuBuilders);
+  }
+  checkMenuBuilders(vendorAST);
+  assert.equal(
+    menuCallbacks,
+    179,
+    bundle + " all pinned menu callbacks audited",
+  );
+  let focusCalls = 0,
+    options;
+  const target = {};
+  const context = {
+    model: { position: 0 },
+    element: {
+      querySelector: () => target,
+      focus: () => focusCalls++,
+    },
+    menu: {
+      visible: true,
+      state: "closed",
+      show: (value) => (options = value),
+    },
+  };
+  const toggleMenu = new Function(
+    "getElementInfo",
+    `return ({${menuMethod}}).toggleContextMenu`,
+  )((field, offset) => {
+    assert.equal(field, context);
+    assert.equal(offset, 0);
+    return { bounds: { right: 30, bottom: 290 } };
+  });
+  assert.equal(toggleMenu.call(context), true);
+  assert.equal(focusCalls, 0, bundle + " opens without delayed field focus");
+  assert.equal(options.target, target);
+  assert.deepEqual(options.location, { x: 30, y: 290 });
+  options.onDismiss();
+  assert.equal(focusCalls, 1, bundle + " restores field focus after dismissal");
+}
+
 // Execute the actual geometry/cleanup block with controlled public DOM/API bounds.
 const geometrySource = ts.createSourceFile(
   "MathEditor.tsx",
@@ -496,7 +601,10 @@ function harness({ failImport = false } = {}) {
       this.inserted = { value, selection: this.selection };
     }
     executeCommand(value) {
+      this.events.push(value);
       this.command = { value, selection: this.selection };
+      if (value === "toggleContextMenu")
+        this.menu = { selection: this.selection };
     }
     get menuItems() {
       assert(
@@ -504,7 +612,6 @@ function harness({ failImport = false } = {}) {
         "Public menu API is used only after mounting the field",
       );
       this.events.push("menuItems");
-      this.menuInitialized = true;
       return this.menuEntries;
     }
     set menuItems(items) {
@@ -513,11 +620,6 @@ function harness({ failImport = false } = {}) {
     }
     showMenu(options) {
       this.events.push("showMenu");
-      assert(
-        this.focusCalls > 0,
-        "menu must capture the focused mathfield before vendor activation",
-      );
-      if (!this.menuInitialized) throw TypeError("Menu is not initialized");
       this.menu = { options, selection: this.selection };
       return true;
     }
@@ -776,46 +878,46 @@ try {
   );
   const focusCalls = field.focusCalls;
   const priorValue = field.value;
+  let menuSelection = { ranges: [[0, 0]] };
+  Object.defineProperty(field, "selection", {
+    configurable: true,
+    get: () => menuSelection,
+    set: (value) => {
+      field.events.push("restoreSelection");
+      menuSelection = value;
+    },
+  });
   globalThis.window.mathVirtualKeyboard = {
     visible: true,
     hide() {
       field.events.push("hideKeyboard");
       this.visible = false;
-      field.selection = { ranges: [[0, 0]] };
+      menuSelection = { ranges: [[0, 0]] };
     },
   };
-  field.selection = { ranges: [[0, 0]] };
   field.events.length = 0;
   menuButton.props.onClick({
     currentTarget: {
-      getBoundingClientRect: () => {
-        field.events.push("bounds");
-        return { left: 29, bottom: 390 };
-      },
+      getBoundingClientRect: () => ({ left: 29, bottom: 390 }),
     },
-    altKey: false,
-    ctrlKey: false,
-    shiftKey: true,
-    metaKey: false,
   });
   assert.equal(
     field.focusCalls,
-    focusCalls + 1,
-    "opening the external menu synchronously focuses the preserved field selection",
+    focusCalls,
+    "opening the external menu cannot schedule a field focus that steals menu keyboard input",
   );
   assert.deepEqual(
     field.events,
-    ["hideKeyboard", "focus", "bounds", "menuItems", "showMenu"],
-    "hide keyboard before restoring selection, geometry and menu focus capture",
+    ["hideKeyboard", "restoreSelection", "toggleContextMenu"],
+    "hide keyboard, restore selection without focus, then capture menu focus",
   );
   assert.equal(field.value, priorValue, "menu opening preserves expression");
+  assert.equal(field.command.value, "toggleContextMenu");
   assert.deepEqual(field.menu, {
-    options: {
-      location: { x: 29, y: 390 },
-      modifiers: { alt: false, control: false, shift: true, meta: false },
-    },
     selection: { ranges: [[1, 3]], direction: "backward" },
   });
+  delete field.selection;
+  field.selection = menuSelection;
   const toolsButton = nodes(
     loadedTree,
     (node) =>
@@ -878,22 +980,20 @@ try {
     (node) =>
       node.type === "button" && node.props["aria-label"] === "Expression menu",
   )[0];
-  unfocusedMenu.props.onClick({
-    currentTarget: {
-      getBoundingClientRect: () => ({ left: 29, bottom: 390 }),
-    },
-  });
+  unfocusedField.events.length = 0;
+  unfocusedMenu.props.onClick();
   assert.equal(
     unfocusedField.focusCalls,
-    1,
-    "menu opened from an unfocused empty field must establish field ownership before vendor focus capture",
+    0,
+    "menu opened from an unfocused empty field must not start a field focus transition",
   );
   assert(unfocusedField.menu, "an unfocused field still opens its owned menu");
+  assert.deepEqual(unfocusedField.events, ["toggleContextMenu"]);
   assert.equal(unfocusedField.value, "");
   unfocused.handle().insert("x");
   assert.equal(
     unfocusedField.focusCalls,
-    2,
+    1,
     "subsequent editing still explicitly focuses the field",
   );
   unfocused.unmount();

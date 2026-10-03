@@ -12787,7 +12787,7 @@
       "id": "control.121",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 441,
+        "line": 430,
         "signature": "c3567a336c8370a31889f7b4bd73e419c78da75ab77e70bf4906a5dfbbfb6e2a"
       },
       "kind": "button",
@@ -12825,7 +12825,7 @@
       "id": "control.122",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 466,
+        "line": 455,
         "signature": "a71508206dcd39d8c75baf4d934b73912d561c60327bd842045e54d8fe2ee37e"
       },
       "kind": "button",
@@ -12863,7 +12863,7 @@
       "id": "control.123",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 492,
+        "line": 481,
         "signature": "72296f0af9931b794392e69955b610b45848d720077d52b2ad48addcbbb9dc1a"
       },
       "kind": "button",
@@ -12901,7 +12901,7 @@
       "id": "control.124",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 508,
+        "line": 497,
         "signature": "ee94840c391383d973b57dd5c90f60afd6cdf640644851a24be2c6366f0c5b22"
       },
       "kind": "button",
@@ -14307,7 +14307,7 @@
       "id": "control.161",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 454,
+        "line": 443,
         "signature": "b6dcac13afd555f4b0f265238dc6c69404bd2b392afcfe58f41018e74a57d6c5"
       },
       "kind": "button",

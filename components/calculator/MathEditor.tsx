@@ -6,7 +6,6 @@ import {
   useState,
   forwardRef,
   useImperativeHandle,
-  type MouseEvent,
 } from "react";
 import type {
   MathfieldElement,
@@ -87,23 +86,13 @@ export default forwardRef<
     if (!el) return;
     el.executeCommand(selector);
   };
-  const showExpressionMenu = (event: MouseEvent<HTMLButtonElement>) => {
+  const showExpressionMenu = () => {
     if (window.mathVirtualKeyboard?.visible) window.mathVirtualKeyboard.hide();
-    // Menu dismissal must return focus to the field, including its first use.
-    const el = focusSelection();
+    // Focusing first schedules a keyboard sink that steals the menu's focus.
+    const el = mf.current;
     if (!el) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    // MathLive 0.110 showMenu assumes its lazy menu has been initialized.
-    void el.menuItems;
-    el.showMenu({
-      location: { x: bounds.left, y: bounds.bottom },
-      modifiers: {
-        alt: event.altKey,
-        control: event.ctrlKey,
-        shift: event.shiftKey,
-        meta: event.metaKey,
-      },
-    });
+    if (selection.current) el.selection = selection.current;
+    el.executeCommand("toggleContextMenu");
   };
   useImperativeHandle(ref, () => ({
     keyboard: () => {
