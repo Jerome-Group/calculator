@@ -157,3 +157,46 @@ export function checkWorkspaceNavigation({
         failures.push(names[i] + " overlaps " + names[j]);
   return failures;
 }
+
+export function checkVirtualKeyboardTargets({ targets, plate, viewport }) {
+  const valid = (rect) =>
+    rect &&
+    [rect.x, rect.y, rect.width, rect.height].every(Number.isFinite) &&
+    rect.width > 0 &&
+    rect.height > 0;
+  if (
+    !valid(plate) ||
+    ![viewport?.width, viewport?.height].every(Number.isFinite) ||
+    !targets ||
+    !Object.keys(targets).length ||
+    !Object.values(targets).every((target) => valid(target.rect))
+  )
+    return ["Virtual keyboard target observation is incomplete"];
+  const failures = [];
+  if (plate.x < 0 || plate.x + plate.width > viewport.width - 16)
+    failures.push(
+      "Interactive keyboard plate does not clear the observed16px native scrollbar band",
+    );
+  for (const [name, { rect, hits }] of Object.entries(targets)) {
+    if (
+      rect.x < plate.x ||
+      rect.x + rect.width > plate.x + plate.width ||
+      rect.y < plate.y ||
+      rect.y + rect.height > plate.y + plate.height ||
+      rect.y < 0 ||
+      rect.y + rect.height > viewport.height
+    )
+      failures.push(
+        name + " target is outside interactive keyboard/viewport bounds",
+      );
+    if (
+      !Array.isArray(hits) ||
+      hits.length !== 9 ||
+      hits.some((hit) => hit !== true)
+    )
+      failures.push(
+        name + " interior8px/edge-midpoint/center hits are not all correct",
+      );
+  }
+  return failures;
+}

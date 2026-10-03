@@ -38,6 +38,7 @@
   --math-keyboard-height: 0px;
   --math-navigation-clearance: 0px;
   --math-keyboard-sidebar-inset: 0px;
+  --math-keyboard-edge-clearance: 16px;
   --keyboard-zindex: 100;
   --keyboard-background: #e1e6db;
   --keycap-background: #fffefa;
@@ -2119,6 +2120,13 @@ footer button {
   }
 }
 
+.ML__keyboard .MLK__plate {
+  width: calc(
+    100% - 2 * var(--keyboard-padding-horizontal, 0px) -
+      var(--math-keyboard-edge-clearance)
+  );
+}
+
 @media (min-width: 701px) and (max-height: 500px) and (pointer: coarse) {
   .ML__keyboard .MLK__plate {
     left: calc(
@@ -2127,7 +2135,8 @@ footer button {
     );
     width: calc(
       100% - var(--math-keyboard-sidebar-inset) - 2 *
-        var(--keyboard-padding-horizontal, 0px)
+        var(--keyboard-padding-horizontal, 0px) -
+        var(--math-keyboard-edge-clearance)
     );
   }
 }

@@ -8,6 +8,8 @@ Calculator's 128 existing forms, graphs, objects and notebook controls must rema
 
 At 390 × 844 with coarse-pointer/no-hover media, the unfocused MathLive menu needed two presses. The first focused the field without opening the menu; the second opened it. Computed styles and hit testing established the cause: MathLive 0.110.0 sets its exposed container to `pointer-events: none` before focus. Calculator's placeholder already had `pointer-events: none`; it did not intercept the press. Normal pointer mode opened the menu on the first press.
 
+Native page scrolling at390px portrait and1024px short landscape exposed a separate keyboard obstruction: a key center activated normally while its right corner hit the document scrollbar and did nothing. The observed native overlay band occupied the final16px without reducing `clientWidth`; the keyboard was unanimated and its bounds unchanged. Reserve that trailing space in the interactive keyboard plate while keeping page scrolling, the pointer-transparent wrapper and all layouts/commands. Preserve the measured landscape sidebar inset independently. This bounds the proved obstruction; it is not a universal device scrollbar-width guarantee. Overlay scrollbars create no layout gutter, so global `scrollbar-gutter` does not address this cause ([CSS Overflow](https://www.w3.org/TR/css-overflow/#scrollbar-gutter-property)).
+
 Generic ASCII-to-LaTeX conversion also changed function grouping in previews. A source such as `sin(x^2)` must remain distinct from `sin(x)^2`. Parsing long numeric literals into JavaScript numbers introduced a second loss: distinct exact decimal sources could become the same rounded value.
 
 ## Decision

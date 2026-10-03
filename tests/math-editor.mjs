@@ -8,6 +8,7 @@ import {
   checkExternalMenuGeometry,
   checkKeyboardActionRow,
   checkWorkspaceNavigation,
+  checkVirtualKeyboardTargets,
 } from "./verification/editor-geometry.mjs";
 
 await import("./resolve-types.mjs");
@@ -86,6 +87,77 @@ assert.deepEqual(
   }),
   ["Workspace navigation observation is incomplete"],
 );
+const nativeScrollbarKeyboard = {
+  plate: { x: 224, y: 125, width: 800, height: 266 },
+  viewport: { width: 1024, height: 390 },
+  targets: {
+    Paste: {
+      rect: { x: 978, y: 125, width: 42, height: 38 },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+    pi: {
+      rect: { x: 948, y: 167, width: 72, height: 48 },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+    sqrt: {
+      rect: { x: 948, y: 223, width: 72, height: 48 },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+  },
+};
+assert(
+  checkVirtualKeyboardTargets(nativeScrollbarKeyboard).includes(
+    "Interactive keyboard plate does not clear the observed16px native scrollbar band",
+  ),
+);
+assert(
+  checkVirtualKeyboardTargets(nativeScrollbarKeyboard).includes(
+    "pi interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const clearedKeyboard = structuredClone(nativeScrollbarKeyboard);
+clearedKeyboard.plate.width -= 16;
+for (const target of Object.values(clearedKeyboard.targets)) {
+  target.rect.x -= 16;
+  target.hits.fill(true);
+}
+assert.deepEqual(checkVirtualKeyboardTargets(clearedKeyboard), []);
+const edgeCoveredKeyboard = structuredClone(clearedKeyboard);
+edgeCoveredKeyboard.targets.Paste.hits[7] = false;
+assert(
+  checkVirtualKeyboardTargets(edgeCoveredKeyboard).includes(
+    "Paste interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const abovePlateKeyboard = structuredClone(clearedKeyboard);
+abovePlateKeyboard.targets.Paste.rect.y = abovePlateKeyboard.plate.y - 1;
+assert(
+  checkVirtualKeyboardTargets(abovePlateKeyboard).includes(
+    "Paste target is outside interactive keyboard/viewport bounds",
+  ),
+);
+const belowPlateKeyboard = structuredClone(clearedKeyboard);
+belowPlateKeyboard.plate.height = 140;
+assert(
+  checkVirtualKeyboardTargets(belowPlateKeyboard).includes(
+    "sqrt target is outside interactive keyboard/viewport bounds",
+  ),
+);
+const belowViewportKeyboard = structuredClone(clearedKeyboard);
+belowViewportKeyboard.targets.sqrt.rect.y = 343;
+assert(
+  checkVirtualKeyboardTargets(belowViewportKeyboard).includes(
+    "sqrt target is outside interactive keyboard/viewport bounds",
+  ),
+);
+assert.deepEqual(
+  checkVirtualKeyboardTargets({
+    ...clearedKeyboard,
+    plate: { ...clearedKeyboard.plate, width: NaN },
+  }),
+  ["Virtual keyboard target observation is incomplete"],
+);
+
 const phoneMenuGeometry = {
   context: "composer",
   field: { bottom: 333 },
