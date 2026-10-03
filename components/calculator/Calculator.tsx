@@ -38,6 +38,7 @@ import StructuredFields, {
   Preview,
   ProblemPreview,
   matrixRows,
+  listItems,
   ListInput,
 } from "./StructuredFields";
 import RichResult from "./RichResult";
@@ -346,9 +347,6 @@ export default function Calculator() {
   const openObject = (d: Partial<Definition> = {}) => {
     const generation = ++objectGeneration.current;
     objectModal.current = "object";
-    const stillEditing = () =>
-      generation === objectGeneration.current &&
-      objectModal.current === "object";
     setObj(d);
     setName(d.name || "");
     setKind(d.kind || "expression");
@@ -361,32 +359,50 @@ export default function Calculator() {
     setMatrixLoading(false);
     setModal("object");
     hide();
-    if (d.kind === "matrix" && d.expression) {
-      setMatrixLoading(true);
-      calculate({
-        operation: "matrix_cells",
-        params: { expression: d.expression },
-        definitions: book?.definitions || [],
-        settings,
-      })
-        .then((r) => {
-          if (!stillEditing()) return;
-          if (r.status === "error" || !r.details?.cells) {
-            setKind("expression");
-            setNotice(
-              "The original matrix expression is preserved for editing.",
-            );
-          } else setGrid(r.details.cells);
-        })
-        .catch((e) => {
-          if (!stillEditing()) return;
+    if (d.kind === "matrix" && d.expression)
+      readObjectMatrix(d.expression, generation);
+  };
+  const readObjectMatrix = (expression: string, generation: number) => {
+    const stillEditing = () =>
+      generation === objectGeneration.current &&
+      objectModal.current === "object";
+    setMatrixLoading(true);
+    calculate({
+      operation: "matrix_cells",
+      params: { expression },
+      definitions: book?.definitions || [],
+      settings,
+    })
+      .then((r) => {
+        if (!stillEditing()) return;
+        if (r.status === "error" || !r.details?.cells) {
           setKind("expression");
-          setNotice("The original matrix is preserved. " + String(e));
-        })
-        .finally(() => {
-          if (generation === objectGeneration.current) setMatrixLoading(false);
-        });
-    }
+          setNotice("The original matrix expression is preserved for editing.");
+        } else setGrid(r.details.cells);
+      })
+      .catch((e) => {
+        if (!stillEditing()) return;
+        setKind("expression");
+        setNotice("The original matrix is preserved. " + String(e));
+      })
+      .finally(() => {
+        if (generation === objectGeneration.current) setMatrixLoading(false);
+      });
+  };
+  const changeObjectKind = (next: Definition["kind"]) => {
+    if (next === kind) return;
+    const generation = ++objectGeneration.current,
+      source =
+        kind === "matrix" && !matrixLoading
+          ? "Matrix([" +
+            grid.map((r) => "[" + r.join(",") + "]").join(",") +
+            "])"
+          : body;
+    setMatrixLoading(false);
+    setBody(next === "dataset" && !source.trim() ? "[]" : source);
+    setKind(next);
+    if (next === "matrix" && source.trim())
+      readObjectMatrix(source, generation);
   };
   useEffect(() => {
     if (keyboardRequested && mode === "math" && math.current) {
@@ -1675,7 +1691,7 @@ export default function Calculator() {
                   "dataset",
                   "object",
                 ]}
-                onChange={(s) => setKind(s as Definition["kind"])}
+                onChange={(s) => changeObjectKind(s as Definition["kind"])}
               />
             </label>
           </div>
@@ -1774,9 +1790,9 @@ export default function Calculator() {
                 Exact fractions and symbols work in each cell.
               </p>
             </>
-          ) : kind === "dataset" ? (
+          ) : kind === "dataset" && (!body.trim() || listItems(body)) ? (
             <ListInput
-              value={body.startsWith("[") ? body : "[]"}
+              value={body.trim() ? body : "[]"}
               onChange={setBody}
               label="Data values"
             />

@@ -143,11 +143,21 @@ export default function GraphWorkspace({
         try {
           return { g, ...graphFunctions(g, scope), error: "" };
         } catch (e) {
-          return { g, f: () => NaN, second: () => NaN, error: String(e) };
+          return {
+            g,
+            f: () => NaN,
+            second: () => NaN,
+            warning: "",
+            error: String(e),
+          };
         }
       }),
     [graphs, scope],
   );
+  const diagnostic =
+    error ||
+    prepared.find((p) => p.error)?.error ||
+    prepared.find((p) => p.warning)?.warning;
   useEffect(() => {
     if (!holder.current) return;
     const ro = new ResizeObserver(([e]) =>
@@ -754,9 +764,9 @@ export default function GraphWorkspace({
           />
         </div>
       </div>
-      {(error || prepared.find((p) => p.error)?.error) && (
-        <p className="warning">
-          {error || prepared.find((p) => p.error)?.error}
+      {diagnostic && (
+        <p className="warning" role="status">
+          {diagnostic}
         </p>
       )}
       <div className="graph-list">

@@ -122,7 +122,8 @@ export function numeric(code: any, scope: any) {
   }
 }
 export function graphFunctions(g: GraphSpec, scope: any) {
-  if (g.type === "data") return { f: () => NaN, second: () => NaN };
+  if (g.type === "data")
+    return { f: () => NaN, second: () => NaN, warning: "" };
   if (g.radians) scope = { ...scope, ...trig(false) };
   let ex = g.expression;
   if (g.type === "implicit" && ex.includes("=") && !/[<>]/.test(ex)) {
@@ -146,14 +147,21 @@ export function graphFunctions(g: GraphSpec, scope: any) {
     );
   const c = compileMath(ex),
     d = g.type === "parametric" ? compileMath(g.second) : null;
+  let warning = "";
   try {
     const sampleScope = { ...scope, x: 0, y: 0, t: 0, theta: 0, n: 0 };
     c.evaluate(sampleScope);
     d?.evaluate(sampleScope);
   } catch (error) {
     if (error instanceof GraphResourceError) throw error;
+    if (
+      error instanceof Error &&
+      /^Undefined (symbol|function) /.test(error.message)
+    )
+      warning = String(error);
   }
   return {
+    warning,
     f: (x: number, y = 0) =>
       numeric(c, { ...scope, x, y, t: x, theta: x, n: x }),
     second: (x: number) => (d ? numeric(d, { ...scope, x, t: x }) : 0),

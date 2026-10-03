@@ -73,6 +73,39 @@ assert.deepEqual(
   null,
 );
 assert.equal(numeric(compileMath("200+10%"), scope), 220);
+for (const source of ["missing*x", "missing(x)"]) {
+  const unresolved = graphFunctions(graph("cartesian", source), scope);
+  assert.match(unresolved.warning, /Undefined (?:symbol|function) missing/);
+  assert(Number.isNaN(unresolved.f(2)));
+}
+const partlyDefined = graphFunctions(
+  graph("cartesian", "x <= 0 ? missing : x^2"),
+  scope,
+);
+assert.match(partlyDefined.warning, /Undefined symbol missing/);
+assert.equal(
+  partlyDefined.f(2),
+  4,
+  "warning must preserve valid curve regions",
+);
+assert(Number.isNaN(partlyDefined.f(-1)));
+const singular = graphFunctions(graph("cartesian", "1/x"), scope);
+assert.equal(singular.warning, "", "a pole is not an undefined reference");
+assert.equal(singular.f(2), 0.5);
+assert(Number.isNaN(singular.f(0)));
+const resolved = graphFunctions(graph("cartesian", "missing*x"), {
+  ...scope,
+  missing: 3,
+});
+assert.equal(resolved.warning, "");
+assert.equal(resolved.f(2), 6);
+const missingSecond = graphFunctions(
+  graph("parametric", "t", { second: "missing*t" }),
+  scope,
+);
+assert.match(missingSecond.warning, /Undefined symbol missing/);
+assert.equal(missingSecond.f(2), 2);
+assert(Number.isNaN(missingSecond.second(2)));
 const largePointRange = graphDataRange([
   graph("data", "Point", { points: [[1e20, -1e20]] }),
 ]);

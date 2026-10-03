@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { sourceToLatex, matrixRowsToLatex } from "@/lib/calculator/notation";
 import Choice from "./Choice";
 import MathView from "./MathView";
@@ -30,9 +31,39 @@ export function splitMath(source: string): string[] {
 }
 export function listItems(value: string) {
   const s = value.trim();
-  return /^[\[(]/.test(s) && /[\])]$/.test(s)
-    ? splitMath(s.slice(1, -1))
-    : null;
+  if (s[0] !== "[" && s[0] !== "(") return null;
+  const closing: string[] = [],
+    items: string[] = [];
+  let quote = "",
+    start = 1,
+    comma = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (quote) {
+      if (c === "\\") i++;
+      else if (c === quote) quote = "";
+      continue;
+    }
+    if (c === '"' || c === "'") {
+      quote = c;
+      continue;
+    }
+    const bracket = "([{".indexOf(c);
+    if (bracket !== -1) closing.push(")]}"[bracket]);
+    else if (")]}".includes(c)) {
+      if (closing.pop() !== c) return null;
+      if (!closing.length && i !== s.length - 1) return null;
+    } else if (c === "," && closing.length === 1) {
+      items.push(s.slice(start, i).trim());
+      start = i + 1;
+      comma = true;
+    }
+  }
+  if (quote || closing.length) return null;
+  const last = s.slice(start, -1).trim();
+  if (s[0] === "(" && !comma && last) return null;
+  if (last) items.push(last);
+  return items;
 }
 export function matrixRows(value: string) {
   const v = value.trim().replace(/^(?:Immutable)?Matrix\(([\s\S]*)\)$/, "$1"),
@@ -73,6 +104,27 @@ export function MatrixInput({
       (d) => d.name === value && d.kind === "matrix",
     ),
     rows = matrixRows(selected?.expression || value);
+  const source = (selected?.expression || value).trim(),
+    constructor = source.match(/^(ImmutableMatrix|Matrix)\(/)?.[1],
+    contents = constructor ? source.slice(constructor.length + 1, -1) : source,
+    rowSources = listItems(contents) || [];
+  const enclose = (items: string[], tuple: boolean) =>
+    (tuple ? "(" : "[") +
+    items.join(",") +
+    (tuple && items.length === 1 ? "," : "") +
+    (tuple ? ")" : "]");
+  const writeRows = (next: string[][]) => {
+    const contents = enclose(
+      next.map((row, i) =>
+        enclose(
+          row,
+          !constructor && !!(rowSources[i] || rowSources[0])?.startsWith("("),
+        ),
+      ),
+      !constructor && source.startsWith("("),
+    );
+    onChange(constructor ? constructor + "(" + contents + ")" : contents);
+  };
   return (
     <fieldset className="structured-field">
       <legend>{label}</legend>
@@ -119,21 +171,13 @@ export function MatrixInput({
                 max={12}
                 value={rows.length}
                 onChange={(e) =>
-                  onChange(
-                    "[" +
-                      Array.from(
-                        {
-                          length: Math.max(
-                            1,
-                            Math.min(12, +e.target.value || 1),
-                          ),
-                        },
-                        (_, i) =>
-                          "[" +
-                          (rows[i] || rows[0].map(() => "0")).join(",") +
-                          "]",
-                      ).join(",") +
-                      "]",
+                  writeRows(
+                    Array.from(
+                      {
+                        length: Math.max(1, Math.min(12, +e.target.value || 1)),
+                      },
+                      (_, i) => rows[i] || rows[0].map(() => "0"),
+                    ),
                   )
                 }
               />
@@ -147,25 +191,18 @@ export function MatrixInput({
                 max={12}
                 value={rows[0].length}
                 onChange={(e) =>
-                  onChange(
-                    "[" +
-                      rows
-                        .map(
-                          (r) =>
-                            "[" +
-                            Array.from(
-                              {
-                                length: Math.max(
-                                  1,
-                                  Math.min(12, +e.target.value || 1),
-                                ),
-                              },
-                              (_, j) => r[j] || "0",
-                            ).join(",") +
-                            "]",
-                        )
-                        .join(",") +
-                      "]",
+                  writeRows(
+                    rows.map((r) =>
+                      Array.from(
+                        {
+                          length: Math.max(
+                            1,
+                            Math.min(12, +e.target.value || 1),
+                          ),
+                        },
+                        (_, j) => r[j] || "0",
+                      ),
+                    ),
                   )
                 }
               />
@@ -184,21 +221,12 @@ export function MatrixInput({
                   aria-label={`${label} row ${i + 1} column ${j + 1}`}
                   value={x}
                   onChange={(e) =>
-                    onChange(
-                      "[" +
-                        rows
-                          .map(
-                            (r, a) =>
-                              "[" +
-                              r
-                                .map((x, b) =>
-                                  a === i && b === j ? e.target.value : x,
-                                )
-                                .join(",") +
-                              "]",
-                          )
-                          .join(",") +
-                        "]",
+                    writeRows(
+                      rows.map((r, a) =>
+                        r.map((x, b) =>
+                          a === i && b === j ? e.target.value : x,
+                        ),
+                      ),
                     )
                   }
                 />
@@ -462,9 +490,10 @@ function LogicFields({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const [advanced, setAdvanced] = useState(false);
   const match = value.match(/^(Implies|And|Or|Xor|Equivalent)\((.*)\)$/),
     args = match ? splitMath(match[2]) : [],
-    kind = match?.[1] || "custom";
+    kind = !advanced && args.length === 2 ? match?.[1] || "custom" : "custom";
   const names = [
     { value: "Implies", label: "Implication · p ⇒ q" },
     { value: "And", label: "Both true · p ∧ q" },
@@ -481,13 +510,14 @@ function LogicFields({
           label="Logical relationship"
           value={kind}
           options={names}
-          onChange={(v) =>
+          onChange={(v) => {
+            setAdvanced(v === "custom");
             onChange(
               v === "custom"
-                ? "p"
+                ? value
                 : v + "(" + [args[0] || "p", args[1] || "q"].join(",") + ")",
-            )
-          }
+            );
+          }}
         />
       </label>
       {kind !== "custom" ? (

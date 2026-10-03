@@ -110,6 +110,145 @@ await check(
     }
   },
 );
+function objectKindControl(tree) {
+  if (!tree || typeof tree !== "object") return null;
+  if (tree.props?.label === "Object kind") return tree;
+  for (const child of [tree.props?.children].flat(Infinity)) {
+    const control = objectKindControl(child);
+    if (control) return control;
+  }
+  return null;
+}
+await check(
+  "assignment matrix draft survives object kind selection and save",
+  async () => {
+    const harness = calculator([notebook("A")]);
+    harness
+      .render()
+      .actions.openObject({ name: "M", expression: "[[1,2],[3,4]]" });
+    const control = objectKindControl(harness.render().tree);
+    assert(control, "actual object kind control is rendered");
+    control.props.onChange("matrix");
+    assert.equal(
+      harness.requests.at(-1)?.request.operation,
+      "matrix_cells",
+      "entered matrix is read before saving",
+    );
+    harness.requests.at(-1).resolve({
+      status: "exact",
+      details: {
+        cells: [
+          ["1", "2"],
+          ["3", "4"],
+        ],
+      },
+      notes: [],
+    });
+    await flush();
+    assert.deepEqual(harness.state.get("grid"), [
+      ["1", "2"],
+      ["3", "4"],
+    ]);
+    const pending = harness.render().actions.saveObject();
+    const request = harness.requests.at(-1);
+    assert.equal(
+      request.request.definitions.at(-1).expression,
+      "Matrix([[1,2],[3,4]])",
+    );
+    request.resolve(exact);
+    await pending;
+    assert.equal(
+      harness.state.get("state").notebooks[0].definitions.at(-1).expression,
+      "Matrix([[1,2],[3,4]])",
+    );
+  },
+);
+await check(
+  "switching from edited matrix retains cells in the expression draft",
+  async () => {
+    const harness = calculator([notebook("A")], {
+      kind: "matrix",
+      grid: [
+        ["2", "3"],
+        ["5", "7"],
+      ],
+      modal: "object",
+    });
+    objectKindControl(harness.render().tree).props.onChange("expression");
+    assert.equal(harness.state.get("body"), "Matrix([[2,3],[5,7]])");
+  },
+);
+await check(
+  "kind changes cancel stale matrix conversion without losing the draft",
+  async () => {
+    const harness = calculator([notebook("A")]);
+    harness
+      .render()
+      .actions.openObject({ name: "M", expression: "[[1,2],[3,4]]" });
+    objectKindControl(harness.render().tree).props.onChange("matrix");
+    const request = harness.requests.at(-1);
+    assert(request, "matrix conversion starts");
+    objectKindControl(harness.render().tree).props.onChange("function");
+    request.resolve({
+      status: "exact",
+      details: { cells: [["9"]] },
+      notes: [],
+    });
+    await flush();
+    assert.equal(harness.state.get("kind"), "function");
+    assert.equal(harness.state.get("body"), "[[1,2],[3,4]]");
+    assert.equal(harness.state.get("matrixLoading"), false);
+  },
+);
+await check(
+  "dataset selection retains non-list entered source visibly",
+  async () => {
+    const harness = calculator([notebook("A")], {
+      body: "sin(x)",
+      modal: "object",
+    });
+    objectKindControl(harness.render().tree).props.onChange("dataset");
+    assert.equal(harness.state.get("body"), "sin(x)");
+    function expressionInput(tree) {
+      if (!tree || typeof tree !== "object") return null;
+      if (tree.props?.["aria-label"] === "Object expression") return tree;
+      for (const child of [tree.props?.children].flat(Infinity)) {
+        const input = expressionInput(child);
+        if (input) return input;
+      }
+      return null;
+    }
+    assert.equal(expressionInput(harness.render().tree)?.props.value, "sin(x)");
+  },
+);
+await check(
+  "pristine matrix draft keeps the default grid without computation",
+  async () => {
+    const harness = calculator([notebook("A")]);
+    harness.render().actions.openObject();
+    objectKindControl(harness.render().tree).props.onChange("matrix");
+    assert.deepEqual(harness.state.get("grid"), [
+      ["1", "0"],
+      ["0", "1"],
+    ]);
+    assert.equal(harness.requests.length, 0);
+  },
+);
+await check(
+  "unreadable matrix kind conversion preserves the original entered source",
+  async () => {
+    const harness = calculator([notebook("A")]);
+    harness.render().actions.openObject({ expression: "sin(x)" });
+    objectKindControl(harness.render().tree).props.onChange("matrix");
+    harness.requests
+      .at(-1)
+      .resolve({ status: "error", text: "Not a matrix", notes: [] });
+    await flush();
+    assert.equal(harness.state.get("body"), "sin(x)");
+    assert.equal(harness.state.get("kind"), "expression");
+    assert.equal(harness.state.get("matrixLoading"), false);
+  },
+);
 await check(
   "graph derivation preserves concurrent graph edits and additions",
   async () => {

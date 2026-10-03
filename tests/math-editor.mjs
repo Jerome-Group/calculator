@@ -191,6 +191,106 @@ function nodes(tree, predicate) {
       .flatMap((child) => nodes(child, predicate)),
   ];
 }
+const dialogSource = fs.readFileSync(
+  new URL("../components/ui/dialog.tsx", import.meta.url),
+  "utf8",
+);
+const dialogModule = { exports: {} };
+const primitive = { Content: () => null };
+new Function(
+  "require",
+  "module",
+  "exports",
+  ts.transpileModule(dialogSource, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      jsx: ts.JsxEmit.ReactJSX,
+    },
+  }).outputText,
+)(
+  (name) => {
+    if (name === "react/jsx-runtime") return require(name);
+    if (name === "radix-ui") return { Dialog: primitive };
+    if (name === "@/lib/utils") return { cn: (...values) => values.join(" ") };
+    if (name === "react" || name === "lucide-react") return {};
+    if (name === "@/components/ui/button") return { Button: () => null };
+    throw Error(`Unexpected dialog import ${name}`);
+  },
+  dialogModule,
+  dialogModule.exports,
+);
+const priorElement = globalThis.Element;
+class MenuTarget {
+  constructor(mathMenu = false) {
+    this.mathMenu = mathMenu;
+  }
+  matches(selector) {
+    assert.equal(selector, '.ui-menu-container[role="menu"]');
+    return this.mathMenu;
+  }
+}
+globalThis.Element = MenuTarget;
+try {
+  let callerCount = 0;
+  const tree = dialogModule.exports.DialogContent({
+    children: "Unsaved nested expression",
+    onEscapeKeyDown: () => callerCount++,
+  });
+  const content = nodes(tree, (node) => node.type === primitive.Content)[0];
+  const menu = new MenuTarget(true);
+  const input = new MenuTarget();
+  let menuOpen = true,
+    editorOpen = true,
+    draft = "x^{2}+1";
+  function escape(path) {
+    const event = new Event("keydown", { cancelable: true });
+    Object.defineProperty(event, "key", { value: "Escape" });
+    event.composedPath = () => path;
+    // Installed Radix captures first; MathLive hides its menu during bubbling.
+    content.props.onEscapeKeyDown?.(event);
+    if (!event.defaultPrevented) {
+      editorOpen = false;
+      draft = null;
+    }
+    if (path.includes(menu)) menuOpen = false;
+    return event;
+  }
+  const firstEscape = escape([input, menu]);
+  assert.equal(
+    menuOpen,
+    false,
+    "Escape still reaches MathLive to close its menu",
+  );
+  assert.equal(editorOpen, true, "menu Escape must retain the nested editor");
+  assert.equal(draft, "x^{2}+1", "unsaved expression remains available");
+  assert.equal(
+    firstEscape.cancelBubble,
+    false,
+    "vendor bubbling is not blocked",
+  );
+  const secondEscape = escape([input]);
+  assert.equal(secondEscape.defaultPrevented, false);
+  assert.equal(editorOpen, false, "next Escape dismisses the editor normally");
+  assert.equal(callerCount, 2, "existing dialog Escape handler is preserved");
+  const preventedTree = dialogModule.exports.DialogContent({
+    onEscapeKeyDown: (event) => event.preventDefault(),
+  });
+  const preventedContent = nodes(
+    preventedTree,
+    (node) => node.type === primitive.Content,
+  )[0];
+  const prevented = new Event("keydown", { cancelable: true });
+  prevented.composedPath = () => [input];
+  preventedContent.props.onEscapeKeyDown(prevented);
+  assert.equal(
+    prevented.defaultPrevented,
+    true,
+    "caller cancellation is retained",
+  );
+} finally {
+  if (priorElement === undefined) delete globalThis.Element;
+  else globalThis.Element = priorElement;
+}
 const flush = () => new Promise(setImmediate);
 const priorWindow = globalThis.window;
 globalThis.window = {};

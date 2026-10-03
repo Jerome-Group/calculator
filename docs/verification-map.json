@@ -646,7 +646,9 @@
         "owned source and controlled async fixtures",
         "tests/mathlive-loader.mjs",
         "lib/calculator/mathlive-loader.ts",
-        "locked standalone MathLive bundle"
+        "locked standalone MathLive bundle",
+        "components/ui/dialog.tsx",
+        "nested menu Escape capture/bubble cancellation regression"
       ],
       "writes": [],
       "network": "mocked only",
@@ -693,7 +695,11 @@
         "tests/notation-previews.mjs"
       ],
       "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "reads": [
+        "owned source and controlled async fixtures",
+        "components/calculator/StructuredFields.tsx",
+        "scalar Expression/Math controls and tuple/matrix/bounds/cases rendering regression"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -3178,7 +3184,7 @@
           "required": true
         },
         "grid": {
-          "label": "Interior grid points per side (3–35)",
+          "label": "Interior grid points per side (3\u201335)",
           "choices": [],
           "required": true
         }
@@ -5080,7 +5086,7 @@
       },
       "fields": {
         "sequence": {
-          "label": "Sequence term aₙ",
+          "label": "Sequence term a\u2099",
           "choices": [],
           "required": true
         },
@@ -5453,7 +5459,7 @@
           "choices": [
             "gcd",
             "lcm",
-            "Bézout",
+            "B\u00e9zout",
             "modular inverse",
             "modular power",
             "factor",
@@ -5511,7 +5517,7 @@
           "fixtureId": "choice.number_theory.action.2",
           "choice": {
             "field": "action",
-            "value": "Bézout",
+            "value": "B\u00e9zout",
             "index": 2
           },
           "status": "required"
@@ -6519,7 +6525,7 @@
           "required": true
         },
         "constraints": {
-          "label": "Constraints g(x) ≥ 0",
+          "label": "Constraints g(x) \u2265 0",
           "choices": [],
           "required": true
         }
@@ -8099,7 +8105,12 @@
       "editor.external-menu",
       "keyboard-toolbar-fit",
       "editor.compact-arguments",
-      "help-licences"
+      "help-licences",
+      "editor.parenthesized-scalar",
+      "editor.nested-menu-escape",
+      "structured.logic-mode-preservation",
+      "structured.points-grid",
+      "objects.kind-draft-preservation"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -8231,7 +8242,7 @@
         "line": 842
       },
       "kind": "button",
-      "label": "· · dp",
+      "label": "\u00b7 \u00b7 dp",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -12116,7 +12127,7 @@
         "line": 898
       },
       "kind": "button",
-      "label": "Plot integral from x₀",
+      "label": "Plot integral from x\u2080",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -12708,7 +12719,7 @@
         "line": 32
       },
       "kind": "button",
-      "label": "Export copy · notebooks",
+      "label": "Export copy \u00b7 notebooks",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13152,7 +13163,7 @@
         "line": 440
       },
       "kind": "button",
-      "label": "×",
+      "label": "\u00d7",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13448,7 +13459,7 @@
         "line": 633
       },
       "kind": "button",
-      "label": "×",
+      "label": "\u00d7",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13744,7 +13755,7 @@
         "line": 800
       },
       "kind": "button",
-      "label": "×",
+      "label": "\u00d7",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -14275,7 +14286,8 @@
         "object-remove",
         "object-undo",
         "object-function-reference",
-        "conversion-function-quotient"
+        "conversion-function-quotient",
+        "objects.kind-draft-preservation"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14304,7 +14316,8 @@
         "ordered UI steps",
         "independent assertions",
         "semantic DOM/screenshot artifacts",
-        "revision + dirty source + built asset fingerprints"
+        "revision + dirty source + built asset fingerprints",
+        "objects.kind-draft-preservation: actual Text assignment A := [[1,2],[3,4]], Save named object dialog retains original expression after choosing matrix kind; Save creates A with entered entries and independent determinant -2"
       ]
     },
     {
@@ -14351,7 +14364,10 @@
       "source": [
         "components/calculator/MathEditor.tsx",
         "components/calculator/StructuredFields.tsx",
-        "public/engine/latex_adapter.py"
+        "public/engine/latex_adapter.py",
+        "components/ui/dialog.tsx",
+        "tests/notation-previews.mjs",
+        "tests/math-editor.mjs"
       ],
       "browserScenarioIds": [
         "math-fractions-entry",
@@ -14377,7 +14393,11 @@
         "editor.logic-relationships",
         "editor.external-menu",
         "keyboard-toolbar-fit",
-        "editor.compact-arguments"
+        "editor.compact-arguments",
+        "editor.parenthesized-scalar",
+        "editor.nested-menu-escape",
+        "structured.logic-mode-preservation",
+        "structured.points-grid"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14407,7 +14427,11 @@
         "independent assertions",
         "semantic DOM/screenshot artifacts",
         "editor.external-menu: actual field/button rectangles, enclosing Math composer border/shadow and vendor-toggle computed styles, hit-test and one-activation observations at 320px/390px before/after field focus",
-        "revision + dirty source + built asset fingerprints"
+        "revision + dirty source + built asset fingerprints",
+        "editor.parenthesized-scalar: notation-previews regression; actual Math fraction 12/(3+1) to Text (12)/(3+1), Differentiate Expression scalar input and Math editor button retain exact source without list/matrix controls; submitted derivative independently equals 0; grouped scalar (x+y) retains source",
+        "editor.nested-menu-escape: math-editor regression; actual nested Expression editor with unsaved x^2+1, external Expression menu, Escape closes only vendor menu while editor and draft remain; Use expression retains draft and derivative independently equals 2*x; reopen editor, menu Escape then editor Escape closes only nested editor and preserves underlying operation dialog",
+        "structured.logic-mode-preservation: notation-previews regression; actual logical relationship operands a,b, calculate Equivalent(a,b), Edit problem then Advanced proposition retains complete Equivalent(a,b); edit And(a,b,c) and keep all operands as raw input; switching back to supported two-argument relation retains a,b",
+        "structured.points-grid: notation-previews regression; actual Exact polynomial interpolation Points [(0,1),(1,2),(2,5)], resize rows 3 to 4 to 3 and columns 2 to 3 to 2, edit a cell then restore; captured point input retains tuple rows and calculation independently equals x^2+1; single-column/mixed rows and matrix list shapes checked separately by rendering regression"
       ]
     },
     {
