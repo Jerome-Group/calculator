@@ -5,13 +5,15 @@ are parsed structurally and their scalar entries use SymPy's mature LaTeX parser
 Unknown notation is rejected; this is not a general TeX interpreter.
 """
 from dataclasses import dataclass, field
+from functools import lru_cache
+from importlib.resources import files
 import re
 import sympy as sp
 from sympy.core.function import AppliedUndef
 from sympy.core.parameters import evaluate
-from sympy.parsing.latex.lark import LarkLaTeXParser
 from sympy.parsing.latex.lark.transformer import TransformToSymPyExpr
-from lark import Tree
+from lark import Lark, Tree
+from lark.exceptions import UnexpectedInput
 
 class LatexInputError(ValueError):
     pass
@@ -31,7 +33,23 @@ class ParsedLatex:
     excluded_denominators: list = field(default_factory=list)
     notes: list = field(default_factory=list)
 
-_PARSER = LarkLaTeXParser(transform=False)
+_GRAMMAR_ROOT = files('sympy.parsing.latex.lark').joinpath('grammar')
+_GRAMMAR = _GRAMMAR_ROOT.joinpath('latex.lark').read_text(encoding='utf-8')
+
+def _latex_parser(grammar):
+    return Lark(
+        grammar, source_path=str(_GRAMMAR_ROOT)+'/', parser='earley',
+        start='latex_string', lexer='auto', ambiguity='explicit',
+        propagate_positions=False, maybe_placeholders=False, keep_all_tokens=True,
+    )
+
+_PARSER = _latex_parser(_GRAMMAR)
+
+@lru_cache(maxsize=1)
+def _unary_plus_parser():
+    # The pinned grammar omits unary identity. Retry syntax failures only, so
+    # existing successful or ambiguous parses keep their exact grammar routes.
+    return _latex_parser(_GRAMMAR+'\n%extend _expression: unary_plus\nunary_plus: ADD _expression_mul\n')
 
 _ENV = re.compile(r'\\(begin|end)\{([A-Za-z*]+)\}')
 _MATRIX_NAMES = {'matrix', 'pmatrix', 'bmatrix', 'Bmatrix', 'vmatrix', 'Vmatrix', 'smallmatrix'}
@@ -228,6 +246,7 @@ def parse_math_latex(source, *, symbols=None, functions=None, max_length=8000, a
         if not symbol_callback:return symbols.get(name,sp.Symbol(name))
         return symbol_callback(name,sp.And(*guard_path),guard_path)
     class Transformer(TransformToSymPyExpr):
+        def unary_plus(self,t):return t[1]
         def SYMBOL(self,token):
             name=str(token)
             return symbol_value(name,current_guard_path)
@@ -471,7 +490,9 @@ def parse_math_latex(source, *, symbols=None, functions=None, max_length=8000, a
         try:
             current_guard=guard
             current_guard_path=guard_path
-            result=transformer.transform(_PARSER.doparse(text))
+            try:tree=_PARSER.parse(text)
+            except UnexpectedInput:tree=_unary_plus_parser().parse(text)
+            result=transformer.transform(tree)
         except AmbiguousLatex:raise
         except Exception as exc:
             original=getattr(exc,'orig_exc',exc)

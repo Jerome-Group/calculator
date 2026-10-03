@@ -2,6 +2,16 @@ import unittest,json,math
 import sympy as S
 from calculator import compute_json
 class CurrentDispatchTests(unittest.TestCase):
+ def test_latex_unary_plus_cut_remainder_and_domain(self):
+  self.assertEqual(self.call('evaluate',input='+2',mode='latex')['text'],'2')
+  self.assertEqual(self.call('evaluate',input='+x',mode='latex')['text'],'x')
+  self.assertEqual(self.call('evaluate',input=r'\frac{+2}{+4}',mode='latex')['text'],'1/2')
+  out=self.call('solve',{'expression':r'latex:(\frac{x}{+x})-1','variable':'x'})
+  self.assertEqual(S.sympify(out['text']),S.Union(S.Interval.open(-S.oo,0),S.Interval.open(0,S.oo)))
+  # Unary LaTeX ingestion does not change the existing plain percent convention.
+  for source in ['50%','+50%',r'+50\%']:
+   out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':source,'mode':'latex' if '\\' in source else 'text'})))
+   self.assertEqual(out['status'],'error',out)
  def call(self,op,params=None,settings=None,input='',mode='text',definitions=None):
   out=json.loads(compute_json(json.dumps({'operation':op,'params':params or {},'settings':{'precision':30,'angle':'rad','domain':'real',**(settings or {})},'input':input,'mode':mode,'definitions':definitions or []})))
   self.assertNotEqual(out['status'],'error',out)
