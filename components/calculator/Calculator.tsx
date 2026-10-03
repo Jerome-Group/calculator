@@ -1105,9 +1105,7 @@ export default function Calculator() {
             </div>
           </div>
           <div className="output-workbench">
-            {!book.history.length ? (
-              <TaskBrowser choose={choose} compact />
-            ) : (
+            {(book.history.length > 0 || undo.current.length > 0) && (
               <section className="history">
                 <div className="section-heading">
                   <span className="section-label">
@@ -1376,6 +1374,7 @@ export default function Calculator() {
                 )}
               </section>
             )}
+            {!book.history.length && <TaskBrowser choose={choose} compact />}
           </div>
         </TabsContent>
         <TabsContent value="explore">
