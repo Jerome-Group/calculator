@@ -1,0 +1,643 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "editor.menu.abs",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "|-3|",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "3"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.abs",
+      "oracleProvenance": {
+        "method": "hand-derived mathematical identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.nth-root",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\sqrt[3]{8}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "2"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.nth-root",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; vendor source used only for notation",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.log-base",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\log_{2}{8}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "3"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.log-base",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; vendor source used only for notation",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.derivative",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\dfrac{\\mathrm{d}}{\\mathrm{d}x}x^2\\bigm|_{x=3}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "6"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.derivative",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.nth-derivative",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\dfrac{\\mathrm{d}^2}{\\mathrm{d}x^2}x^3\\bigm|_{x=2}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "12"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.nth-derivative",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.integral",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\int_3^41\\,\\mathrm{dx}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.integral",
+      "oracleProvenance": {
+        "method": "hand-derived mathematical identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.sum",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\sum_{n=1}^3n",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "6"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.sum",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.product",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\prod_{n=1}^3n",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "6"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.product",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.modulus",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "complex",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\lvert3+4i\\rvert",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "5"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.modulus",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.argument",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "complex",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\arg(i)",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "pi/2"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.argument",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.real-part",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "complex",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\Re(3+4i)",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "3"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.real-part",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.imaginary-part",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "complex",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\Im(3+4i)",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "4"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.imaginary-part",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.conjugate",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "complex",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\overline{3+4i}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "3-4*I"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.conjugate",
+      "oracleProvenance": {
+        "method": "hand-derived mathematical identities; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.integral-negative",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\int_{-2}^31\\,\\mathrm{dx}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "5"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.integral-negative",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; vendor source used only for notation",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.integral-reversed",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\int_4^31\\,\\mathrm{dx}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "-1"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.integral-reversed",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; vendor source used only for notation",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.integral-greek",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\int_3^41\\,\\mathrm{d}\\theta",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.integral-greek",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; vendor source used only for notation",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.matrix",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[1,2],[3,4]])"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.matrix",
+      "oracleProvenance": {
+        "method": "hand-derived calculus, arithmetic and complex-number identities; vendor source used only for notation",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.color-red",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\textcolor{red}{3+1}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "4"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.color-red",
+      "oracleProvenance": {
+        "method": "hand-derived 3+1=4; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.background-blue",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\colorbox{blue}{\\textcolor{red}{$ 3+1 $}}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "4"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.background-blue",
+      "oracleProvenance": {
+        "method": "hand-derived 3+1=4; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.boxed",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\boxed{3+1}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "4"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.boxed",
+      "oracleProvenance": {
+        "method": "hand-derived 3+1=4; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.bbox-red",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\bbox[5px,border: 2px solid red]{3+1}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "4"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.bbox-red",
+      "oracleProvenance": {
+        "method": "hand-derived 3+1=4; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    },
+    {
+      "id": "editor.menu.bbox-dashed",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\bbox[5px,border: 2px dashed black]{3+1}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "4"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.bbox-dashed",
+      "oracleProvenance": {
+        "method": "hand-derived 3+1=4; notation taken from actual vendor-menu browser serialization",
+        "reviewState": "independent typed assertions; vendor browser serialization verified separately"
+      }
+    }
+  ]
+}

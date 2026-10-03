@@ -557,11 +557,17 @@ export default function Calculator() {
     } catch {}
     return () => lifecycle.abort();
   }, []);
-  const choose = (o: Operation, expression?: string) => {
+  const choose = (o: Operation, expression?: string, shortcut = false) => {
     fieldConversionGeneration.current++;
     setOp(o);
     setParams(
-      initialOperationParams(o, expression, book?.definitions, selectedObject),
+      initialOperationParams(
+        o,
+        expression,
+        book?.definitions,
+        selectedObject,
+        shortcut,
+      ),
     );
     setModal("operation");
     hide();
@@ -1061,6 +1067,7 @@ export default function Calculator() {
                           : latex
                             ? "latex:" + latex
                             : undefined,
+                        true,
                       );
                   }}
                 >

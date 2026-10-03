@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   failure,
   readJson,
+  readFixtures,
   sourceIdentity,
   validateMap,
 } from "./verification-contract.mjs";
@@ -14,13 +15,7 @@ import { checkPrerequisites, runSuite } from "./verification-runner.mjs";
 async function main() {
   const root = process.env.CALCULATOR_ROOT || process.cwd();
   const map = readJson(path.join(root, "docs/verification-map.json"));
-  const fixtures = [
-    "maths-defaults.json",
-    "maths-choices.json",
-    "maths-invalid.json",
-  ].flatMap(
-    (file) => readJson(path.join(root, "tests/fixtures", file)).fixtures,
-  );
+  const fixtures = readFixtures(root);
   const args = process.argv.slice(2),
     flags = new Map(),
     positional = [];

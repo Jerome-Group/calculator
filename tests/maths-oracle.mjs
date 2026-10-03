@@ -30,7 +30,7 @@ const selected = process.argv.indexOf("--fixture");
 let fixtures = process.env.CALCULATOR_FIXTURES_FILE
   ? JSON.parse(fs.readFileSync(process.env.CALCULATOR_FIXTURES_FILE, "utf8"))
       .fixtures
-  : ["maths-defaults.json", "maths-choices.json"].flatMap(
+  : ["maths-defaults.json", "maths-choices.json", "menu-math.json"].flatMap(
       (file) =>
         JSON.parse(fs.readFileSync(root + "/tests/fixtures/" + file, "utf8"))
           .fixtures,

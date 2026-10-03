@@ -1,9 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { sourceToLatex, matrixRowsToLatex } from "@/lib/calculator/notation";
 import Choice from "./Choice";
 import MathView from "./MathView";
 import type { Definition, Operation } from "@/lib/calculator/types";
+export function scalarFieldText(source: string): string {
+  return source.startsWith("latex:") ? source.slice(6) : source;
+}
+export function scalarFieldSource(previous: string, text: string): string {
+  return previous.startsWith("latex:") && text ? "latex:" + text : text;
+}
 export function splitMath(source: string): string[] {
   let depth = 0,
     quote = "",
@@ -576,6 +582,7 @@ export default function StructuredFields({
   definitions: Definition[];
   onMath: (key: string, label: string) => void;
 }) {
+  const scalarNotation = useRef(new Set<string>());
   if (op.id === "logic")
     return (
       <LogicFields
@@ -853,6 +860,11 @@ export default function StructuredFields({
             </fieldset>
           );
         }
+        const notationKey = op.id + "." + f.key;
+        if (value.startsWith("latex:")) scalarNotation.current.add(notationKey);
+        else if (value) scalarNotation.current.delete(notationKey);
+        const latexNotation = scalarNotation.current.has(notationKey);
+        const notationHintId = "scalar-notation-" + op.id + "-" + f.key;
         return (
           <label key={f.key}>
             {f.label}
@@ -867,8 +879,19 @@ export default function StructuredFields({
               <div className="math-field-row">
                 <input
                   aria-label={f.label}
-                  value={value}
-                  onChange={(e) => onChange(f.key, e.target.value)}
+                  aria-describedby={latexNotation ? notationHintId : undefined}
+                  value={scalarFieldText(value)}
+                  onChange={(e) =>
+                    onChange(
+                      f.key,
+                      scalarFieldSource(
+                        scalarNotation.current.has(notationKey)
+                          ? "latex:"
+                          : value,
+                        e.target.value,
+                      ),
+                    )
+                  }
                 />
                 <button
                   className="subtle"
@@ -878,6 +901,11 @@ export default function StructuredFields({
                   Math
                 </button>
               </div>
+            )}
+            {!f.choices && latexNotation && (
+              <span id={notationHintId} className="field-hint">
+                LaTeX · Use Math to edit visually
+              </span>
             )}
             {f.hint && <span className="field-hint">{f.hint}</span>}
           </label>

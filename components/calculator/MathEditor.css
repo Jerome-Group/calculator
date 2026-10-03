@@ -67,4 +67,20 @@
   body {
     --keyboard-toolbar-font-size: 14px;
   }
+
+  .math-editor-field math-field::part(menu-item) {
+    box-sizing: border-box;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .math-editor-field math-field::part(ui-menu-container) {
+    box-sizing: border-box;
+    /* Five 44px matrix choices plus the vendor's 8px side padding. */
+    min-width: 236px;
+    max-height: calc(100dvh - var(--math-keyboard-height, 0px) - 16px);
+    max-width: calc(100vw - 16px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }

@@ -4,7 +4,11 @@ import { browserContractChecks } from "./browser-contract.mjs";
 import { controlCoverageChecks } from "./control-coverage.mjs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { validateMap } from "../../scripts/verification-contract.mjs";
+import {
+  readFixtures,
+  readJson,
+  validateMap,
+} from "../../scripts/verification-contract.mjs";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const checks = [];
 function check(id, run) {
@@ -53,6 +57,39 @@ check("cli.show.group", () => {
   const report = cli(["show", "core"], 0);
   assert.equal(report.id, "core");
   assert(report.suites.includes("build"));
+});
+check("cli.menu.fixture.discovery", () => {
+  const fixture = cli(["show", "editor.menu.integral"], 0);
+  assert.equal(fixture.request.input, "\\int_3^41\\,\\mathrm{dx}");
+  assert.equal(fixture.assertions[0].expected, "1");
+  const report = cli(["show", "math"], 0);
+  assert(report.fixtures.includes(fixture.id));
+  const editor = cli(["show", "feature.editor"], 0);
+  assert(editor.fixtures.includes(fixture.id));
+  assert(editor.browserScenarioIds.includes("editor.integral-shortcut"));
+  assert(editor.browserScenarioIds.includes("editor.vendor-presentation"));
+  const map = readJson(root + "docs/verification-map.json");
+  const menuFixtures = readFixtures(root).filter(
+    (row) => row.surfaceId === "editor.menu",
+  );
+  for (const row of menuFixtures) {
+    assert(report.fixtures.includes(row.id), `${row.id} is runnable in math`);
+    assert(
+      editor.fixtures.includes(row.id),
+      `${row.id} is discoverable in editor`,
+    );
+    assert(
+      map.evidenceSchema.requiredBrowserFixtureIds.includes(
+        row.renderedEvidenceId,
+      ),
+      `${row.id} requires an independently matched rendered outcome`,
+    );
+  }
+  assert(
+    map.evidenceSchema.requiredBrowserScenarioIds.includes(
+      "editor.vendor-presentation",
+    ),
+  );
 });
 check("cli.evidence.metadata", () => {
   const report = cli(["list"], 0);

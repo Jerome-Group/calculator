@@ -64,6 +64,7 @@ if (!chosen || chosen === "catalogue.mapping") {
       "tests/fixtures/maths-defaults.json",
       "tests/fixtures/maths-choices.json",
       "tests/fixtures/maths-invalid.json",
+      "tests/fixtures/menu-math.json",
       "lib/calculator/catalog.ts",
       "scripts/verify.mjs",
       "scripts/verification-contract.mjs",

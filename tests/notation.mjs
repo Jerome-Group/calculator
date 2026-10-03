@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import { createRequire } from "node:module";
+import ts from "typescript";
+import * as displayFormat from "../lib/calculator/display-format.ts";
 import { abs, parse, subtract } from "mathjs";
 import {
   mathToSource,
@@ -6,6 +10,95 @@ import {
   sourceToLatex,
   sourceToMath,
 } from "../lib/calculator/notation.ts";
+
+const require = createRequire(import.meta.url);
+const viewModule = { exports: {} };
+const viewSource = fs.readFileSync(
+  new URL("../components/calculator/MathView.tsx", import.meta.url),
+  "utf8",
+);
+new Function(
+  "require",
+  "module",
+  "exports",
+  ts.transpileModule(viewSource, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      jsx: ts.JsxEmit.ReactJSX,
+    },
+  }).outputText,
+)(
+  (name) =>
+    name === "../../lib/calculator/display-format"
+      ? displayFormat
+      : name === "katex"
+        ? { default: require(name) }
+        : require(name),
+  viewModule,
+  viewModule.exports,
+);
+for (const [source, border] of [
+  [String.raw`\bbox[5px,border: 2px solid red]{3+1}`, "2px solid red"],
+  [String.raw`\bbox[5px,border: 2px dashed black]{3+1}`, "2px dashed black"],
+  [
+    String.raw`\bbox[5px,border: 2px solid red]{\frac{3+1}{2}}`,
+    "2px solid red",
+  ],
+]) {
+  const rendered = viewModule.exports.default({ latex: source });
+  const box = rendered.props.children;
+  assert(
+    box?.props?.style,
+    "Observed bbox variants render a visible enclosure",
+  );
+  assert.equal(box.props.style.border, border);
+  assert.equal(box.props.style.padding, "5px");
+  const html = box.props.dangerouslySetInnerHTML.__html;
+  assert(
+    html.includes('class="katex"'),
+    "Actual pinned KaTeX renders the body",
+  );
+  assert(!html.includes("katex-error"));
+  const visible = html.replace(/<annotation[^>]*>[\s\S]*?<\/annotation>/g, "");
+  assert(!visible.includes("bbox"));
+  assert(!visible.includes("border:"));
+  assert(!visible.includes("5px"));
+  assert(visible.includes("<mn>3</mn><mo>+</mo><mn>1</mn>"));
+  assert(
+    html.includes(
+      `<annotation encoding="application/x-tex">${source}</annotation>`,
+    ),
+    "Copy annotation preserves the exact original serialized source",
+  );
+}
+for (const source of [
+  String.raw`\bbox[5px,border: 2px solid red]{3+1}+2`,
+  String.raw`\bbox[5px,border: 2px solid red]{3+1`,
+  String.raw`\bbox[5px,border: 2px solid red;background:url(x)]{3+1}`,
+]) {
+  assert.equal(
+    viewModule.exports.default({ latex: source }).props.children,
+    undefined,
+    "Malformed or unsupported metadata never becomes a CSS style",
+  );
+}
+const escapedBox = viewModule.exports.default({
+  latex: String.raw`\bbox[5px,border: 2px solid red]{a<b}`,
+});
+assert(
+  escapedBox.props.children.props.dangerouslySetInnerHTML.__html.includes(
+    String.raw`<annotation encoding="application/x-tex">\bbox[5px,border: 2px solid red]{a&lt;b}</annotation>`,
+  ),
+);
+const untrustedBox = viewModule.exports.default({
+  latex: String.raw`\bbox[5px,border: 2px solid red]{\href{javascript:alert(1)}{3+1}}`,
+});
+assert(
+  !untrustedBox.props.children.props.dangerouslySetInnerHTML.__html.includes(
+    '<a href="javascript:',
+  ),
+  "The display adaptation retains KaTeX trust:false",
+);
 
 const grouped = [
   "sin(x^2)",

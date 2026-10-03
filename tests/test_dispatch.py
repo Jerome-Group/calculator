@@ -33,6 +33,109 @@ class CurrentDispatchTests(unittest.TestCase):
   for latex,expected in samples:
    out=self.call('evaluate',input=latex,mode='latex')
    self.assertEqual(S.simplify(S.sympify(out['text'])-S.sympify(expected)),0,latex)
+ def test_vendor_menu_calculus_and_complex_templates(self):
+  samples=[(r'\dfrac{\mathrm{d}}{\mathrm{d}x}x^2\bigm|_{x=3}','6'),(r'\frac{\mathrm{d}}{\mathrm{dx}}x^2\bigm|_{x=3}','6'),(r'\dfrac{\mathrm{d}^{2}}{\mathrm{d}x^{2}}x^3\bigm|_{x=2}','12'),(r'\dfrac{\mathrm{d}}{\mathrm{d}x}(x^2+3*x)\bigm|_{x=-2}','-1'),(r'2+\dfrac{\mathrm{d}}{\mathrm{d}x}x^2\bigm|_{x=3}','8'),(r'\lvert3+4\mathrm{i}\rvert','5'),(r'\arg(\mathrm{i})','pi/2'),(r'\Re(3+4\mathrm{i})','3'),(r'\Im(3+4\mathrm{i})','4')]
+  for latex,expected in samples:
+   with self.subTest(latex=latex):
+    out=self.call('evaluate',input=latex,mode='latex',settings={'domain':'complex'})
+    self.assertEqual(S.simplify(S.sympify(out['text'])-S.sympify(expected)),0)
+ def test_vendor_menu_derivative_order_and_point_validation(self):
+  for latex in [r'\dfrac{\mathrm{d}^{2}}{\mathrm{d}x^{3}}x^3\bigm|_{x=2}',r'\dfrac{\mathrm{d}}{\mathrm{d}x}x^2\bigm|_{y=3}',r'\dfrac{\mathrm{d}^{0}}{\mathrm{d}x^{0}}x^2\bigm|_{x=3}',r'\dfrac{\mathrm{d}}{\mathrm{d}x}x^2',r'\dfrac{\mathrm{d}}{\mathrm{d}x}\frac{x}{x}\bigm|_{x=0}']:
+   out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':latex,'mode':'latex'})))
+   self.assertEqual(out['status'],'error',out)
+ def test_vendor_menu_derivative_keeps_named_functions_and_angle_policy(self):
+  out=self.call('evaluate',input=r'\dfrac{\mathrm{d}}{\mathrm{d}x}f(x)\bigm|_{x=3}',mode='latex',definitions=[{'name':'f','args':'t','expression':'t^3'}])
+  self.assertEqual(out['text'],'27')
+  out=self.call('evaluate',input=r'\dfrac{\mathrm{d}}{\mathrm{d}x}\sin(x)\bigm|_{x=30}',mode='latex',settings={'angle':'deg'})
+  self.assertEqual(S.simplify(S.sympify(out['text'])-S.pi*S.sqrt(3)/360),0)
+  out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':r'\dfrac{\mathrm{d}}{\mathrm{d}x}f(x)\bigm|_{x=1}','mode':'latex','definitions':[{'name':'f','args':'t','expression':'(t^2-1)/(t-1)'}]})))
+  self.assertEqual(out['status'],'error',out)
+  self.assertIn('original denominator',out['text'])
+ def test_vendor_menu_constructs_keep_original_denominator_exclusions(self):
+  from latex_adapter import parse_math_latex
+  for source in [r'\Re(\frac{x}{x})',r'\lvert\frac{x}{x}\rvert']:
+   parsed=parse_math_latex(source)
+   self.assertEqual(parsed.original,source)
+   self.assertIn(S.Symbol('x'),parsed.excluded_denominators)
+  source=r'\dfrac{\mathrm{d}}{\mathrm{d}x}\frac{1}{x}\bigm|_{x=3}'
+  parsed=parse_math_latex(source)
+  self.assertEqual(parsed.original,source)
+  self.assertFalse(any(S.Symbol('x') in den.free_symbols for den in parsed.excluded_denominators))
+ def test_vendor_menu_derivative_keeps_saved_scalar_restrictions_at_point(self):
+  for expression,valid,invalid in [('x/x','3','0'),('(x^2-1)/(x-1)','3','1')]:
+   definitions=[{'name':'A','expression':expression}]
+   source=r'\dfrac{\mathrm{d}}{\mathrm{d}x}A\bigm|_{x='+valid+'}'
+   out=self.call('evaluate',input=source,mode='latex',definitions=definitions)
+   self.assertEqual(out['text'],'0' if expression=='x/x' else '1')
+   self.assertFalse(any('Original restriction' in note for note in out['notes']),out)
+   source=r'\dfrac{\mathrm{d}}{\mathrm{d}x}A\bigm|_{x='+invalid+'}'
+   out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':source,'mode':'latex','definitions':definitions})))
+   self.assertEqual(out['status'],'error',out)
+   self.assertIn('original denominator',out['text'])
+ def test_vendor_menu_nested_derivatives_consume_inner_bindings(self):
+  from calculator import Context
+  x=S.Symbol('x')
+  for argument,definitions in [(r'\frac{1}{x-3}',[]),('f(x)',[{'name':'f','args':'t','expression':'1/(t-3)'}]),('A',[{'name':'A','expression':'1/(x-3)'}])]:
+   source=r'\dfrac{\mathrm{d}}{\mathrm{d}x}{\dfrac{\mathrm{d}}{\mathrm{d}x}'+argument+r'\bigm|_{x=2}}\bigm|_{x=3}'
+   out=self.call('evaluate',input=source,mode='latex',definitions=definitions)
+   self.assertEqual(out['text'],'0')
+   context=Context({'definitions':definitions});context.parse(source,latex=True)
+   self.assertFalse(any(x in den.free_symbols for den in context.denominators))
+ def test_vendor_menu_presentation_wrappers_preserve_mathematics(self):
+  from latex_adapter import parse_math_latex
+  samples=[(r'\textcolor{red}{3+1}','4'),(r'\colorbox{blue}{\textcolor{red}{$ 3+1 $}}','4'),(r'\boxed{3+1}','4'),(r'\bbox[5px,border: 2px solid red]{3+1}','4'),(r'\bbox[5px,border: 2px dashed black]{3+1}','4'),(r'2\boxed{3+1}','8'),(r'x^2\textcolor{red}{3}','3*x**2'),(r'\boxed{x}^{2}','x**2')]
+  for source,expected in samples:
+   with self.subTest(source=source):
+    self.assertEqual(parse_math_latex(source).original,source)
+    out=self.call('evaluate',input=source,mode='latex')
+    self.assertEqual(S.simplify(S.sympify(out['text'])-S.sympify(expected)),0)
+ def test_vendor_menu_presentation_rejects_mixed_text_and_bad_metadata(self):
+  for source in [r'\colorbox{blue}{hello $3+1$}',r'\colorbox{blue}{$3$ and $1$}',r'\colorbox{blue}{3+1}',r'\textcolor{red}{3+1',r'\bbox[border: calc(1px) solid red]{3+1}',r'\textcolor{not-a-color}{3+1}']:
+   out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':source,'mode':'latex'})))
+   self.assertEqual(out['status'],'error',out)
+ def test_vendor_menu_presentation_keeps_piecewise_denominator_guards(self):
+  from latex_adapter import parse_math_latex
+  x=S.Symbol('x')
+  for expression in [r'\textcolor{red}{\frac{1}{x}}',r'\boxed{\frac{1}{x}}',r'\colorbox{blue}{\textcolor{red}{$ \frac{1}{x} $}}']:
+   source=r'\begin{cases}'+expression+r'&x\ne0\\0&\text{otherwise}\end{cases}'
+   parsed=parse_math_latex(source)
+   self.assertEqual(parsed.expression.subs(x,0),0)
+   self.assertTrue(parsed.excluded_denominators)
+   self.assertTrue(all(den.subs(x,0)!=0 for den in parsed.excluded_denominators))
+ def test_vendor_menu_derivative_point_preserves_outer_piecewise_guard(self):
+  from calculator import Context
+  x=S.Symbol('x')
+  for argument,definitions in [(r'\frac{x}{x}',[]),('f(x)',[{'name':'f','args':'t','expression':'t/t'}]),('A',[{'name':'A','expression':'x/x'}])]:
+   source=r'\begin{cases}\dfrac{\mathrm{d}}{\mathrm{d}x}'+argument+r'\bigm|_{x=0}&x\ne0\\0&\text{otherwise}\end{cases}'
+   context=Context({'definitions':definitions})
+   context.parse(source,latex=True)
+   self.assertTrue(any(den.subs(x,1)==0 for den in context.denominators))
+   self.assertTrue(all(den.subs(x,0)!=0 for den in context.denominators))
+   out=self.call('evaluate',input=source,mode='latex',definitions=definitions)
+   self.assertEqual(out['text'],'0')
+   self.assertTrue(any('Original restriction' in note for note in out['notes']),out)
+ def test_vendor_menu_derivative_keeps_identical_local_and_outer_guards_distinct(self):
+  from calculator import Context
+  x=S.Symbol('x')
+  for branch,definitions in [(r'\frac{1}{x+1}',[]),('f(x)',[{'name':'f','args':'t','expression':'1/(t+1)'}]),('A',[{'name':'A','expression':'1/(x+1)'}])]:
+   inner=r'\begin{cases}'+branch+r'&x>0\\x&\text{otherwise}\end{cases}'
+   source=r'\begin{cases}\dfrac{\mathrm{d}}{\mathrm{d}x}{'+inner+r'}\bigm|_{x=-1}&x>0\\0&\text{otherwise}\end{cases}'
+   context=Context({'definitions':definitions});expression=context.parse(source,latex=True).doit()
+   self.assertEqual(expression.subs(x,1),1)
+   self.assertEqual(expression.subs(x,-1),0)
+   self.assertFalse(context.denominators,context.denominators)
+ def test_vendor_menu_constructs_keep_piecewise_restriction_guards(self):
+  from latex_adapter import parse_math_latex
+  x=S.Symbol('x')
+  for expression in [r'\Re(\frac{1}{x})',r'\lvert\frac{1}{x}\rvert',r'\Im(\frac{1}{x})']:
+   source=r'\begin{cases}'+expression+r'&x\ne0\\0&\text{otherwise}\end{cases}'
+   parsed=parse_math_latex(source)
+   self.assertTrue(parsed.excluded_denominators)
+   self.assertTrue(all(den.subs(x,0)!=0 for den in parsed.excluded_denominators))
+   self.assertEqual(parsed.expression.subs(x,0),0)
+  source=r'\begin{cases}\Re(f(x))&x\ne0\\0&\text{otherwise}\end{cases}'
+  out=self.call('solve',{'expression':'latex:'+source,'variable':'x'},definitions=[{'name':'f','args':'t','expression':'1/t'}])
+  self.assertEqual(out['text'],'{0}')
  def test_compact_tex_argument_boundaries(self):
   samples=[(r'\int_1^02\,\mathrm{d}x','-2'),(r'\int_0^12\,\mathrm{d}x','2'),(r'\sum_{n=1}^32','6'),(r'\prod_{n=1}^32','8'),(r'x^23','3*x**2'),(r'2^34','32'),(r'2^{34}','17179869184'),(r'\frac123','3/2'),(r'\frac1234','17'),(r'\frac1{23}','1/23'),(r'\frac{12}3','4'),(r'2^3\frac12','4'),(r'2^\frac123','3*sqrt(2)'),(r'\sqrt{x^23}','sqrt(3*x**2)'),(r'\int_0^\pi2\,\mathrm{d}x','2*pi'),(r'\int_0^{12}2\,\mathrm{d}x','24'),(r'\sum_{n=1}^{32}2','64'),(r'\sin^230','sin(30)**2'),(r'\left(x^2\right)','x**2'),(r'x^2\cdot3','3*x**2'),(r'x^2{3}','3*x**2'),(r'x^2\times3','3*x**2'),(r'\int_0^1x^2\mathrm{d}x','1/3'),(r'\int_0^1x^2dx','1/3'),(r'\mathit{x}^23','3*x**2'),(r'\operatorname{sin}^230','sin(30)**2'),(r'x^2dy','x**2*d*y'),(r'\int_0^1x^2dx+x^2dy','1/3+x**2*d*y'),(r'\int_0^1x^2\mathrm{d}x+x^2dy','1/3+x**2*d*y'),(r'\int_0^1x^2dx+d^2y','1/3+d**2*y')]
   for latex,expected in samples:
@@ -42,6 +145,24 @@ class CurrentDispatchTests(unittest.TestCase):
  def test_compact_tex_missing_arguments(self):
   for latex in [r'x^',r'\frac1',r'\int_1^',r'x^{2',r'\sqrt' * 70 + '2']:
    with self.subTest(latex=latex):
+    out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':latex,'mode':'latex'})))
+    self.assertEqual(out['status'],'error')
+ def test_merged_upright_integral_differentials(self):
+  samples=[(r'\int_3^41\,\mathrm{dx}','1'),(r'\int_4^31\,\mathrm{dx}','-1'),(r'\int_{-2}^11\,\mathrm{dx}','3'),(r'\int_0^1y^2\mathrm{dy}','1/3'),(r'\int_0^1\theta^2\mathrm{d\theta}','1/3'),(r'\int_0^1x^2\mathrm{dx}','1/3'),(r'\int_0^1\sqrt{x}\mathrm{dx}','2/3'),(r'\int_3^41\,\mathrm { d x }','1'),(r'\int_3^41\,\mathrm { d } x','1'),(r'\int_0^1\int_0^1xy\mathrm{dx}\mathrm{dy}','1/4'),(r'{\int_0^1x^2\mathrm{dx}}+x^2dy','1/3+x**2*d*y')]
+  for latex,expected in samples:
+   with self.subTest(latex=latex):
+    out=self.call('evaluate',input=latex,mode='latex')
+    self.assertEqual(S.simplify(S.sympify(out['text'])-S.sympify(expected)),0)
+  from latex_adapter import parse_math_latex
+  source=r'\int_3^41\,\mathrm{dx}'
+  self.assertEqual(parse_math_latex(source).original,source)
+  self.assertEqual(self.call('evaluate',params={'expression':'latex:'+source})['text'],'1')
+  self.assertEqual(self.call('evaluate',input='A',definitions=[{'name':'A','expression':'latex:'+source}])['text'],'1')
+ def test_upright_differential_scope_and_ambiguity(self):
+  from latex_adapter import normalize_compact_arguments
+  for latex in [r'\mathrm{dx}',r'\int_0^1x\mathrm{dxyz}',r'\int_0^1x\mathrm{delta}',r'\int_0^1x\mathrm{d}',r'\int_0^1x\mathrm{dx}+\mathrm{dy}']:
+   with self.subTest(latex=latex):
+    if latex==r'\mathrm{dx}':self.assertEqual(normalize_compact_arguments(latex),latex)
     out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':latex,'mode':'latex'})))
     self.assertEqual(out['status'],'error')
  def test_degrees_current(self):

@@ -95,6 +95,7 @@ function harness({ failImport = false } = {}) {
     attributes = new Map();
     removed = false;
     focusCalls = 0;
+    events = [];
     constructor() {
       super();
       fields.push(this);
@@ -106,6 +107,7 @@ function harness({ failImport = false } = {}) {
       this.removed = true;
     }
     focus() {
+      this.events.push("focus");
       this.focusCalls++;
       this.selection = { ranges: [[0, 0]] };
     }
@@ -116,10 +118,16 @@ function harness({ failImport = false } = {}) {
       this.command = { value, selection: this.selection };
     }
     get menuItems() {
+      this.events.push("menuItems");
       this.menuInitialized = true;
       return [];
     }
     showMenu(options) {
+      this.events.push("showMenu");
+      assert(
+        this.focusCalls > 0,
+        "menu must capture the focused mathfield before vendor activation",
+      );
       if (!this.menuInitialized) throw TypeError("Menu is not initialized");
       this.menu = { options, selection: this.selection };
       return true;
@@ -362,9 +370,13 @@ try {
   const focusCalls = field.focusCalls;
   const priorValue = field.value;
   field.selection = { ranges: [[0, 0]] };
+  field.events.length = 0;
   menuButton.props.onClick({
     currentTarget: {
-      getBoundingClientRect: () => ({ left: 29, bottom: 390 }),
+      getBoundingClientRect: () => {
+        field.events.push("bounds");
+        return { left: 29, bottom: 390 };
+      },
     },
     altKey: false,
     ctrlKey: false,
@@ -373,8 +385,13 @@ try {
   });
   assert.equal(
     field.focusCalls,
-    focusCalls,
-    "opening the external menu must not start a delayed editor focus transition",
+    focusCalls + 1,
+    "opening the external menu synchronously focuses the preserved field selection",
+  );
+  assert.deepEqual(
+    field.events,
+    ["focus", "bounds", "menuItems", "showMenu"],
+    "focus precedes geometry, lazy menu initialization and vendor focus capture",
   );
   assert.equal(field.value, priorValue, "menu opening preserves expression");
   assert.deepEqual(field.menu, {
@@ -396,7 +413,7 @@ try {
   assert.equal(field.removed, true);
 
   const unfocused = harness();
-  const unfocusedProps = { value: "x^2+1", onChange() {} };
+  const unfocusedProps = { value: "", onChange() {} };
   unfocused.render(unfocusedProps);
   await flush();
   const unfocusedField = unfocused.fields[0];
@@ -412,15 +429,15 @@ try {
   });
   assert.equal(
     unfocusedField.focusCalls,
-    0,
-    "menu opened before field focus must leave focus ownership unchanged",
+    1,
+    "menu opened from an unfocused empty field must establish field ownership before vendor focus capture",
   );
   assert(unfocusedField.menu, "an unfocused field still opens its owned menu");
-  assert.equal(unfocusedField.value, "x^2+1");
+  assert.equal(unfocusedField.value, "");
   unfocused.handle().insert("x");
   assert.equal(
     unfocusedField.focusCalls,
-    1,
+    2,
     "subsequent editing still explicitly focuses the field",
   );
   unfocused.unmount();

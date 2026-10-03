@@ -23,12 +23,14 @@ const compiled = ts.transpileModule(
 const loadedModule = { exports: {} };
 const MathView = () => null;
 let advancedMode = false;
+const scalarNotation = { current: new Set() };
 new Function("require", "module", "exports", compiled)(
   (name) => {
     if (name === "react/jsx-runtime") return require(name);
     if (name === "react")
       return {
         useState: () => [advancedMode, (value) => (advancedMode = value)],
+        useRef: () => scalarNotation,
       };
     if (name === "@/lib/calculator/notation")
       return { sourceToLatex, matrixRowsToLatex };
@@ -48,6 +50,16 @@ const {
   matrixRows,
 } = loadedModule.exports;
 const StructuredFields = loadedModule.exports.default;
+assert.equal(
+  loadedModule.exports.scalarFieldText("latex:\\frac{1}{x}"),
+  "\\frac{1}{x}",
+);
+assert.equal(
+  loadedModule.exports.scalarFieldSource("latex:x", "x+1"),
+  "latex:x+1",
+);
+assert.equal(loadedModule.exports.scalarFieldSource("latex:x", ""), "");
+assert.equal(loadedModule.exports.scalarFieldSource("x", "x+1"), "x+1");
 function elements(tree, predicate) {
   if (!tree || typeof tree !== "object") return [];
   return [
@@ -60,6 +72,104 @@ function elements(tree, predicate) {
 function math(tree) {
   return elements(tree, (node) => node.type === MathView).map(
     (node) => node.props.latex,
+  );
+}
+{
+  const integration = operations.find((entry) => entry.id === "integrate");
+  const params = {
+    expression: "latex:1",
+    variable: "x",
+    lower: "latex:3",
+    upper: "latex:4",
+  };
+  const changes = [];
+  const rendered = StructuredFields({
+    op: integration,
+    params,
+    definitions: [],
+    onChange: (...args) => changes.push(args),
+    onMath: () => {},
+  });
+  const inputs = elements(rendered, (node) => node.type === "input");
+  assert.equal(
+    inputs.find((node) => node.props["aria-label"] === "Expression").props
+      .value,
+    "1",
+  );
+  const lower = inputs.find(
+    (node) => node.props["aria-label"] === "Lower bound",
+  );
+  assert.equal(lower.props.value, "3");
+  const notationHints = elements(
+    rendered,
+    (node) => node.type === "span" && node.props.id,
+  );
+  assert.equal(notationHints.length, 3);
+  assert.equal(new Set(notationHints.map((node) => node.props.id)).size, 3);
+  for (const label of ["Expression", "Lower bound", "Upper bound"]) {
+    const input = inputs.find((node) => node.props["aria-label"] === label);
+    const hint = notationHints.find(
+      (node) => node.props.id === input.props["aria-describedby"],
+    );
+    assert(hint, `${label} associates its visible notation hint`);
+    assert.equal(hint.props.children, "LaTeX · Use Math to edit visually");
+  }
+  assert.equal(
+    inputs.find((node) => node.props["aria-label"] === "Variable").props[
+      "aria-describedby"
+    ],
+    undefined,
+    "Ordinary text fields have no LaTeX mode hint",
+  );
+  lower.props.onChange({ target: { value: "2" } });
+  assert.deepEqual(changes, [["lower", "latex:2"]]);
+  lower.props.onChange({ target: { value: "" } });
+  assert.deepEqual(changes.at(-1), ["lower", ""]);
+  const cleared = StructuredFields({
+    op: integration,
+    params: { ...params, lower: "" },
+    definitions: [],
+    onChange: (...args) => changes.push(args),
+    onMath: () => {},
+  });
+  const clearedLower = elements(cleared, (node) => node.type === "input").find(
+    (node) => node.props["aria-label"] === "Lower bound",
+  );
+  assert.equal(
+    clearedLower.props["aria-describedby"],
+    lower.props["aria-describedby"],
+    "Clearing retains the associated mode hint and its stable ID",
+  );
+  assert.equal(
+    elements(
+      cleared,
+      (node) => node.props?.id === clearedLower.props["aria-describedby"],
+    ).length,
+    1,
+  );
+  clearedLower.props.onChange({ target: { value: "\\pi" } });
+  assert.deepEqual(
+    changes.at(-1),
+    ["lower", "latex:\\pi"],
+    "Clearing and retyping retains field notation without sending an empty LaTeX marker as a bound",
+  );
+  assert.equal(
+    math(ProblemPreview({ op: integration, params }))[0],
+    "\\int_{3}^{4} 1\\,d x",
+  );
+  const plain = StructuredFields({
+    op: integration,
+    params: { ...params, expression: "x+1" },
+    definitions: [],
+    onChange: () => {},
+    onMath: () => {},
+  });
+  assert.equal(
+    elements(plain, (node) => node.type === "input").find(
+      (node) => node.props["aria-label"] === "Expression",
+    ).props["aria-describedby"],
+    undefined,
+    "An explicitly plain source removes its LaTeX mode hint",
   );
 }
 for (const op of operations) {

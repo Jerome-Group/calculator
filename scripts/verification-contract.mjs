@@ -15,6 +15,19 @@ export function readJson(file) {
     failure(`Cannot read JSON ${file}: ${error.message}`);
   }
 }
+export function readFixtures(root) {
+  return [
+    "maths-defaults.json",
+    "maths-choices.json",
+    "maths-invalid.json",
+    "menu-math.json",
+  ].flatMap((file) => {
+    const bundle = readJson(path.join(root, "tests/fixtures", file));
+    if (bundle.schemaVersion !== 1 || !Array.isArray(bundle.fixtures))
+      failure("Unsupported fixture bundle " + file);
+    return bundle.fixtures;
+  });
+}
 export function sourceIdentity(root) {
   const git = (argv) => {
     const result = spawnSync("git", argv, { cwd: root, encoding: "utf8" });
@@ -95,6 +108,7 @@ export function mathContractFingerprint(root) {
     "tests/fixtures/maths-defaults.json",
     "tests/fixtures/maths-choices.json",
     "tests/fixtures/maths-invalid.json",
+    "tests/fixtures/menu-math.json",
     "tests/maths-oracle.py",
     "tests/maths-assertions.py",
     "tests/verification/observed-matcher.mjs",

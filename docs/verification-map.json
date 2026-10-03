@@ -401,7 +401,29 @@
         "choice.finance.action.1",
         "choice.symbolic_expectation.distribution.0",
         "choice.symbolic_expectation.distribution.1",
-        "choice.symbolic_expectation.distribution.2"
+        "choice.symbolic_expectation.distribution.2",
+        "editor.menu.abs",
+        "editor.menu.nth-root",
+        "editor.menu.log-base",
+        "editor.menu.derivative",
+        "editor.menu.nth-derivative",
+        "editor.menu.integral",
+        "editor.menu.sum",
+        "editor.menu.product",
+        "editor.menu.modulus",
+        "editor.menu.argument",
+        "editor.menu.real-part",
+        "editor.menu.imaginary-part",
+        "editor.menu.conjugate",
+        "editor.menu.integral-negative",
+        "editor.menu.integral-reversed",
+        "editor.menu.integral-greek",
+        "editor.menu.matrix",
+        "editor.menu.color-red",
+        "editor.menu.background-blue",
+        "editor.menu.boxed",
+        "editor.menu.bbox-red",
+        "editor.menu.bbox-dashed"
       ],
       "exitCodes": {
         "0": "pass",
@@ -8045,7 +8067,29 @@
       "invalid-default.matrix.singular",
       "invalid-default.quotient.reducible-field",
       "invalid-default.quotient.zero-divisor-inverse",
-      "invalid-default.expectation.not-normalized"
+      "invalid-default.expectation.not-normalized",
+      "browser.editor.menu.abs",
+      "browser.editor.menu.nth-root",
+      "browser.editor.menu.log-base",
+      "browser.editor.menu.derivative",
+      "browser.editor.menu.nth-derivative",
+      "browser.editor.menu.integral",
+      "browser.editor.menu.sum",
+      "browser.editor.menu.product",
+      "browser.editor.menu.modulus",
+      "browser.editor.menu.argument",
+      "browser.editor.menu.real-part",
+      "browser.editor.menu.imaginary-part",
+      "browser.editor.menu.conjugate",
+      "browser.editor.menu.integral-negative",
+      "browser.editor.menu.integral-reversed",
+      "browser.editor.menu.integral-greek",
+      "browser.editor.menu.matrix",
+      "browser.editor.menu.color-red",
+      "browser.editor.menu.background-blue",
+      "browser.editor.menu.boxed",
+      "browser.editor.menu.bbox-red",
+      "browser.editor.menu.bbox-dashed"
     ],
     "requiredBrowserScenarioIds": [
       "graph-table",
@@ -8139,7 +8183,12 @@
       "structured.points-grid",
       "objects.kind-draft-preservation",
       "editor.repeated-transition",
-      "graph-table.invalid-bounds"
+      "graph-table.invalid-bounds",
+      "editor.vendor-insertions",
+      "editor.integral-shortcut",
+      "editor.scalar-notation-roundtrip",
+      "editor.vendor-presentation",
+      "editor.vendor-touch-targets"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -8195,7 +8244,7 @@
       "id": "control.002",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 824,
+        "line": 830,
         "signature": "1bd2749a8e2a65fa60daa93a11e514867eaa73b512025f6373ac11aa2b6befcb"
       },
       "kind": "button",
@@ -8233,7 +8282,7 @@
       "id": "control.003",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 843,
+        "line": 849,
         "signature": "106894d07ac11fc0e008ca08882b5882ae419032504cb8f566f8e00168d05003"
       },
       "kind": "a",
@@ -8271,7 +8320,7 @@
       "id": "control.004",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 858,
+        "line": 864,
         "signature": "ad6ddea7ab54766f0e5be8589ac4839c0c0e4579b4916b42e08125ee980cd1e2"
       },
       "kind": "button",
@@ -8309,7 +8358,7 @@
       "id": "control.005",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 867,
+        "line": 873,
         "signature": "6e78804f81e7ff252dc44079b47aee1ec7d4586eed8920927e7f8d4c06f22306"
       },
       "kind": "button",
@@ -8347,7 +8396,7 @@
       "id": "control.006",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 874,
+        "line": 880,
         "signature": "667a33f0df4ddba0bdcfb4db3e0e9cb7967d0acc6aa76deeeeb113c9f29620f7"
       },
       "kind": "button",
@@ -8385,7 +8434,7 @@
       "id": "control.007",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 884,
+        "line": 890,
         "signature": "2db96ef79f4f039bd4402330a8e15bc18836cc30da323750d5784c11bae0982b"
       },
       "kind": "button",
@@ -8423,7 +8472,7 @@
       "id": "control.008",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 888,
+        "line": 894,
         "signature": "6ecfcea61c020b03459dc2cfef5a8cf159ac6416f8a4fd45713d5850847e02fc"
       },
       "kind": "button",
@@ -8461,7 +8510,7 @@
       "id": "control.009",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 964,
+        "line": 970,
         "signature": "476227989a3250ee768eafd91bc08e72f61cbce5e63f9c8b763c51099b7d77fa"
       },
       "kind": "button",
@@ -8499,7 +8548,7 @@
       "id": "control.010",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 982,
+        "line": 988,
         "signature": "2263a7e1f50521b5582a530f73d8594bbd977f97e5477a80e248a792c5b8ac58"
       },
       "kind": "button",
@@ -8537,7 +8586,7 @@
       "id": "control.011",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 996,
+        "line": 1002,
         "signature": "d632f0244a8e36b24812a2f450db90cd95007aca30bc225ac663b97f78fb3848"
       },
       "kind": "MathEditor",
@@ -8575,7 +8624,7 @@
       "id": "control.012",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1003,
+        "line": 1009,
         "signature": "d4b5b5328e924677bb2bc10e298bd5249c8de732ca7dbb636f73f23fb686e9a8"
       },
       "kind": "textarea",
@@ -8613,7 +8662,7 @@
       "id": "control.013",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1023,
+        "line": 1029,
         "signature": "ac3c6fe99b540bd79531ff37e7ff0f45fd43a2a6a2569955954002a2b225cc54"
       },
       "kind": "button",
@@ -8651,7 +8700,7 @@
       "id": "control.014",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1033,
+        "line": 1039,
         "signature": "d2f169e979808efd2cd0abb3c6ebef8160c317f267ce29596a9fe0d82c0251fe"
       },
       "kind": "button",
@@ -8689,7 +8738,7 @@
       "id": "control.015",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1040,
+        "line": 1046,
         "signature": "038ffb3343b98232c2a94488039a0044fecfd6569784acd6c27e60b98192545d"
       },
       "kind": "button",
@@ -8727,8 +8776,8 @@
       "id": "control.016",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1052,
-        "signature": "18a22c1783be4c44f2a25ddec6ff357c4790ec787e128ac67b897849ae9c9b0c"
+        "line": 1058,
+        "signature": "2ab5f14a6d418da32502b753de114ca0d9872e19b2a03c617a85ae3e085cb239"
       },
       "kind": "button",
       "label": "dynamic/accessibility label requires browser observation",
@@ -8765,7 +8814,7 @@
       "id": "control.017",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1074,
+        "line": 1081,
         "signature": "d156f0d144252b7ed3dad9c88b4e76ea9bca935b2089a340d71304970554771f"
       },
       "kind": "button",
@@ -8803,7 +8852,7 @@
       "id": "control.018",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1077,
+        "line": 1084,
         "signature": "4daf31c6ae930aa142d3ac76239a9c9c0b50c8c6305e8007bf7c104a4740940a"
       },
       "kind": "button",
@@ -8841,7 +8890,7 @@
       "id": "control.019",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1090,
+        "line": 1097,
         "signature": "45094f11a5ff20d221813331a7d0d944d59f85098455a9a5d4fc4e08876239f9"
       },
       "kind": "button",
@@ -8879,7 +8928,7 @@
       "id": "control.020",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1103,
+        "line": 1110,
         "signature": "983148481ad249f8253f49b10aeeb4dc6523198659cc534da5973d85a7ee82a1"
       },
       "kind": "button",
@@ -8917,7 +8966,7 @@
       "id": "control.021",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1137,
+        "line": 1144,
         "signature": "1fd28a49ac104f6e259b373e24acf8e74d131570a903a0332ff57851a971e315"
       },
       "kind": "button",
@@ -8955,7 +9004,7 @@
       "id": "control.022",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1153,
+        "line": 1160,
         "signature": "3c6b88ed21271a7a1624b157d3d57dd9783a16773591179f743251cfd7178858"
       },
       "kind": "button",
@@ -8993,7 +9042,7 @@
       "id": "control.023",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1271,
+        "line": 1278,
         "signature": "3859972b3a4bfed15876d5a2e3c486df51d7f2d1488ea8533cfd6addeefdbffb"
       },
       "kind": "button",
@@ -9031,7 +9080,7 @@
       "id": "control.024",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1284,
+        "line": 1291,
         "signature": "6fca7ef1f7468131ee98d414bb8dbee71b5ccca1b236fd8f504e4eca5bab1f01"
       },
       "kind": "button",
@@ -9069,7 +9118,7 @@
       "id": "control.025",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1287,
+        "line": 1294,
         "signature": "2454cf1595898d86d78710bc2d846e3642b3490fa9f96934bd3fe6fc4adc46ea"
       },
       "kind": "button",
@@ -9107,7 +9156,7 @@
       "id": "control.026",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1290,
+        "line": 1297,
         "signature": "9a1e9750bdbc58eef4fd0e7b8e335b11b58bb0d587f5b51ce5f6a3e7d6bd85fe"
       },
       "kind": "button",
@@ -9145,7 +9194,7 @@
       "id": "control.027",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1298,
+        "line": 1305,
         "signature": "6187111adc65d3f473b36358d93575004f94ad9d2a1f9f50bb7efb7821b70af9"
       },
       "kind": "button",
@@ -9183,7 +9232,7 @@
       "id": "control.028",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1311,
+        "line": 1318,
         "signature": "a75d5a95e6ecd6498e4ac2f05e2bf07434e1e12f091f15c993ad4c808e7f90e0"
       },
       "kind": "button",
@@ -9221,7 +9270,7 @@
       "id": "control.029",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1315,
+        "line": 1322,
         "signature": "244291d76aa1ab8e1314bd901e67f3a7dea4ba8d17c55a74de276714a59b21c3"
       },
       "kind": "button",
@@ -9259,7 +9308,7 @@
       "id": "control.030",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1321,
+        "line": 1328,
         "signature": "339e634692ec530dacbbfa056b0b6197855ea3de4118a983408ffb06a1acdd4d"
       },
       "kind": "button",
@@ -9297,7 +9346,7 @@
       "id": "control.031",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1349,
+        "line": 1356,
         "signature": "fbb612136d8fd37a970ea488f7d162ccd869cd42ae6d1c7d5897e2018c1d79c1"
       },
       "kind": "button",
@@ -9335,7 +9384,7 @@
       "id": "control.032",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1357,
+        "line": 1364,
         "signature": "cb063da00454446a4b5bf01607d9c8f8920b9abbab9a0ba1c1f6de02669a091a"
       },
       "kind": "button",
@@ -9373,7 +9422,7 @@
       "id": "control.033",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1372,
+        "line": 1379,
         "signature": "4311b5f6a595020324d9d05012a89bd4ecea5a79612cf8efa0cc308deaa0a363"
       },
       "kind": "GraphWorkspace",
@@ -9411,7 +9460,7 @@
       "id": "control.034",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1396,
+        "line": 1403,
         "signature": "0e2e40c4fe8dceaa47e762664abf4c8f863293fbf93fdb73b743699bce8f29fd"
       },
       "kind": "button",
@@ -9449,7 +9498,7 @@
       "id": "control.035",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1408,
+        "line": 1415,
         "signature": "99721e895e6db84a2fb2b5598ccac02cc9169f6b8a11ff4245b27d30c23659dd"
       },
       "kind": "button",
@@ -9487,7 +9536,7 @@
       "id": "control.036",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1439,
+        "line": 1446,
         "signature": "06b50c4c4e73bbae6abde7b5c0fd10dccadfeced21dce12c70fc0a901ae81f08"
       },
       "kind": "button",
@@ -9525,7 +9574,7 @@
       "id": "control.037",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1465,
+        "line": 1472,
         "signature": "e422655705368b5e86de6d6bb2d82ba464288a8b692c0b246673ef328f7f3d6e"
       },
       "kind": "button",
@@ -9563,7 +9612,7 @@
       "id": "control.038",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1466,
+        "line": 1473,
         "signature": "d5937cd2d16faf97023b07cf5a7e921fdd2d0d58f43d30542fdc23e62ab72bcd"
       },
       "kind": "button",
@@ -9601,7 +9650,7 @@
       "id": "control.039",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1475,
+        "line": 1482,
         "signature": "8c4903a66cfc178fa600968171778f01f083fe115b2423bc5932f9b84e37b7b8"
       },
       "kind": "button",
@@ -9639,7 +9688,7 @@
       "id": "control.040",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1481,
+        "line": 1488,
         "signature": "1aca6944e3a84786a1c033d4be99e51d68d4290765af59c94561683698a6ad57"
       },
       "kind": "button",
@@ -9677,7 +9726,7 @@
       "id": "control.041",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1491,
+        "line": 1498,
         "signature": "e422655705368b5e86de6d6bb2d82ba464288a8b692c0b246673ef328f7f3d6e"
       },
       "kind": "button",
@@ -9715,7 +9764,7 @@
       "id": "control.042",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1496,
+        "line": 1503,
         "signature": "0031d2e5cd3f8eba2d9f14aaad01d0a537d9a57fa874a59b5a3231bd9f16abc7"
       },
       "kind": "button",
@@ -9753,7 +9802,7 @@
       "id": "control.043",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1520,
+        "line": 1527,
         "signature": "5739dd685d8de5fefab339630bf0a39382d01b2e771d7f52b63a5aaa216b317b"
       },
       "kind": "button",
@@ -9791,7 +9840,7 @@
       "id": "control.044",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1530,
+        "line": 1537,
         "signature": "21c0c339d54c74f3bfcf7b7e1f18c3764b48501d75a02d8423bd7cb36b4dbc53"
       },
       "kind": "button",
@@ -9829,7 +9878,7 @@
       "id": "control.045",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1548,
+        "line": 1555,
         "signature": "e4f49332fc912c449c55d2c00eb050e1a641214e07b4da19e9f115cee5b710e5"
       },
       "kind": "CommandInput",
@@ -9867,7 +9916,7 @@
       "id": "control.046",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1558,
+        "line": 1565,
         "signature": "cda20ba9cd4df31675dda33ac72df1c9b2d53181f3192b6d5506bac4c71cdfe1"
       },
       "kind": "CommandItem",
@@ -9905,7 +9954,7 @@
       "id": "control.047",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1589,
+        "line": 1596,
         "signature": "3ec04757f196ecfcdcb4645f883f995ff689b79dcfaa3910b44c7b518aeafd00"
       },
       "kind": "StructuredFields",
@@ -9943,7 +9992,7 @@
       "id": "control.048",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1600,
+        "line": 1607,
         "signature": "59cbaf8ad6f028f3fb4d1b435fc83ec6f5c1f1709f8bd6ff77dac5a71eb556f6"
       },
       "kind": "button",
@@ -9981,7 +10030,7 @@
       "id": "control.049",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1603,
+        "line": 1610,
         "signature": "ce4b13158400530a68c6d304f384dbbb13dae999295b9b1a35307bc9fcee6039"
       },
       "kind": "button",
@@ -10019,7 +10068,7 @@
       "id": "control.050",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1630,
+        "line": 1637,
         "signature": "90af04fe32c901d39e5a0b933a770848e622233951820cfea2b06a3b6eab1050"
       },
       "kind": "MathEditor",
@@ -10057,7 +10106,7 @@
       "id": "control.051",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1636,
+        "line": 1643,
         "signature": "295e3e1d9ce56f4cedb9a9860bdd148b1890b04275303c6e304aa6a5035770d2"
       },
       "kind": "button",
@@ -10095,7 +10144,7 @@
       "id": "control.052",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1642,
+        "line": 1649,
         "signature": "e2fbd54a7091c4a1549a76d37aad66b1332d782fe9f930a97ee254b45c635717"
       },
       "kind": "button",
@@ -10133,7 +10182,7 @@
       "id": "control.053",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1676,
+        "line": 1683,
         "signature": "8488f2eed25566f0d0bdbe53896800affce9d4ae4676d510b9cc45045f2e92f8"
       },
       "kind": "input",
@@ -10171,7 +10220,7 @@
       "id": "control.054",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1684,
+        "line": 1691,
         "signature": "241e6607551dff11e290e1b32c16370e4dcaf50e8915424fea723edf8379e8c5"
       },
       "kind": "Choice",
@@ -10209,7 +10258,7 @@
       "id": "control.055",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1701,
+        "line": 1708,
         "signature": "ae7a5856d2ebd60947b1e64579c97ba6386287f3b14251536a38ef51594de5d6"
       },
       "kind": "input",
@@ -10247,7 +10296,7 @@
       "id": "control.056",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1713,
+        "line": 1720,
         "signature": "7c4b209812f754cf4b89d4ebaf70d6a9c37bcc52e502e74cd0e79884e81de06b"
       },
       "kind": "input",
@@ -10285,7 +10334,7 @@
       "id": "control.057",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1737,
+        "line": 1744,
         "signature": "d19683ade3968966b48d95c654edb719806bc278e2e97d577849e0c0be72dd00"
       },
       "kind": "input",
@@ -10323,7 +10372,7 @@
       "id": "control.058",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1771,
+        "line": 1778,
         "signature": "f2a29a0011b521f642a0265b6b4b5f6e0c8655fd45d1b208399b1fc1dfb26ad5"
       },
       "kind": "input",
@@ -10361,7 +10410,7 @@
       "id": "control.059",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1794,
+        "line": 1801,
         "signature": "888ac94c06b6a0131aba16769ef8884a6fe86ba644ac6acc79f43866c86bea72"
       },
       "kind": "ListInput",
@@ -10399,7 +10448,7 @@
       "id": "control.060",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1802,
+        "line": 1809,
         "signature": "39ecd325b0a4f3da883b6949558503509382b7e50d5bf4ce2cdb0dd36df7bba0"
       },
       "kind": "textarea",
@@ -10437,7 +10486,7 @@
       "id": "control.061",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1812,
+        "line": 1819,
         "signature": "8b98810504ce42e6d6c944dbbfa8b126de42ffdd9471456cabbefb173a0b0c00"
       },
       "kind": "button",
@@ -10475,7 +10524,7 @@
       "id": "control.062",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1815,
+        "line": 1822,
         "signature": "6e825ac79164a2b054f0fb0bb7783672d4e9bae33a3f4afe4bbb0f7591a2c9a4"
       },
       "kind": "button",
@@ -10513,7 +10562,7 @@
       "id": "control.063",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1839,
+        "line": 1846,
         "signature": "9d64c548cb57f1ed449239ddb10f364b9e3b6d41e38fb07ebe689946c17d16fd"
       },
       "kind": "button",
@@ -10551,7 +10600,7 @@
       "id": "control.064",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1860,
+        "line": 1867,
         "signature": "63eddb2c0bcf1d9705c74ca498abf5d69f8803ebdc3bbecd75da690bf64418e7"
       },
       "kind": "input",
@@ -10589,7 +10638,7 @@
       "id": "control.065",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1866,
+        "line": 1873,
         "signature": "18c6ddae16604285e74a7811987a08b34fbdf2e2a8ca24be3986e7abc482966c"
       },
       "kind": "button",
@@ -10627,7 +10676,7 @@
       "id": "control.066",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1889,
+        "line": 1896,
         "signature": "cf3b5ed247518b677c08b6e63acb76d6a518cfcb096362e1c3ecf63f636e1863"
       },
       "kind": "input",
@@ -10665,7 +10714,7 @@
       "id": "control.067",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1912,
+        "line": 1919,
         "signature": "a797d1385fd95e5b300d0615c024378a75ee98de8d9e37c9e977a0987e44da43"
       },
       "kind": "Choice",
@@ -10703,7 +10752,7 @@
       "id": "control.068",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1932,
+        "line": 1939,
         "signature": "fde14052262f70ef62be79c275a9279a45a5fb2eaef90efc68659e85fc025fd6"
       },
       "kind": "Choice",
@@ -10741,7 +10790,7 @@
       "id": "control.069",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1949,
+        "line": 1956,
         "signature": "db76932f2602c869a08438c4c9a3a96839268ad2c4235a09b79779d87bb3ea29"
       },
       "kind": "input",
@@ -10779,7 +10828,7 @@
       "id": "control.070",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1973,
+        "line": 1980,
         "signature": "02da84c0af322fd91de50e17e36cba33ced9c3411def140805464845bd3bd63e"
       },
       "kind": "input",
@@ -10817,7 +10866,7 @@
       "id": "control.071",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1995,
+        "line": 2002,
         "signature": "b89e8f9ed03046a5ec42871a24836bb8aec129230abb8b081f9e04501a38ea40"
       },
       "kind": "input",
@@ -10855,7 +10904,7 @@
       "id": "control.072",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2011,
+        "line": 2018,
         "signature": "2f3c3f9ae559a6772c29d0f2db151b4d3448e9fbffcac800a22b675da5cec48f"
       },
       "kind": "Choice",
@@ -10893,7 +10942,7 @@
       "id": "control.073",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2035,
+        "line": 2042,
         "signature": "3e6fa53aee221a97a3949af46e19fae308f2c9653dbf33fcc3defe30a595189a"
       },
       "kind": "button",
@@ -10931,7 +10980,7 @@
       "id": "control.074",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2087,
+        "line": 2094,
         "signature": "afacb7db8c7da7e3301ca5d467bb94fdb9c9a64b1f7536d11f8eb3338c5b607b"
       },
       "kind": "button",
@@ -10969,7 +11018,7 @@
       "id": "control.075",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2106,
+        "line": 2113,
         "signature": "375215f46b1220ae73ff4fab4ad1406fca0da99f1ca6dedd7e7091bc648df08f"
       },
       "kind": "button",
@@ -11007,7 +11056,7 @@
       "id": "control.076",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2117,
+        "line": 2124,
         "signature": "482aebee25fdac280c3269c175989b5026a3ccfa7462df7f0a7b23a2e9ec25d2"
       },
       "kind": "button",
@@ -11045,7 +11094,7 @@
       "id": "control.077",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2121,
+        "line": 2128,
         "signature": "695d8444d6e861e2daa3aa4e913be3d14660a9feb7f678d9ed1c2d9e31a87312"
       },
       "kind": "input",
@@ -11083,7 +11132,7 @@
       "id": "control.078",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2160,
+        "line": 2167,
         "signature": "11b08a53ef4c0d2e44ea3aa2b79d1b149d5e08ad00559dec0e57568baf217a32"
       },
       "kind": "button",
@@ -11121,7 +11170,7 @@
       "id": "control.079",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2182,
+        "line": 2189,
         "signature": "efc8337060ded27391ef66d1ab9d276a8622c58ab5b77a0b8a457f571fd69eab"
       },
       "kind": "button",
@@ -11159,7 +11208,7 @@
       "id": "control.080",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2296,
+        "line": 2303,
         "signature": "ee5932715263bf2d3aa8c412bc65042e61c073abc3a5027d4ea31a9d4557c410"
       },
       "kind": "Choice",
@@ -12907,7 +12956,7 @@
       "id": "control.126",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 132,
+        "line": 138,
         "signature": "5c3e4b908d88e429a60dd23c836894f9eac71a33a2f8cc69b9ff597aa9a9a385"
       },
       "kind": "Choice",
@@ -12945,7 +12994,7 @@
       "id": "control.127",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 155,
+        "line": 161,
         "signature": "bd626374b1d822b50270725e6a729325e22612821110bed01fbc3ada6af907e3"
       },
       "kind": "button",
@@ -12983,7 +13032,7 @@
       "id": "control.128",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 167,
+        "line": 173,
         "signature": "c9bd4102b0840b750c76ae361742c75dfd3a84fdc50b201044676d695b672b0e"
       },
       "kind": "input",
@@ -13021,7 +13070,7 @@
       "id": "control.129",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 187,
+        "line": 193,
         "signature": "f38e88cce60f06a74732e8a7194b9dcf1da3a38535f059bf3874fd61c4f9d7ff"
       },
       "kind": "input",
@@ -13059,7 +13108,7 @@
       "id": "control.130",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 219,
+        "line": 225,
         "signature": "17646f5f0dd781351acab8d8701631b1982aa972794c32d0cd56ed5ea429e2d9"
       },
       "kind": "input",
@@ -13097,7 +13146,7 @@
       "id": "control.131",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 240,
+        "line": 246,
         "signature": "0cb9caa6dc0bd108d860c8cc259b9e3d8b1d5af9ced9454174c82c75f006a513"
       },
       "kind": "input",
@@ -13135,7 +13184,7 @@
       "id": "control.132",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 361,
+        "line": 367,
         "signature": "f60a888fc9333676c35fffa80db1c704fcad015f27ce1ff5531e39e7d9b96085"
       },
       "kind": "Choice",
@@ -13173,7 +13222,7 @@
       "id": "control.133",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 379,
+        "line": 385,
         "signature": "a022d03f1f20e15b23a6833f6588f1127d3b69c78cb9457f208bb29d6aeae71d"
       },
       "kind": "input",
@@ -13211,7 +13260,7 @@
       "id": "control.134",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 401,
+        "line": 407,
         "signature": "31155f5dfad0f1f7a0d25254484fa72a9ceeb8d5a44f0c8483bd87a6f7b680c0"
       },
       "kind": "Choice",
@@ -13249,7 +13298,7 @@
       "id": "control.135",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 421,
+        "line": 427,
         "signature": "a11333360394542968c8b1da5acf70a44b01271cb54929dc48a052b2c6c96c79"
       },
       "kind": "input",
@@ -13287,7 +13336,7 @@
       "id": "control.136",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 461,
+        "line": 467,
         "signature": "c6b013a3d947262afa640b34ed392c8cd6429c449d6b88a50e1f1cd3ee13ae12"
       },
       "kind": "input",
@@ -13325,7 +13374,7 @@
       "id": "control.137",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 468,
+        "line": 474,
         "signature": "a272449b8a5e34231dec9d88e8685efb43eb234c89f7ee24010dfe36106c26c9"
       },
       "kind": "button",
@@ -13363,7 +13412,7 @@
       "id": "control.138",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 477,
+        "line": 483,
         "signature": "0e12475267bc573886e6fd8337590250fdc35c540240390df4c51ab2ad00c2eb"
       },
       "kind": "button",
@@ -13401,7 +13450,7 @@
       "id": "control.139",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 509,
+        "line": 515,
         "signature": "2606c2b0d7ef4d914905b11bf80e0a94122ae1d998f6f4beb49d58eb5c9d70d1"
       },
       "kind": "Choice",
@@ -13439,7 +13488,7 @@
       "id": "control.140",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 528,
+        "line": 534,
         "signature": "8c6330504b1d32acdeb23d21dc40d976f6de688d60f990b3cd0398325bf820fb"
       },
       "kind": "input",
@@ -13477,7 +13526,7 @@
       "id": "control.141",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 549,
+        "line": 555,
         "signature": "56f5df7263d2a96826c06a7cac064c346a1ebc02b0287545001c6888574426cf"
       },
       "kind": "input",
@@ -13515,7 +13564,7 @@
       "id": "control.142",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 581,
+        "line": 588,
         "signature": "377f03ca9142d132adb52818084dafb5c56e6c9df1121066ec34171a4fedb963"
       },
       "kind": "LogicFields",
@@ -13553,7 +13602,7 @@
       "id": "control.143",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 601,
+        "line": 608,
         "signature": "ef5846bb284cbf5a93b95d550ab3563578f7aa1a099c7ea7a9296f1ff7588bba"
       },
       "kind": "MatrixInput",
@@ -13591,7 +13640,7 @@
       "id": "control.144",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 636,
+        "line": 643,
         "signature": "6734cf09487711c95acadce352afe605c8b439225c220190ecaf54aac870a246"
       },
       "kind": "input",
@@ -13629,7 +13678,7 @@
       "id": "control.145",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 663,
+        "line": 670,
         "signature": "dbc9f236755e7f297ea2db5069f042d8fc069596311f47a6ebaaf7e7415ee72b"
       },
       "kind": "button",
@@ -13667,7 +13716,7 @@
       "id": "control.146",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 681,
+        "line": 688,
         "signature": "653f9ccf5a7635d4133f2e219dfd3f9e563733b614afbf59c19250e1d14117dc"
       },
       "kind": "button",
@@ -13705,7 +13754,7 @@
       "id": "control.147",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 717,
+        "line": 724,
         "signature": "4663bf6a6baf638f1887295a9484928bb2ac5a5b992ff413dc0baf25a9bc6ccd"
       },
       "kind": "input",
@@ -13743,7 +13792,7 @@
       "id": "control.148",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 746,
+        "line": 753,
         "signature": "75f90e0bbaec8122e4c728cda006f15294897efa573984eba241343bd2a00670"
       },
       "kind": "button",
@@ -13781,7 +13830,7 @@
       "id": "control.149",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 763,
+        "line": 770,
         "signature": "47cae6aab48cd12808a94cb0683dbf17a1e4643004438d93960e033bb16ed4db"
       },
       "kind": "input",
@@ -13819,7 +13868,7 @@
       "id": "control.150",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 776,
+        "line": 783,
         "signature": "9d345bd4f3655be001e8c5e6555367ea956a89eaf183a561a7bbcc1d0678bf68"
       },
       "kind": "MatrixInput",
@@ -13857,7 +13906,7 @@
       "id": "control.151",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 785,
+        "line": 792,
         "signature": "23213ac2a3cdd18d55e612c1b031febb6c492865f69970c11a53374bbf107f74"
       },
       "kind": "ListInput",
@@ -13895,7 +13944,7 @@
       "id": "control.152",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 806,
+        "line": 813,
         "signature": "5d8f7bd310cdf59b9f5615bbdcbfefeb0a206f57d43ac17e080b3fb893a05b56"
       },
       "kind": "input",
@@ -13933,7 +13982,7 @@
       "id": "control.153",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 830,
+        "line": 837,
         "signature": "94b6d0eb661db73412f92c02b3b26364f6dd7d2bc533012cf2897556c2b1b94b"
       },
       "kind": "button",
@@ -13971,7 +14020,7 @@
       "id": "control.154",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 844,
+        "line": 851,
         "signature": "394efdb34b0fd57f290514b074abba2e4ac0c006967c95a4333be69c97dcede3"
       },
       "kind": "button",
@@ -14009,7 +14058,7 @@
       "id": "control.155",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 860,
+        "line": 872,
         "signature": "0a1007777d53881ad558eca0f753c0a0c0536f5f3e1f88d5e14e1e55badbfe76"
       },
       "kind": "Choice",
@@ -14047,8 +14096,8 @@
       "id": "control.156",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 868,
-        "signature": "03129722ed644a7272ab6ef0a93251cbdf7a9079a2075626ce7df562e8eb6d86"
+        "line": 880,
+        "signature": "50f4f679b38fb4be61dccf7dd5b923a24657bd61610b9dcdc64fdb69e70aa6a9"
       },
       "kind": "input",
       "label": "dynamic/accessibility label requires browser observation",
@@ -14085,7 +14134,7 @@
       "id": "control.157",
       "source": {
         "file": "components/calculator/StructuredFields.tsx",
-        "line": 873,
+        "line": 896,
         "signature": "299640b5ea5ce6b9041a5bb7522f717f8334a5f5e7ea5f3f4ed56f85fe517ab3"
       },
       "kind": "button",
@@ -14565,7 +14614,10 @@
         "tests/notation-previews.mjs",
         "tests/math-editor.mjs",
         "scripts/patches/mathlive@0.110.0.patch",
-        "tests/mathlive-lifecycle.mjs"
+        "tests/mathlive-lifecycle.mjs",
+        "components/calculator/MathEditor.css",
+        "components/calculator/MathView.tsx",
+        "tests/notation.mjs"
       ],
       "browserScenarioIds": [
         "math-fractions-entry",
@@ -14596,7 +14648,12 @@
         "editor.nested-menu-escape",
         "structured.logic-mode-preservation",
         "structured.points-grid",
-        "editor.repeated-transition"
+        "editor.repeated-transition",
+        "editor.vendor-insertions",
+        "editor.integral-shortcut",
+        "editor.scalar-notation-roundtrip",
+        "editor.vendor-presentation",
+        "editor.vendor-touch-targets"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14631,7 +14688,36 @@
         "editor.nested-menu-escape: math-editor regression; actual nested Expression editor with unsaved x^2+1, external Expression menu, Escape closes only vendor menu while editor and draft remain; Use expression retains draft and derivative independently equals 2*x; reopen editor, menu Escape then editor Escape closes only nested editor and preserves underlying operation dialog",
         "structured.logic-mode-preservation: notation-previews regression; actual logical relationship operands a,b, calculate Equivalent(a,b), Edit problem then Advanced proposition retains complete Equivalent(a,b); edit And(a,b,c) and keep all operands as raw input; switching back to supported two-argument relation retains a,b",
         "structured.points-grid: notation-previews regression; actual Exact polynomial interpolation Points [(0,1),(1,2),(2,5)], resize rows 3 to 4 to 3 and columns 2 to 3 to 2, edit a cell then restore; captured point input retains tuple rows and calculation independently equals x^2+1; single-column/mixed rows and matrix list shapes checked separately by rendering regression",
-        "editor.repeated-transition: actual focused nested editor Use expression/Close/Escape transitions, including immediate closure after focus; alternate Text/Math and open Graph expression editor; one activation opens external Expression menu, keyboard remains usable and edited x^2+1 derivative independently equals 2*x; no disposed-model or disconnected-popover console errors"
+        "editor.repeated-transition: actual focused nested editor Use expression/Close/Escape transitions, including immediate closure after focus; alternate Text/Math and open Graph expression editor; one activation opens external Expression menu, keyboard remains usable and edited x^2+1 derivative independently equals 2*x; no disposed-model or disconnected-popover console errors",
+        "editor.vendor-insertions: actual vendor template activation, completed operands, exact serialized LaTeX and semantic rendered outcomes independently matched; static TSX controls do not enumerate or certify vendor menu controls; at 320px/390px, first insertion from an unfocused empty field restores field focus and selected-placeholder typing; repeated insertion after clearing remains usable",
+        "editor.integral-shortcut: completed root integral 3 to 4 of 1 transferred into existing integrand/variable/bounds fields with one integral in preview, independently calculated result 1, generic manual integration semantics retained",
+        "editor.scalar-notation-roundtrip: generic scalar inputs hide internal latex marker while preserving encoded source through edits and clear/retype; actual Math editor and reopened problem retain notation and mathematical meaning; at 320px/390px, encoded scalar fields show a visible LaTeX hint associated through aria-describedby, retained after clearing/retyping, while ordinary text fields have no notation hint",
+        "editor.vendor-presentation: actual vendor foreground red, background blue, boxed, bbox red and dashed border activation; capture exact serialized LaTeX, visible input colour/background/enclosure and semantic DOM/screenshots, then independently match each calculated result 4; broader vendor style variants remain unverified until explicitly inventoried and observed; actual Calculation card bbox previews render readable mathematical bodies inside the retained red-solid/black-dashed enclosures without visible padding/border metadata; copy retains exact original LaTeX annotation and saved serialization",
+        "editor.vendor-touch-targets: at 320px/390px, actual root and submenu interactive item bounds at least 44px by 44px, including colour swatches and matrix grid; keyboard-visible menu bounds fit the keyboard-free viewport, top-layer submenus remain visible, real pointer activation changes source/style, and scrolling reveals/reaches remaining items with working focus/dismissal recovery; AX click alone cannot establish pointer activation"
+      ],
+      "fixtures": [
+        "editor.menu.abs",
+        "editor.menu.nth-root",
+        "editor.menu.log-base",
+        "editor.menu.derivative",
+        "editor.menu.nth-derivative",
+        "editor.menu.integral",
+        "editor.menu.sum",
+        "editor.menu.product",
+        "editor.menu.modulus",
+        "editor.menu.argument",
+        "editor.menu.real-part",
+        "editor.menu.imaginary-part",
+        "editor.menu.conjugate",
+        "editor.menu.integral-negative",
+        "editor.menu.integral-reversed",
+        "editor.menu.integral-greek",
+        "editor.menu.matrix",
+        "editor.menu.color-red",
+        "editor.menu.background-blue",
+        "editor.menu.boxed",
+        "editor.menu.bbox-red",
+        "editor.menu.bbox-dashed"
       ]
     },
     {

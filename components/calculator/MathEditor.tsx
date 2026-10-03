@@ -87,9 +87,9 @@ export default forwardRef<
     el.executeCommand(selector);
   };
   const showExpressionMenu = (event: MouseEvent<HTMLButtonElement>) => {
-    const el = mf.current;
+    // Menu dismissal must return focus to the field, including its first use.
+    const el = focusSelection();
     if (!el) return;
-    if (selection.current) el.selection = selection.current;
     const bounds = event.currentTarget.getBoundingClientRect();
     // MathLive 0.110 showMenu assumes its lazy menu has been initialized.
     void el.menuItems;

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import {
   failure,
   readJson,
+  readFixtures,
   digest,
   mathContractFingerprint,
 } from "./verification-contract.mjs";
@@ -15,13 +16,7 @@ export async function reviewBrowserMath(root, file) {
   const evidence = readJson(file);
   if (evidence.schemaVersion !== 1 || !Array.isArray(evidence.captures))
     failure("Expected schemaVersion 1 and captures array");
-  const fixtures = [
-    "maths-defaults.json",
-    "maths-choices.json",
-    "maths-invalid.json",
-  ].flatMap(
-    (name) => readJson(path.join(root, "tests/fixtures", name)).fixtures,
-  );
+  const fixtures = readFixtures(root);
   const ids = new Set();
   for (const capture of evidence.captures) {
     if (ids.has(capture.fixtureId))
