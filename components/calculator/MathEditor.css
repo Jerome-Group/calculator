@@ -76,6 +76,12 @@
 
   .math-editor-field math-field::part(ui-menu-container) {
     box-sizing: border-box;
+    /* The vendor's side-by-side placement can move phone submenus offscreen. */
+    position: fixed !important;
+    left: 8px !important;
+    top: 8px !important;
+    right: auto !important;
+    bottom: auto !important;
     /* Five 44px matrix choices plus the vendor's 8px side padding. */
     min-width: 236px;
     max-height: calc(100dvh - var(--math-keyboard-height, 0px) - 16px);
