@@ -59,6 +59,33 @@ assert(
   }).includes("Graphs overlaps editor controls or caret"),
 );
 
+const landscapeNavigation = {
+  tabs: Object.fromEntries(
+    ["Calculate", "Explore", "Graphs", "Objects"].map((name, index) => [
+      name,
+      {
+        rect: { x: 10, y: 146 + index * 58, width: 164, height: 50 },
+        hits: Array(9).fill(true),
+      },
+    ]),
+  ),
+  keyboardRect: { x: 184, y: 125, width: 660, height: 266 },
+  viewport: { width: 844, height: 391 },
+};
+assert.deepEqual(checkWorkspaceNavigation(landscapeNavigation), []);
+assert(
+  checkWorkspaceNavigation({
+    ...landscapeNavigation,
+    keyboardRect: { x: 0, y: 125, width: 844, height: 266 },
+  }).includes("Graphs target overlaps interactive keyboard plate"),
+);
+assert.deepEqual(
+  checkWorkspaceNavigation({
+    ...landscapeNavigation,
+    keyboardRect: { x: NaN, y: 125, width: 660, height: 266 },
+  }),
+  ["Workspace navigation observation is incomplete"],
+);
 const phoneMenuGeometry = {
   context: "composer",
   field: { bottom: 333 },
@@ -351,6 +378,9 @@ function geometryHarness({
   viewportHeight = 390,
   modal = standalone,
   navigationTop,
+  sidebarRight,
+  tabsBounds,
+  keyboardBounds,
   keyboardRight = 336,
   actionBottom = 115,
   buttonWidths = [129, 147],
@@ -415,7 +445,7 @@ function geometryHarness({
   };
   const keyboard = new Surface();
   keyboard.visible = visible;
-  keyboard.boundingRect = { height: 266 };
+  keyboard.boundingRect = keyboardBounds ?? { height: 266 };
   keyboard.hide = () => {
     keyboard.visible = false;
     keyboard.dispatchEvent(new Event("geometrychange"));
@@ -433,8 +463,8 @@ function geometryHarness({
   const win = new Surface();
   win.innerWidth = viewportWidth;
   win.innerHeight = viewportHeight;
-  win.getComputedStyle = () => ({
-    position: viewportWidth <= 700 ? "fixed" : "static",
+  win.getComputedStyle = (element) => ({
+    position: element.isSidebar || win.innerWidth <= 700 ? "fixed" : "static",
   });
   const media = new Surface();
   media.matches = mediaMatches;
@@ -446,14 +476,22 @@ function geometryHarness({
         ? modal
           ? dialog
           : null
-        : navigationTop === undefined
-          ? null
-          : {
-              getBoundingClientRect: () => ({
-                top: keyboard.visible ? navigationTop : viewportHeight - 72,
-                height: 64,
-              }),
-            },
+        : selector === ".navigation"
+          ? sidebarRight === undefined
+            ? null
+            : {
+                isSidebar: true,
+                getBoundingClientRect: () => ({ left: 0, right: sidebarRight }),
+              }
+          : navigationTop === undefined && !tabsBounds
+            ? null
+            : {
+                getBoundingClientRect: () =>
+                  tabsBounds ?? {
+                    top: keyboard.visible ? navigationTop : viewportHeight - 72,
+                    height: 64,
+                  },
+              },
     documentElement: {
       style: {
         getPropertyValue: () => "266px",
@@ -574,6 +612,83 @@ function geometryHarness({
     false,
     "unmount restores CSS clearance fallback",
   );
+  for (const sidebarRight of [184, 224]) {
+    const landscape = geometryHarness({
+      focused: false,
+      sidebarRight,
+      tabsBounds: { top: 146, bottom: 370 },
+      keyboardBounds: {
+        left: 0,
+        right: 844,
+        top: 125,
+        bottom: 391,
+        height: 266,
+      },
+    });
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      `${sidebarRight}px`,
+    );
+    landscape.keyboard.boundingRect.left = sidebarRight;
+    landscape.geometry();
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      `${sidebarRight}px`,
+      "inset remains stable after lateral clearance",
+    );
+    landscape.win.innerWidth = 390;
+    landscape.geometry();
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      "0px",
+    );
+    landscape.win.innerWidth = 844;
+    landscape.keyboard.hide();
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      "0px",
+    );
+    landscape.cleanup();
+    assert.equal(
+      landscape.rootStyles.has("--math-keyboard-sidebar-inset"),
+      false,
+    );
+  }
+  for (const options of [
+    { modal: true },
+    { sidebarRight: NaN },
+    { sidebarRight: 900 },
+    { mediaMatches: false },
+    {
+      keyboardBounds: {
+        left: 0,
+        right: 844,
+        top: 380,
+        bottom: 390,
+        height: 10,
+      },
+    },
+  ]) {
+    const exempt = geometryHarness({
+      sidebarRight: 184,
+      tabsBounds: { top: 146, bottom: 370 },
+      keyboardBounds: {
+        left: 0,
+        right: 844,
+        top: 125,
+        bottom: 391,
+        height: 266,
+      },
+      ...options,
+    });
+    exempt.flushFrames();
+    assert.equal(exempt.rootStyles.get("--math-keyboard-sidebar-inset"), "0px");
+    exempt.cleanup();
+  }
   const desktop = geometryHarness({ navigationTop: 50 });
   desktop.flushFrames();
   assert.equal(desktop.rootStyles.get("--math-navigation-clearance"), "0px");

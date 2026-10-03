@@ -264,13 +264,54 @@ export default forwardRef<
               }
               const navigationElement =
                 document.querySelector(".workspace-tabs");
+              const dialogOpen = document.querySelector(
+                '[data-slot="dialog-content"][data-state="open"]',
+              );
+              const sidebar = document.querySelector(".navigation");
+              const sidebarBounds = sidebar?.getBoundingClientRect();
+              const tabsBounds = navigationElement?.getBoundingClientRect();
+              const keyboardBounds = k.boundingRect;
+              const sidebarInset =
+                k.visible &&
+                toolbarMedia?.matches &&
+                window.innerWidth > 700 &&
+                window.innerHeight <= 500 &&
+                !dialogOpen &&
+                sidebar &&
+                window.getComputedStyle(sidebar).position === "fixed" &&
+                sidebarBounds &&
+                tabsBounds &&
+                keyboardBounds &&
+                [
+                  sidebarBounds.left,
+                  sidebarBounds.right,
+                  tabsBounds.top,
+                  tabsBounds.bottom,
+                  keyboardBounds.left,
+                  keyboardBounds.right,
+                  keyboardBounds.top,
+                  keyboardBounds.bottom,
+                ].every(Number.isFinite) &&
+                sidebarBounds.left === 0 &&
+                sidebarBounds.right > 0 &&
+                sidebarBounds.right < window.innerWidth &&
+                tabsBounds.bottom > tabsBounds.top &&
+                keyboardBounds.bottom > keyboardBounds.top &&
+                keyboardBounds.left <= sidebarBounds.right &&
+                keyboardBounds.right > sidebarBounds.left &&
+                tabsBounds.bottom > keyboardBounds.top &&
+                tabsBounds.top < keyboardBounds.bottom
+                  ? sidebarBounds.right
+                  : 0;
+              document.documentElement.style.setProperty(
+                "--math-keyboard-sidebar-inset",
+                `${sidebarInset}px`,
+              );
               const navigation =
                 navigationElement &&
                 window.getComputedStyle(navigationElement).position ===
                   "fixed" &&
-                !document.querySelector(
-                  '[data-slot="dialog-content"][data-state="open"]',
-                )
+                !dialogOpen
                   ? navigationElement.getBoundingClientRect()
                   : undefined;
               const navigationClearance =
@@ -397,6 +438,9 @@ export default forwardRef<
             cleanupMenu();
             document.documentElement.style.removeProperty(
               "--math-navigation-clearance",
+            );
+            document.documentElement.style.removeProperty(
+              "--math-keyboard-sidebar-inset",
             );
             cancelAnimationFrame(frame);
             k.removeEventListener("geometrychange", geometry);

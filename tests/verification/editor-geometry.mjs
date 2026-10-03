@@ -107,6 +107,7 @@ export function checkKeyboardActionRow(observation) {
 export function checkWorkspaceNavigation({
   tabs,
   keyboardPaintTop,
+  keyboardRect,
   viewport,
   obstacles = [],
 }) {
@@ -116,9 +117,10 @@ export function checkWorkspaceNavigation({
   if (
     !names.every((name) => valid(tabs?.[name]?.rect)) ||
     !obstacles.every(valid) ||
-    ![keyboardPaintTop, viewport?.width, viewport?.height].every(
-      Number.isFinite,
-    )
+    !(keyboardRect
+      ? valid(keyboardRect) && keyboardRect.width > 0 && keyboardRect.height > 0
+      : Number.isFinite(keyboardPaintTop)) ||
+    ![viewport?.width, viewport?.height].every(Number.isFinite)
   )
     return ["Workspace navigation observation is incomplete"];
   const failures = [];
@@ -133,9 +135,11 @@ export function checkWorkspaceNavigation({
       rect.x < 0 ||
       rect.y < 0 ||
       rect.x + rect.width > viewport.width ||
-      rect.y + rect.height > keyboardPaintTop
+      rect.y + rect.height > (keyboardRect ? viewport.height : keyboardPaintTop)
     )
       failures.push(name + " target is outside keyboard-free viewport");
+    if (keyboardRect && overlap(rect, keyboardRect))
+      failures.push(name + " target overlaps interactive keyboard plate");
     if (
       !Array.isArray(hits) ||
       hits.length !== 9 ||
