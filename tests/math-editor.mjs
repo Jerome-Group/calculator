@@ -342,6 +342,13 @@ try {
 }
 const flush = () => new Promise(setImmediate);
 const priorWindow = globalThis.window;
+const priorMatchMedia = globalThis.matchMedia;
+const menuMediaListeners = new Set();
+globalThis.matchMedia = () => ({
+  matches: false,
+  addEventListener: (_, listener) => menuMediaListeners.add(listener),
+  removeEventListener: (_, listener) => menuMediaListeners.delete(listener),
+});
 globalThis.window = {};
 globalThis.window.parent = globalThis.window;
 try {
@@ -444,6 +451,11 @@ try {
   );
   editor.unmount();
   assert.equal(field.removed, true);
+  assert.equal(
+    menuMediaListeners.size,
+    0,
+    "unmount removes phone-menu listener",
+  );
 
   const unfocused = harness();
   const unfocusedProps = { value: "", onChange() {} };
@@ -610,8 +622,15 @@ try {
   await flush();
   assert.equal(retry.fields[0].value, "x^3", "retry retains latest expression");
   retry.unmount();
+  assert.equal(
+    menuMediaListeners.size,
+    0,
+    "retry cleanup removes phone-menu listener",
+  );
   console.log("Math editor lifecycle and selection regressions passed");
 } finally {
+  if (priorMatchMedia === undefined) delete globalThis.matchMedia;
+  else globalThis.matchMedia = priorMatchMedia;
   if (priorWindow === undefined) delete globalThis.window;
   else globalThis.window = priorWindow;
 }

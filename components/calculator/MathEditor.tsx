@@ -171,7 +171,8 @@ export default forwardRef<
           }
         });
         host.current.replaceChildren(el);
-        prepareMathLiveMenu(el);
+        const cleanupMenu = prepareMathLiveMenu(el);
+        cleanup = cleanupMenu;
         mf.current = el;
         const k = window.mathVirtualKeyboard;
         if (k) {
@@ -270,6 +271,7 @@ export default forwardRef<
           };
           k.addEventListener("geometrychange", geometry);
           cleanup = () => {
+            cleanupMenu();
             cancelAnimationFrame(frame);
             k.removeEventListener("geometrychange", geometry);
           };

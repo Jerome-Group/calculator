@@ -12787,7 +12787,7 @@
       "id": "control.121",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 319,
+        "line": 321,
         "signature": "c3567a336c8370a31889f7b4bd73e419c78da75ab77e70bf4906a5dfbbfb6e2a"
       },
       "kind": "button",
@@ -12825,7 +12825,7 @@
       "id": "control.122",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 340,
+        "line": 342,
         "signature": "b6a02e5763e84e153ee4d681a997caeb337e3992a51840a63b4e839921b37dd3"
       },
       "kind": "button",
@@ -12863,7 +12863,7 @@
       "id": "control.123",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 355,
+        "line": 357,
         "signature": "72296f0af9931b794392e69955b610b45848d720077d52b2ad48addcbbb9dc1a"
       },
       "kind": "button",
@@ -12901,7 +12901,7 @@
       "id": "control.124",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 371,
+        "line": 373,
         "signature": "ee94840c391383d973b57dd5c90f60afd6cdf640644851a24be2c6366f0c5b22"
       },
       "kind": "button",
@@ -14307,7 +14307,7 @@
       "id": "control.161",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 332,
+        "line": 334,
         "signature": "ea30bf3086fa5b1a65d4870f5b3a3c4b137d26a62c4399ba40daa9d973008f48"
       },
       "kind": "button",
@@ -14771,7 +14771,8 @@
         "editor.vendor-menu-coverage: retain a hashed private inventory of all 115 MathLive 0.110.0 menu leaves with leaf ID, group, eligible context, command and expected source/semantic effect; link each of the 112 ordinary leaves to actual current-build UI action records: 13 Insert templates, 25 matrix sizes, 6 matrix edits, 5 borders, 16 foreground plus 16 background colours, 6 fonts, 12 accents, 3 decorations, 3 modes and 7 clipboard/selection actions. Record current runtime public MathfieldElement.computeEngine and actual menu observations in eligible contexts for the 3 conditional compute-engine leaves; only observed null/unavailable and absent leaves permit an explicitly reasoned not-applicable classification. Never install a compute engine or fabricate conditional activation. Retain selected/caret/editable matrix contexts, minimum-shape delete availability and actual shape/cell effects. Matrix/pmatrix/bmatrix/Bmatrix preserve [[1,2],[3,4]]; vmatrix independently calculates determinant -2. All 32 palette calculations independently equal 4; rendered foreground/background match the pinned MathLive hex values and original source annotations survive preview/history/copy. Font/accent source preservation is distinct from computational success: retain explicit existing engine errors for the 17 unsupported forms and supported overline conjugation, without stripping notation or inventing semantics. Grouped pass flags alone cannot prove complete leaf execution; use original action, source, result, target and screenshot records linked to each leaf. Source tests do not substitute for IAB activation.",
         "editor.menu-clipboard-safety: preserve user clipboard around isolated synthetic checks. Set an owned sentinel; select actual 3+1 and activate the vendor Cut leaf. Observe successful clipboard copy before selected input removal, then actual Paste and Calculate independently equal 4. Retain actual source/clipboard and menu action order; pending clipboard write keeps input until success, denied/rejected write keeps selected input and sentinel without data loss. Exercise Undo/Redo, repeated Cut/Paste, and interruption or field/selection change while write is pending; completion must not delete a newer draft or another selection. A stale clipboard containing the sentinel plus an empty input is a failure, even if native keyboard Cut works. Run real IAB menu interactions; mathlive-cut/mathlive-menu source regressions and CLI/CI results cannot replace browser evidence.",
         "distribution.saved-input-recovery: actual Settings import/Edit/Calculate for synthetic absent-key, missing, malformed and extra distribution tuples; seed results excluded; missing inputs blank, absent key engine default visible, malformed/excess exact raw Parameters preserved, explicit fills recover; student-t [5,2] retains location2; fresh13family defaults unchanged; fresh calculation numbers and exact stored requests captured separately",
-        "editor.scalar-notation-roundtrip: actual Math→Text ordinary fractions/powers/trig/radicals/equality must retain binding; unsupported matrix/determinant, bars, calculus, Re and wrappers retain byte-exact latex: source, show preservation notice, reconvert exactly and independently preserve type/domain/denominators; no CAS value-equivalence substitution"
+        "editor.scalar-notation-roundtrip: actual Math→Text ordinary fractions/powers/trig/radicals/equality must retain binding; unsupported matrix/determinant, bars, calculus, Re and wrappers retain byte-exact latex: source, show preservation notice, reconvert exactly and independently preserve type/domain/denominators; no CAS value-equivalence substitution",
+        "editor.menu-vendor-complete: at widths320/390/480 the Expression menu has one scrollable pane, no child popovers,44px rows, contextual matrix edits/borders before Insert templates before25 matrix sizes; visible dimension/color/border names. All115 pinned action declarations preserved through public projection, dynamic ancestor/leaf visibility and enabled predicates, checked/data/callbacks; private matrix grid constructor omitted on phone. At481/desktop restore adapted nested tree; resize and unmount cleanup preserve source/selection. Actual IAB coarse/mouse activation, exact source/result and screenshots required; source tests are not physical-touch proof."
       ],
       "fixtures": [
         "editor.menu.abs",

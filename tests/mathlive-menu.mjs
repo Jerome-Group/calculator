@@ -19,8 +19,11 @@ const ast = ts.createSourceFile(
 );
 const functions = new Map();
 const vendorClasses = new Map();
+const vendorValues = new Map();
 let insertionSelection;
 function visit(node) {
+  if (ts.isVariableDeclaration(node) && node.initializer)
+    vendorValues.set(node.name.getText(ast), node.initializer.getText(ast));
   if (ts.isClassExpression(node) && ts.isVariableDeclaration(node.parent))
     vendorClasses.set(node.parent.name.getText(ast), node);
   if (ts.isFunctionDeclaration(node))
@@ -804,4 +807,370 @@ try {
 }
 console.log(
   "Menu Cut clipboard transaction, interruption, repetition and undo regressions passed",
+);
+
+// Actual pinned declarations, including context predicates and private matrix factory.
+const phoneFunctions = [
+  "getDefaultMenuItems",
+  "getDecorationSubmenu",
+  "getAccentSubmenu",
+  "getVariantSubmenu",
+  "variantMenuItem",
+  "variantStyleMenuItem",
+  "getInsertMatrixSubmenu",
+  "getColorSubmenu",
+  "getBackgroundColorSubmenu",
+  "insertMenu",
+  "insertLabel",
+  "inMatrix",
+  "isMatrixSelected",
+  "shape",
+  "minShape",
+  "maxShape",
+  "getSelectionPlainString",
+  "getSelectionAtoms",
+  "validVariantAtom",
+  "isCommand",
+  "isSubmenu",
+  "isHeading",
+  "isDivider",
+  "dynamicValue",
+];
+const phoneEnvironment = {
+  convertLatexToMarkup: (latex) => "preview:" + latex,
+  localize: (key, row, col) => (row ? `${row} by ${col}` : key),
+  contrast: () => "#000",
+  asHexColor: (value) => value,
+  InsertMatrixMenuItem: class {
+    constructor() {
+      throw Error("Private grid instantiated");
+    }
+  },
+};
+const vendorPhone = new Function(
+  "environment",
+  `with(environment) {
+${["FOREGROUND_COLORS", "BACKGROUND_COLORS", "VARIANT_REPERTOIRE"].map((name) => `const ${name}=${vendorValues.get(name)};`).join("\n")}
+${phoneFunctions.map((name) => functions.get(name)).join("\n")}
+const NativeItem = ${vendorClasses.get("_MenuItemState").getText(ast)};
+return {getDefaultMenuItems, NativeItem};
+}`,
+)(phoneEnvironment);
+const priorMedia = globalThis.matchMedia;
+const priorMathfield = globalThis.MathfieldElement;
+const mediaListeners = new Set();
+const media = {
+  matches: false,
+  addEventListener(name, listener) {
+    assert.equal(name, "change");
+    mediaListeners.add(listener);
+  },
+  removeEventListener(name, listener) {
+    assert.equal(name, "change");
+    mediaListeners.delete(listener);
+  },
+};
+globalThis.matchMedia = (query) => {
+  assert.equal(query, "(max-width: 480px)");
+  return media;
+};
+globalThis.MathfieldElement = { computeEngine: null };
+const modifiers = { shift: true, alt: false, control: false, meta: false };
+const evaluate = (value) =>
+  (typeof value === "function" ? value(modifiers) : value) ?? true;
+const leaves = (items, parents = []) =>
+  items.flatMap((item) =>
+    "submenu" in item
+      ? leaves(item.submenu, [...parents, item])
+      : item.id
+        ? [{ item, parents }]
+        : [],
+  );
+try {
+  const mf = field();
+  mf.options = { readOnly: false };
+  mf.isSelectionEditable = true;
+  mf.hasEditableContent = true;
+  mf.queryStyle = () => "all";
+  mf.model = {
+    selectionIsCollapsed: true,
+    mode: "math",
+    selection: { ranges: [[0, 1]] },
+    position: 0,
+    getAtoms: () => [{ type: "mord", value: "x" }],
+    at: () => ({ type: "mord" }),
+  };
+  mf.menuItems = vendorPhone.getDefaultMenuItems(mf);
+  const cleanupPhone = prepareMathLiveMenu(mf);
+  const desktop = mf.menuItems;
+  const originalLeaves = leaves(desktop);
+  assert.equal(
+    originalLeaves.length,
+    115,
+    "All pinned actionable variants inventoried",
+  );
+  media.matches = true;
+  for (const listener of mediaListeners) listener();
+  const flat = mf.menuItems;
+  assert(
+    flat.every((item) => !("submenu" in item)),
+    "Phone has no child popover",
+  );
+  const flatLeaves = leaves(flat);
+  assert.equal(flatLeaves.length, 115);
+  assert.deepEqual(
+    flatLeaves.map(({ item }) => item.id).sort(),
+    originalLeaves.map(({ item }) => item.id).sort(),
+  );
+  assert(
+    flat.findIndex((item) => item.id === "insert-abs") <
+      flat.findIndex((item) => item.id === "insert-matrix-1x1"),
+  );
+  for (const { item, parents } of originalLeaves) {
+    // Copy-as-LaTeX and Copy-as-Typst share the pinned copy-latex id.
+    const projected = flatLeaves.find(
+      (row) => row.item.onMenuSelect === item.onMenuSelect,
+    ).item;
+    for (const key of [
+      "onMenuSelect",
+      "data",
+      "checked",
+      "keyboardShortcut",
+      "ariaLabel",
+      "tooltip",
+      "class",
+    ])
+      assert.equal(
+        projected[key],
+        item[key],
+        `Public ${key} survives for ${item.id}`,
+      );
+    assert(!("onCreate" in projected), "Private grid factory omitted");
+    assert.equal(
+      evaluate(projected.visible),
+      parents.every((p) => evaluate(p.visible)) && evaluate(item.visible),
+    );
+    assert.equal(
+      evaluate(projected.enabled),
+      parents.every((p) => evaluate(p.enabled)) && evaluate(item.enabled),
+    );
+    const state = new vendorPhone.NativeItem(projected, { dirty: false });
+    Object.defineProperty(state, "element", { value: null });
+    state.updateState(modifiers);
+    assert.equal(state.visible, evaluate(projected.visible));
+    assert.equal(state.enabled, evaluate(projected.enabled));
+    state.active = true; // Actual ordinary item avoids private sibling-grid activation.
+  }
+  const matrixLabels = flatLeaves
+    .filter(({ item }) => item.id.startsWith("insert-matrix-"))
+    .map(({ item }) => evaluate(item.label));
+  assert.equal(
+    new Set(matrixLabels).size,
+    25,
+    "Matrix dimensions visible, not identical boxes",
+  );
+  for (const { item } of flatLeaves.filter(({ item }) =>
+    /^(color-|background-color-|environment-)/.test(item.id),
+  ))
+    assert.equal(
+      evaluate(item.label),
+      evaluate(item.ariaLabel),
+      "Named glyph rows support visible/typeahead discovery",
+    );
+  const nativeList = vendorClasses.get("_MenuListState");
+  const nativeMethods = nativeList.members
+    .filter(
+      (member) =>
+        (member.name?.getText(ast) === "menuItems" &&
+          ts.isSetAccessorDeclaration(member)) ||
+        member.name?.getText(ast) === "updateState",
+    )
+    .map((member) => member.getText(ast));
+  const listMethods = new Function(
+    "_MenuItemState",
+    `return ({${nativeMethods.join(",")}})`,
+  )(vendorPhone.NativeItem);
+  const list = { parentMenu: null, dispose() {}, activeMenuItem: null };
+  Object.getOwnPropertyDescriptor(listMethods, "menuItems").set.call(
+    list,
+    flat,
+  );
+  assert.equal(list._menuItems.length, flat.length);
+  for (const item of list._menuItems)
+    Object.defineProperty(item, "element", { value: null });
+  listMethods.updateState.call(list, modifiers);
+  assert(
+    list._menuItems.every((item) => item.type !== "submenu"),
+    "Native construction creates no submenu state",
+  );
+  assert(
+    list._menuItems.filter((item) => item.visible && item.type === "heading")
+      .length > 0,
+    "Native headings retain eligible groups",
+  );
+  for (const prefix of [0, 6]) {
+    const matrixField = field(prefix);
+    const cleanupMatrix = prepareMathLiveMenu(matrixField);
+    for (const command of matrixField.menuItems.filter((item) =>
+      item.id?.startsWith("insert-matrix-"),
+    )) {
+      command.onMenuSelect({ id: command.id, modifiers });
+      assert.deepEqual(
+        matrixField.selection.ranges,
+        [[prefix + 1, prefix + 2]],
+        "Phone matrix retains native first-cell selection",
+      );
+      assert.equal(
+        [...matrixField.calls.at(-1).latex.matchAll(/#\?/g)].length,
+        command.data.row * command.data.col,
+      );
+    }
+    cleanupMatrix();
+  }
+  for (const state of [
+    { editable: false, collapsed: true, atoms: "x", matrix: false },
+    { editable: true, collapsed: false, atoms: "x", matrix: false },
+    { editable: true, collapsed: false, atoms: "xyz", matrix: false },
+    { editable: true, collapsed: false, atoms: "A", matrix: false, ce: true },
+    { editable: true, collapsed: true, atoms: "1", matrix: true },
+    { editable: true, collapsed: true, atoms: "", matrix: true },
+  ]) {
+    mf.options.readOnly = !state.editable;
+    globalThis.MathfieldElement.computeEngine = state.ce
+      ? { box: (value) => ({ latex: value }) }
+      : null;
+    mf.expression = { unknowns: ["x"] };
+    mf.isSelectionEditable = state.editable;
+    mf.model.selectionIsCollapsed = state.collapsed;
+    mf.model.getAtoms = () =>
+      [...state.atoms].map((value) => ({ type: "mord", value }));
+    mf.model.parentEnvironment = state.matrix
+      ? {
+          environmentName: "pmatrix",
+          rows: [
+            [1, 2],
+            [3, 4],
+          ],
+          minRows: 1,
+          minColumns: 1,
+          maxRows: 5,
+          maxColumns: 5,
+        }
+      : undefined;
+    for (const { item, parents } of originalLeaves) {
+      const projected = flatLeaves.find(
+        (row) => row.item.onMenuSelect === item.onMenuSelect,
+      ).item;
+      assert.equal(
+        evaluate(projected.visible),
+        parents.every((p) => evaluate(p.visible)) && evaluate(item.visible),
+        `${item.id} context visibility`,
+      );
+      assert.equal(
+        evaluate(projected.enabled),
+        parents.every((p) => evaluate(p.enabled)) && evaluate(item.enabled),
+        `${item.id} context enabled`,
+      );
+    }
+    const visible = (id) =>
+      evaluate(flatLeaves.find((row) => row.item.id === id).item.visible);
+    assert.equal(
+      visible("color-red"),
+      state.editable,
+      "Colors require editable selection",
+    );
+    assert.equal(
+      visible("mode-text"),
+      state.editable && state.collapsed,
+      "Modes require collapsed selection",
+    );
+    assert.equal(
+      visible("accent-vec"),
+      state.editable && state.atoms.length === 1,
+      "Vector requires one selected character",
+    );
+    assert.equal(
+      visible("accent-overrightarrow"),
+      state.editable && state.atoms.length > 0,
+      "Arrow accepts nonempty selection",
+    );
+    assert.equal(
+      visible("variant-double-struck"),
+      state.editable && /^[A-Z ]$/.test(state.atoms),
+      "Blackboard retains pinned repertoire",
+    );
+    assert.equal(
+      visible("environment-bar"),
+      state.editable && state.matrix,
+      "Determinant border remains matrix-only",
+    );
+    assert.equal(
+      visible("ce-evaluate"),
+      state.editable && !!state.ce,
+      "Compute Engine context unchanged",
+    );
+  }
+  media.matches = false;
+  for (const listener of mediaListeners) listener();
+  assert.equal(
+    mf.menuItems,
+    desktop,
+    "Resize restores same adapted desktop tree",
+  );
+  const restored = mf.menuItems;
+  cleanupPhone();
+  assert.equal(mediaListeners.size, 0, "Media listener disposed");
+  media.matches = true;
+  for (const listener of mediaListeners) listener();
+  assert.equal(mf.menuItems, restored, "Disposed field cannot update");
+  const seen = [];
+  const guarded = {
+    menuItems: [
+      {
+        label: "Parent",
+        visible: (m) => {
+          seen.push(m);
+          return m.shift;
+        },
+        enabled: false,
+        submenu: [
+          {
+            label: "Nested",
+            enabled: (m) => m.alt,
+            submenu: [
+              {
+                id: "guarded",
+                label: "Leaf",
+                visible: undefined,
+                enabled: undefined,
+                onMenuSelect() {},
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  const cleanupGuard = prepareMathLiveMenu(guarded);
+  const guardedLeaf = guarded.menuItems.find((item) => item.id === "guarded");
+  assert.equal(evaluate(guardedLeaf.visible), true);
+  assert.equal(
+    evaluate(guardedLeaf.enabled),
+    false,
+    "Disabled parent cannot expose active child",
+  );
+  assert.equal(guardedLeaf.visible({ ...modifiers, shift: false }), false);
+  assert(
+    seen.every((m) => m === modifiers || m.shift === false),
+    "Modifiers forwarded unchanged",
+  );
+  cleanupGuard();
+} finally {
+  if (priorMedia === undefined) delete globalThis.matchMedia;
+  else globalThis.matchMedia = priorMedia;
+  if (priorMathfield === undefined) delete globalThis.MathfieldElement;
+  else globalThis.MathfieldElement = priorMathfield;
+}
+console.log(
+  "Phone projection preserves all115 pinned variants, dynamic contexts, native item state and responsive cleanup",
 );

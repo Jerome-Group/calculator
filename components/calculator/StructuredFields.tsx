@@ -263,7 +263,7 @@ const distributions: Record<
   },
   "student-t": {
     definition:
-      "Student t distribution, centered at 0. Scale 1; it is not a standard deviation.",
+      "Student t distribution. The one-parameter form is centered at 0 with scale 1; scale is not a standard deviation.",
     fields: [
       [
         "Degrees of freedom ν",
