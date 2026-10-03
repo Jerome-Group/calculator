@@ -14,11 +14,11 @@ function check(id, run) {
     checks.push({ id, status: "fail", error: error.message });
   }
 }
-function cli(argv, expected) {
+function cli(argv, expected, env = {}) {
   const result = spawnSync(
     process.execPath,
     ["scripts/verify.mjs", ...argv, "--json"],
-    { cwd: root, encoding: "utf8" },
+    { cwd: root, encoding: "utf8", env: { ...process.env, ...env } },
   );
   assert.equal(result.status, expected, result.stderr);
   const parsed = JSON.parse(result.stdout);
@@ -33,6 +33,39 @@ check("cli.unknown.fixture", () =>
   cli(["run", "--suite", "math", "--fixture", "missing"], 2),
 );
 check("cli.unknown.suite", () => cli(["doctor", "--suite", "missing"], 2));
+check("cli.unknown.group", () => cli(["doctor", "--group", "missing"], 2));
+check("cli.group.prerequisite-blocked", () => {
+  const report = cli(["doctor", "--group", "core"], 3, {
+    CALCULATOR_PNPM: root + "/missing-pnpm",
+  });
+  assert.equal(report.group, "core");
+  assert(report.suites.length > 1);
+  assert(
+    report.suites.some((suite) =>
+      suite.checks.some(
+        (check) => check.id === "pnpm" && check.status === "blocked",
+      ),
+    ),
+  );
+});
+check("cli.show.group", () => {
+  const report = cli(["show", "core"], 0);
+  assert.equal(report.id, "core");
+  assert(report.suites.includes("build"));
+});
+check("cli.evidence.metadata", () => {
+  const report = cli(["list"], 0);
+  const suite = (id) => report.suites.find((row) => row.id === id);
+  assert.deepEqual(suite("format").evidence, [
+    "format.stdout.log",
+    "format.stderr.log",
+  ]);
+  assert(suite("math").evidence.includes("math.result.json"));
+  assert(suite("detectors").evidence.includes("detectors.result.json"));
+  assert.deepEqual(suite("coverage").evidence, [
+    "manifest.json suites[].checks",
+  ]);
+});
 check("cli.unknown.argument", () => cli(["--unknown"], 2));
 check("cli.conflicting.group", () =>
   cli(["run", "--suite", "math", "--group", "core"], 2),

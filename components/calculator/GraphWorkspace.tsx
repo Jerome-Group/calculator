@@ -24,6 +24,7 @@ import Choice from "./Choice";
 import MathEditor, { MathEditorHandle } from "./MathEditor";
 import { sourceToMath, mathToSource } from "@/lib/calculator/notation";
 import { formatDisplayApprox } from "@/lib/calculator/display-format";
+import { graphTableInterval } from "@/lib/calculator/graph-table-interval";
 import { calculate } from "@/lib/calculator/engine";
 import { uid } from "@/lib/calculator/types";
 import type { GraphSpec, Definition, Settings } from "@/lib/calculator/types";
@@ -629,7 +630,16 @@ export default function GraphWorkspace({
         );
     }
   };
+  const tableInterval = useMemo(
+    () => graphTableInterval(lower, upper),
+    [lower, upper],
+  );
+  const tableIntervalError =
+    current &&
+    !["data", "parametric", "polar"].includes(current.type) &&
+    !tableInterval;
   const tableData = useMemo(() => {
+    if (tableIntervalError) return { headers: [], rows: [] };
     if (!current) return { headers: [], rows: [] };
     const p = prepared.find((p) => p.g.id === current.id);
     if (!p) return { headers: [], rows: [] };
@@ -639,13 +649,13 @@ export default function GraphWorkspace({
         p,
         scope,
         settings,
-        Number(lower),
-        Number(upper),
+        tableInterval?.[0] ?? 0,
+        tableInterval?.[1] ?? 0,
       );
     } catch {
       return { headers: [], rows: [] };
     }
-  }, [current, prepared, scope, lower, upper, settings]);
+  }, [current, prepared, scope, tableInterval, tableIntervalError, settings]);
   return (
     <section>
       <div className="section-heading">
@@ -990,6 +1000,11 @@ export default function GraphWorkspace({
           </div>
           {table && (
             <div className="table-scroll">
+              {tableIntervalError && (
+                <p className="warning" role="alert">
+                  Use finite numbers for the table interval.
+                </p>
+              )}
               <table>
                 <thead>
                   <tr>

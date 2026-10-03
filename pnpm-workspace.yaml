@@ -35,3 +35,4 @@ overrides:
   "@esbuild-kit/core-utils>esbuild": 0.25.12
 patchedDependencies:
   mathjs@15.2.0: scripts/patches/mathjs-15.2.0-percent.patch
+  mathlive@0.110.0: scripts/patches/mathlive@0.110.0.patch

@@ -60,6 +60,16 @@ assert.equal(
   0,
   loaderChecks.stderr || loaderChecks.stdout,
 );
+const lifecycleChecks = spawnSync(
+  process.execPath,
+  [fileURLToPath(new URL("./mathlive-lifecycle.mjs", import.meta.url))],
+  { encoding: "utf8" },
+);
+assert.equal(
+  lifecycleChecks.status,
+  0,
+  lifecycleChecks.stderr || lifecycleChecks.stdout,
+);
 const source = fs.readFileSync(
   new URL("../components/calculator/MathEditor.tsx", import.meta.url),
   "utf8",

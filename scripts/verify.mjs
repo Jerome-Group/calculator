@@ -71,6 +71,8 @@ async function main() {
     )
   )
     failure("Unknown detector case");
+  if (flags.has("--group") && !Object.hasOwn(map.groups, flags.get("--group")))
+    failure(`Unknown group ${flags.get("--group")}`);
   const command = flags.has("--help") ? "help" : positional[0] || "help",
     startedAt = new Date().toISOString();
   if (positional.length > (["show", "browser"].includes(command) ? 2 : 1))
@@ -97,7 +99,8 @@ async function main() {
         ...(map.features || []),
         ...(map.routes || []),
       ].find((row) => row.id === id) ||
-      fixtures.find((row) => row.id === id);
+      fixtures.find((row) => row.id === id) ||
+      (Object.hasOwn(map.groups, id) ? { id, suites: map.groups[id] } : null);
     if (!report) failure(`Unknown ID ${id}`);
   } else if (command === "doctor") {
     if (
@@ -105,13 +108,30 @@ async function main() {
       !map.suites.some((suite) => suite.id === flags.get("--suite"))
     )
       failure(`Unknown suite ${flags.get("--suite")}`);
-    report = {
-      ...sourceIdentity(root),
-      ...checkPrerequisites(
-        root,
-        map.suites.find((suite) => suite.id === flags.get("--suite")),
-      ),
-    };
+    if (flags.has("--group")) {
+      const suites = map.groups[flags.get("--group")].map((id) => ({
+        id,
+        ...checkPrerequisites(
+          root,
+          map.suites.find((suite) => suite.id === id),
+        ),
+      }));
+      report = {
+        ...sourceIdentity(root),
+        group: flags.get("--group"),
+        suites,
+        status: suites.every((suite) => suite.status === "pass")
+          ? "pass"
+          : "blocked",
+      };
+    } else
+      report = {
+        ...sourceIdentity(root),
+        ...checkPrerequisites(
+          root,
+          map.suites.find((suite) => suite.id === flags.get("--suite")),
+        ),
+      };
   } else if (command === "coverage")
     report = await checkCoverage(root, map, fixtures);
   else if (command === "browser" && positional[1] === "validate")

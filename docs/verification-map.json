@@ -4,7 +4,7 @@
     "help",
     "list",
     "show ID",
-    "doctor --suite ID",
+    "doctor --suite ID | --group ID",
     "coverage",
     "run --suite ID | --group ID",
     "browser validate --evidence FILE",
@@ -35,7 +35,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["format.stdout.log", "format.stderr.log"]
     },
     {
       "id": "lint",
@@ -53,7 +53,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["lint.stdout.log", "lint.stderr.log"]
     },
     {
       "id": "types",
@@ -71,7 +71,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["types.stdout.log", "types.stderr.log"]
     },
     {
       "id": "existing-tests",
@@ -89,7 +89,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["existing-tests.stdout.log", "existing-tests.stderr.log"]
     },
     {
       "id": "math",
@@ -410,7 +410,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["math.stdout.log", "math.stderr.log", "math.result.json"]
     },
     {
       "id": "coverage",
@@ -428,7 +428,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["manifest.json suites[].checks"]
     },
     {
       "id": "build",
@@ -446,7 +446,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["build.stdout.log", "build.stderr.log"]
     },
     {
       "id": "assets",
@@ -467,7 +467,7 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": ["assets.stdout.log", "assets.stderr.log"]
     },
     {
       "id": "detectors",
@@ -485,7 +485,11 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["results.json", "stdout.log", "stderr.log"]
+      "evidence": [
+        "detectors.stdout.log",
+        "detectors.stderr.log",
+        "detectors.result.json"
+      ]
     },
     {
       "id": "engine-lifecycle",
@@ -507,7 +511,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["engine-lifecycle.stdout.log", "engine-lifecycle.stderr.log"]
     },
     {
       "id": "result-validation",
@@ -530,7 +534,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": [
+        "result-validation.stdout.log",
+        "result-validation.stderr.log"
+      ]
     },
     {
       "id": "component-async",
@@ -548,7 +555,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["component-async.stdout.log", "component-async.stderr.log"]
     },
     {
       "id": "verification-cli",
@@ -566,7 +573,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["verification-cli.stdout.log", "verification-cli.stderr.log"]
     },
     {
       "id": "math-invalid",
@@ -615,7 +622,11 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": [
+        "math-invalid.stdout.log",
+        "math-invalid.stderr.log",
+        "math-invalid.result.json"
+      ]
     },
     {
       "id": "observed-matcher",
@@ -636,7 +647,11 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["stdout.log", "stderr.log", "result.json"]
+      "evidence": [
+        "observed-matcher.stdout.log",
+        "observed-matcher.stderr.log",
+        "observed-matcher.result.json"
+      ]
     },
     {
       "id": "math-editor",
@@ -648,7 +663,10 @@
         "lib/calculator/mathlive-loader.ts",
         "locked standalone MathLive bundle",
         "components/ui/dialog.tsx",
-        "nested menu Escape capture/bubble cancellation regression"
+        "nested menu Escape capture/bubble cancellation regression",
+        "tests/mathlive-lifecycle.mjs",
+        "scripts/patches/mathlive@0.110.0.patch",
+        "actual development and production MathLive disposal/focus methods with controlled timers"
       ],
       "writes": [],
       "network": "mocked only",
@@ -661,7 +679,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["math-editor.stdout.log", "math-editor.stderr.log"]
     },
     {
       "id": "notation",
@@ -684,7 +702,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["notation.stdout.log", "notation.stderr.log"]
     },
     {
       "id": "notation-previews",
@@ -711,7 +729,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": [
+        "notation-previews.stdout.log",
+        "notation-previews.stderr.log"
+      ]
     },
     {
       "id": "display-format",
@@ -734,7 +755,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["display-format.stdout.log", "display-format.stderr.log"]
     },
     {
       "id": "graph-semantics",
@@ -757,7 +778,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["graph-semantics.stdout.log", "graph-semantics.stderr.log"]
     },
     {
       "id": "graph-resources",
@@ -781,7 +802,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["graph-resources.stdout.log", "graph-resources.stderr.log"]
     },
     {
       "id": "gate-recovery",
@@ -801,7 +822,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": ["gate-recovery.stdout.log", "gate-recovery.stderr.log"]
     },
     {
       "id": "workspace-request",
@@ -826,7 +847,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": [
+        "workspace-request.stdout.log",
+        "workspace-request.stderr.log"
+      ]
     },
     {
       "id": "persistence-warning",
@@ -846,7 +870,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["stdout.log", "stderr.log"]
+      "evidence": [
+        "persistence-warning.stdout.log",
+        "persistence-warning.stderr.log"
+      ]
     }
   ],
   "surfaces": [
@@ -3184,7 +3211,7 @@
           "required": true
         },
         "grid": {
-          "label": "Interior grid points per side (3\u201335)",
+          "label": "Interior grid points per side (3–35)",
           "choices": [],
           "required": true
         }
@@ -5086,7 +5113,7 @@
       },
       "fields": {
         "sequence": {
-          "label": "Sequence term a\u2099",
+          "label": "Sequence term aₙ",
           "choices": [],
           "required": true
         },
@@ -5459,7 +5486,7 @@
           "choices": [
             "gcd",
             "lcm",
-            "B\u00e9zout",
+            "Bézout",
             "modular inverse",
             "modular power",
             "factor",
@@ -5517,7 +5544,7 @@
           "fixtureId": "choice.number_theory.action.2",
           "choice": {
             "field": "action",
-            "value": "B\u00e9zout",
+            "value": "Bézout",
             "index": 2
           },
           "status": "required"
@@ -6525,7 +6552,7 @@
           "required": true
         },
         "constraints": {
-          "label": "Constraints g(x) \u2265 0",
+          "label": "Constraints g(x) ≥ 0",
           "choices": [],
           "required": true
         }
@@ -8110,7 +8137,9 @@
       "editor.nested-menu-escape",
       "structured.logic-mode-preservation",
       "structured.points-grid",
-      "objects.kind-draft-preservation"
+      "objects.kind-draft-preservation",
+      "editor.repeated-transition",
+      "graph-table.invalid-bounds"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -8242,7 +8271,7 @@
         "line": 842
       },
       "kind": "button",
-      "label": "\u00b7 \u00b7 dp",
+      "label": "· · dp",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -12127,7 +12156,7 @@
         "line": 898
       },
       "kind": "button",
-      "label": "Plot integral from x\u2080",
+      "label": "Plot integral from x₀",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -12719,7 +12748,7 @@
         "line": 32
       },
       "kind": "button",
-      "label": "Export copy \u00b7 notebooks",
+      "label": "Export copy · notebooks",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13163,7 +13192,7 @@
         "line": 440
       },
       "kind": "button",
-      "label": "\u00d7",
+      "label": "×",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13459,7 +13488,7 @@
         "line": 633
       },
       "kind": "button",
-      "label": "\u00d7",
+      "label": "×",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -13755,7 +13784,7 @@
         "line": 800
       },
       "kind": "button",
-      "label": "\u00d7",
+      "label": "×",
       "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
       "risk": "isolated local fixture workspace; auth controls need scoped test identity",
       "run": [
@@ -14212,7 +14241,11 @@
   "features": [
     {
       "id": "feature.graphs",
-      "source": ["components/calculator/GraphWorkspace.tsx"],
+      "source": [
+        "components/calculator/GraphWorkspace.tsx",
+        "lib/calculator/graph-table-interval.ts",
+        "tests/graph-semantics.mjs"
+      ],
       "browserScenarioIds": [
         "graph-table",
         "graph-trace",
@@ -14240,7 +14273,8 @@
         "graph.analysis.integral",
         "graph.analysis.area",
         "graph.analysis.domain",
-        "graph.analysis.singularities"
+        "graph.analysis.singularities",
+        "graph-table.invalid-bounds"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14269,7 +14303,8 @@
         "ordered UI steps",
         "independent assertions",
         "semantic DOM/screenshot artifacts",
-        "revision + dirty source + built asset fingerprints"
+        "revision + dirty source + built asset fingerprints",
+        "graph-table.invalid-bounds: actual open Table shared lower/upper blank, pi and Infinity show accessible finite-number warning; restore numeric/scientific/negative bounds and independently check all 11 sin/curve samples; parametric/polar/data graphs exempt from shared interval warnings; symbolic Analysis bounds remain supported"
       ]
     },
     {
@@ -14367,7 +14402,9 @@
         "public/engine/latex_adapter.py",
         "components/ui/dialog.tsx",
         "tests/notation-previews.mjs",
-        "tests/math-editor.mjs"
+        "tests/math-editor.mjs",
+        "scripts/patches/mathlive@0.110.0.patch",
+        "tests/mathlive-lifecycle.mjs"
       ],
       "browserScenarioIds": [
         "math-fractions-entry",
@@ -14397,7 +14434,8 @@
         "editor.parenthesized-scalar",
         "editor.nested-menu-escape",
         "structured.logic-mode-preservation",
-        "structured.points-grid"
+        "structured.points-grid",
+        "editor.repeated-transition"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -14431,7 +14469,8 @@
         "editor.parenthesized-scalar: notation-previews regression; actual Math fraction 12/(3+1) to Text (12)/(3+1), Differentiate Expression scalar input and Math editor button retain exact source without list/matrix controls; submitted derivative independently equals 0; grouped scalar (x+y) retains source",
         "editor.nested-menu-escape: math-editor regression; actual nested Expression editor with unsaved x^2+1, external Expression menu, Escape closes only vendor menu while editor and draft remain; Use expression retains draft and derivative independently equals 2*x; reopen editor, menu Escape then editor Escape closes only nested editor and preserves underlying operation dialog",
         "structured.logic-mode-preservation: notation-previews regression; actual logical relationship operands a,b, calculate Equivalent(a,b), Edit problem then Advanced proposition retains complete Equivalent(a,b); edit And(a,b,c) and keep all operands as raw input; switching back to supported two-argument relation retains a,b",
-        "structured.points-grid: notation-previews regression; actual Exact polynomial interpolation Points [(0,1),(1,2),(2,5)], resize rows 3 to 4 to 3 and columns 2 to 3 to 2, edit a cell then restore; captured point input retains tuple rows and calculation independently equals x^2+1; single-column/mixed rows and matrix list shapes checked separately by rendering regression"
+        "structured.points-grid: notation-previews regression; actual Exact polynomial interpolation Points [(0,1),(1,2),(2,5)], resize rows 3 to 4 to 3 and columns 2 to 3 to 2, edit a cell then restore; captured point input retains tuple rows and calculation independently equals x^2+1; single-column/mixed rows and matrix list shapes checked separately by rendering regression",
+        "editor.repeated-transition: actual focused nested editor Use expression/Close/Escape transitions, including immediate closure after focus; alternate Text/Math and open Graph expression editor; one activation opens external Expression menu, keyboard remains usable and edited x^2+1 derivative independently equals 2*x; no disposed-model or disconnected-popover console errors"
       ]
     },
     {

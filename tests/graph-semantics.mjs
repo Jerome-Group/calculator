@@ -8,6 +8,7 @@ import {
   numeric,
 } from "../lib/calculator/graph.ts";
 import { DEFAULT_SETTINGS } from "../lib/calculator/types.ts";
+import { graphTableInterval } from "../lib/calculator/graph-table-interval.ts";
 const settings = { ...DEFAULT_SETTINGS },
   scope = graphScope([], settings, 1);
 const graph = (type, expression = "x^2", extra = {}) => ({
@@ -60,6 +61,33 @@ assert.equal(table(data).rows.length, 11);
 assert.deepEqual(table(data).rows.at(-1).cells, [19999, 39998]);
 assert.equal(table(graph("sequence"), settings, 0, 1e9).rows.length, 101);
 assert.deepEqual(table(graph("cartesian"), settings, 2, -2).rows, []);
+for (const invalid of ["", " ", "pi", "Infinity", "-Infinity", "NaN"])
+  for (const bounds of [
+    [invalid, "2"],
+    ["-2", invalid],
+  ])
+    assert.equal(graphTableInterval(...bounds), null);
+for (const [sources, expected] of [
+  [
+    ["-2e0", "2e0"],
+    [-2, 2],
+  ],
+  [
+    [" -3 ", "-1"],
+    [-3, -1],
+  ],
+  [
+    ["0", "0"],
+    [0, 0],
+  ],
+]) {
+  const bounds = graphTableInterval(...sources);
+  assert.deepEqual(bounds, expected);
+  const recovered = table(graph("cartesian"), settings, ...bounds);
+  assert.equal(recovered.rows.length, 11);
+  for (const row of recovered.rows)
+    assert.equal(row.cells[1], row.cells[0] ** 2);
+}
 const dense = Array.from({ length: 100 }, (_, index) =>
   graph("data", "Data", {
     points: Array.from({ length: 20000 }, (_, i) => [index * 20000 + i, i]),
