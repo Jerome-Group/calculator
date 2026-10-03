@@ -18,8 +18,11 @@ const ast = ts.createSourceFile(
   true,
 );
 const functions = new Map();
+const vendorClasses = new Map();
 let insertionSelection;
 function visit(node) {
+  if (ts.isClassExpression(node) && ts.isVariableDeclaration(node.parent))
+    vendorClasses.set(node.parent.name.getText(ast), node);
   if (ts.isFunctionDeclaration(node))
     functions.set(node.name?.text, node.getText(ast));
   if (
@@ -258,40 +261,272 @@ const deferred = () => {
   });
   return { promise, resolve, reject };
 };
+
+function vendorMethod(className, name, environment) {
+  const member = vendorClasses
+    .get(className)
+    ?.members.find(
+      (node) => ts.isMethodDeclaration(node) && node.name.getText(ast) === name,
+    );
+  assert(member, `Pinned ${className}.${name} exists`);
+  return new Function(
+    "environment",
+    `with(environment){return ({${member.getText(ast).replace(/^static /, "")}}).${name};}`,
+  )(environment);
+}
+const VendorUndoManager = new Function(
+  `return ${vendorClasses.get("_UndoManager").getText(ast)}`,
+)();
+VendorUndoManager.maximumDepth = 1000;
+const commandEnvironment = {
+  parseCommand: (command) => command,
+  isArray: Array.isArray,
+  removeSuggestion() {},
+  updateAutocomplete() {},
+  requestUpdate() {},
+  range: (selection) => selection.ranges[0],
+  ArrayAtom: class {},
+};
+const vendorCommands = new Function(
+  "environment",
+  `with(environment){${["perform", "deleteBackward", "deleteRange"].map((name) => functions.get(name)).join("\n")}return {perform,deleteBackward,deleteRange};}`,
+)(commandEnvironment);
+commandEnvironment.COMMANDS = {
+  deleteBackward: {
+    target: "model",
+    changeContent: true,
+    changeSelection: true,
+    fn: vendorCommands.deleteBackward,
+  },
+  undo: {
+    target: "mathfield",
+    changeContent: true,
+    fn: (field) => field.undoManager.undo(),
+  },
+  redo: {
+    target: "mathfield",
+    changeContent: true,
+    fn: (field) => field.undoManager.redo(),
+  },
+  plonk: { target: "mathfield", fn: () => false },
+};
+const vendorCopy = vendorMethod("_ModeEditor", "copyToClipboard", {
+  range: commandEnvironment.range,
+});
+const vendorCutEvent = vendorMethod("_Mathfield", "onCut", {
+  ModeEditor: {
+    copyToClipboard: vendorCopy,
+    onCopy() {
+      throw Error("This harness exercises absent clipboardData fallback");
+    },
+  },
+  range: commandEnvironment.range,
+  deleteRange: vendorCommands.deleteRange,
+  requestUpdate() {},
+});
+let cutCommand;
+function findCutCommand(node) {
+  if (
+    ts.isPropertyAssignment(node) &&
+    node.name.getText(ast) === "cutToClipboard" &&
+    node.getText(ast).includes("document.execCommand")
+  )
+    cutCommand = node.initializer.getText(ast);
+  ts.forEachChild(node, findCutCommand);
+}
+findCutCommand(ast);
+assert(cutCommand, "Pinned cutToClipboard command exists");
+const cutDocument = {
+  queryCommandSupported: () => true,
+  execCommand: () => false,
+};
+const NativeClipboardEvent = class extends Event {
+  clipboardData = null;
+};
+commandEnvironment.COMMANDS.cutToClipboard = {
+  target: "mathfield",
+  fn: new Function("document", "ClipboardEvent", `return (${cutCommand});`)(
+    cutDocument,
+    NativeClipboardEvent,
+  ),
+};
+function initializeCutModel(field) {
+  const parent = {
+    type: "root",
+    hasEmptyBranch: () => !field.value,
+    addChildrenAfter(atoms) {
+      assert.deepEqual(atoms, []);
+    },
+  };
+  const cursor = { type: "first", parent, isLastSibling: true };
+  field.model = {
+    get selection() {
+      return field.selection;
+    },
+    get selectionIsCollapsed() {
+      return field.selectionIsCollapsed;
+    },
+    get position() {
+      return field.selection.ranges[0][1];
+    },
+    set position(position) {
+      field.selection = {
+        ranges: [[position, position]],
+        direction: "forward",
+      };
+    },
+    root: parent,
+    silenceNotifications: false,
+    getValue: (range) =>
+      field.atoms
+        ? field.atoms
+            .slice(...(Array.isArray(range) ? range : range.ranges[0]))
+            .join("")
+        : (field.selectedLatex ?? field.value),
+    at: (offset) =>
+      field.atoms && offset > 0
+        ? {
+            type:
+              field.atoms[offset - 1] === String.raw`\placeholder{}`
+                ? "placeholder"
+                : "mord",
+            parent,
+            isLastSibling: offset === field.atoms.length,
+          }
+        : cursor,
+    getAtoms(range) {
+      return field.atoms
+        ? field.atoms
+            .slice(...range)
+            .map((_, index) => this.at(range[0] + index + 1))
+        : [{ type: "mord", parent: null }];
+    },
+    deleteAtoms(range) {
+      field.deletedRanges.push([...range]);
+      if (field.atoms) {
+        field.atoms.splice(range[0], range[1] - range[0]);
+        field.value = field.atoms.join("");
+      } else field.value = field.remainder;
+      this.position = range[0];
+    },
+    contentWillChange(options) {
+      const event = new Event("beforeinput", { cancelable: true });
+      event.inputType = options?.inputType;
+      return field.dispatchEvent(event);
+    },
+    contentDidChange(options) {
+      if (!this.silenceNotifications) {
+        const event = new Event("input");
+        event.inputType = options?.inputType;
+        field.dispatchEvent(event);
+      }
+    },
+    deferNotifications(options, run) {
+      const result = run();
+      this.contentDidChange({ inputType: options.type });
+      return result;
+    },
+    getState: () =>
+      structuredClone({
+        value: field.value,
+        selection: field.selection,
+        atoms: field.atoms,
+      }),
+    setState(state) {
+      field.value = state.value;
+      field.atoms = structuredClone(state.atoms);
+      field.selection = structuredClone(state.selection);
+      field.dispatchEvent(new Event("input"));
+    },
+  };
+  parent.firstChild = cursor;
+  Object.defineProperty(cursor, "rightSibling", {
+    get: () => field.model.at(1),
+  });
+  Object.defineProperty(parent, "lastChild", {
+    get: () => field.model.at(field.atoms?.length ?? 0),
+  });
+  const undoManager = new VendorUndoManager(field.model);
+  undoManager.startRecording();
+  undoManager.snapshot();
+  field.runtime = {
+    model: field.model,
+    undoManager,
+    get isSelectionEditable() {
+      return !field.readOnly;
+    },
+    flushInlineShortcutBuffer() {},
+    snapshot: (op) => undoManager.snapshot(op),
+    stopCoalescingUndo: () => undoManager.stopCoalescing(field.selection),
+    scrollIntoView() {},
+    focus() {},
+    contentEditable: true,
+    userSelect: "text",
+  };
+  field.model.announce = () => {};
+  field.runtime.onCut = (event) => vendorCutEvent.call(field.runtime, event);
+  const sink = new EventTarget();
+  sink.addEventListener("cut", field.runtime.onCut);
+  field.runtime.element = { querySelector: () => sink };
+  field.model.mathfield = field.runtime;
+}
 class CutField extends EventTarget {
   value = String.raw`\textcolor{dark-grey}{3+1}`;
   selection = { ranges: [[0, 3]], direction: "forward" };
   readOnly = false;
   isConnected = true;
   commands = [];
-  history = [];
+  atoms;
+  deletedRanges = [];
   selectedLatex;
   remainder = "";
+  constructor() {
+    super();
+    initializeCutModel(this);
+  }
   get selectionIsCollapsed() {
     return this.selection.ranges.every(([start, end]) => start === end);
   }
   getValue(selection, format) {
     assert.deepEqual(selection, this.selection);
     assert.equal(format, "latex");
-    return this.selectedLatex ?? this.value;
+    return this.atoms
+      ? this.atoms.slice(...selection.ranges[0]).join("")
+      : (this.selectedLatex ?? this.value);
   }
   executeCommand(command) {
     this.commands.push(command);
-    if (command === "deleteBackward") {
-      const before = new Event("beforeinput", { cancelable: true });
-      if (!this.dispatchEvent(before)) return false;
-      this.history.push(this.value);
-      this.value = this.remainder;
-      this.selection = { ranges: [[0, 0]], direction: "forward" };
-      this.dispatchEvent(new Event("input"));
-    } else if (command === "undo") {
-      this.value = this.history.pop();
-      this.dispatchEvent(new Event("input"));
-    }
-    return true;
+    return vendorCommands.perform(this.runtime, command);
   }
 }
+// The old path really fails redo with the pinned command and UndoManager.
+const oldCut = new CutField(),
+  oldSource = oldCut.value;
+oldCut.executeCommand("deleteBackward");
+assert.equal(oldCut.value, "");
+oldCut.executeCommand("undo");
+assert.equal(oldCut.value, oldSource);
+oldCut.executeCommand("redo");
+assert.equal(oldCut.value, oldSource, "Pre-delete snapshot cannot redo a cut");
+
 try {
+  let unconfirmedWrites = 0;
+  setClipboard({
+    writeText: async () => {
+      unconfirmedWrites++;
+      throw Error("Denied");
+    },
+  });
+  const unsafeNative = new CutField();
+  unsafeNative.executeCommand("cutToClipboard");
+  await Promise.resolve();
+  assert.equal(unconfirmedWrites, 1);
+  assert.equal(
+    unsafeNative.value,
+    "",
+    "Pinned native fallback deletes before its clipboard promise settles",
+  );
+
   const write = deferred(),
     writes = [];
   setClipboard({
@@ -304,7 +539,9 @@ try {
     originalValue = field.value;
   const events = [];
   for (const type of ["beforeinput", "input"])
-    field.addEventListener(type, () => events.push(type));
+    field.addEventListener(type, (event) =>
+      events.push([type, event.inputType]),
+    );
   const vendorCut = pinned
     .getDefaultMenuItems(field)
     .find((item) => item.id === "cut");
@@ -335,11 +572,20 @@ try {
   write.resolve();
   assert.equal(await cutting, true);
   assert.equal(field.value, "");
-  assert.deepEqual(field.commands, ["deleteBackward"]);
+  assert.deepEqual(field.commands, ["cutToClipboard"]);
+  assert.equal(
+    writes.length,
+    2,
+    "Native fallback recopies the same already-secured source",
+  );
+  assert.equal(writes[1], originalValue);
   assert.deepEqual(
     events,
-    ["beforeinput", "input"],
-    "Public deletion emits normal editor source events",
+    [
+      ["beforeinput", "deleteByCut"],
+      ["input", "deleteByCut"],
+    ],
+    "Native Cut emits deleteByCut editor source events",
   );
   assert.equal(
     field.executeCommand,
@@ -351,6 +597,14 @@ try {
     field.value,
     originalValue,
     "Public undo restores exact styled source",
+  );
+  field.executeCommand("redo");
+  assert.equal(field.value, "", "Pinned UndoManager redoes the cut result");
+  field.executeCommand("undo");
+  assert.equal(
+    field.value,
+    originalValue,
+    "Undo remains repeatable after redo",
   );
 
   const partial = new CutField();
@@ -366,7 +620,7 @@ try {
   assert.equal(await cutMathLiveSelection(partial), true);
   assert.deepEqual(
     partialWrites,
-    ["3+1"],
+    ["3+1", "3+1"],
     "Clipboard receives selected LaTeX only",
   );
   assert.equal(
@@ -388,6 +642,58 @@ try {
     true,
     "Failed transaction releases pending lock and listeners",
   );
+
+  for (const [atoms, range, expected] of [
+    [["x", String.raw`\placeholder{}`], [0, 1], String.raw`\placeholder{}`],
+    [[String.raw`\placeholder{}`, "x"], [1, 2], String.raw`\placeholder{}`],
+    [["3", "+", "1", "+", "2"], [0, 3], "+2"],
+  ]) {
+    const selected = new CutField();
+    selected.atoms = [...atoms];
+    selected.value = atoms.join("");
+    selected.selection = { ranges: [range], direction: "forward" };
+    selected.runtime.undoManager.reset();
+    selected.runtime.undoManager.snapshot();
+    const original = selected.value,
+      source = atoms.slice(...range).join(""),
+      copies = [];
+    setClipboard({
+      writeText: async (text) => {
+        copies.push(text);
+      },
+    });
+    assert.equal(await cutMathLiveSelection(selected), true);
+    assert.equal(
+      selected.value,
+      expected,
+      "Cut preserves every unselected adjacent atom/placeholder",
+    );
+    assert.deepEqual(
+      selected.deletedRanges,
+      [range],
+      "Native deleteRange only removes selected offsets",
+    );
+    assert.deepEqual(copies, [source, source]);
+    selected.executeCommand("undo");
+    assert.equal(selected.value, original);
+    selected.executeCommand("redo");
+    assert.equal(selected.value, expected);
+  }
+  const secondaryDenied = new CutField(),
+    secured = [];
+  setClipboard({
+    writeText: async (text) => {
+      if (secured.length) throw Error("Second write denied");
+      secured.push(text);
+    },
+  });
+  assert.equal(await cutMathLiveSelection(secondaryDenied), true);
+  assert.deepEqual(
+    secured,
+    [String.raw`\textcolor{dark-grey}{3+1}`],
+    "Second copy refusal cannot erase the first confirmed clipboard payload",
+  );
+  assert.equal(secondaryDenied.value, "");
 
   for (const clipboard of [
     undefined,
@@ -457,7 +763,7 @@ try {
       selection,
       "Interrupted Cut never restores or deletes a newer selection",
     );
-    assert(!field.commands.includes("deleteBackward"));
+    assert(!field.commands.includes("cutToClipboard"));
   }
   let writesCount = 0;
   setClipboard({

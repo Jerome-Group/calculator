@@ -36,8 +36,8 @@ export async function cutMathLiveSelection(
       throw new Error("Clipboard unavailable");
     await navigator.clipboard.writeText(latex);
     if (!unchanged()) return false;
-    // Public deletion retains MathLive's beforeinput, input and undo behavior.
-    field.executeCommand("deleteBackward");
+    // Clipboard is already secured; native Cut preserves slots and redo snapshots.
+    field.executeCommand("cutToClipboard");
     return field.value !== value;
   } catch {
     if (field.isConnected) field.executeCommand("plonk");
