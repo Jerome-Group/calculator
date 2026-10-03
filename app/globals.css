@@ -2028,6 +2028,44 @@ footer button {
     width: 44px;
   }
 }
+
+@media (max-width: 480px) {
+  .composer:focus-within:has(.math-editor[data-keyboard-tools="composer"])
+    .composer-bottom
+    > button:first-child {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .composer:focus-within:has(.math-editor[data-keyboard-tools="composer"])
+    .math-keyboard-label {
+    display: none;
+  }
+  .composer:focus-within:has(.math-editor[data-keyboard-tools="composer"])
+    .composer-bottom
+    .primary {
+    padding: 8px 12px;
+  }
+  .composer:focus-within:has(.math-editor[data-keyboard-tools="composer"])
+    .composer-bottom
+    .primary
+    svg {
+    display: none;
+  }
+}
+
+@media (max-height: 500px) and (pointer: coarse) {
+  [data-slot="dialog-content"]:has(.math-editor[data-keyboard-tools]) {
+    left: 0;
+    top: 0;
+    translate: none !important;
+    transform: none;
+    width: 100%;
+    max-width: 100% !important;
+    height: calc(100dvh - var(--math-keyboard-height));
+    max-height: calc(100dvh - var(--math-keyboard-height));
+    overflow-y: auto;
+  }
+}
 .dialog-feedback {
   display: flex;
   align-items: center;

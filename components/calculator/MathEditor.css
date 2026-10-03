@@ -63,12 +63,37 @@
   font-size: 14px;
 }
 
+.math-entry-compact-label {
+  display: none;
+}
+
 @media (max-width: 700px), (max-height: 500px) and (pointer: coarse) {
-  .math-entry-tools {
-    position: sticky;
-    bottom: calc(var(--math-keyboard-height, 0px) + 64px);
+  .composer:focus-within
+    .math-editor[data-keyboard-tools="composer"]
+    .math-entry-tools,
+  .math-editor:focus-within[data-keyboard-tools="standalone"]
+    .math-entry-tools {
+    position: fixed;
+    left: var(--math-tools-left);
+    bottom: var(--math-tools-bottom);
+    width: var(--math-tools-width);
+    margin: 0;
+    flex-wrap: nowrap;
     z-index: 6;
     background: var(--card);
+  }
+  .math-editor[data-keyboard-tools] .math-entry-tools > button {
+    min-width: 44px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .math-editor[data-keyboard-tools] .math-entry-full-label {
+    display: none;
+  }
+  .math-editor[data-keyboard-tools] .math-entry-compact-label {
+    display: inline;
   }
 }
 

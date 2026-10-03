@@ -1031,13 +1031,15 @@ export default function Calculator() {
               )}
               <div className="composer-bottom">
                 <button
+                  aria-label="Math keyboard"
                   onClick={async () => {
                     if (mode === "math") math.current?.keyboard();
                     else if (await switchMode("math"))
                       setKeyboardRequested(true);
                   }}
                 >
-                  <Keyboard size={16} /> Math keyboard
+                  <Keyboard size={16} />{" "}
+                  <span className="math-keyboard-label">Math keyboard</span>
                 </button>
                 {busy ? (
                   <button

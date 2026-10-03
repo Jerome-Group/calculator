@@ -4,7 +4,10 @@ import { createRequire } from "node:module";
 import ts from "typescript";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { checkExternalMenuGeometry } from "./verification/editor-geometry.mjs";
+import {
+  checkExternalMenuGeometry,
+  checkKeyboardActionRow,
+} from "./verification/editor-geometry.mjs";
 
 await import("./resolve-types.mjs");
 const { prepareMathLiveMenu } = await import(
@@ -51,6 +54,57 @@ for (const [property, value, message] of [
     "Browser geometry detector must reject " + message,
   );
 
+const actionRow = {
+  viewport: { width: 844, height: 390 },
+  keyboardPaintTop: 119,
+  caret: { x: 230, y: 40, width: 2, height: 25 },
+  tools: { x: 344, y: 71, width: 346, height: 44 },
+  buttons: Object.fromEntries(
+    [
+      ["Math keyboard", { x: 216, y: 71, width: 120, height: 44 }],
+      ["Expression menu", { x: 344, y: 71, width: 129, height: 44 }],
+      ["Structures & editing", { x: 481, y: 71, width: 147, height: 44 }],
+      ["Calculate", { x: 698, y: 69, width: 130, height: 46 }],
+    ].map(([name, rect]) => [name, { rect, hits: Array(9).fill(true) }]),
+  ),
+};
+assert.deepEqual(checkKeyboardActionRow(actionRow), []);
+const coveredRow = structuredClone(actionRow);
+coveredRow.tools = { x: 216, y: 47, width: 612, height: 44 };
+coveredRow.buttons["Expression menu"].rect = {
+  x: 216,
+  y: 47,
+  width: 129,
+  height: 44,
+};
+coveredRow.buttons["Math keyboard"].hits[0] = false;
+const coveredFailures = checkKeyboardActionRow(coveredRow);
+assert(
+  coveredFailures.includes("Expression menu overlaps Math keyboard") ||
+    coveredFailures.includes("Math keyboard overlaps Expression menu"),
+);
+assert(coveredFailures.includes("Editor tools container overlaps Calculate"));
+assert(
+  coveredFailures.includes(
+    "Math keyboard interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+for (const changed of [
+  { ...actionRow, keyboardPaintTop: 110 },
+  { ...actionRow, caret: { x: 230, y: 85, width: 2, height: 25 } },
+  {
+    ...actionRow,
+    buttons: {
+      ...actionRow.buttons,
+      "Math keyboard": {
+        rect: { x: 216, y: 71, width: 43, height: 44 },
+        hits: Array(9).fill(true),
+      },
+    },
+  },
+])
+  assert(checkKeyboardActionRow(changed).length > 0);
+
 const require = createRequire(import.meta.url);
 const loaderChecks = spawnSync(
   process.execPath,
@@ -89,6 +143,313 @@ const source = fs.readFileSync(
 const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
 }).outputText;
+
+// Execute the actual geometry/cleanup block with controlled public DOM/API bounds.
+const geometrySource = ts.createSourceFile(
+  "MathEditor.tsx",
+  source,
+  ts.ScriptTarget.Latest,
+  true,
+  ts.ScriptKind.TSX,
+);
+let geometryStart, geometryEnd;
+function geometryNodes(node) {
+  if (
+    ts.isVariableStatement(node) &&
+    node.declarationList.declarations.some(
+      (d) => d.name.getText(geometrySource) === "frame",
+    )
+  )
+    geometryStart = node.getStart(geometrySource);
+  if (
+    ts.isExpressionStatement(node) &&
+    ts.isBinaryExpression(node.expression) &&
+    node.expression.left.getText(geometrySource) === "cleanup" &&
+    node
+      .getText(geometrySource)
+      .includes('removeEventListener("geometrychange"')
+  )
+    geometryEnd = node.end;
+  ts.forEachChild(node, geometryNodes);
+}
+geometryNodes(geometrySource);
+assert(Number.isInteger(geometryStart) && Number.isInteger(geometryEnd));
+const geometryCode = ts.transpileModule(
+  source.slice(geometryStart, geometryEnd),
+  { compilerOptions: { module: ts.ModuleKind.CommonJS } },
+).outputText;
+function geometryHarness({
+  standalone = false,
+  focused = true,
+  fieldFocused = focused,
+  visible = true,
+  mediaMatches = true,
+  calculateLeft = 698,
+} = {}) {
+  class Surface extends EventTarget {
+    listeners = new Set();
+    addEventListener(name, fn) {
+      this.listeners.add(name);
+      super.addEventListener(name, fn);
+    }
+    removeEventListener(name, fn) {
+      this.listeners.delete(name);
+      super.removeEventListener(name, fn);
+    }
+  }
+  const attributes = new Map(),
+    styles = new Map(),
+    frames = new Map(),
+    scrolls = [],
+    commands = [];
+  let frameId = 0;
+  const caret = { top: 185.89, bottom: 218.89 },
+    position = 66,
+    value = "\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}";
+  const makeScroller = (name) => ({
+    scrollBy(x, y) {
+      scrolls.push({ name, x, y });
+      caret.top -= y;
+      caret.bottom -= y;
+    },
+  });
+  const page = makeScroller("page"),
+    dialog = makeScroller("dialog"),
+    composer = new Surface();
+  composer.matches = () => focused;
+  composer.querySelector = (selector) => ({
+    getBoundingClientRect: () =>
+      selector.includes("first-child")
+        ? { right: 336, bottom: 115 }
+        : { left: calculateLeft },
+  });
+  const editor = new Surface();
+  editor.matches = () => focused;
+  editor.closest = (selector) =>
+    selector === ".composer"
+      ? standalone
+        ? null
+        : composer
+      : standalone
+        ? dialog
+        : null;
+  editor.setAttribute = (name, value) => attributes.set(name, value);
+  editor.removeAttribute = (name) => attributes.delete(name);
+  editor.getBoundingClientRect = () => ({ left: 16, width: 812 });
+  editor.querySelectorAll = () => [
+    { getBoundingClientRect: () => ({ width: 129, height: 44 }) },
+    { getBoundingClientRect: () => ({ width: 147, height: 44 }) },
+  ];
+  editor.style = {
+    setProperty: (name, value) => styles.set(name, value),
+    removeProperty: (name) => styles.delete(name),
+  };
+  const keyboard = new Surface();
+  keyboard.visible = visible;
+  keyboard.boundingRect = { height: 266 };
+  keyboard.hide = () => {
+    keyboard.visible = false;
+    keyboard.dispatchEvent(new Event("geometrychange"));
+  };
+  const el = new Surface();
+  el.matches = () => fieldFocused;
+  el.position = position;
+  el.value = value;
+  el.executeCommand = (command) => commands.push(command);
+  el.getElementInfo = (offset) => {
+    assert.equal(offset, 66);
+    return { bounds: caret };
+  };
+  el.scrollIntoView = () => {};
+  const win = new Surface();
+  win.innerWidth = 844;
+  win.innerHeight = 390;
+  const media = new Surface();
+  media.matches = mediaMatches;
+  const doc = new Surface();
+  Object.assign(doc, {
+    documentElement: {
+      style: { getPropertyValue: () => "266px", setProperty() {} },
+    },
+    scrollingElement: page,
+  });
+  const scope = {
+    k: keyboard,
+    el,
+    window: win,
+    host: { current: { parentElement: editor } },
+    globalThis: { matchMedia: () => media },
+    document: doc,
+    requestAnimationFrame: (fn) => {
+      const id = ++frameId;
+      frames.set(id, fn);
+      return id;
+    },
+    cancelAnimationFrame: (id) => frames.delete(id),
+    cleanupMenu() {},
+  };
+  const result = new Function(
+    "scope",
+    `with(scope){let cleanup;${geometryCode};return{geometry,cleanup};}`,
+  )(scope);
+  const flushFrames = () => {
+    const pending = [...frames.values()];
+    frames.clear();
+    pending.forEach((fn) => fn());
+  };
+  return {
+    ...result,
+    el,
+    editor,
+    composer,
+    win,
+    media,
+    doc,
+    keyboard,
+    attributes,
+    styles,
+    caret,
+    scrolls,
+    commands,
+    frames,
+    flushFrames,
+    position,
+    value,
+  };
+}
+{
+  const main = geometryHarness();
+  assert.equal(
+    main.frames.size,
+    1,
+    "Initial geometry synchronizes without waiting for keyboard event",
+  );
+  main.flushFrames();
+  assert.equal(main.attributes.get("data-keyboard-tools"), "composer");
+  assert.equal(main.styles.get("--math-tools-left"), "344px");
+  assert.equal(main.styles.get("--math-tools-width"), "346px");
+  assert.equal(
+    main.styles.get("--math-tools-bottom"),
+    "275px",
+    "Measured button bottom, not guessed footer64",
+  );
+  assert.deepEqual(
+    main.commands,
+    ["scrollIntoView"],
+    "Public native scroll command first",
+  );
+  assert.equal(main.scrolls[0].name, "page");
+  assert(
+    main.caret.bottom <= 63,
+    "Tall active caret recovered above action row",
+  );
+  assert.equal(main.el.position, main.position);
+  assert.equal(main.el.value, main.value);
+  main.el.dispatchEvent(new Event("selection-change"));
+  assert.equal(main.frames.size, 1);
+  main.cleanup();
+  assert.equal(main.frames.size, 0);
+  assert.equal(main.attributes.size, 0);
+  assert.equal(main.styles.size, 0);
+  assert.equal(main.keyboard.listeners.size, 0);
+  assert.equal(main.el.listeners.size, 0);
+  assert.equal(main.composer.listeners.size, 0);
+  assert.equal(main.win.listeners.size, 0);
+  assert.equal(main.media.listeners.size, 0);
+  assert.equal(main.doc.listeners.size, 0);
+  main.keyboard.dispatchEvent(new Event("geometrychange"));
+  assert.equal(main.frames.size, 0);
+  const inactive = geometryHarness({ focused: false });
+  inactive.flushFrames();
+  assert.equal(inactive.attributes.size, 0);
+  assert.equal(inactive.scrolls.length, 0);
+  inactive.cleanup();
+  const hidden = geometryHarness({ visible: false });
+  hidden.flushFrames();
+  assert.equal(hidden.attributes.size, 0);
+  assert.equal(hidden.commands.length, 0);
+  hidden.cleanup();
+  const nested = geometryHarness({ standalone: true });
+  nested.flushFrames();
+  assert.equal(nested.attributes.get("data-keyboard-tools"), "standalone");
+  assert.equal(nested.styles.get("--math-tools-left"), "16px");
+  assert.equal(
+    nested.scrolls[0].name,
+    "dialog",
+    "Nested editor scrolls its owning dialog, not main workspace",
+  );
+  nested.cleanup();
+  const keyboardButtonFocus = geometryHarness({ fieldFocused: false });
+  keyboardButtonFocus.flushFrames();
+  assert.equal(
+    keyboardButtonFocus.attributes.get("data-keyboard-tools"),
+    "composer",
+  );
+  keyboardButtonFocus.keyboard.hide();
+  keyboardButtonFocus.flushFrames();
+  assert.equal(keyboardButtonFocus.attributes.size, 0);
+  keyboardButtonFocus.cleanup();
+  const nestedInactive = geometryHarness({
+    standalone: true,
+    fieldFocused: false,
+  });
+  nestedInactive.flushFrames();
+  assert.equal(
+    nestedInactive.attributes.get("data-keyboard-tools"),
+    "standalone",
+    "Tab from field to external editor button retains row ownership",
+  );
+  nestedInactive.editor.matches = () => false;
+  nestedInactive.doc.dispatchEvent(new Event("focusin"));
+  nestedInactive.flushFrames();
+  assert.equal(
+    nestedInactive.attributes.size,
+    0,
+    "Focus transferred outside the editor revokes ownership",
+  );
+  nestedInactive.cleanup();
+  const otherEditor = geometryHarness({
+    standalone: true,
+    focused: false,
+    fieldFocused: false,
+  });
+  otherEditor.flushFrames();
+  assert.equal(
+    otherEditor.attributes.size,
+    0,
+    "Another focused editor cannot grant this editor ownership",
+  );
+  otherEditor.cleanup();
+  const resized = geometryHarness();
+  resized.flushFrames();
+  resized.win.innerWidth = 800;
+  resized.win.dispatchEvent(new Event("resize"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.get("data-keyboard-tools"), "composer");
+  resized.media.matches = false;
+  resized.media.dispatchEvent(new Event("change"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.size, 0);
+  resized.media.matches = true;
+  resized.media.dispatchEvent(new Event("change"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.get("data-keyboard-tools"), "composer");
+  resized.composer.matches = () => false;
+  resized.doc.dispatchEvent(new Event("focusin"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.size, 0);
+  resized.cleanup();
+  const insufficient = geometryHarness({ calculateLeft: 380 });
+  insufficient.flushFrames();
+  assert.equal(insufficient.attributes.has("data-keyboard-tools"), false);
+  assert.equal(
+    insufficient.attributes.get("data-keyboard-tools-fit"),
+    "insufficient",
+  );
+  assert.equal(insufficient.styles.size, 0);
+  assert.equal(insufficient.scrolls.length, 0);
+  insufficient.cleanup();
+}
 
 function harness({ failImport = false } = {}) {
   const refs = [],
@@ -393,7 +754,7 @@ try {
   const menuButton = nodes(
     loadedTree,
     (node) =>
-      node.type === "button" && node.props.children === "Expression menu",
+      node.type === "button" && node.props["aria-label"] === "Expression menu",
   )[0];
   assert(menuButton, "existing context menu has a separate application button");
   assert.equal(menuButton.props["aria-haspopup"], "menu");
@@ -452,7 +813,8 @@ try {
   const toolsButton = nodes(
     loadedTree,
     (node) =>
-      node.type === "button" && node.props.children === "Structures & editing",
+      node.type === "button" &&
+      node.props["aria-label"] === "Structures & editing",
   )[0];
   globalThis.window.mathVirtualKeyboard.visible = true;
   field.events.length = 0;
@@ -472,7 +834,8 @@ try {
   const closeTools = nodes(
     expandedTree,
     (node) =>
-      node.type === "button" && node.props.children === "Structures & editing",
+      node.type === "button" &&
+      node.props["aria-label"] === "Structures & editing",
   )[0];
   assert.equal(closeTools.props["aria-expanded"], true);
   field.events.length = 0;
@@ -507,7 +870,7 @@ try {
   const unfocusedMenu = nodes(
     unfocused.render(unfocusedProps),
     (node) =>
-      node.type === "button" && node.props.children === "Expression menu",
+      node.type === "button" && node.props["aria-label"] === "Expression menu",
   )[0];
   unfocusedMenu.props.onClick({
     currentTarget: {
