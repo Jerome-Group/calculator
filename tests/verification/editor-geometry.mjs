@@ -108,6 +108,7 @@ export function checkWorkspaceNavigation({
   tabs,
   keyboardPaintTop,
   keyboardRect,
+  opaqueKeyboardBackdrop,
   viewport,
   obstacles = [],
 }) {
@@ -117,6 +118,10 @@ export function checkWorkspaceNavigation({
   if (
     !names.every((name) => valid(tabs?.[name]?.rect)) ||
     !obstacles.every(valid) ||
+    (opaqueKeyboardBackdrop &&
+      (!valid(opaqueKeyboardBackdrop) ||
+        opaqueKeyboardBackdrop.width <= 0 ||
+        opaqueKeyboardBackdrop.height <= 0)) ||
     !(keyboardRect
       ? valid(keyboardRect) && keyboardRect.width > 0 && keyboardRect.height > 0
       : Number.isFinite(keyboardPaintTop)) ||
@@ -140,6 +145,8 @@ export function checkWorkspaceNavigation({
       failures.push(name + " target is outside keyboard-free viewport");
     if (keyboardRect && overlap(rect, keyboardRect))
       failures.push(name + " target overlaps interactive keyboard plate");
+    if (opaqueKeyboardBackdrop && overlap(rect, opaqueKeyboardBackdrop))
+      failures.push(name + " target overlaps opaque keyboard backdrop");
     if (
       !Array.isArray(hits) ||
       hits.length !== 9 ||

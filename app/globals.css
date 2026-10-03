@@ -2128,6 +2128,10 @@ footer button {
 }
 
 @media (min-width: 701px) and (max-height: 500px) and (pointer: coarse) {
+  .ML__keyboard .MLK__backdrop {
+    left: var(--math-keyboard-sidebar-inset, 0px);
+    width: calc(100% - var(--math-keyboard-sidebar-inset, 0px));
+  }
   .ML__keyboard .MLK__plate {
     left: calc(
       var(--math-keyboard-sidebar-inset) +

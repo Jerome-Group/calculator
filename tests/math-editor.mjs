@@ -87,6 +87,91 @@ assert.deepEqual(
   }),
   ["Workspace navigation observation is incomplete"],
 );
+const paintedSidebarNavigation = {
+  tabs: {
+    Calculate: {
+      rect: {
+        x: 16,
+        y: 146,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Explore: {
+      rect: {
+        x: 16,
+        y: 204,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Graphs: {
+      rect: {
+        x: 16,
+        y: 262,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Objects: {
+      rect: {
+        x: 16,
+        y: 320,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+  },
+  keyboardRect: {
+    x: 224,
+    y: 125,
+    width: 784,
+    height: 266,
+  },
+  opaqueKeyboardBackdrop: {
+    x: 0,
+    y: 119,
+    width: 1024,
+    height: 271,
+  },
+  viewport: {
+    width: 1024,
+    height: 390,
+  },
+};
+assert.deepEqual(
+  checkWorkspaceNavigation({
+    ...paintedSidebarNavigation,
+    opaqueKeyboardBackdrop: undefined,
+  }),
+  [],
+  "hit-only inspection misses pointer-transparent opaque paint",
+);
+for (const name of ["Calculate", "Explore", "Graphs", "Objects"])
+  assert(
+    checkWorkspaceNavigation(paintedSidebarNavigation).includes(
+      name + " target overlaps opaque keyboard backdrop",
+    ),
+  );
+const clearedSidebarPaint = structuredClone(paintedSidebarNavigation);
+clearedSidebarPaint.opaqueKeyboardBackdrop.x = 224;
+clearedSidebarPaint.opaqueKeyboardBackdrop.width = 800;
+assert.deepEqual(checkWorkspaceNavigation(clearedSidebarPaint), []);
+assert.deepEqual(
+  checkWorkspaceNavigation({
+    ...paintedSidebarNavigation,
+    opaqueKeyboardBackdrop: {
+      ...paintedSidebarNavigation.opaqueKeyboardBackdrop,
+      width: NaN,
+    },
+  }),
+  ["Workspace navigation observation is incomplete"],
+);
+
 const nativeScrollbarKeyboard = {
   plate: { x: 224, y: 125, width: 800, height: 266 },
   viewport: { width: 1024, height: 390 },
