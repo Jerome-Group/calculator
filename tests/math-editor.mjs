@@ -160,7 +160,23 @@ for (const name of ["Calculate", "Explore", "Graphs", "Objects"])
 const clearedSidebarPaint = structuredClone(paintedSidebarNavigation);
 clearedSidebarPaint.opaqueKeyboardBackdrop.x = 224;
 clearedSidebarPaint.opaqueKeyboardBackdrop.width = 800;
-assert.deepEqual(checkWorkspaceNavigation(clearedSidebarPaint), []);
+assert.deepEqual(
+  checkWorkspaceNavigation(clearedSidebarPaint),
+  [],
+  "opaque paint beginning beside the sidebar clears it while child plate bounds stay unchanged",
+);
+assert.deepEqual(
+  clearedSidebarPaint.keyboardRect,
+  paintedSidebarNavigation.keyboardRect,
+);
+const keyboardVendorSource = fs.readFileSync(
+  new URL("../node_modules/mathlive/mathlive.mjs", import.meta.url),
+  "utf8",
+);
+assert(
+  keyboardVendorSource.includes("backdrop.appendChild(plate)"),
+  "pinned keyboard plate remains a child of backdrop",
+);
 assert.deepEqual(
   checkWorkspaceNavigation({
     ...paintedSidebarNavigation,

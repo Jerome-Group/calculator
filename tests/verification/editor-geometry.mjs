@@ -104,6 +104,7 @@ export function checkKeyboardActionRow(observation) {
 }
 
 // Supply rendered tab bounds and nine native hit samples; fixtures only test detection.
+// opaqueKeyboardBackdrop is observed opaque painted area after the background transition, not raw DOM bounds.
 export function checkWorkspaceNavigation({
   tabs,
   keyboardPaintTop,
