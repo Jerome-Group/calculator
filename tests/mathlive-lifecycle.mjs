@@ -14,6 +14,9 @@ function vendorHarness(file) {
   );
   let mathfield;
   let menuList;
+  let menuRoot;
+  let scrimClass;
+  let menuItem;
   function inspect(node) {
     if (
       ts.isClassExpression(node) &&
@@ -29,6 +32,26 @@ function vendorHarness(file) {
       node.members.some((member) => member.name?.getText(ast) === "dispose")
     )
       menuList = node;
+    if (
+      ts.isClassExpression(node) &&
+      node.members.some(
+        (member) => member.name?.getText(ast) === "disconnectScrim",
+      )
+    )
+      menuRoot = node;
+    if (
+      ts.isClassExpression(node) &&
+      node.members.some((member) => member.name?.getText(ast) === "scrim") &&
+      node.members.some((member) => member.name?.getText(ast) === "state")
+    )
+      scrimClass = node;
+    if (
+      ts.isClassExpression(node) &&
+      node.members.some(
+        (member) => member.name?.getText(ast) === "dispatchSelect",
+      )
+    )
+      menuItem = node;
     ts.forEachChild(node, inspect);
   }
   inspect(ast);
@@ -151,7 +174,203 @@ function vendorHarness(file) {
     Object.defineProperty(value, "menu", { get: () => value._menu });
     return value;
   }
-  return { Field, field, timers, events, scrim };
+  function realDismissal(owner) {
+    const trace = [];
+    let active = "menu",
+      callbacks = 0,
+      removals = 0;
+    const noop = () => {};
+    class Plate {
+      style = { paddingRight: "23px" };
+    }
+    const plate = new Plate();
+    const bodyStyle = { overflow: "hidden", marginRight: "27px" };
+    const parent = {
+      focus: () => {
+        active = "container";
+      },
+    };
+    const overlay = {
+      parentElement: parent,
+      removeEventListener: () => removals++,
+      removeChild(element) {
+        element.isConnected = false;
+        element.parentElement = null;
+        element.parentNode = null;
+        trace.push("menu.remove");
+      },
+      remove() {
+        this.parentElement = null;
+        owner._menu._element.isConnected = false;
+        trace.push("scrim.remove");
+      },
+      innerHTML: "menu",
+    };
+    const close = scrimClass.members.find(
+      (member) =>
+        member.name?.getText(ast) === "close" &&
+        !member.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.StaticKeyword,
+        ),
+    );
+    const activeName = close
+      .getText(ast)
+      .match(/([\w$]+)\(\)\s*!==\s*this\.savedActiveElement/)?.[1];
+    assert(activeName, "actual scrim restores the saved active element");
+    const scrimMethods = scrimClass.members
+      .filter((member) =>
+        ["scrim", "state", "element", "close"].includes(
+          member.name?.getText(ast),
+        ),
+      )
+      .map((member) => member.getText(ast))
+      .join("\n");
+    const Scrim = new Function(
+      "environment",
+      `with(environment){return class ${scrimClass.name.text}{${scrimMethods}}}`,
+    )({
+      [activeName]: () => active,
+      document: {
+        body: { style: bodyStyle },
+        querySelector: () => plate,
+        removeEventListener: () => removals++,
+      },
+      HTMLElement: Plate,
+    });
+    const instance = new Scrim();
+    Scrim._scrim = instance;
+    Object.defineProperty(instance, "state", {
+      get: () => scrim.state,
+      set: (value) => {
+        scrim.state = value;
+      },
+    });
+    Object.assign(instance, {
+      _element: overlay,
+      savedOverflow: "auto",
+      savedMarginRight: "12px",
+      savedMlkPaddingRight: "17px",
+      savedActiveElement: {
+        focus: () => {
+          active = "button";
+          trace.push("savedButton.focus");
+        },
+      },
+    });
+    const scrimIdentifier = menuRoot.members
+      .find((member) => member.name?.getText(ast) === "disconnectScrim")
+      .getText(ast)
+      .match(/([\w$]+)\.state/)?.[1];
+    const baseHide = menuList.members
+      .find((member) => member.name?.getText(ast) === "hide")
+      .getText(ast);
+    const menuMethods = menuRoot.members
+      .filter((member) =>
+        ["hide", "disconnectScrim", "scrim", "cancelDelayedOperation"].includes(
+          member.name?.getText(ast),
+        ),
+      )
+      .map((member) => member.getText(ast))
+      .join("\n");
+    const Menu = new Function(
+      "environment",
+      `with(environment){class Base{${baseHide}};return class ${menuRoot.name.text} extends Base{${menuMethods}}}`,
+    )(
+      new Proxy(
+        { [scrimIdentifier]: Scrim },
+        {
+          has: () => true,
+          get: (target, name) =>
+            name === Symbol.unscopables ? undefined : (target[name] ?? noop),
+        },
+      ),
+    );
+    const menu = new Menu();
+    Object.assign(menu, {
+      visible: true,
+      state: "closed",
+      hysteresisTimer: 0,
+      _element: {
+        isConnected: true,
+        parentElement: overlay,
+        parentNode: overlay,
+        remove: noop,
+      },
+      _abortController: { abort: noop },
+      _menuItems: [],
+      dispose: menuDispose,
+      show(options) {
+        this.state = "open";
+        this._onDismiss = options.onDismiss;
+        instance.onDismiss = function () {
+          assert.equal(this, instance, "scrim callback retains its receiver");
+          menu.hide();
+        };
+        instance.state = "open";
+      },
+    });
+    owner._menu = menu;
+    owner.keyboardDelegate.focus = () => {
+      owner.sinkFocusCalls++;
+      active = "sink";
+      trace.push("sink.focus");
+    };
+    assert.equal(owner.toggleContextMenu(), true);
+    const onDismiss = menu._onDismiss;
+    menu._onDismiss = function () {
+      assert.equal(this, menu, "menu callback retains its receiver");
+      callbacks++;
+      trace.push("menu.callback");
+      assert.equal(
+        instance.state,
+        "closed",
+        "menu callback waits for complete scrim cleanup",
+      );
+      menu.hide();
+      onDismiss();
+    };
+    const select = menuItem.members.find(
+      (member) => member.name?.getText(ast) === "select",
+    );
+    let blink;
+    function findBlink(node) {
+      if (
+        ts.isCallExpression(node) &&
+        node.expression.getText(ast) === "setTimeout"
+      )
+        blink = node.arguments[1].getText(ast);
+      ts.forEachChild(node, findBlink);
+    }
+    findBlink(select);
+    const selectMethod = new Function(
+      "environment",
+      `with(environment){return ({${select.getText(ast)}}).select;}`,
+    )({ [blink]: 1, setTimeout: (callback) => timers.push(callback) });
+    return {
+      menu,
+      instance,
+      trace,
+      active: () => active,
+      callbacks: () => callbacks,
+      select(action) {
+        selectMethod.call({
+          rootMenu: menu,
+          type: "command",
+          dispatchSelect: action,
+        });
+      },
+      verifyCleanup() {
+        assert.equal(menu.state, "closed");
+        assert.equal(instance.state, "closed");
+        assert.equal(overlay.parentElement, null);
+        assert.equal(overlay.innerHTML, "");
+        assert.deepEqual(bodyStyle, { overflow: "auto", marginRight: "12px" });
+        assert.equal(plate.style.paddingRight, "17px");
+        assert(removals >= 8, "actual scrim and menu listeners are removed");
+      },
+    };
+  }
+  return { Field, field, timers, events, scrim, realDismissal };
 }
 
 for (const name of [
@@ -165,10 +384,76 @@ for (const name of [
     : fileURLToPath(
         new URL("../node_modules/mathlive/" + name, import.meta.url),
       );
-  const { Field, field, timers, events, scrim } = vendorHarness(file);
+  const { Field, field, timers, events, scrim, realDismissal } =
+    vendorHarness(file);
   const flush = () => {
     while (timers.length) timers.shift()();
   };
+  for (const entry of ["menu", "scrim", "dispose", "readonly", "disabled"]) {
+    const owner = field();
+    if (entry === "readonly") owner.options.readOnly = true;
+    owner.onFocus();
+    const actual = realDismissal(owner);
+    flush();
+    assert.equal(
+      owner.sinkFocusCalls,
+      0,
+      "rapid focus cannot steal the real open menu",
+    );
+    if (entry === "disabled") owner.host.disabled = true;
+    if (entry === "dispose") owner.dispose();
+    else if (entry === "scrim") actual.instance.close();
+    else actual.menu.hide();
+    actual.verifyCleanup();
+    assert.equal(
+      actual.callbacks(),
+      1,
+      "reentrant dismissal callback runs exactly once",
+    );
+    const focusable = entry !== "dispose" && entry !== "disabled";
+    assert.equal(owner.sinkFocusCalls, focusable ? 1 : 0);
+    assert.equal(
+      actual.active(),
+      focusable ? "sink" : "button",
+      "final focus follows cleanup and owner liveness",
+    );
+    if (focusable)
+      assert(
+        actual.trace.indexOf("savedButton.focus") <
+          actual.trace.indexOf("sink.focus"),
+      );
+    actual.menu.hide();
+    assert.equal(
+      actual.callbacks(),
+      1,
+      "repeated hide cannot invoke dismissal again",
+    );
+    flush();
+    if (entry !== "dispose") owner.dispose();
+  }
+  const selected = field();
+  const selection = { ranges: [[1, 3]], direction: "backward" };
+  selected.selection = selection;
+  const commandMenu = realDismissal(selected);
+  let dispatched = 0;
+  commandMenu.select(() => {
+    dispatched++;
+    assert.equal(
+      commandMenu.active(),
+      "sink",
+      "actual menu item dispatch follows final sink restoration",
+    );
+    assert.equal(commandMenu.instance.state, "closed");
+    assert.equal(
+      selected.selection,
+      selection,
+      "dismissal leaves command selection intact",
+    );
+  });
+  flush();
+  assert.equal(dispatched, 1);
+  commandMenu.verifyCleanup();
+  selected.dispose();
   for (const pending of [false, true]) {
     const owner = field(true);
     owner._menu.state = "closed";
