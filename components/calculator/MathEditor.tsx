@@ -137,6 +137,23 @@ export default forwardRef<
         };
         el.addEventListener("selection-change", rememberSelection);
         el.addEventListener("blur", rememberSelection);
+        // Vendor menus overlap the field; their presses must not capture its caret.
+        el.addEventListener(
+          "pointerdown",
+          (event: PointerEvent) => {
+            if (
+              event
+                .composedPath()
+                .some(
+                  (node) =>
+                    node instanceof Element &&
+                    node.getAttribute("role") === "menu",
+                )
+            )
+              event.stopPropagation();
+          },
+          { capture: true },
+        );
 
         el.addEventListener("input", () =>
           callbacks.current.onChange(el.value),

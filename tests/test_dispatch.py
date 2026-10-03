@@ -72,6 +72,29 @@ class CurrentDispatchTests(unittest.TestCase):
    out=json.loads(compute_json(json.dumps({'operation':'evaluate','input':source,'mode':'latex','definitions':definitions})))
    self.assertEqual(out['status'],'error',out)
    self.assertIn('original denominator',out['text'])
+ def test_vendor_menu_bound_variable_assumptions(self):
+  for kind,valid,invalid in [('positive','2','-1'),('nonzero','2','0'),('real','2','i')]:
+   for argument,definitions in [(r'x^2',[]),('A',[{'name':'A','expression':'x^2'}]),('f(x)',[{'name':'f','args':'t','expression':'t^2'}])]:
+    settings={'assumptions':'x:'+kind}
+    source=r'\dfrac{\mathrm{d}}{\mathrm{d}x}'+argument+r'\bigm|_{x='+valid+'}'
+    out=self.call('evaluate',input=source,mode='latex',settings=settings,definitions=definitions)
+    self.assertEqual(out['text'],'4')
+    source=r'\dfrac{\mathrm{d}}{\mathrm{d}x}'+argument+r'\bigm|_{x='+invalid+'}'
+    out=json.loads(compute_json(json.dumps({'operation':'evaluate','mode':'latex','input':source,'settings':settings,'definitions':definitions})))
+    self.assertEqual(out['status'],'error',out)
+    self.assertIn('domain assumption',out['text'])
+  source=r'\dfrac{\mathrm{d}}{\mathrm{d}x}\sqrt{x^2}\bigm|_{x=-1}'
+  out=json.loads(compute_json(json.dumps({'operation':'evaluate','mode':'latex','input':source,'settings':{'assumptions':'x:positive'}})))
+  self.assertEqual(out['status'],'error',out)
+ def test_vendor_menu_bound_assumptions_preserve_outer_case_guard(self):
+  from calculator import Context
+  y=S.Symbol('y')
+  for argument,definitions in [('x^2',[]),('A',[{'name':'A','expression':'x^2'}]),('f(x)',[{'name':'f','args':'t','expression':'t^2'}])]:
+   source=r'\begin{cases}\dfrac{\mathrm{d}}{\mathrm{d}x}'+argument+r'\bigm|_{x=-1}&y>0\\0&\text{otherwise}\end{cases}'
+   context=Context({'settings':{'assumptions':'x:positive'},'definitions':definitions})
+   expression,_,_,conditions=context._parse(source,latex=True)
+   self.assertEqual(expression.doit().subs(y,-1),0)
+   self.assertTrue(any(kind=='positive' and arg.subs(y,1).is_positive is False and arg.subs(y,-1).is_positive is True for kind,arg in conditions),conditions)
  def test_vendor_menu_nested_derivatives_consume_inner_bindings(self):
   from calculator import Context
   x=S.Symbol('x')

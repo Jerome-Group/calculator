@@ -189,3 +189,246 @@ for (const name of ["mathlive.mjs", "mathlive.min.mjs"]) {
 console.log(
   "Actual development/production MathLive disposal, focus-window and menu ownership regressions passed",
 );
+
+// Execute the pinned caret/capture/menu methods, with controlled DOM geometry and
+// pointer-capture routing. Actual browser pointer activation remains a separate gate.
+{
+  const vendor = fs.readFileSync(
+    new URL("../node_modules/mathlive/mathlive.mjs", import.meta.url),
+    "utf8",
+  );
+  const ast = ts.createSourceFile(
+    "mathlive.mjs",
+    vendor,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  const functions = new Map();
+  let tracker, menuItem;
+  function visit(node) {
+    if (ts.isFunctionDeclaration(node))
+      functions.set(node.name?.text, node.getText(ast));
+    if (ts.isClassExpression(node)) {
+      if (node.name?.text === "_PointerTracker") tracker = node.getText(ast);
+      if (
+        node.members.some(
+          (member) => member.name?.getText(ast) === "dispatchSelect",
+        )
+      )
+        menuItem = node;
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(ast);
+  assert(tracker && menuItem && functions.has("onPointerDown"));
+  const appSource = fs.readFileSync(
+    process.env.CALCULATOR_MATH_EDITOR_SOURCE ??
+      new URL("../components/calculator/MathEditor.tsx", import.meta.url),
+    "utf8",
+  );
+  const appAst = ts.createSourceFile(
+    "MathEditor.tsx",
+    appSource,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+  let guard;
+  function findGuard(node) {
+    if (
+      ts.isCallExpression(node) &&
+      node.expression.getText(appAst) === "el.addEventListener" &&
+      node.arguments[0]?.getText(appAst) === '"pointerdown"'
+    ) {
+      assert.equal(
+        node.arguments[2].getText(appAst).replace(/\s/g, ""),
+        "{capture:true}",
+      );
+      guard = ts.transpileModule(
+        "const guard = " + node.arguments[1].getText(appAst),
+        {
+          compilerOptions: { target: ts.ScriptTarget.ES2022 },
+        },
+      ).outputText;
+    }
+    ts.forEachChild(node, findGuard);
+  }
+  findGuard(appAst);
+  assert(
+    guard,
+    "Actual app registers the menu pointer guard during field setup",
+  );
+  class Element extends EventTarget {
+    constructor(role) {
+      super();
+      this.role = role;
+    }
+    getAttribute(name) {
+      return name === "role" ? this.role : null;
+    }
+  }
+  class PointerEvent extends Event {
+    constructor(type, path) {
+      super(type, { cancelable: true });
+      Object.assign(this, {
+        buttons: 1,
+        pointerId: 1,
+        clientX: 100,
+        clientY: 270,
+        detail: 1,
+        isPrimary: true,
+      });
+      this.path = path;
+    }
+    composedPath() {
+      return this.path;
+    }
+  }
+  const appGuard = new Function("Element", guard + ";return guard;")(Element);
+  const methods = menuItem.members
+    .filter((member) =>
+      ["handleEvent", "select"].includes(member.name?.getText(ast)),
+    )
+    .map((member) => member.getText(ast))
+    .join("\n");
+  function replay(protectMenu, pressMenu, menuState = "open") {
+    const timers = [];
+    let captured = null,
+      insertions = 0;
+    const field = new Element();
+    const leaf = new Element("menuitem");
+    const menu = new Element("menu");
+    const host = new Element();
+    field.getBoundingClientRect = () => ({
+      left: 25,
+      top: 254,
+      right: 365,
+      bottom: 326,
+    });
+    field.setPointerCapture = () => {
+      captured = field;
+    };
+    field.releasePointerCapture = () => {
+      captured = null;
+    };
+    host.getBoundingClientRect = field.getBoundingClientRect;
+    host.classList = { add() {}, remove() {} };
+    const environment = {
+      BLINK_SPEED: Number(/var BLINK_SPEED = (\d+)/.exec(vendor)?.[1]),
+      window: { PointerEvent },
+      globalThis: { PointerEvent },
+      PointerEvent,
+      AbortController,
+      Map,
+      Date,
+      Math,
+      setTimeout: (callback) => timers.push(callback),
+      setInterval: () => 1,
+      clearInterval() {},
+      offsetFromPoint: () => 0,
+      acceptCommandSuggestion: () => false,
+      requestUpdate() {},
+      selectGroup() {},
+    };
+    const pinned = new Function(
+      "environment",
+      `with(environment) {
+      let gLastTap=null, gTapCount=0;
+      const PointerTracker=${tracker};
+      ${["isPointerEvent", "pointInRect", "clamp", "onPointerDown"].map((name) => functions.get(name)).join("\n")}
+      return {onPointerDown, Item:class {${methods}}};
+    }`,
+    )(environment);
+    const item = new pinned.Item();
+    Object.assign(item, {
+      visible: true,
+      enabled: true,
+      type: "command",
+      rootMenu: { state: menuState, cancelDelayedOperation() {}, hide() {} },
+      dispatchSelect: () => insertions++,
+    });
+    const mathfield = {
+      field,
+      container: host,
+      element: host,
+      defaultStyle: {},
+      model: {
+        anchor: 0,
+        at: () => ({ type: "mord" }),
+        selectionIsCollapsed: true,
+      },
+      hasFocus: () => true,
+      flushInlineShortcutBuffer() {},
+      stopCoalescingUndo() {},
+    };
+    const down = new PointerEvent(
+      "pointerdown",
+      pressMenu ? [leaf, menu, host] : [field, host],
+    );
+    if (protectMenu) appGuard(down);
+    const stopped = down.cancelBubble;
+    const defaultBeforeVendor = down.defaultPrevented;
+    if (!stopped) pinned.onPointerDown(mathfield, down);
+    const releaseTarget = captured ?? (pressMenu ? leaf : field);
+    const up = new PointerEvent("pointerup", [releaseTarget]);
+    if (releaseTarget === field) field.dispatchEvent(up);
+    else {
+      item.handleEvent(up);
+      item.handleEvent(new PointerEvent("click", [leaf, menu, host]));
+    }
+    while (timers.length) timers.shift()();
+    return {
+      releaseTarget,
+      field,
+      leaf,
+      insertions,
+      stopped,
+      defaultBeforeVendor,
+      captured,
+    };
+  }
+  const baseline = replay(false, true);
+  assert.equal(
+    baseline.releaseTarget,
+    baseline.field,
+    "Pinned caret handler captures overlapping menu press",
+  );
+  assert.equal(
+    baseline.insertions,
+    0,
+    "Captured release never reaches the menu command",
+  );
+  const fixed = replay(true, true);
+  assert.equal(fixed.releaseTarget, fixed.leaf);
+  assert.equal(
+    fixed.insertions,
+    1,
+    "Pinned menu handler receives uncaptured release and selects command",
+  );
+  assert.equal(
+    fixed.defaultBeforeVendor,
+    false,
+    "Menu press keeps default focus behavior",
+  );
+  const modal = replay(true, true, "modal");
+  assert.equal(
+    modal.insertions,
+    1,
+    "Modal menus retain their pinned click activation",
+  );
+  const caret = replay(true, false);
+  assert.equal(caret.stopped, false);
+  assert.equal(
+    caret.releaseTarget,
+    caret.field,
+    "Ordinary caret presses retain pinned pointer capture",
+  );
+  assert.equal(
+    caret.captured,
+    null,
+    "Pinned pointer-up releases ordinary caret capture",
+  );
+}
+console.log(
+  "Pinned overlapping-menu capture detector and app guard regressions passed",
+);

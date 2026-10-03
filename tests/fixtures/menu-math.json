@@ -638,6 +638,217 @@
         "method": "hand-derived 3+1=4; notation taken from actual vendor-menu browser serialization",
         "reviewState": "independent typed assertions; vendor browser serialization verified separately"
       }
+    },
+    {
+      "id": "editor.menu.derivative-degree",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "deg",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\dfrac{\\mathrm{d}}{\\mathrm{d}x}\\sin(x)\\bigm|_{x=0}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "pi/180"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.derivative-degree",
+      "oracleProvenance": {
+        "method": "Hand-derived chain rule with sin(pi*x/180); second derivative at90 is -(pi/180)^2, definite integral0..180 is360/pi. Vendor calculus notation exercised separately.",
+        "reviewState": "independent analytic oracle; pinned engine and existing calculus operation agree"
+      }
+    },
+    {
+      "id": "editor.menu.nth-derivative-degree",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "deg",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\dfrac{\\mathrm{d}^2}{\\mathrm{d}x^2}\\sin(x)\\bigm|_{x=90}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "-pi**2/32400"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.nth-derivative-degree",
+      "oracleProvenance": {
+        "method": "Hand-derived chain rule with sin(pi*x/180); second derivative at90 is -(pi/180)^2, definite integral0..180 is360/pi. Vendor calculus notation exercised separately.",
+        "reviewState": "independent analytic oracle; pinned engine and existing calculus operation agree"
+      }
+    },
+    {
+      "id": "editor.menu.integral-degree",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "deg",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\int_0^{180}\\sin(x)\\,\\mathrm{dx}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "360/pi"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.integral-degree",
+      "oracleProvenance": {
+        "method": "Hand-derived chain rule with sin(pi*x/180); second derivative at90 is -(pi/180)^2, definite integral0..180 is360/pi. Vendor calculus notation exercised separately.",
+        "reviewState": "independent analytic oracle; pinned engine and existing calculus operation agree"
+      }
+    },
+    {
+      "id": "editor.menu.derivative-degree-saved-function",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "deg",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "input": "\\dfrac{\\mathrm{d}}{\\mathrm{d}x}f(x)\\bigm|_{x=0}",
+        "mode": "latex",
+        "definitions": [
+          {
+            "id": "menu-degree-saved-function",
+            "name": "f",
+            "expression": "sin(t)",
+            "kind": "function",
+            "args": "t",
+            "updated": 0
+          }
+        ]
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "pi/180"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.derivative-degree-saved-function",
+      "oracleProvenance": {
+        "method": "Hand-derived chain rule with sin(pi*x/180); second derivative at90 is -(pi/180)^2, definite integral0..180 is360/pi. Vendor calculus notation exercised separately.",
+        "reviewState": "independent analytic oracle; pinned engine and existing calculus operation agree"
+      }
+    },
+    {
+      "id": "editor.menu.derivative-positive-forbidden",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": "x:positive"
+        },
+        "input": "\\dfrac{\\mathrm{d}}{\\mathrm{d}x}\\sqrt{x^2}\\bigm|_{x=-1}",
+        "mode": "latex"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "domain assumption"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.derivative-positive-forbidden",
+      "oracleProvenance": {
+        "method": "Declared positive x excludes negative evaluation points; declared nonzero x excludes zero. For positive x, sqrt(x^2)=x and its derivative at2 is1.",
+        "reviewState": "independent mathematical domain oracle; old-source forbidden-point regression demonstrated separately"
+      }
+    },
+    {
+      "id": "editor.menu.derivative-nonzero-forbidden",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": "x:nonzero"
+        },
+        "input": "\\dfrac{\\mathrm{d}}{\\mathrm{d}x}x^2\\bigm|_{x=0}",
+        "mode": "latex"
+      },
+      "expectedStatus": "error",
+      "assertions": [
+        {
+          "kind": "textContains",
+          "expected": "domain assumption"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.derivative-nonzero-forbidden",
+      "oracleProvenance": {
+        "method": "Declared positive x excludes negative evaluation points; declared nonzero x excludes zero. For positive x, sqrt(x^2)=x and its derivative at2 is1.",
+        "reviewState": "independent mathematical domain oracle; old-source forbidden-point regression demonstrated separately"
+      }
+    },
+    {
+      "id": "editor.menu.derivative-positive-valid",
+      "surfaceId": "editor.menu",
+      "request": {
+        "operation": "evaluate",
+        "params": {},
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": "x:positive"
+        },
+        "input": "\\dfrac{\\mathrm{d}}{\\mathrm{d}x}\\sqrt{x^2}\\bigm|_{x=2}",
+        "mode": "latex"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "renderedEvidenceId": "browser.editor.menu.derivative-positive-valid",
+      "oracleProvenance": {
+        "method": "Declared positive x excludes negative evaluation points; declared nonzero x excludes zero. For positive x, sqrt(x^2)=x and its derivative at2 is1.",
+        "reviewState": "independent mathematical domain oracle; old-source forbidden-point regression demonstrated separately"
+      }
     }
   ]
 }

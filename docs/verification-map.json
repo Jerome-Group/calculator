@@ -423,7 +423,14 @@
         "editor.menu.background-blue",
         "editor.menu.boxed",
         "editor.menu.bbox-red",
-        "editor.menu.bbox-dashed"
+        "editor.menu.bbox-dashed",
+        "editor.menu.derivative-degree",
+        "editor.menu.nth-derivative-degree",
+        "editor.menu.integral-degree",
+        "editor.menu.derivative-degree-saved-function",
+        "editor.menu.derivative-positive-forbidden",
+        "editor.menu.derivative-nonzero-forbidden",
+        "editor.menu.derivative-positive-valid"
       ],
       "exitCodes": {
         "0": "pass",
@@ -8089,7 +8096,14 @@
       "browser.editor.menu.background-blue",
       "browser.editor.menu.boxed",
       "browser.editor.menu.bbox-red",
-      "browser.editor.menu.bbox-dashed"
+      "browser.editor.menu.bbox-dashed",
+      "browser.editor.menu.derivative-degree",
+      "browser.editor.menu.nth-derivative-degree",
+      "browser.editor.menu.integral-degree",
+      "browser.editor.menu.derivative-degree-saved-function",
+      "browser.editor.menu.derivative-positive-forbidden",
+      "browser.editor.menu.derivative-nonzero-forbidden",
+      "browser.editor.menu.derivative-positive-valid"
     ],
     "requiredBrowserScenarioIds": [
       "graph-table",
@@ -12766,7 +12780,7 @@
       "id": "control.121",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 295,
+        "line": 312,
         "signature": "c3567a336c8370a31889f7b4bd73e419c78da75ab77e70bf4906a5dfbbfb6e2a"
       },
       "kind": "button",
@@ -12804,7 +12818,7 @@
       "id": "control.122",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 316,
+        "line": 333,
         "signature": "b6a02e5763e84e153ee4d681a997caeb337e3992a51840a63b4e839921b37dd3"
       },
       "kind": "button",
@@ -12842,7 +12856,7 @@
       "id": "control.123",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 331,
+        "line": 348,
         "signature": "72296f0af9931b794392e69955b610b45848d720077d52b2ad48addcbbb9dc1a"
       },
       "kind": "button",
@@ -12880,7 +12894,7 @@
       "id": "control.124",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 347,
+        "line": 364,
         "signature": "ee94840c391383d973b57dd5c90f60afd6cdf640644851a24be2c6366f0c5b22"
       },
       "kind": "button",
@@ -14286,7 +14300,7 @@
       "id": "control.161",
       "source": {
         "file": "components/calculator/MathEditor.tsx",
-        "line": 308,
+        "line": 325,
         "signature": "ea30bf3086fa5b1a65d4870f5b3a3c4b137d26a62c4399ba40daa9d973008f48"
       },
       "kind": "button",
@@ -14689,7 +14703,7 @@
         "structured.logic-mode-preservation: notation-previews regression; actual logical relationship operands a,b, calculate Equivalent(a,b), Edit problem then Advanced proposition retains complete Equivalent(a,b); edit And(a,b,c) and keep all operands as raw input; switching back to supported two-argument relation retains a,b",
         "structured.points-grid: notation-previews regression; actual Exact polynomial interpolation Points [(0,1),(1,2),(2,5)], resize rows 3 to 4 to 3 and columns 2 to 3 to 2, edit a cell then restore; captured point input retains tuple rows and calculation independently equals x^2+1; single-column/mixed rows and matrix list shapes checked separately by rendering regression",
         "editor.repeated-transition: actual focused nested editor Use expression/Close/Escape transitions, including immediate closure after focus; alternate Text/Math and open Graph expression editor; one activation opens external Expression menu, keyboard remains usable and edited x^2+1 derivative independently equals 2*x; no disposed-model or disconnected-popover console errors",
-        "editor.vendor-insertions: actual vendor template activation, completed operands, exact serialized LaTeX and semantic rendered outcomes independently matched; static TSX controls do not enumerate or certify vendor menu controls; at 320px/390px, first insertion from an unfocused empty field restores field focus and selected-placeholder typing; repeated insertion after clearing remains usable",
+        "editor.vendor-insertions: actual vendor template activation, completed operands, exact serialized LaTeX and semantic rendered outcomes independently matched; static TSX controls do not enumerate or certify vendor menu controls; at 320px/390px, first insertion from an unfocused empty field restores field focus and selected-placeholder typing; repeated insertion after clearing remains usable; real pointer presses on leaves overlapping the mathfield select exactly once without field pointer capture; ordinary caret pointer selection still works; independently match degree-mode calculus and saved-function fixtures, and bound-point positive/nonzero assumption rejection with a valid positive-assumption control",
         "editor.integral-shortcut: completed root integral 3 to 4 of 1 transferred into existing integrand/variable/bounds fields with one integral in preview, independently calculated result 1, generic manual integration semantics retained",
         "editor.scalar-notation-roundtrip: generic scalar inputs hide internal latex marker while preserving encoded source through edits and clear/retype; actual Math editor and reopened problem retain notation and mathematical meaning; at 320px/390px, encoded scalar fields show a visible LaTeX hint associated through aria-describedby, retained after clearing/retyping, while ordinary text fields have no notation hint",
         "editor.vendor-presentation: actual vendor foreground red, background blue, boxed, bbox red and dashed border activation; capture exact serialized LaTeX, visible input colour/background/enclosure and semantic DOM/screenshots, then independently match each calculated result 4; broader vendor style variants remain unverified until explicitly inventoried and observed; actual Calculation card bbox previews render readable mathematical bodies inside the retained red-solid/black-dashed enclosures without visible padding/border metadata; copy retains exact original LaTeX annotation and saved serialization",
@@ -14717,7 +14731,14 @@
         "editor.menu.background-blue",
         "editor.menu.boxed",
         "editor.menu.bbox-red",
-        "editor.menu.bbox-dashed"
+        "editor.menu.bbox-dashed",
+        "editor.menu.derivative-degree",
+        "editor.menu.nth-derivative-degree",
+        "editor.menu.integral-degree",
+        "editor.menu.derivative-degree-saved-function",
+        "editor.menu.derivative-positive-forbidden",
+        "editor.menu.derivative-nonzero-forbidden",
+        "editor.menu.derivative-positive-valid"
       ]
     },
     {

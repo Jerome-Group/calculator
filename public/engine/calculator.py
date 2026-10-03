@@ -162,6 +162,8 @@ class Context:
    try:argument=parse_argument()
    finally:binding_frames.pop()
    substitutions={variable:point}
+   kind=self.assumption_kinds.get(str(variable))
+   if kind:add_condition(kind,point,S.And(*outer_path),outer_path)
    for denominator,path in frame['denominators']:
     path=substitute_bound_guard_path(path,len(outer_path),substitutions)
     add_den(denominator.subs(substitutions,simultaneous=True),S.And(*path),path)
