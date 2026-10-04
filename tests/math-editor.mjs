@@ -1,0 +1,1693 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { createRequire } from "node:module";
+import ts from "typescript";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import {
+  checkExternalMenuGeometry,
+  checkKeyboardActionRow,
+  checkWorkspaceNavigation,
+  checkVirtualKeyboardTargets,
+} from "./verification/editor-geometry.mjs";
+
+await import("./resolve-types.mjs");
+const { prepareMathLiveMenu } = await import(
+  "../lib/calculator/mathlive-menu.ts"
+);
+
+const navigationGeometry = {
+  tabs: Object.fromEntries(
+    ["Calculate", "Explore", "Graphs", "Objects"].map((name, index) => [
+      name,
+      {
+        rect: { x: 12 + index * 90, y: 514, width: 86, height: 52 },
+        hits: Array(9).fill(true),
+      },
+    ]),
+  ),
+  keyboardPaintTop: 603,
+  viewport: { width: 390, height: 844 },
+  obstacles: [{ x: 16, y: 460, width: 358, height: 44 }],
+};
+assert.deepEqual(checkWorkspaceNavigation(navigationGeometry), []);
+const coveredNavigation = structuredClone(navigationGeometry);
+for (const tab of Object.values(coveredNavigation.tabs)) {
+  tab.rect.y = 778;
+  tab.hits[8] = false;
+}
+assert(
+  checkWorkspaceNavigation(coveredNavigation).includes(
+    "Graphs target is outside keyboard-free viewport",
+  ),
+);
+assert(
+  checkWorkspaceNavigation(coveredNavigation).includes(
+    "Graphs interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const interceptedNavigation = structuredClone(navigationGeometry);
+interceptedNavigation.tabs.Graphs.hits[0] = false;
+assert(
+  checkWorkspaceNavigation(interceptedNavigation).includes(
+    "Graphs interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+assert(
+  checkWorkspaceNavigation({
+    ...navigationGeometry,
+    obstacles: [{ x: 16, y: 520, width: 358, height: 44 }],
+  }).includes("Graphs overlaps editor controls or caret"),
+);
+
+const landscapeNavigation = {
+  tabs: Object.fromEntries(
+    ["Calculate", "Explore", "Graphs", "Objects"].map((name, index) => [
+      name,
+      {
+        rect: { x: 10, y: 146 + index * 58, width: 164, height: 50 },
+        hits: Array(9).fill(true),
+      },
+    ]),
+  ),
+  keyboardRect: { x: 184, y: 125, width: 660, height: 266 },
+  viewport: { width: 844, height: 391 },
+};
+assert.deepEqual(checkWorkspaceNavigation(landscapeNavigation), []);
+assert(
+  checkWorkspaceNavigation({
+    ...landscapeNavigation,
+    keyboardRect: { x: 0, y: 125, width: 844, height: 266 },
+  }).includes("Graphs target overlaps interactive keyboard plate"),
+);
+assert.deepEqual(
+  checkWorkspaceNavigation({
+    ...landscapeNavigation,
+    keyboardRect: { x: NaN, y: 125, width: 660, height: 266 },
+  }),
+  ["Workspace navigation observation is incomplete"],
+);
+const paintedSidebarNavigation = {
+  tabs: {
+    Calculate: {
+      rect: {
+        x: 16,
+        y: 146,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Explore: {
+      rect: {
+        x: 16,
+        y: 204,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Graphs: {
+      rect: {
+        x: 16,
+        y: 262,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Objects: {
+      rect: {
+        x: 16,
+        y: 320,
+        width: 192,
+        height: 50,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+  },
+  keyboardRect: {
+    x: 224,
+    y: 125,
+    width: 784,
+    height: 266,
+  },
+  opaqueKeyboardBackdrop: {
+    x: 0,
+    y: 119,
+    width: 1024,
+    height: 271,
+  },
+  viewport: {
+    width: 1024,
+    height: 390,
+  },
+};
+assert.deepEqual(
+  checkWorkspaceNavigation({
+    ...paintedSidebarNavigation,
+    opaqueKeyboardBackdrop: undefined,
+  }),
+  [],
+  "hit-only inspection misses pointer-transparent opaque paint",
+);
+for (const name of ["Calculate", "Explore", "Graphs", "Objects"])
+  assert(
+    checkWorkspaceNavigation(paintedSidebarNavigation).includes(
+      name + " target overlaps opaque keyboard backdrop",
+    ),
+  );
+const clearedSidebarPaint = structuredClone(paintedSidebarNavigation);
+clearedSidebarPaint.opaqueKeyboardBackdrop.x = 224;
+clearedSidebarPaint.opaqueKeyboardBackdrop.width = 800;
+assert.deepEqual(
+  checkWorkspaceNavigation(clearedSidebarPaint),
+  [],
+  "opaque paint beginning beside the sidebar clears it while child plate bounds stay unchanged",
+);
+assert.deepEqual(
+  clearedSidebarPaint.keyboardRect,
+  paintedSidebarNavigation.keyboardRect,
+);
+const keyboardVendorSource = fs.readFileSync(
+  new URL("../node_modules/mathlive/mathlive.mjs", import.meta.url),
+  "utf8",
+);
+assert(
+  keyboardVendorSource.includes("backdrop.appendChild(plate)"),
+  "pinned keyboard plate remains a child of backdrop",
+);
+assert.deepEqual(
+  checkWorkspaceNavigation({
+    ...paintedSidebarNavigation,
+    opaqueKeyboardBackdrop: {
+      ...paintedSidebarNavigation.opaqueKeyboardBackdrop,
+      width: NaN,
+    },
+  }),
+  ["Workspace navigation observation is incomplete"],
+);
+
+const nativeScrollbarKeyboard = {
+  plate: { x: 224, y: 125, width: 800, height: 266 },
+  viewport: { width: 1024, height: 390 },
+  targets: {
+    Paste: {
+      rect: { x: 978, y: 125, width: 42, height: 38 },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+    pi: {
+      rect: { x: 948, y: 167, width: 72, height: 48 },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+    sqrt: {
+      rect: { x: 948, y: 223, width: 72, height: 48 },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+  },
+};
+assert(
+  checkVirtualKeyboardTargets(nativeScrollbarKeyboard).includes(
+    "Interactive keyboard plate does not clear the observed16px native scrollbar band",
+  ),
+);
+assert(
+  checkVirtualKeyboardTargets(nativeScrollbarKeyboard).includes(
+    "pi interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const clearedKeyboard = structuredClone(nativeScrollbarKeyboard);
+clearedKeyboard.plate.width -= 16;
+for (const target of Object.values(clearedKeyboard.targets)) {
+  target.rect.x -= 16;
+  target.hits.fill(true);
+}
+assert.deepEqual(checkVirtualKeyboardTargets(clearedKeyboard), []);
+const edgeCoveredKeyboard = structuredClone(clearedKeyboard);
+edgeCoveredKeyboard.targets.Paste.hits[7] = false;
+assert(
+  checkVirtualKeyboardTargets(edgeCoveredKeyboard).includes(
+    "Paste interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const abovePlateKeyboard = structuredClone(clearedKeyboard);
+abovePlateKeyboard.targets.Paste.rect.y = abovePlateKeyboard.plate.y - 1;
+assert(
+  checkVirtualKeyboardTargets(abovePlateKeyboard).includes(
+    "Paste target is outside interactive keyboard/viewport bounds",
+  ),
+);
+const belowPlateKeyboard = structuredClone(clearedKeyboard);
+belowPlateKeyboard.plate.height = 140;
+assert(
+  checkVirtualKeyboardTargets(belowPlateKeyboard).includes(
+    "sqrt target is outside interactive keyboard/viewport bounds",
+  ),
+);
+const belowViewportKeyboard = structuredClone(clearedKeyboard);
+belowViewportKeyboard.targets.sqrt.rect.y = 343;
+assert(
+  checkVirtualKeyboardTargets(belowViewportKeyboard).includes(
+    "sqrt target is outside interactive keyboard/viewport bounds",
+  ),
+);
+assert.deepEqual(
+  checkVirtualKeyboardTargets({
+    ...clearedKeyboard,
+    plate: { ...clearedKeyboard.plate, width: NaN },
+  }),
+  ["Virtual keyboard target observation is incomplete"],
+);
+
+const narrowToolbarKeyboard = {
+  plate: {
+    x: 0,
+    y: 327,
+    width: 304,
+    height: 242,
+  },
+  viewport: {
+    width: 320,
+    height: 568,
+  },
+  targets: {
+    Numbers: {
+      rect: {
+        x: 2,
+        y: 327,
+        width: 42,
+        height: 34,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Symbols: {
+      rect: {
+        x: 48,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Letters: {
+      rect: {
+        x: 94,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Structures: {
+      rect: {
+        x: 140,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Undo: {
+      rect: {
+        x: 186,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    Redo: {
+      rect: {
+        x: 232,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, true, true, true, true, true, true, true, true],
+    },
+    "Paste from Clipboard": {
+      rect: {
+        x: 278,
+        y: 327,
+        width: 42,
+        height: 38,
+      },
+      hits: [true, false, true, false, true, true, true, false, true],
+    },
+  },
+};
+assert(
+  checkVirtualKeyboardTargets(narrowToolbarKeyboard).includes(
+    "Paste from Clipboard target is outside interactive keyboard/viewport bounds",
+  ),
+);
+assert(
+  checkVirtualKeyboardTargets(narrowToolbarKeyboard).includes(
+    "Paste from Clipboard interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+const fittedToolbarKeyboard = structuredClone(narrowToolbarKeyboard);
+Object.values(fittedToolbarKeyboard.targets).forEach((target, index) => {
+  target.rect.x = index < 4 ? index * 42 : 178 + (index - 4) * 42;
+  target.hits.fill(true);
+});
+assert.equal(Object.keys(fittedToolbarKeyboard.targets).length, 7);
+assert(
+  Object.values(fittedToolbarKeyboard.targets).every(
+    (target) => target.rect.width === 42,
+  ),
+);
+assert.deepEqual(checkVirtualKeyboardTargets(fittedToolbarKeyboard), []);
+const fittedToolbarEdgeCovered = structuredClone(fittedToolbarKeyboard);
+fittedToolbarEdgeCovered.targets["Paste from Clipboard"].hits[7] = false;
+assert(
+  checkVirtualKeyboardTargets(fittedToolbarEdgeCovered).includes(
+    "Paste from Clipboard interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+
+const phoneMenuGeometry = {
+  context: "composer",
+  field: { bottom: 333 },
+  menu: { top: 341, left: 29, right: 159, width: 130, height: 44 },
+  internalMenu: { display: "none", width: 0, height: 0 },
+  composer: { borderWidth: 0, boxShadow: "none" },
+  hitTarget: true,
+  viewport: { width: 390 },
+};
+assert.deepEqual(checkExternalMenuGeometry(phoneMenuGeometry), []);
+for (const missing of [
+  { composer: undefined },
+  { context: undefined },
+  { field: { bottom: NaN } },
+])
+  assert.deepEqual(
+    checkExternalMenuGeometry({ ...phoneMenuGeometry, ...missing }),
+    ["Expression menu geometry observation is incomplete"],
+  );
+for (const [property, value, message] of [
+  [
+    "composer",
+    { borderWidth: 1, boxShadow: "none" },
+    "Expression-box framing still encloses the menu action bar",
+  ],
+  [
+    "internalMenu",
+    { display: "flex", width: 24, height: 24 },
+    "The internal expression menu toggle is still visible",
+  ],
+  ["hitTarget", false, "Another element intercepts the expression menu target"],
+])
+  assert(
+    checkExternalMenuGeometry({
+      ...phoneMenuGeometry,
+      [property]: value,
+    }).includes(message),
+    "Browser geometry detector must reject " + message,
+  );
+
+const actionRow = {
+  viewport: { width: 844, height: 390 },
+  keyboardPaintTop: 119,
+  caret: { x: 230, y: 40, width: 2, height: 25 },
+  tools: { x: 344, y: 71, width: 346, height: 44 },
+  buttons: Object.fromEntries(
+    [
+      ["Math keyboard", { x: 216, y: 71, width: 120, height: 44 }],
+      ["Expression menu", { x: 344, y: 71, width: 129, height: 44 }],
+      ["Structures & editing", { x: 481, y: 71, width: 147, height: 44 }],
+      ["Calculate", { x: 698, y: 69, width: 130, height: 46 }],
+    ].map(([name, rect]) => [name, { rect, hits: Array(9).fill(true) }]),
+  ),
+};
+assert.deepEqual(checkKeyboardActionRow(actionRow), []);
+const invisibleTooltipRow = structuredClone(actionRow);
+invisibleTooltipRow.buttons.Calculate.hits[3] = false;
+assert.equal(invisibleTooltipRow.buttons.Calculate.hits[8], true);
+assert.deepEqual(checkKeyboardActionRow(invisibleTooltipRow), [
+  "Calculate interior8px/edge-midpoint/center hits are not all correct",
+]);
+const coveredRow = structuredClone(actionRow);
+coveredRow.tools = { x: 216, y: 47, width: 612, height: 44 };
+coveredRow.buttons["Expression menu"].rect = {
+  x: 216,
+  y: 47,
+  width: 129,
+  height: 44,
+};
+coveredRow.buttons["Math keyboard"].hits[0] = false;
+const coveredFailures = checkKeyboardActionRow(coveredRow);
+assert(
+  coveredFailures.includes("Expression menu overlaps Math keyboard") ||
+    coveredFailures.includes("Math keyboard overlaps Expression menu"),
+);
+assert(coveredFailures.includes("Editor tools container overlaps Calculate"));
+assert(
+  coveredFailures.includes(
+    "Math keyboard interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+for (const changed of [
+  { ...actionRow, keyboardPaintTop: 110 },
+  { ...actionRow, caret: { x: 230, y: 85, width: 2, height: 25 } },
+  {
+    ...actionRow,
+    buttons: {
+      ...actionRow.buttons,
+      "Math keyboard": {
+        rect: { x: 216, y: 71, width: 43, height: 44 },
+        hits: Array(9).fill(true),
+      },
+    },
+  },
+])
+  assert(checkKeyboardActionRow(changed).length > 0);
+
+const require = createRequire(import.meta.url);
+const loaderChecks = spawnSync(
+  process.execPath,
+  [
+    "--experimental-vm-modules",
+    fileURLToPath(new URL("./mathlive-loader.mjs", import.meta.url)),
+  ],
+  { encoding: "utf8" },
+);
+assert.equal(
+  loaderChecks.status,
+  0,
+  loaderChecks.stderr || loaderChecks.stdout,
+);
+const lifecycleChecks = spawnSync(
+  process.execPath,
+  [fileURLToPath(new URL("./mathlive-lifecycle.mjs", import.meta.url))],
+  { encoding: "utf8" },
+);
+const menuChecks = spawnSync(
+  process.execPath,
+  [fileURLToPath(new URL("./mathlive-menu.mjs", import.meta.url))],
+  { encoding: "utf8" },
+);
+assert.equal(menuChecks.status, 0, menuChecks.stderr || menuChecks.stdout);
+assert.equal(
+  lifecycleChecks.status,
+  0,
+  lifecycleChecks.stderr || lifecycleChecks.stdout,
+);
+const source = fs.readFileSync(
+  process.env.CALCULATOR_MATH_EDITOR_SOURCE ??
+    new URL("../components/calculator/MathEditor.tsx", import.meta.url),
+  "utf8",
+);
+const compiled = ts.transpileModule(source, {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
+}).outputText;
+
+for (const bundle of ["mathlive.mjs", "mathlive.js"]) {
+  const vendorSource = fs.readFileSync(
+    new URL("../node_modules/mathlive/" + bundle, import.meta.url),
+    "utf8",
+  );
+  const vendorAST = ts.createSourceFile(
+    bundle,
+    vendorSource,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.JS,
+  );
+  let menuMethod;
+  function findMenuMethod(node) {
+    if (
+      ts.isMethodDeclaration(node) &&
+      node.name.getText(vendorAST) === "toggleContextMenu"
+    )
+      menuMethod = node.getText(vendorAST);
+    ts.forEachChild(node, findMenuMethod);
+  }
+  findMenuMethod(vendorAST);
+  assert(menuMethod, bundle + " contains the pinned menu command");
+  const menuBuilders = new Set([
+    "getDefaultMenuItems",
+    "getVariantSubmenu",
+    "getAccentSubmenu",
+    "getDecorationSubmenu",
+    "getBackgroundColorSubmenu",
+    "getColorSubmenu",
+    "getInsertMatrixSubmenu",
+    "variantMenuItem",
+    "variantStyleMenuItem",
+    "insertMenu",
+  ]);
+  const dynamicProperties = new Set([
+    "visible",
+    "enabled",
+    "checked",
+    "label",
+    "class",
+    "tooltip",
+    "ariaLabel",
+    "onMenuSelect",
+  ]);
+  let menuCallbacks = 0;
+  function checkMenuCallback(node) {
+    if (
+      ts.isPropertyAssignment(node) &&
+      dynamicProperties.has(node.name.getText(vendorAST)) &&
+      (ts.isArrowFunction(node.initializer) ||
+        ts.isFunctionExpression(node.initializer))
+    ) {
+      menuCallbacks++;
+      assert.equal(
+        node.initializer.parameters.length,
+        0,
+        bundle + " pinned menu semantics must not depend on opening modifiers",
+      );
+      assert(!/\barguments\b/.test(node.initializer.getText(vendorAST)));
+    }
+    ts.forEachChild(node, checkMenuCallback);
+  }
+  function checkMenuBuilders(node) {
+    if (ts.isFunctionDeclaration(node) && menuBuilders.has(node.name?.text))
+      checkMenuCallback(node);
+    else ts.forEachChild(node, checkMenuBuilders);
+  }
+  checkMenuBuilders(vendorAST);
+  assert.equal(
+    menuCallbacks,
+    179,
+    bundle + " all pinned menu callbacks audited",
+  );
+  let focusCalls = 0,
+    options;
+  const target = {};
+  const context = {
+    model: { position: 0 },
+    element: {
+      querySelector: () => target,
+    },
+    keyboardDelegate: { focus: () => focusCalls++ },
+    onFocus() {},
+    connectToVirtualKeyboard() {},
+    menu: {
+      visible: true,
+      state: "closed",
+      show: (value) => (options = value),
+    },
+  };
+  const toggleMenu = new Function(
+    "getElementInfo",
+    "isValidMathfield",
+    `return ({${menuMethod}}).toggleContextMenu`,
+  )(
+    (field, offset) => {
+      assert.equal(field, context);
+      assert.equal(offset, 0);
+      return { bounds: { right: 30, bottom: 290 } };
+    },
+    () => true,
+  );
+  assert.equal(toggleMenu.call(context), true);
+  assert.equal(focusCalls, 0, bundle + " opens without delayed field focus");
+  assert.equal(options.target, target);
+  assert.deepEqual(options.location, { x: 30, y: 290 });
+  options.onDismiss();
+  assert.equal(focusCalls, 1, bundle + " restores field focus after dismissal");
+}
+
+// Execute the actual geometry/cleanup block with controlled public DOM/API bounds.
+const geometrySource = ts.createSourceFile(
+  "MathEditor.tsx",
+  source,
+  ts.ScriptTarget.Latest,
+  true,
+  ts.ScriptKind.TSX,
+);
+let geometryStart, geometryEnd;
+function geometryNodes(node) {
+  if (
+    ts.isVariableStatement(node) &&
+    node.declarationList.declarations.some(
+      (d) => d.name.getText(geometrySource) === "frame",
+    )
+  )
+    geometryStart = node.getStart(geometrySource);
+  if (
+    ts.isExpressionStatement(node) &&
+    ts.isBinaryExpression(node.expression) &&
+    node.expression.left.getText(geometrySource) === "cleanup" &&
+    node
+      .getText(geometrySource)
+      .includes('removeEventListener("geometrychange"')
+  )
+    geometryEnd = node.end;
+  ts.forEachChild(node, geometryNodes);
+}
+geometryNodes(geometrySource);
+assert(Number.isInteger(geometryStart) && Number.isInteger(geometryEnd));
+const geometryCode = ts.transpileModule(
+  source.slice(geometryStart, geometryEnd),
+  { compilerOptions: { module: ts.ModuleKind.CommonJS } },
+).outputText;
+function geometryHarness({
+  standalone = false,
+  focused = true,
+  fieldFocused = focused,
+  visible = true,
+  mediaMatches = true,
+  calculateLeft = 698,
+  viewportWidth = 844,
+  viewportHeight = 390,
+  modal = standalone,
+  navigationTop,
+  sidebarRight,
+  tabsBounds,
+  keyboardBounds,
+  keyboardRight = 336,
+  actionBottom = 115,
+  buttonWidths = [129, 147],
+} = {}) {
+  class Surface extends EventTarget {
+    listeners = new Set();
+    addEventListener(name, fn) {
+      this.listeners.add(name);
+      super.addEventListener(name, fn);
+    }
+    removeEventListener(name, fn) {
+      this.listeners.delete(name);
+      super.removeEventListener(name, fn);
+    }
+  }
+  const attributes = new Map(),
+    styles = new Map(),
+    frames = new Map(),
+    scrolls = [],
+    commands = [];
+  let frameId = 0;
+  const caret = { top: 185.89, bottom: 218.89 },
+    position = 66,
+    value = "\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}";
+  const makeScroller = (name) => ({
+    scrollBy(x, y) {
+      scrolls.push({ name, x, y });
+      caret.top -= y;
+      caret.bottom -= y;
+    },
+  });
+  const page = makeScroller("page"),
+    dialog = makeScroller("dialog"),
+    composer = new Surface();
+  composer.matches = () => focused;
+  composer.querySelector = (selector) => ({
+    getBoundingClientRect: () =>
+      selector.includes("first-child")
+        ? { right: keyboardRight, bottom: actionBottom }
+        : { left: calculateLeft },
+  });
+  const editor = new Surface();
+  editor.matches = () => focused;
+  editor.closest = (selector) =>
+    selector === ".composer"
+      ? standalone
+        ? null
+        : composer
+      : modal
+        ? dialog
+        : null;
+  editor.setAttribute = (name, value) => attributes.set(name, value);
+  editor.removeAttribute = (name) => attributes.delete(name);
+  editor.getBoundingClientRect = () => ({ left: 16, width: 812 });
+  editor.querySelectorAll = () =>
+    buttonWidths.map((width) => ({
+      getBoundingClientRect: () => ({ width, height: 44 }),
+    }));
+  editor.style = {
+    setProperty: (name, value) => styles.set(name, value),
+    removeProperty: (name) => styles.delete(name),
+  };
+  const keyboard = new Surface();
+  keyboard.visible = visible;
+  keyboard.boundingRect = keyboardBounds ?? { height: 266 };
+  keyboard.hide = () => {
+    keyboard.visible = false;
+    keyboard.dispatchEvent(new Event("geometrychange"));
+  };
+  const el = new Surface();
+  el.matches = () => fieldFocused;
+  el.position = position;
+  el.value = value;
+  el.executeCommand = (command) => commands.push(command);
+  el.getElementInfo = (offset) => {
+    assert.equal(offset, 66);
+    return { bounds: caret };
+  };
+  el.scrollIntoView = () => {};
+  const win = new Surface();
+  win.innerWidth = viewportWidth;
+  win.innerHeight = viewportHeight;
+  win.getComputedStyle = (element) => ({
+    position: element.isSidebar || win.innerWidth <= 700 ? "fixed" : "static",
+  });
+  const media = new Surface();
+  media.matches = mediaMatches;
+  const doc = new Surface();
+  const rootStyles = new Map();
+  Object.assign(doc, {
+    querySelector: (selector) =>
+      selector.includes("dialog-content")
+        ? modal
+          ? dialog
+          : null
+        : selector === ".navigation"
+          ? sidebarRight === undefined
+            ? null
+            : {
+                isSidebar: true,
+                getBoundingClientRect: () => ({ left: 0, right: sidebarRight }),
+              }
+          : navigationTop === undefined && !tabsBounds
+            ? null
+            : {
+                getBoundingClientRect: () =>
+                  tabsBounds ?? {
+                    top: keyboard.visible ? navigationTop : viewportHeight - 72,
+                    height: 64,
+                  },
+              },
+    documentElement: {
+      style: {
+        getPropertyValue: () => "266px",
+        setProperty: (name, value) => rootStyles.set(name, value),
+        removeProperty: (name) => rootStyles.delete(name),
+      },
+    },
+    scrollingElement: page,
+  });
+  const scope = {
+    k: keyboard,
+    el,
+    window: win,
+    host: { current: { parentElement: editor } },
+    globalThis: { matchMedia: () => media },
+    document: doc,
+    requestAnimationFrame: (fn) => {
+      const id = ++frameId;
+      frames.set(id, fn);
+      return id;
+    },
+    cancelAnimationFrame: (id) => frames.delete(id),
+    cleanupMenu() {},
+  };
+  const result = new Function(
+    "scope",
+    `with(scope){let cleanup;${geometryCode};return{geometry,cleanup};}`,
+  )(scope);
+  const flushFrames = () => {
+    const pending = [...frames.values()];
+    frames.clear();
+    pending.forEach((fn) => fn());
+  };
+  return {
+    ...result,
+    el,
+    editor,
+    composer,
+    win,
+    media,
+    doc,
+    keyboard,
+    attributes,
+    styles,
+    rootStyles,
+    caret,
+    scrolls,
+    commands,
+    frames,
+    flushFrames,
+    position,
+    value,
+  };
+}
+{
+  for (const modal of [false, true]) {
+    const phone = geometryHarness({
+      standalone: true,
+      modal,
+      viewportWidth: 390,
+      viewportHeight: 844,
+      navigationTop: 506,
+    });
+    phone.flushFrames();
+    assert.equal(
+      phone.rootStyles.get("--math-navigation-clearance"),
+      modal ? "0px" : "80px",
+    );
+    assert.equal(
+      phone.styles.get("--math-tools-bottom"),
+      modal ? "274px" : "354px",
+    );
+    phone.keyboard.hide();
+    phone.flushFrames();
+    assert.equal(
+      phone.rootStyles.get("--math-navigation-clearance"),
+      modal ? "0px" : "80px",
+    );
+    phone.cleanup();
+  }
+  const phoneComposer = geometryHarness({
+    viewportWidth: 390,
+    viewportHeight: 844,
+    navigationTop: 506,
+    keyboardRight: 60,
+    calculateLeft: 300,
+    actionBottom: 498,
+    buttonWidths: [44, 44],
+  });
+  phoneComposer.flushFrames();
+  assert.equal(
+    phoneComposer.rootStyles.get("--math-navigation-clearance"),
+    "80px",
+  );
+  assert.equal(phoneComposer.styles.get("--math-tools-bottom"), "346px");
+  phoneComposer.keyboard.hide();
+  phoneComposer.flushFrames();
+  assert.equal(
+    phoneComposer.rootStyles.get("--math-navigation-clearance"),
+    "80px",
+  );
+  phoneComposer.cleanup();
+  const inactivePhone = geometryHarness({
+    focused: false,
+    viewportWidth: 320,
+    viewportHeight: 568,
+    navigationTop: 230,
+  });
+  inactivePhone.flushFrames();
+  assert.equal(
+    inactivePhone.rootStyles.get("--math-navigation-clearance"),
+    "80px",
+  );
+  assert.equal(inactivePhone.attributes.has("data-keyboard-tools"), false);
+  inactivePhone.cleanup();
+  assert.equal(
+    inactivePhone.rootStyles.has("--math-navigation-clearance"),
+    false,
+    "unmount restores CSS clearance fallback",
+  );
+  for (const sidebarRight of [184, 224]) {
+    const landscape = geometryHarness({
+      focused: false,
+      sidebarRight,
+      tabsBounds: { top: 146, bottom: 370 },
+      keyboardBounds: {
+        left: 0,
+        right: 844,
+        top: 125,
+        bottom: 391,
+        height: 266,
+      },
+    });
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      `${sidebarRight}px`,
+    );
+    landscape.keyboard.boundingRect.left = sidebarRight;
+    landscape.geometry();
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      `${sidebarRight}px`,
+      "inset remains stable after lateral clearance",
+    );
+    landscape.win.innerWidth = 390;
+    landscape.geometry();
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      "0px",
+    );
+    landscape.win.innerWidth = 844;
+    landscape.keyboard.hide();
+    landscape.flushFrames();
+    assert.equal(
+      landscape.rootStyles.get("--math-keyboard-sidebar-inset"),
+      "0px",
+    );
+    landscape.cleanup();
+    assert.equal(
+      landscape.rootStyles.has("--math-keyboard-sidebar-inset"),
+      false,
+    );
+  }
+  for (const options of [
+    { modal: true },
+    { sidebarRight: NaN },
+    { sidebarRight: 900 },
+    { mediaMatches: false },
+    {
+      keyboardBounds: {
+        left: 0,
+        right: 844,
+        top: 380,
+        bottom: 390,
+        height: 10,
+      },
+    },
+  ]) {
+    const exempt = geometryHarness({
+      sidebarRight: 184,
+      tabsBounds: { top: 146, bottom: 370 },
+      keyboardBounds: {
+        left: 0,
+        right: 844,
+        top: 125,
+        bottom: 391,
+        height: 266,
+      },
+      ...options,
+    });
+    exempt.flushFrames();
+    assert.equal(exempt.rootStyles.get("--math-keyboard-sidebar-inset"), "0px");
+    exempt.cleanup();
+  }
+  const desktop = geometryHarness({ navigationTop: 50 });
+  desktop.flushFrames();
+  assert.equal(desktop.rootStyles.get("--math-navigation-clearance"), "0px");
+  desktop.cleanup();
+}
+{
+  const main = geometryHarness();
+  assert.equal(
+    main.frames.size,
+    1,
+    "Initial geometry synchronizes without waiting for keyboard event",
+  );
+  main.flushFrames();
+  assert.equal(main.attributes.get("data-keyboard-tools"), "composer");
+  assert.equal(main.styles.get("--math-tools-left"), "344px");
+  assert.equal(main.styles.get("--math-tools-width"), "346px");
+  assert.equal(
+    main.styles.get("--math-tools-bottom"),
+    "275px",
+    "Measured button bottom, not guessed footer64",
+  );
+  assert.deepEqual(
+    main.commands,
+    ["scrollIntoView"],
+    "Public native scroll command first",
+  );
+  assert.equal(main.scrolls[0].name, "page");
+  assert(
+    main.caret.bottom <= 63,
+    "Tall active caret recovered above action row",
+  );
+  assert.equal(main.el.position, main.position);
+  assert.equal(main.el.value, main.value);
+  main.el.dispatchEvent(new Event("selection-change"));
+  assert.equal(main.frames.size, 1);
+  main.cleanup();
+  assert.equal(main.frames.size, 0);
+  assert.equal(main.attributes.size, 0);
+  assert.equal(main.styles.size, 0);
+  assert.equal(main.keyboard.listeners.size, 0);
+  assert.equal(main.el.listeners.size, 0);
+  assert.equal(main.composer.listeners.size, 0);
+  assert.equal(main.win.listeners.size, 0);
+  assert.equal(main.media.listeners.size, 0);
+  assert.equal(main.doc.listeners.size, 0);
+  main.keyboard.dispatchEvent(new Event("geometrychange"));
+  assert.equal(main.frames.size, 0);
+  const inactive = geometryHarness({ focused: false });
+  inactive.flushFrames();
+  assert.equal(inactive.attributes.size, 0);
+  assert.equal(inactive.scrolls.length, 0);
+  inactive.cleanup();
+  const hidden = geometryHarness({ visible: false });
+  hidden.flushFrames();
+  assert.equal(hidden.attributes.size, 0);
+  assert.equal(hidden.commands.length, 0);
+  hidden.cleanup();
+  const nested = geometryHarness({ standalone: true });
+  nested.flushFrames();
+  assert.equal(nested.attributes.get("data-keyboard-tools"), "standalone");
+  assert.equal(nested.styles.get("--math-tools-left"), "16px");
+  assert.equal(
+    nested.scrolls[0].name,
+    "dialog",
+    "Nested editor scrolls its owning dialog, not main workspace",
+  );
+  nested.cleanup();
+  const keyboardButtonFocus = geometryHarness({ fieldFocused: false });
+  keyboardButtonFocus.flushFrames();
+  assert.equal(
+    keyboardButtonFocus.attributes.get("data-keyboard-tools"),
+    "composer",
+  );
+  keyboardButtonFocus.keyboard.hide();
+  keyboardButtonFocus.flushFrames();
+  assert.equal(keyboardButtonFocus.attributes.size, 0);
+  keyboardButtonFocus.cleanup();
+  const nestedInactive = geometryHarness({
+    standalone: true,
+    fieldFocused: false,
+  });
+  nestedInactive.flushFrames();
+  assert.equal(
+    nestedInactive.attributes.get("data-keyboard-tools"),
+    "standalone",
+    "Tab from field to external editor button retains row ownership",
+  );
+  nestedInactive.editor.matches = () => false;
+  nestedInactive.doc.dispatchEvent(new Event("focusin"));
+  nestedInactive.flushFrames();
+  assert.equal(
+    nestedInactive.attributes.size,
+    0,
+    "Focus transferred outside the editor revokes ownership",
+  );
+  nestedInactive.cleanup();
+  const otherEditor = geometryHarness({
+    standalone: true,
+    focused: false,
+    fieldFocused: false,
+  });
+  otherEditor.flushFrames();
+  assert.equal(
+    otherEditor.attributes.size,
+    0,
+    "Another focused editor cannot grant this editor ownership",
+  );
+  otherEditor.cleanup();
+  const resized = geometryHarness();
+  resized.flushFrames();
+  resized.win.innerWidth = 800;
+  resized.win.dispatchEvent(new Event("resize"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.get("data-keyboard-tools"), "composer");
+  resized.media.matches = false;
+  resized.media.dispatchEvent(new Event("change"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.size, 0);
+  resized.media.matches = true;
+  resized.media.dispatchEvent(new Event("change"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.get("data-keyboard-tools"), "composer");
+  resized.composer.matches = () => false;
+  resized.doc.dispatchEvent(new Event("focusin"));
+  resized.flushFrames();
+  assert.equal(resized.attributes.size, 0);
+  resized.cleanup();
+  const insufficient = geometryHarness({ calculateLeft: 380 });
+  insufficient.flushFrames();
+  assert.equal(insufficient.attributes.has("data-keyboard-tools"), false);
+  assert.equal(
+    insufficient.attributes.get("data-keyboard-tools-fit"),
+    "insufficient",
+  );
+  assert.equal(insufficient.styles.size, 0);
+  assert.equal(insufficient.scrolls.length, 0);
+  insufficient.cleanup();
+}
+
+function harness({ failImport = false } = {}) {
+  const refs = [],
+    states = [],
+    effects = [],
+    fields = [];
+  let refIndex = 0,
+    stateIndex = 0,
+    effectIndex = 0;
+  let importFailure = failImport;
+  let currentHandle;
+  class Field extends EventTarget {
+    value = "";
+    selection = { ranges: [[0, 0]] };
+    attributes = new Map();
+    removed = false;
+    focusCalls = 0;
+    events = [];
+    menuEntries = [];
+    menuAdaptations = 0;
+    mode = "math";
+    constructor() {
+      super();
+      fields.push(this);
+    }
+    setAttribute(name, value) {
+      this.attributes.set(name, value);
+    }
+    remove() {
+      this.removed = true;
+    }
+    focus() {
+      this.events.push("focus");
+      this.focusCalls++;
+      this.selection = { ranges: [[0, 0]] };
+    }
+    insert(value) {
+      this.inserted = { value, selection: this.selection };
+    }
+    executeCommand(value) {
+      this.events.push(value);
+      this.command = { value, selection: this.selection };
+      if (value === "toggleContextMenu")
+        this.menu = { selection: this.selection };
+    }
+    get menuItems() {
+      assert(
+        this.mounted,
+        "Public menu API is used only after mounting the field",
+      );
+      this.events.push("menuItems");
+      return this.menuEntries;
+    }
+    set menuItems(items) {
+      this.menuEntries = items;
+      this.menuAdaptations++;
+    }
+    showMenu(options) {
+      this.events.push("showMenu");
+      this.menu = { options, selection: this.selection };
+      return true;
+    }
+  }
+  const react = {
+    forwardRef: (component) => component,
+    useRef: (initial) => (refs[refIndex++] ??= { current: initial }),
+    useState(initial) {
+      const index = stateIndex++;
+      if (!(index in states)) states[index] = initial;
+      return [
+        states[index],
+        (value) => {
+          states[index] =
+            typeof value === "function" ? value(states[index]) : value;
+        },
+      ];
+    },
+    useImperativeHandle: (_, create) => {
+      currentHandle = create();
+    },
+    useEffect(run, dependencies) {
+      const index = effectIndex++;
+      const previous = effects[index];
+      if (
+        !previous ||
+        dependencies.some((value, i) => value !== previous.dependencies[i])
+      ) {
+        previous?.cleanup?.();
+        effects[index] = { dependencies, run, pending: true };
+      }
+    },
+  };
+  react.useLayoutEffect = react.useEffect;
+  const loadedModule = { exports: {} };
+  new Function("require", "module", "exports", compiled)(
+    (name) => {
+      if (name === "react") return react;
+      if (name === "react/jsx-runtime") return require(name);
+      if (name.endsWith(".css")) return {};
+      if (name === "../../lib/calculator/mathlive-menu")
+        return { prepareMathLiveMenu };
+      if (name === "../../lib/calculator/mathlive-loader") {
+        return {
+          async loadMathLive() {
+            if (importFailure) {
+              importFailure = false;
+              throw Error("Unavailable");
+            }
+            return { MathfieldElement: Field };
+          },
+        };
+      }
+      throw Error(`Unexpected module ${name}`);
+    },
+    loadedModule,
+    loadedModule.exports,
+  );
+  const render = (props) => {
+    refIndex = stateIndex = effectIndex = 0;
+    const tree = loadedModule.exports.default(props, {});
+    refs[0].current ??= {
+      replaceChildren(field) {
+        field.mounted = true;
+      },
+    };
+    for (const effect of effects)
+      if (effect.pending) {
+        effect.pending = false;
+        effect.cleanup = effect.run();
+      }
+    return tree;
+  };
+  return {
+    render,
+    fields,
+    handle: () => currentHandle,
+    unmount: () => effects.forEach((effect) => effect.cleanup?.()),
+  };
+}
+function nodes(tree, predicate) {
+  if (!tree || typeof tree !== "object") return [];
+  return [
+    ...(predicate(tree) ? [tree] : []),
+    ...[tree.props?.children]
+      .flat(Infinity)
+      .flatMap((child) => nodes(child, predicate)),
+  ];
+}
+const dialogSource = fs.readFileSync(
+  new URL("../components/ui/dialog.tsx", import.meta.url),
+  "utf8",
+);
+const dialogModule = { exports: {} };
+const primitive = { Content: () => null };
+new Function(
+  "require",
+  "module",
+  "exports",
+  ts.transpileModule(dialogSource, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      jsx: ts.JsxEmit.ReactJSX,
+    },
+  }).outputText,
+)(
+  (name) => {
+    if (name === "react/jsx-runtime") return require(name);
+    if (name === "radix-ui") return { Dialog: primitive };
+    if (name === "@/lib/utils") return { cn: (...values) => values.join(" ") };
+    if (name === "react" || name === "lucide-react") return {};
+    if (name === "@/components/ui/button") return { Button: () => null };
+    throw Error(`Unexpected dialog import ${name}`);
+  },
+  dialogModule,
+  dialogModule.exports,
+);
+const priorElement = globalThis.Element;
+class MenuTarget {
+  constructor(mathMenu = false) {
+    this.mathMenu = mathMenu;
+  }
+  matches(selector) {
+    assert.equal(selector, '.ui-menu-container[role="menu"]');
+    return this.mathMenu;
+  }
+}
+globalThis.Element = MenuTarget;
+try {
+  let callerCount = 0;
+  const tree = dialogModule.exports.DialogContent({
+    children: "Unsaved nested expression",
+    onEscapeKeyDown: () => callerCount++,
+  });
+  const content = nodes(tree, (node) => node.type === primitive.Content)[0];
+  const menu = new MenuTarget(true);
+  const input = new MenuTarget();
+  let menuOpen = true,
+    editorOpen = true,
+    draft = "x^{2}+1";
+  function escape(path) {
+    const event = new Event("keydown", { cancelable: true });
+    Object.defineProperty(event, "key", { value: "Escape" });
+    event.composedPath = () => path;
+    // Installed Radix captures first; MathLive hides its menu during bubbling.
+    content.props.onEscapeKeyDown?.(event);
+    if (!event.defaultPrevented) {
+      editorOpen = false;
+      draft = null;
+    }
+    if (path.includes(menu)) menuOpen = false;
+    return event;
+  }
+  const firstEscape = escape([input, menu]);
+  assert.equal(
+    menuOpen,
+    false,
+    "Escape still reaches MathLive to close its menu",
+  );
+  assert.equal(editorOpen, true, "menu Escape must retain the nested editor");
+  assert.equal(draft, "x^{2}+1", "unsaved expression remains available");
+  assert.equal(
+    firstEscape.cancelBubble,
+    false,
+    "vendor bubbling is not blocked",
+  );
+  const secondEscape = escape([input]);
+  assert.equal(secondEscape.defaultPrevented, false);
+  assert.equal(editorOpen, false, "next Escape dismisses the editor normally");
+  assert.equal(callerCount, 2, "existing dialog Escape handler is preserved");
+  const preventedTree = dialogModule.exports.DialogContent({
+    onEscapeKeyDown: (event) => event.preventDefault(),
+  });
+  const preventedContent = nodes(
+    preventedTree,
+    (node) => node.type === primitive.Content,
+  )[0];
+  const prevented = new Event("keydown", { cancelable: true });
+  prevented.composedPath = () => [input];
+  preventedContent.props.onEscapeKeyDown(prevented);
+  assert.equal(
+    prevented.defaultPrevented,
+    true,
+    "caller cancellation is retained",
+  );
+} finally {
+  if (priorElement === undefined) delete globalThis.Element;
+  else globalThis.Element = priorElement;
+}
+const flush = () => new Promise(setImmediate);
+const priorWindow = globalThis.window;
+const priorMatchMedia = globalThis.matchMedia;
+const menuMediaListeners = new Set();
+globalThis.matchMedia = () => ({
+  matches: false,
+  addEventListener: (_, listener) => menuMediaListeners.add(listener),
+  removeEventListener: (_, listener) => menuMediaListeners.delete(listener),
+});
+globalThis.window = {};
+globalThis.window.parent = globalThis.window;
+try {
+  const changes = [];
+  const editor = harness();
+  editor.render({
+    value: "old",
+    label: "Original field",
+    onChange: (value) => changes.push(value),
+  });
+  editor.render({
+    value: "new",
+    label: "Current field",
+    onChange: (value) => changes.push(value),
+  });
+  await flush();
+  const field = editor.fields[0];
+  assert.equal(
+    field.value,
+    "new",
+    "late import must initialize latest supplied value",
+  );
+  assert.equal(field.attributes.get("aria-label"), "Current field");
+  assert.equal(
+    field.menuAdaptations,
+    1,
+    "Actual editor prepares its public menu once after mounting",
+  );
+  field.selection = { ranges: [[1, 3]], direction: "backward" };
+  field.dispatchEvent(new Event("selection-change"));
+  editor.handle().insert("\\frac{#@}{#?}");
+  assert.deepEqual(
+    field.inserted.selection,
+    { ranges: [[1, 3]], direction: "backward" },
+    "insertion restores selection after focus",
+  );
+  const loadedTree = editor.render({
+    value: "new",
+    label: "Current field",
+    onChange: (value) => changes.push(value),
+  });
+  const menuButton = nodes(
+    loadedTree,
+    (node) =>
+      node.type === "button" && node.props["aria-label"] === "Expression menu",
+  )[0];
+  assert(menuButton, "existing context menu has a separate application button");
+  assert.equal(menuButton.props["aria-haspopup"], "menu");
+  let pointerDefaultPrevented = false;
+  menuButton.props.onPointerDown({
+    preventDefault() {
+      pointerDefaultPrevented = true;
+    },
+  });
+  assert(
+    pointerDefaultPrevented,
+    "menu activation must preserve field selection",
+  );
+  const focusCalls = field.focusCalls;
+  const priorValue = field.value;
+  let menuSelection = { ranges: [[0, 0]] };
+  Object.defineProperty(field, "selection", {
+    configurable: true,
+    get: () => menuSelection,
+    set: (value) => {
+      field.events.push("restoreSelection");
+      menuSelection = value;
+    },
+  });
+  globalThis.window.mathVirtualKeyboard = {
+    visible: true,
+    hide() {
+      field.events.push("hideKeyboard");
+      this.visible = false;
+      menuSelection = { ranges: [[0, 0]] };
+    },
+  };
+  field.events.length = 0;
+  menuButton.props.onClick({
+    currentTarget: {
+      getBoundingClientRect: () => ({ left: 29, bottom: 390 }),
+    },
+  });
+  assert.equal(
+    field.focusCalls,
+    focusCalls,
+    "opening the external menu cannot schedule a field focus that steals menu keyboard input",
+  );
+  assert.deepEqual(
+    field.events,
+    ["hideKeyboard", "restoreSelection", "toggleContextMenu"],
+    "hide keyboard, restore selection without focus, then capture menu focus",
+  );
+  assert.equal(field.value, priorValue, "menu opening preserves expression");
+  assert.equal(field.command.value, "toggleContextMenu");
+  assert.deepEqual(field.menu, {
+    selection: { ranges: [[1, 3]], direction: "backward" },
+  });
+  delete field.selection;
+  field.selection = menuSelection;
+  const toolsButton = nodes(
+    loadedTree,
+    (node) =>
+      node.type === "button" &&
+      node.props["aria-label"] === "Structures & editing",
+  )[0];
+  globalThis.window.mathVirtualKeyboard.visible = true;
+  field.events.length = 0;
+  toolsButton.props.onClick();
+  assert.deepEqual(
+    field.events,
+    ["hideKeyboard", "focus"],
+    "opening structures hides keyboard before focus",
+  );
+  assert.deepEqual(
+    field.selection,
+    { ranges: [[1, 3]], direction: "backward" },
+    "opening structures retains selected expression",
+  );
+  assert.equal(field.value, priorValue);
+  const expandedTree = editor.render({ value: "new", onChange() {} });
+  const closeTools = nodes(
+    expandedTree,
+    (node) =>
+      node.type === "button" &&
+      node.props["aria-label"] === "Structures & editing",
+  )[0];
+  assert.equal(closeTools.props["aria-expanded"], true);
+  field.events.length = 0;
+  closeTools.props.onClick();
+  assert.deepEqual(
+    field.events,
+    [],
+    "closing structures does not refocus or toggle keyboard",
+  );
+  delete globalThis.window.mathVirtualKeyboard;
+  const enter = new Event("keydown", { cancelable: true });
+  Object.defineProperty(enter, "key", { value: "Enter" });
+  field.dispatchEvent(enter);
+  assert.equal(
+    enter.defaultPrevented,
+    false,
+    "nested editor without submit must retain Enter behavior",
+  );
+  editor.unmount();
+  assert.equal(field.removed, true);
+  assert.equal(
+    menuMediaListeners.size,
+    0,
+    "unmount removes phone-menu listener",
+  );
+
+  const unfocused = harness();
+  const unfocusedProps = { value: "", onChange() {} };
+  unfocused.render(unfocusedProps);
+  await flush();
+  const unfocusedField = unfocused.fields[0];
+  const unfocusedMenu = nodes(
+    unfocused.render(unfocusedProps),
+    (node) =>
+      node.type === "button" && node.props["aria-label"] === "Expression menu",
+  )[0];
+  unfocusedField.events.length = 0;
+  unfocusedMenu.props.onClick();
+  assert.equal(
+    unfocusedField.focusCalls,
+    0,
+    "menu opened from an unfocused empty field must not start a field focus transition",
+  );
+  assert(unfocusedField.menu, "an unfocused field still opens its owned menu");
+  assert.deepEqual(unfocusedField.events, ["toggleContextMenu"]);
+  assert.equal(unfocusedField.value, "");
+  unfocused.handle().insert("x");
+  assert.equal(
+    unfocusedField.focusCalls,
+    1,
+    "subsequent editing still explicitly focuses the field",
+  );
+  unfocused.unmount();
+
+  const inline = harness();
+  const submitted = [];
+  const committed = [];
+  let inlineField;
+  inline.render({
+    value: String.raw`\int_3^41\,\mathrm{d}`,
+    onChange: (value) => committed.push(value),
+    onSubmit: () => submitted.push(inlineField.value),
+  });
+  await flush();
+  inlineField = inline.fields[0];
+  inlineField.mode = "latex";
+  const commandEnter = new Event("keydown", { cancelable: true });
+  Object.defineProperty(commandEnter, "key", { value: "Enter" });
+  inlineField.dispatchEvent(commandEnter);
+  assert.equal(
+    submitted.length,
+    0,
+    "Temporary LaTeX Return must not submit incomplete mathematical source",
+  );
+  assert.equal(
+    commandEnter.defaultPrevented,
+    false,
+    "Return remains available to the vendor command completer",
+  );
+
+  const vendorSource = fs.readFileSync(
+    new URL("../node_modules/mathlive/mathlive.mjs", import.meta.url),
+    "utf8",
+  );
+  const vendorAst = ts.createSourceFile(
+    "mathlive.mjs",
+    vendorSource,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  let complete;
+  const commitKeys = [];
+  function inspectVendor(node) {
+    if (ts.isFunctionDeclaration(node) && node.name?.text === "complete")
+      complete = node.getText(vendorAst);
+    if (ts.isObjectLiteralExpression(node)) {
+      const properties = new Map(
+        node.properties
+          .filter(ts.isPropertyAssignment)
+          .map((property) => [
+            property.name.getText(vendorAst),
+            property.initializer,
+          ]),
+      );
+      if (
+        properties.get("ifMode")?.getText(vendorAst) === '"latex"' &&
+        properties.get("command")?.getText(vendorAst) ===
+          '["complete", "accept-all"]'
+      )
+        commitKeys.push(properties.get("key").text);
+    }
+    ts.forEachChild(node, inspectVendor);
+  }
+  inspectVendor(vendorAst);
+  assert(commitKeys.includes("[Enter]") && commitKeys.includes("[Return]"));
+  assert(complete);
+  const group = { leftSibling: {}, parent: { removeChild() {} } };
+  const commandBody = [...String.raw`\theta`].map((value) => ({ value }));
+  let insertion;
+  const pinnedComplete = new Function(
+    "environment",
+    `with(environment){${complete};return complete;}`,
+  )({
+    hideSuggestionPopover() {},
+    getLatexGroup: () => group,
+    getLatexGroupBody: () => commandBody,
+    __spreadValues: Object.assign,
+    computeInsertStyle: () => ({}),
+    ModeEditor: {
+      insert(model, latex, options) {
+        insertion = { latex, options };
+        inlineField.value += latex;
+        inlineField.dispatchEvent(new Event("input"));
+      },
+    },
+  });
+  assert.equal(
+    pinnedComplete(
+      {
+        model: { offsetOf: () => 0, announce() {} },
+        switchMode: (mode) => {
+          inlineField.mode = mode;
+        },
+        snapshot() {},
+        styleBias: "none",
+      },
+      "accept-all",
+    ),
+    true,
+  );
+  assert.equal(insertion.latex, String.raw`\theta`);
+  assert.equal(insertion.options.selectionMode, "placeholder");
+  assert.equal(inlineField.mode, "math");
+  assert.equal(committed.at(-1), String.raw`\int_3^41\,\mathrm{d}\theta`);
+  // The vendor keyboard sink consumes completion in capture phase, before the
+  // host's bubbling handler sees the same Enter with the field back in math mode.
+  commandEnter.preventDefault();
+  inlineField.dispatchEvent(commandEnter);
+  assert.equal(
+    submitted.length,
+    0,
+    "Vendor-consumed completion Enter must not calculate the stale React draft",
+  );
+  const calculateEnter = new Event("keydown", { cancelable: true });
+  Object.defineProperty(calculateEnter, "key", { value: "Enter" });
+  inlineField.dispatchEvent(calculateEnter);
+  assert.deepEqual(
+    submitted,
+    [inlineField.value],
+    "A subsequent math-mode Enter submits the completed source once",
+  );
+  assert.equal(calculateEnter.defaultPrevented, true);
+  inline.unmount();
+
+  const retry = harness({ failImport: true });
+  const props = { value: "x^2", onChange() {} };
+  retry.render(props);
+  await flush();
+  const failed = retry.render(props);
+  const button = nodes(
+    failed,
+    (node) => node.type === "button" && node.props.children === "Retry editor",
+  )[0];
+  assert(button, "failed import must expose retry");
+  button.props.onClick();
+  retry.render({ ...props, value: "x^3" });
+  await flush();
+  assert.equal(retry.fields[0].value, "x^3", "retry retains latest expression");
+  retry.unmount();
+  assert.equal(
+    menuMediaListeners.size,
+    0,
+    "retry cleanup removes phone-menu listener",
+  );
+  console.log("Math editor lifecycle and selection regressions passed");
+} finally {
+  if (priorMatchMedia === undefined) delete globalThis.matchMedia;
+  else globalThis.matchMedia = priorMatchMedia;
+  if (priorWindow === undefined) delete globalThis.window;
+  else globalThis.window = priorWindow;
+}

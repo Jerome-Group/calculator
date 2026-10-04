@@ -21,6 +21,22 @@ const initial = (name = "initial") => ({
     { id: "b", name, definitions: [], history: [], graphs: [], revision: 0 },
   ],
 });
+const largeWorkspace = (name, count = 16) => {
+  const state = initial(name);
+  state.notebooks[0].history = Array.from({ length: count }, (_, i) => ({
+    id: `e${i}`,
+    operation: "evaluate",
+    input: "1",
+    mode: "text",
+    params: {},
+    settings: state.settings,
+    definitions: [],
+    revision: 0,
+    time: 1,
+    result: { status: "exact", text: "X".repeat(80000), latex: "1", notes: [] },
+  }));
+  return state;
+};
 const storage = (values) => ({
   getItem: (key) => values.get(key) ?? null,
   setItem: (key, value) => values.set(key, String(value)),
@@ -30,16 +46,31 @@ const storage = (values) => ({
     return values.size;
   },
 });
-async function tab(name, values, server) {
+async function tab(name, values, server, rewriteStorageWarnings = false) {
+  const listeners = {},
+    messages = [];
   const context = vm.createContext({
     console,
-    crypto: webcrypto,
+    crypto: server.digest
+      ? {
+          randomUUID: webcrypto.randomUUID.bind(webcrypto),
+          getRandomValues: webcrypto.getRandomValues.bind(webcrypto),
+          subtle: { digest: server.digest },
+        }
+      : webcrypto,
     Response,
     Request,
     URL,
     AbortController,
-    setTimeout,
-    clearTimeout,
+    TextEncoder,
+    setTimeout: server.clock
+      ? server.clock.setTimeout
+      : (...args) => {
+          const timer = setTimeout(...args);
+          timer.unref();
+          return timer;
+        },
+    clearTimeout: server.clock ? server.clock.clearTimeout : clearTimeout,
     queueMicrotask,
     CustomEvent: class {
       constructor(type, options) {
@@ -47,12 +78,19 @@ async function tab(name, values, server) {
         this.detail = options.detail;
       }
     },
-    window: { dispatchEvent() {}, addEventListener() {} },
+    window: {
+      dispatchEvent(event) {
+        messages.push(event.detail);
+      },
+      addEventListener(type, callback) {
+        listeners[type] = callback;
+      },
+    },
     navigator: { onLine: true, serviceWorker: {} },
     localStorage: storage(values),
     sessionStorage: storage(new Map()),
     fetch: async (_url, options) => {
-      if (!options?.method && server.get) return await server.get();
+      if (!options?.method && server.get) return await server.get(options);
       if (!options?.method)
         return Response.json(
           server.status === 200
@@ -69,19 +107,52 @@ async function tab(name, values, server) {
               },
           { status: server.status },
         );
-      return await new Promise((resolve) =>
+      return await new Promise((resolve, reject) => {
+        const signal = options.signal;
+        const aborted = () => {
+          const error = Error("The save was aborted");
+          error.name = "AbortError";
+          reject(error);
+        };
+        if (signal?.aborted && !server.ignoreAbort) {
+          aborted();
+          return;
+        }
+        if (!server.ignoreAbort)
+          signal?.addEventListener("abort", aborted, { once: true });
         server.calls.push({
           tab: name,
           body: JSON.parse(options.body),
-          resolve,
-        }),
-      );
+          resolve: (response) => {
+            signal?.removeEventListener("abort", aborted);
+            resolve(response);
+          },
+          signal,
+        });
+      });
     },
   });
   const modules = {};
-  for (const file of ["sync", "storage", "types", "drafts"])
+  for (const file of [
+    "sync",
+    "storage",
+    "types",
+    "drafts",
+    "result-validation",
+    "workspace-request",
+  ])
     modules[file] = new vm.SourceTextModule(
-      source(`lib/calculator/${file}.ts`),
+      file === "storage" && rewriteStorageWarnings
+        ? source(`lib/calculator/${file}.ts`)
+            .replace(
+              "Browser storage is unavailable. Export a backup before closing.",
+              "Device reads failed. Keep this session open.",
+            )
+            .replace(
+              "Saved data could not be read. It is preserved; automatic saving is paused.",
+              "",
+            )
+        : source(`lib/calculator/${file}.ts`),
       { context, identifier: file },
     );
   await modules.sync.link((specifier) => modules[specifier.replace("./", "")]);
@@ -90,6 +161,11 @@ async function tab(name, values, server) {
     sync: modules.sync.namespace,
     storage: modules.storage.namespace,
     drafts: modules.drafts.namespace,
+    trigger: (type) => listeners[type]?.(),
+    setOnline: (value) => {
+      context.navigator.onLine = value;
+    },
+    messages,
   };
 }
 const server = () => ({
@@ -170,18 +246,20 @@ await check(
 );
 
 await check(
-  "stale account response drains the new account's pending save",
+  "stale account completion cannot release the new owner's active save",
   async () => {
     const values = new Map(),
       cloud = server(),
       a = await tab("A", values, cloud);
     await a.sync.initializeAccount();
+    cloud.ignoreAbort = true;
     a.storage.persist(initial("account A"));
     a.sync.forgetAccount();
     cloud.account = "b";
     await a.sync.initializeAccount();
     a.storage.persist(initial("account B"));
-    assert.equal(cloud.calls.length, 1);
+    assert.equal(cloud.calls.length, 2);
+    assert.equal(cloud.calls[0].signal.aborted, true);
     cloud.calls[0].resolve(Response.json({ revision: 2 }));
     await flush();
     assert.equal(cloud.calls.length, 2, "New account's save remained stuck");
@@ -191,7 +269,17 @@ await check(
       "1",
       "Stale save modified account A metadata",
     );
+    a.storage.persist(initial("account B queued"));
+    assert.equal(
+      cloud.calls.length,
+      2,
+      "Stale A completion released B's active request",
+    );
     cloud.calls[1].resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert.equal(cloud.calls.length, 3);
+    assert.equal(cloud.calls[2].body.revision, 2);
+    cloud.calls[2].resolve(Response.json({ revision: 3 }));
     await flush();
   },
 );
@@ -256,6 +344,7 @@ await check(
       crypto: webcrypto,
       Uint8Array,
       AbortController,
+      TextEncoder,
       fetch: async (url) =>
         url === "/offline-manifest.json"
           ? Response.json({
@@ -380,6 +469,7 @@ await check(
       crypto: webcrypto,
       Uint8Array,
       AbortController,
+      TextEncoder,
       fetch: async (url) =>
         url === "/offline-manifest.json"
           ? Response.json({
@@ -436,11 +526,19 @@ await check(
       Response,
       Request,
       TextDecoder,
+      TextEncoder,
       Uint8Array,
       URL,
     });
     const modules = {};
-    for (const file of ["sync", "storage", "types", "drafts"])
+    for (const file of [
+      "sync",
+      "storage",
+      "types",
+      "drafts",
+      "result-validation",
+      "workspace-request",
+    ])
       modules[file] = new vm.SourceTextModule(
         source(`lib/calculator/${file}.ts`),
         { context, identifier: file },
@@ -470,7 +568,9 @@ await check(
           ? modules.auth
           : specifier === "@/lib/calculator/storage"
             ? modules.storage
-            : modules[specifier.replace("./", "")],
+            : modules[
+                specifier.replace("@/lib/calculator/", "").replace("./", "")
+              ],
     );
     await modules.route.evaluate();
     const api = modules.route.namespace;
@@ -493,6 +593,7 @@ await check(
     assert.equal(valid.status, 503);
     assert.equal(valid.headers.get("Cache-Control"), "private, no-store");
     assert.equal((await api.PUT(request("{bad"))).status, 400);
+    assert.equal((await api.PUT(request("x".repeat(1_800_001)))).status, 413);
     current = null;
     assert.equal((await api.GET()).status, 401);
     assert.equal(
@@ -705,5 +806,986 @@ await check(
   },
 );
 
+await check(
+  "an unsettled old-account save cannot block the current account",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      a = await tab("A", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("A pending save"));
+    a.sync.forgetAccount();
+    cloud.account = "b";
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("B pending save"));
+    await flush();
+    assert.equal(
+      cloud.calls.length,
+      2,
+      "Account B was blocked by account A's unsettled fetch",
+    );
+    assert.equal(cloud.calls[1].body.account, "b");
+    assert.equal(
+      a.drafts.readDrafts("a").length,
+      1,
+      "Account A's unsynced draft disappeared",
+    );
+    cloud.calls[1].resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert.equal(values.get("dirty:b"), undefined);
+  },
+);
+for (const failure of ["reads", "writes"]) {
+  await check(
+    `server-verified identity opens in memory when storage ${failure} fail`,
+    async () => {
+      class UnavailableStorage extends Map {
+        get(key) {
+          if (failure === "reads") throw Error("Browser storage unavailable");
+          return super.get(key);
+        }
+        set(key, value) {
+          if (failure === "writes") throw Error("Browser storage unavailable");
+          return super.set(key, value);
+        }
+      }
+      const cloud = server(),
+        a = await tab(failure, new UnavailableStorage(), cloud);
+      const identity = await a.sync.initializeAccount();
+      assert.equal(identity.id, "a");
+      assert.equal(a.sync.currentAccount(), "a");
+      assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "initial");
+      assert.equal(cloud.calls.length, 0);
+      const loaded = a.storage.loadState();
+      if (failure === "reads") {
+        assert.equal(loaded.readable, false);
+        assert.equal(loaded.state.notebooks[0].name, "initial");
+        assert.match(loaded.warning, /storage is unavailable/);
+      } else {
+        assert.equal(loaded.readable, true);
+        assert.equal(loaded.state, null);
+        assert.equal(loaded.warning, "");
+        assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "initial");
+      }
+      assert.throws(
+        () => a.storage.persist(initial("memory edit")),
+        /storage unavailable/,
+      );
+      assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "memory edit");
+      assert.equal(
+        cloud.calls.length,
+        1,
+        "Storage failure should retain authenticated cloud sync",
+      );
+      cloud.calls[0].resolve(Response.json({ revision: 2 }));
+      await flush();
+      assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "memory edit");
+      a.sync.forgetAccount();
+      assert.equal(a.sync.sessionWorkspace(), null);
+    },
+  );
+}
+
+await check(
+  "a timed-out save preserves the draft and can retry on focus",
+  async () => {
+    const callbacks = new Map();
+    let nextTimer = 0;
+    const cloud = server();
+    cloud.clock = {
+      setTimeout(callback, delay) {
+        assert.equal(delay, 15000);
+        callbacks.set(++nextTimer, callback);
+        return nextTimer;
+      },
+      clearTimeout(timer) {
+        callbacks.delete(timer);
+      },
+    };
+    const values = new Map(),
+      a = await tab("deadline", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("timed out"));
+    assert.equal(cloud.calls.length, 1);
+    [...callbacks.values()][0]();
+    await flush();
+    assert.equal(cloud.calls[0].signal.aborted, true);
+    assert.equal(a.drafts.readDrafts("a").length, 1);
+    assert(a.messages.some((message) => message.includes("timed out")));
+    a.trigger("focus");
+    assert.equal(cloud.calls.length, 2);
+    cloud.calls[1].resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert.equal(a.drafts.readDrafts("a").length, 0);
+    assert.equal(callbacks.size, 0);
+  },
+);
+await check(
+  "quota failure keeps recovered work in RAM and durable recovery drafts",
+  async () => {
+    class QuotaStorage extends Map {
+      fail = false;
+      set(key, value) {
+        if (this.fail) throw Error("Quota exceeded");
+        return super.set(key, value);
+      }
+    }
+    const values = new QuotaStorage(),
+      cloud = server(),
+      a = await tab("quota", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("unsynced local"));
+    values.fail = true;
+    cloud.state = initial("remote workspace");
+    await a.sync.initializeAccount();
+    assert.equal(a.sync.currentAccount(), "a");
+    assert(
+      a.sync
+        .sessionWorkspace()
+        .notebooks.some((book) => book.name.includes("unsynced local")),
+    );
+    assert.equal(
+      a.drafts.readDrafts("a").length,
+      1,
+      "Durable draft erased when merged cache could not be written",
+    );
+    a.sync.forgetAccount();
+    assert.equal(a.sync.sessionWorkspace(), null);
+  },
+);
+await check(
+  "in-memory work never crosses owners and cannot authorize unknown offline identity",
+  async () => {
+    const cloud = server(),
+      values = new Map(),
+      a = await tab("owners", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("private A"));
+    cloud.account = "b";
+    cloud.state = initial("private B");
+    await a.sync.initializeAccount();
+    assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "private B");
+    assert(!JSON.stringify(a.sync.sessionWorkspace()).includes("private A"));
+    a.sync.forgetAccount();
+    a.setOnline(false);
+    await assert.rejects(a.sync.initializeAccount(), /Connect and sign in/);
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(a.sync.sessionWorkspace(), null);
+  },
+);
+await check(
+  "storage faults cannot bypass validation of a verified remote workspace",
+  async () => {
+    class FaultStorage extends Map {
+      get() {
+        throw Error("storage blocked");
+      }
+      set() {
+        throw Error("storage blocked");
+      }
+    }
+    const cloud = server();
+    cloud.state = { version: 1, notebooks: [] };
+    const a = await tab("invalid", new FaultStorage(), cloud);
+    await assert.rejects(
+      a.sync.initializeAccount(),
+      /supported Calculator backup/,
+    );
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(a.sync.sessionWorkspace(), null);
+  },
+);
+
+await check(
+  "unreadable storage is never overwritten regardless of warning wording",
+  async () => {
+    class Unreadable extends Map {
+      blocked = false;
+      get(key) {
+        if (this.blocked) throw Error("Reads unavailable");
+        return super.get(key);
+      }
+    }
+    const values = new Unreadable(),
+      cloud = server(),
+      a = await tab("reads preserved", values, cloud, true);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("unreadable private work"));
+    const text = values.get("calculator.workspace.v1:a"),
+      base = values.get("revision:a");
+    values.blocked = true;
+    const inaccessible = a.storage.loadState();
+    assert.equal(inaccessible.readable, false);
+    assert.equal(
+      inaccessible.state.notebooks[0].name,
+      "unreadable private work",
+    );
+    assert.equal(
+      inaccessible.warning,
+      "Device reads failed. Keep this session open.",
+    );
+    cloud.state = initial("verified cloud");
+    cloud.revision = 5;
+    await a.sync.initializeAccount();
+    assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "verified cloud");
+    values.blocked = false;
+    assert.equal(values.get("calculator.workspace.v1:a"), text);
+    assert.equal(values.get("revision:a"), base);
+    assert.equal(a.drafts.readDrafts("a").length, 1);
+    a.sync.forgetAccount();
+  },
+);
+
+await check(
+  "verified cloud hydration preserves malformed scoped bytes and unscoped legacy data",
+  async () => {
+    const malformed = '{"schema":1,"notebooks":broken',
+      legacy = JSON.stringify(initial("unowned legacy work")),
+      values = new Map([
+        ["calculator.workspace.v1:a", malformed],
+        ["calculator.workspace.v1", legacy],
+        ["revision:a", "3"],
+        ["dirty:a", "1"],
+      ]),
+      cloud = server();
+    cloud.state = initial("verified remote work");
+    cloud.revision = 7;
+    const a = await tab("malformed preserved", values, cloud, true);
+    await a.sync.initializeAccount();
+    assert.equal(
+      a.sync.sessionWorkspace().notebooks[0].name,
+      "verified remote work",
+    );
+    const loaded = a.storage.loadState();
+    assert.equal(loaded.state, null);
+    assert.equal(loaded.warning, "");
+    assert.equal(loaded.readable, false);
+    assert.equal(values.get("calculator.workspace.v1:a"), malformed);
+    assert.equal(values.get("revision:a"), "3");
+    assert.equal(values.get("dirty:a"), "1");
+    assert.equal(values.get("calculator.workspace.v1"), legacy);
+    assert.equal(cloud.calls.length, 0);
+    assert.throws(
+      () => a.storage.persist(initial("safe current edit")),
+      /unreadable device save is preserved/,
+    );
+    assert.equal(values.get("calculator.workspace.v1:a"), malformed);
+    assert.equal(values.get("revision:a"), "3");
+    assert.equal(values.get("calculator.workspace.v1"), legacy);
+    assert.equal(
+      a.sync.sessionWorkspace().notebooks[0].name,
+      "safe current edit",
+    );
+    assert.equal(cloud.calls.length, 1);
+    cloud.calls[0].resolve(Response.json({ revision: 8 }));
+    await flush();
+    assert.equal(values.get("calculator.workspace.v1:a"), malformed);
+    assert.equal(values.get("revision:a"), "3");
+    a.sync.forgetAccount();
+    assert.equal(a.sync.sessionWorkspace(), null);
+  },
+);
+
+await check(
+  "volatile quota work warns until its exact latest state is cloud-acknowledged",
+  async () => {
+    class Quota extends Map {
+      set() {
+        throw Error("Quota exceeded");
+      }
+    }
+    const cloud = server(),
+      a = await tab("volatile quota", new Quota(), cloud);
+    await a.sync.initializeAccount();
+    assert.equal(a.sync.hasVolatileWorkspace(), false);
+    assert.throws(() => a.storage.persist(initial("volatile42")), /Quota/);
+    assert.equal(a.sync.hasVolatileWorkspace(), true);
+    assert.throws(() => a.storage.persist(initial("volatile43")), /Quota/);
+    cloud.calls[0].resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert.equal(
+      a.sync.hasVolatileWorkspace(),
+      true,
+      "An older acknowledgement cannot protect the latest edit",
+    );
+    assert.equal(cloud.calls.length, 2);
+    assert.equal(a.messages.at(-1), "Saving your latest changes…");
+    cloud.calls[1].resolve(Response.json({ revision: 3 }));
+    await flush();
+    assert.equal(a.sync.hasVolatileWorkspace(), false);
+    assert.equal(a.messages.at(-1), "Saved to your account");
+    a.sync.forgetAccount();
+    assert.equal(a.sync.hasVolatileWorkspace(), false);
+  },
+);
+await check(
+  "durable offline workspace or owned draft needs no volatile warning",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      a = await tab("durable offline", values, cloud);
+    await a.sync.initializeAccount();
+    a.setOnline(false);
+    a.storage.persist(initial("durable edit"));
+    assert.equal(a.sync.hasVolatileWorkspace(), false);
+    values.delete("calculator.workspace.v1:a");
+    assert.equal(
+      a.sync.hasVolatileWorkspace(),
+      false,
+      "The valid writer draft protects offline edits",
+    );
+    for (const key of [...values.keys()])
+      if (key.startsWith("calculator.pending.v1:a:")) values.delete(key);
+    values.set(
+      "calculator.workspace.v1:b",
+      JSON.stringify(initial("durable edit")),
+    );
+    assert.equal(
+      a.sync.hasVolatileWorkspace(),
+      true,
+      "Another owner's copy cannot protect this account",
+    );
+    a.sync.forgetAccount();
+  },
+);
+
+await check(
+  "successful durable writer save stays safe when reads alone are unavailable",
+  async () => {
+    class ReadFailure extends Map {
+      get() {
+        throw Error("Reads unavailable");
+      }
+    }
+    const cloud = server(),
+      values = new ReadFailure(),
+      a = await tab("durable unreadable", values, cloud);
+    await a.sync.initializeAccount();
+    assert.throws(
+      () => a.storage.persist(initial("durable writer")),
+      /Reads unavailable/,
+    );
+    assert.equal(cloud.calls.length, 1);
+    assert.equal(a.sync.hasVolatileWorkspace(), false);
+    a.sync.forgetAccount();
+  },
+);
+
+await check(
+  "byte-limited recovery preserves the original draft, usable remote work and later fitting copies",
+  async () => {
+    const local = largeWorkspace("Local"),
+      remote = largeWorkspace("Remote"),
+      original = JSON.stringify({ revision: 0, state: local });
+    const key = "calculator.pending.v1:a:original";
+    const values = new Map([
+        ["calculator.workspace.v1:a", JSON.stringify(local)],
+        ["dirty:a", "1"],
+        [key, original],
+      ]),
+      cloud = server();
+    cloud.state = remote;
+    const a = await tab("byte-recovery", values, cloud);
+    await a.sync.initializeAccount();
+    const recovered = a.sync.sessionWorkspace();
+    assert.equal(
+      recovered.notebooks.length,
+      1,
+      "Oversized draft was merged into cloud work",
+    );
+    assert.equal(recovered.notebooks[0].name, "Remote");
+    assert.equal(
+      values.get(key),
+      original,
+      "Original oversized draft bytes changed",
+    );
+    const edited = JSON.parse(JSON.stringify(recovered));
+    edited.notebooks[0].history.push({
+      ...edited.notebooks[0].history[0],
+      id: "new42",
+      result: { status: "exact", text: "42", latex: "42", notes: [] },
+    });
+    a.storage.persist(edited);
+    assert.equal(cloud.calls.length, 1);
+    assert(
+      new TextEncoder().encode(JSON.stringify(cloud.calls[0].body))
+        .byteLength <= 1_800_000,
+    );
+    cloud.state = cloud.calls[0].body.state;
+    cloud.revision = 2;
+    cloud.calls[0].resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert(a.messages.includes("Saved to your account"));
+    assert.equal(
+      values.get(key),
+      original,
+      "New remote edit discarded the separate recovery draft",
+    );
+    values.set(
+      "calculator.pending.v1:a:small",
+      JSON.stringify({ revision: 2, state: initial("Small later") }),
+    );
+    await a.sync.initializeAccount();
+    const next = a.sync.sessionWorkspace();
+    assert.equal(next.notebooks.length, 2);
+    assert(next.notebooks.some((book) => book.name.includes("Small later")));
+    assert(
+      next.notebooks.some((book) =>
+        book.history.some((entry) => entry.id === "new42"),
+      ),
+    );
+    assert.equal(values.get(key), original);
+    const explicit = largeWorkspace("Large local", 25);
+    a.storage.persist(explicit);
+    assert.equal(
+      cloud.calls.length,
+      1,
+      "Explicit oversized local workspace reached the API",
+    );
+    assert(
+      a.messages.some((message) =>
+        message.includes("Cloud save exceeds 1.8 MB"),
+      ),
+    );
+    assert.equal(
+      JSON.parse(values.get("calculator.workspace.v1:a")).notebooks[0].name,
+      "Large local",
+    );
+    assert(
+      a.drafts
+        .readDrafts("a")
+        .some((draft) => draft.state.notebooks[0].name === "Large local"),
+    );
+    assert.equal(values.get(key), original);
+  },
+);
+await check(
+  "unpreserved oversized local work is never overwritten by hydration",
+  async () => {
+    class NoDraftSpace extends Map {
+      set(key, value) {
+        if (key.startsWith("calculator.pending.v1:"))
+          throw Error("Draft quota exceeded");
+        return super.set(key, value);
+      }
+    }
+    const local = largeWorkspace("Only local copy"),
+      raw = JSON.stringify(local);
+    const values = new NoDraftSpace([
+        ["calculator.workspace.v1:a", raw],
+        ["dirty:a", "1"],
+      ]),
+      cloud = server();
+    cloud.state = largeWorkspace("Remote");
+    const a = await tab("no-draft-space", values, cloud);
+    await a.sync.initializeAccount();
+    assert.equal(
+      values.get("calculator.workspace.v1:a"),
+      raw,
+      "Only original was overwritten when draft preservation failed",
+    );
+    assert.equal(
+      a.sync.sessionWorkspace().notebooks[0].name,
+      "Only local copy",
+    );
+  },
+);
+await check(
+  "held initialization GET aborts and opens only the cached owner",
+  async () => {
+    const values = new Map([
+      ["calculator.signed-in-account", JSON.stringify({ id: "a", name: "a" })],
+      [
+        "calculator.workspace.v1:a",
+        JSON.stringify(initial("Offline original")),
+      ],
+    ]);
+    const cloud = server(),
+      timers = new Map();
+    cloud.clock = {
+      setTimeout(fn, ms) {
+        timers.set(fn, ms);
+        return fn;
+      },
+      clearTimeout(fn) {
+        timers.delete(fn);
+      },
+    };
+    let signal;
+    cloud.get = (options) => {
+      signal = options.signal;
+      return new Promise(() => {});
+    };
+    const a = await tab("held-get", values, cloud);
+    const initializing = a.sync.initializeAccount();
+    await flush();
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(timers.size, 1);
+    assert.equal([...timers.values()][0], 15000);
+    [...timers.keys()][0]();
+    assert.equal((await initializing).id, "a");
+    assert.equal(signal.aborted, true);
+    assert.equal(timers.size, 0);
+    assert.equal(
+      a.sync.sessionWorkspace().notebooks[0].name,
+      "Offline original",
+    );
+    assert.equal(
+      cloud.calls.length,
+      0,
+      "Opening a cached workspace wrote cloud data",
+    );
+  },
+);
+await check(
+  "held GET cannot create an unknown offline identity or act on late data",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      timers = new Map();
+    cloud.clock = {
+      setTimeout(fn) {
+        timers.set(fn, true);
+        return fn;
+      },
+      clearTimeout(fn) {
+        timers.delete(fn);
+      },
+    };
+    let release;
+    cloud.get = () =>
+      new Promise((resolve) => {
+        release = resolve;
+      });
+    const a = await tab("unknown-held-get", values, cloud);
+    const initializing = a.sync.initializeAccount();
+    const outcome = initializing.then(
+      (value) => ({ value }),
+      (error) => ({ error }),
+    );
+    await flush();
+    [...timers.keys()][0]();
+    assert.match((await outcome).error.message, /timed out/);
+    release(
+      Response.json({
+        user: { id: "b", name: "b" },
+        state: initial("Private B"),
+        revision: 1,
+      }),
+    );
+    await flush();
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(a.sync.sessionWorkspace(), null);
+    assert.equal(values.size, 0);
+    assert.equal(cloud.calls.length, 0);
+  },
+);
+await check(
+  "initialization body deadline preserves authentication and stale-owner checks",
+  async () => {
+    for (const status of [200, 401, 503]) {
+      const values = new Map([
+        [
+          "calculator.signed-in-account",
+          JSON.stringify({ id: "a", name: "a" }),
+        ],
+        ["calculator.workspace.v1:a", JSON.stringify(initial("Private A"))],
+      ]);
+      const cloud = server(),
+        timers = new Map();
+      cloud.clock = {
+        setTimeout(fn) {
+          timers.set(fn, true);
+          return fn;
+        },
+        clearTimeout(fn) {
+          timers.delete(fn);
+        },
+      };
+      let signal;
+      cloud.get = async (options) => {
+        signal = options.signal;
+        return {
+          status,
+          ok: status === 200,
+          json: () => new Promise(() => {}),
+        };
+      };
+      const a = await tab("held-body", values, cloud);
+      const initializing = a.sync.initializeAccount();
+      // Attach before the immediate 401 rejection to avoid an unhandled promise.
+      const outcome = initializing.then(
+        (value) => ({ value }),
+        (error) => ({ error }),
+      );
+      await flush();
+      if (status !== 401) [...timers.keys()][0]();
+      const result = await outcome;
+      if (status === 200) assert.equal(result.value.id, "a");
+      else assert(result.error);
+      if (status === 401) {
+        assert.equal(a.sync.currentAccount(), "");
+        assert.equal(a.sync.sessionWorkspace(), null);
+        assert.equal(values.has("calculator.signed-in-account"), false);
+      } else assert(signal.aborted);
+      assert.equal(timers.size, 0);
+      assert.equal(cloud.calls.length, 0);
+    }
+    const values = new Map([
+      ["calculator.signed-in-account", JSON.stringify({ id: "a", name: "a" })],
+    ]);
+    const cloud = server(),
+      timers = new Map();
+    cloud.clock = {
+      setTimeout(fn) {
+        timers.set(fn, true);
+        return fn;
+      },
+      clearTimeout(fn) {
+        timers.delete(fn);
+      },
+    };
+    cloud.get = () => new Promise(() => {});
+    const a = await tab("stale-held-get", values, cloud);
+    const initializing = a.sync.initializeAccount();
+    const outcome = initializing.then(
+      (value) => ({ value }),
+      (error) => ({ error }),
+    );
+    await flush();
+    a.sync.forgetAccount();
+    [...timers.keys()][0]();
+    assert.match((await outcome).error.message, /Account changed/);
+    assert.equal(a.sync.currentAccount(), "");
+    assert.equal(a.sync.sessionWorkspace(), null);
+  },
+);
+class PrimaryQuotaStorage extends Map {
+  set(key, value) {
+    if (key === "calculator.workspace.v1:a") throw Error("Quota exceeded");
+    return super.set(key, value);
+  }
+}
+const recoveryFixture = () => {
+  const original = initial("retained original");
+  original.notebooks = Array.from({ length: 13 }, (_, i) => ({
+    ...initial("original " + i).notebooks[0],
+    id: "original-" + i,
+    definitions: [
+      {
+        id: "definition-" + i,
+        name: "a",
+        expression: i + "+1",
+        kind: "expression",
+        updated: 1,
+      },
+    ],
+  }));
+  original.active = original.notebooks[0].id;
+  const cloud = server();
+  cloud.state = structuredClone(original);
+  cloud.state.notebooks.forEach((book, i) => {
+    book.id = "legacy-" + i;
+    book.name += " (offline copy)";
+  });
+  cloud.state.active = cloud.state.notebooks[0].id;
+  const values = new PrimaryQuotaStorage();
+  Map.prototype.set.call(
+    values,
+    "calculator.workspace.v1:a",
+    JSON.stringify(cloud.state),
+  );
+  values.set("dirty:a", "1");
+  values.set(
+    "calculator.pending.v1:a:retained",
+    JSON.stringify({ revision: 0, state: original }),
+  );
+  return { original, cloud, values };
+};
+await check(
+  "quota recovery stabilizes across reloads and retires exact inputs only after cloud acknowledgement",
+  async () => {
+    const { cloud, values } = recoveryFixture();
+    for (let iteration = 0; iteration < 3; iteration++) {
+      const a = await tab("quota-reload-" + iteration, values, cloud);
+      await a.sync.initializeAccount();
+      const recovered = a.sync.sessionWorkspace();
+      assert.equal(recovered.notebooks.length, 26);
+      assert.equal(
+        recovered.notebooks.filter((book) => book.id.startsWith("legacy-"))
+          .length,
+        13,
+        "Legacy notebooks must remain intact",
+      );
+      assert.throws(() => a.storage.persist(recovered), /Quota/);
+      const call = cloud.calls.at(-1);
+      cloud.state = structuredClone(call.body.state);
+      cloud.revision++;
+      call.resolve(Response.json({ revision: cloud.revision }));
+      await flush();
+      assert.equal(values.has("calculator.pending.v1:a:retained"), false);
+      assert.notEqual(
+        values.get("dirty:a"),
+        "1",
+        "Stale incorporated primary remained dirty",
+      );
+      assert.equal(
+        JSON.parse(values.get("calculator.workspace.v1:a")).notebooks.length,
+        13,
+      );
+      assert.equal(a.messages.at(-1), "Saved to your account");
+    }
+  },
+);
+await check(
+  "failed recovery cloud save retains inputs and stable copies across another mount",
+  async () => {
+    const { cloud, values } = recoveryFixture();
+    const a = await tab("failed-recovery", values, cloud);
+    await a.sync.initializeAccount();
+    const recovered = a.sync.sessionWorkspace();
+    assert.throws(() => a.storage.persist(recovered), /Quota/);
+    cloud.calls
+      .at(-1)
+      .resolve(Response.json({ error: "Unavailable" }, { status: 503 }));
+    await flush();
+    assert(values.has("calculator.pending.v1:a:retained"));
+    assert.equal(values.get("dirty:a"), "1");
+    const b = await tab("failed-recovery-reopen", values, cloud);
+    await b.sync.initializeAccount();
+    assert.equal(b.sync.sessionWorkspace().notebooks.length, 26);
+    assert.deepEqual(
+      Array.from(b.sync.sessionWorkspace().notebooks, (book) => book.id),
+      Array.from(recovered.notebooks, (book) => book.id),
+    );
+  },
+);
+await check(
+  "recovery acknowledgement cannot erase a concurrently replaced draft or primary",
+  async () => {
+    const { cloud, values, original } = recoveryFixture();
+    const a = await tab("concurrent-recovery", values, cloud);
+    await a.sync.initializeAccount();
+    assert.throws(() => a.storage.persist(a.sync.sessionWorkspace()), /Quota/);
+    const changed = structuredClone(original);
+    changed.notebooks[0].definitions[0].expression =
+      "different mathematical version";
+    const changedDraft = JSON.stringify({ revision: 1, state: changed });
+    values.set("calculator.pending.v1:a:retained", changedDraft);
+    Map.prototype.set.call(
+      values,
+      "calculator.workspace.v1:a",
+      JSON.stringify(changed),
+    );
+    cloud.state = structuredClone(cloud.calls.at(-1).body.state);
+    cloud.revision++;
+    cloud.calls.at(-1).resolve(Response.json({ revision: cloud.revision }));
+    await flush();
+    assert.equal(values.get("calculator.pending.v1:a:retained"), changedDraft);
+    assert.equal(values.get("dirty:a"), "1");
+    const b = await tab("changed-recovery", values, cloud);
+    await b.sync.initializeAccount();
+    assert(
+      b.sync
+        .sessionWorkspace()
+        .notebooks.some(
+          (book) =>
+            book.definitions[0]?.expression ===
+            "different mathematical version",
+        ),
+    );
+  },
+);
+await check(
+  "recovery identity preserves distinct source notebooks and versions, occupied IDs and account isolation",
+  async () => {
+    const cloud = server(),
+      values = new PrimaryQuotaStorage(),
+      a = await tab("recovery-identities", values, cloud);
+    const state = initial("same content");
+    const first = await a.drafts.recoveryNotebooks("a", state, []);
+    const repeat = await a.drafts.recoveryNotebooks("a", state, first);
+    assert.equal(repeat[0].id, first[0].id);
+    const otherOwner = await a.drafts.recoveryNotebooks("b", state, []);
+    assert.notEqual(otherOwner[0].id, first[0].id);
+    const distinct = structuredClone(state);
+    distinct.notebooks[0].id = "different-source";
+    distinct.active = "different-source";
+    assert.notEqual(
+      (await a.drafts.recoveryNotebooks("a", distinct, first))[0].id,
+      first[0].id,
+    );
+    const changedVersion = structuredClone(state);
+    changedVersion.notebooks[0].revision++;
+    changedVersion.notebooks[0].name = "changed source version";
+    assert.notEqual(
+      (await a.drafts.recoveryNotebooks("a", changedVersion, first))[0].id,
+      first[0].id,
+    );
+    const edited = structuredClone(first);
+    edited[0].name = "edited recovered notebook";
+    const collision = await a.drafts.recoveryNotebooks("a", state, edited);
+    assert.notEqual(collision[0].id, edited[0].id);
+    assert.equal(
+      (
+        await a.drafts.recoveryNotebooks("a", state, [...edited, ...collision])
+      )[0].id,
+      collision[0].id,
+    );
+    await a.sync.initializeAccount();
+    const draftKey = "calculator.pending.v1:a:old-owner";
+    values.set(draftKey, JSON.stringify({ revision: 0, state }));
+    await a.sync.initializeAccount();
+    a.sync.syncWorkspace(a.sync.sessionWorkspace());
+    const stale = cloud.calls.at(-1);
+    cloud.account = "b";
+    cloud.state = initial("owner B");
+    await a.sync.initializeAccount();
+    stale.resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert(
+      values.has(draftKey),
+      "Stale account acknowledgement retired private A recovery",
+    );
+    assert.equal(a.sync.currentAccount(), "b");
+    assert.equal(a.sync.sessionWorkspace().notebooks[0].name, "owner B");
+  },
+);
+
+await check(
+  "settings-only recovery versions remain durable instead of being certified by matching notebooks",
+  async () => {
+    for (const quota of [false, true]) {
+      const values = quota ? new PrimaryQuotaStorage() : new Map(),
+        cloud = server();
+      const changed = structuredClone(cloud.state);
+      changed.settings.angle = "deg";
+      const key = "calculator.pending.v1:a:settings-version";
+      const serialized = JSON.stringify({ revision: 0, state: changed });
+      values.set(key, serialized);
+      const a = await tab("settings-recovery-" + quota, values, cloud);
+      await a.sync.initializeAccount();
+      assert.equal(
+        values.get(key),
+        serialized,
+        "Notebook-only hydration discarded changed settings",
+      );
+      const recovered = a.sync.sessionWorkspace();
+      assert.equal(
+        recovered.settings.angle,
+        "rad",
+        "Existing cloud settings contract changed",
+      );
+      a.sync.syncWorkspace(recovered);
+      const call = cloud.calls.at(-1);
+      cloud.state = structuredClone(call.body.state);
+      cloud.revision++;
+      call.resolve(Response.json({ revision: cloud.revision }));
+      await flush();
+      assert.equal(
+        values.get(key),
+        serialized,
+        "Cloud acknowledgement with different settings erased original snapshot",
+      );
+      const b = await tab("settings-recovery-reload-" + quota, values, cloud);
+      await b.sync.initializeAccount();
+      assert.equal(
+        b.sync.sessionWorkspace().notebooks.length,
+        recovered.notebooks.length,
+      );
+    }
+  },
+);
+await check(
+  "authenticated A-to-B transition recovers B draft and acknowledges only B work",
+  async () => {
+    class BothOwnerQuota extends PrimaryQuotaStorage {
+      set(key, value) {
+        if (key === "calculator.workspace.v1:b") throw Error("Quota exceeded");
+        return super.set(key, value);
+      }
+    }
+    const values = new BothOwnerQuota(),
+      cloud = server(),
+      a = await tab("owner-transition-recovery", values, cloud);
+    await a.sync.initializeAccount();
+    const aKey = "calculator.pending.v1:a:kept",
+      bKey = "calculator.pending.v1:b:recovery";
+    const aDraft = JSON.stringify({
+      revision: 0,
+      state: initial("private A draft"),
+    });
+    values.set(aKey, aDraft);
+    values.set(
+      bKey,
+      JSON.stringify({ revision: 0, state: initial("private B draft") }),
+    );
+    cloud.account = "b";
+    cloud.state = initial("private B cloud");
+    await a.sync.initializeAccount();
+    const recovered = a.sync.sessionWorkspace();
+    assert.equal(a.sync.currentAccount(), "b");
+    assert.equal(recovered.notebooks.length, 2);
+    assert(
+      recovered.notebooks.some((book) =>
+        book.name.startsWith("private B draft"),
+      ),
+    );
+    assert(!JSON.stringify(recovered).includes("private A"));
+    assert.throws(() => a.storage.persist(recovered), /Quota/);
+    const call = cloud.calls.at(-1);
+    assert.equal(call.body.account, "b");
+    cloud.state = structuredClone(call.body.state);
+    cloud.revision++;
+    call.resolve(Response.json({ revision: cloud.revision }));
+    await flush();
+    assert.equal(values.has(bKey), false);
+    assert.equal(values.get(aKey), aDraft);
+  },
+);
+await check(
+  "concurrent C initialization during B recovery hash refuses stale B work and keeps its draft",
+  async () => {
+    const values = new Map(),
+      cloud = server();
+    const key = "calculator.pending.v1:b:interrupted",
+      draft = JSON.stringify({
+        revision: 0,
+        state: initial("private B draft"),
+      });
+    values.set(key, draft);
+    cloud.account = "b";
+    cloud.state = initial("private B cloud");
+    let release;
+    cloud.digest = (...args) =>
+      new Promise((resolve) => {
+        release = () => resolve(webcrypto.subtle.digest(...args));
+      });
+    const held = await tab("held-owner-recovery", values, cloud);
+    cloud.account = "a";
+    cloud.state = initial("private A cloud");
+    await held.sync.initializeAccount();
+    cloud.account = "b";
+    cloud.state = initial("private B cloud");
+    const recovering = held.sync.initializeAccount();
+    const outcome = recovering.then(
+      (value) => ({ value }),
+      (error) => ({ error }),
+    );
+    await flush();
+    assert(release, "B recovery never reached the held hash");
+    cloud.account = "c";
+    cloud.state = initial("private C cloud");
+    await held.sync.initializeAccount();
+    release();
+    assert.match((await outcome).error.message, /Account changed/);
+    assert.equal(held.sync.currentAccount(), "c");
+    assert.equal(
+      held.sync.sessionWorkspace().notebooks[0].name,
+      "private C cloud",
+    );
+    assert.equal(values.get(key), draft);
+  },
+);
 console.log(JSON.stringify(results, null, 2));
 if (results.some((result) => !result.passed)) process.exitCode = 1;

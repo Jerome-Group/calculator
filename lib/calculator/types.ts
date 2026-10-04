@@ -7,6 +7,7 @@ export const uid = () =>
 export type Settings = {
   angle: "rad" | "deg";
   precision: number;
+  displayDecimals?: number;
   domain: "real" | "complex";
   assumptions: string;
 };
@@ -102,6 +103,7 @@ export type Operation = {
 export const DEFAULT_SETTINGS: Settings = {
   angle: "rad",
   precision: 30,
+  displayDecimals: 9,
   domain: "real",
   assumptions: "",
 };

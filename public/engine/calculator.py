@@ -11,7 +11,7 @@ from sympy.core.relational import Relational
 from sympy.calculus.util import continuous_domain
 from sympy.ntheory.modular import crt
 from sympy.solvers.ode import checkodesol
-from latex_adapter import parse_math_latex
+from latex_adapter import parse_math_latex,substitute_bound_guard_path
 from supplemental import *
 from presentation import present, node
 from extended import extended
@@ -135,15 +135,17 @@ class Context:
   if len(source)>12000:raise ValueError('Input is limited to 12,000 characters.')
   if not source.strip():raise ValueError('A required mathematical input is empty.')
   if source.startswith('latex:'):return self._parse(source[6:],extra=extra,latex=True)
-  env=dict(self.env);env.update(extra or {});dens=[];notes=[];conditions=[]
-  def add_den(d,guard=S.true):
+  env=dict(self.env);env.update(extra or {});dens=[];notes=[];conditions=[];binding_frames=[]
+  def add_den(d,guard=S.true,guard_path=None):
    if guard is S.false or guard==False:return
+   if binding_frames:binding_frames[-1]['denominators'].append((d,guard_path if guard_path is not None else (guard,)));return
    if guard is not S.true and guard!=True:d=S.Piecewise((d,guard),(1,True))
    d=self._normal_denominator(d)
    if d is not None and d not in dens:dens.append(d)
-  def add_condition(kind,arg,guard=S.true):
+  def add_condition(kind,arg,guard=S.true,guard_path=None):
    if guard is S.false or guard==False:return
    arg=S.sympify(arg)
+   if binding_frames:binding_frames[-1]['conditions'].append((kind,arg,guard_path if guard_path is not None else (guard,)));return
    if guard is not S.true and guard!=True:arg=S.Piecewise((arg,guard),(-1 if kind=='negative' else 1,True))
    known=getattr(arg,'is_'+kind,None)
    if known is False:raise ValueError('A referenced definition requires '+str(arg)+' to be '+kind+'; this argument violates that domain assumption.')
@@ -151,23 +153,40 @@ class Context:
   active={name for name in re.findall(r'\b[A-Za-z][A-Za-z0-9_]*\b',source) if name in self.definition_sources and name not in (extra or {})}
   for name in active:
    notes.extend(self.definition_notes.get(name,[]))
-  def reference(name,guard=S.true):
-   for d in self.definition_denominators.get(name,[]):add_den(d,guard)
-   for kind,arg in self.definition_conditions.get(name,[]):add_condition(kind,arg,guard)
+  def reference(name,guard=S.true,guard_path=None):
+   for d in self.definition_denominators.get(name,[]):add_den(d,guard,guard_path)
+   for kind,arg in self.definition_conditions.get(name,[]):add_condition(kind,arg,guard,guard_path)
    return env[name]
-  def apply_function(name,args,guard=S.true):
+  def bound_references(variable,point,outer_path,parse_argument):
+   frame={'denominators':[],'conditions':[]};binding_frames.append(frame)
+   try:argument=parse_argument()
+   finally:binding_frames.pop()
+   substitutions={variable:point}
+   kind=self.assumption_kinds.get(str(variable))
+   if kind:add_condition(kind,point,S.And(*outer_path),outer_path)
+   for denominator,path in frame['denominators']:
+    path=substitute_bound_guard_path(path,len(outer_path),substitutions)
+    add_den(denominator.subs(substitutions,simultaneous=True),S.And(*path),path)
+   for kind,arg,path in frame['conditions']:
+    path=substitute_bound_guard_path(path,len(outer_path),substitutions)
+    add_condition(kind,arg.subs(substitutions,simultaneous=True),S.And(*path),path)
+   return argument
+  def apply_function(name,args,guard=S.true,guard_path=None):
    fn=self.env[name];parameters=self.definition_parameters[name]
    if len(args)!=len(parameters):raise ValueError(name+' expects '+str(len(parameters))+' arguments.')
    substitutions=dict(zip(parameters,args))
    for parameter,arg in zip(parameters,args):
     kind=self.assumption_kinds.get(str(parameter))
-    if kind:add_condition(kind,arg,guard)
-   for kind,arg in self.definition_conditions.get(name,[]):add_condition(kind,arg.subs(substitutions,simultaneous=True),guard)
-   for d in self.definition_denominators.get(name,[]):add_den(d.subs(substitutions,simultaneous=True),guard)
+    if kind:add_condition(kind,arg,guard,guard_path)
+   for kind,arg in self.definition_conditions.get(name,[]):add_condition(kind,arg.subs(substitutions,simultaneous=True),guard,guard_path)
+   for d in self.definition_denominators.get(name,[]):add_den(d.subs(substitutions,simultaneous=True),guard,guard_path)
    return fn(*args)
   if latex:
    functions={k:v for k,v in env.items() if isinstance(v,S.Lambda)}
-   out=parse_math_latex(source,symbols={k:v for k,v in env.items() if isinstance(v,(S.Basic,S.MatrixBase)) and not isinstance(v,S.Lambda)},functions=functions,angle=self.settings.get('angle','rad'),function_callback=apply_function,symbol_callback=lambda name,guard:reference(name,guard) if name in active and not isinstance(env[name],S.Lambda) else S.Symbol(name) if name in functions else env.get(name,S.Symbol(name)))
+   def latex_symbol(name,guard,guard_path=None):
+    if name in active and not isinstance(env[name],S.Lambda):return reference(name,guard,guard_path)
+    return S.Symbol(name) if name in functions else env.get(name,S.Symbol(name))
+   out=parse_math_latex(source,symbols={k:v for k,v in env.items() if isinstance(v,(S.Basic,S.MatrixBase)) and not isinstance(v,S.Lambda)},functions=functions,angle=self.settings.get('angle','rad'),function_callback=apply_function,symbol_callback=latex_symbol,binding_callback=bound_references)
    expr=out.expression
    for d in out.excluded_denominators:add_den(d)
    notes.extend(out.notes)
@@ -276,7 +295,7 @@ class Context:
   return n
 
 def walk_unresolved(r):
- if isinstance(r,dict):return any(walk_unresolved(v) for v in r.values())
+ if isinstance(r,dict):return any(walk_unresolved(k) or walk_unresolved(v) for k,v in r.items())
  if isinstance(r,(list,tuple,S.MatrixBase)):return any(walk_unresolved(v) for v in r)
  return isinstance(r,S.Basic) and (r.has(S.Integral,S.Derivative,S.Sum,S.Product,S.Limit,S.ConditionSet) or any('Transform' in type(a).__name__ for a in S.preorder_traversal(r)))
 def convert(r):
@@ -756,7 +775,7 @@ def compute(request):
  for d in dict.fromkeys(c.denominators):c.notes.append('Original restriction: '+str(d)+' ≠ 0.')
  if c.assumptions:c.notes.append('Assumptions: '+c.settings.get('assumptions',''))
  conditional=conditional or isinstance(r,S.Piecewise)
- unresolved=(walk_unresolved(r) and not isinstance(r,S.Piecewise)) or (isinstance(r,dict) and r.get('success') is False)
+ unresolved=walk_unresolved(r) or (isinstance(r,dict) and r.get('success') is False)
  if unresolved:c.notes.append('Some parts remain unevaluated or conditional. The engine has not established a complete answer; try assumptions, bounds, or numerical evaluation.')
  if not numeric and isinstance(r,S.Basic) and r.has(S.Float):numeric=True;c.notes.append('This result contains approximate floating-point values.')
  latex=S.latex(r) if not isinstance(r,(dict,np.ndarray)) else ''

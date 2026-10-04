@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useMemo } from "react";
 import {
   Plus,
   Minus,
@@ -22,6 +22,9 @@ import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import Choice from "./Choice";
 import MathEditor, { MathEditorHandle } from "./MathEditor";
+import { sourceToMath, mathToSource } from "@/lib/calculator/notation";
+import { formatDisplayApprox } from "@/lib/calculator/display-format";
+import { graphTableInterval } from "@/lib/calculator/graph-table-interval";
 import { calculate } from "@/lib/calculator/engine";
 import { uid } from "@/lib/calculator/types";
 import type { GraphSpec, Definition, Settings } from "@/lib/calculator/types";
@@ -31,6 +34,10 @@ import {
   graphFunctions,
   numeric,
   finiteSegment,
+  graphDataRange,
+  drawableGraphRange,
+  graphTable,
+  MAX_GRAPHS,
 } from "@/lib/calculator/graph";
 const colors = ["#254cdb", "#cb510f", "#8b48cb", "#047d70", "#c62c72"];
 export function makeGraph(
@@ -89,7 +96,44 @@ export default function GraphWorkspace({
       id: string;
       field: "expression" | "second";
       latex: string;
+      original: string;
     } | null>(null);
+  const editingLatest = useRef(editing);
+  useLayoutEffect(() => {
+    editingLatest.current = editing;
+  }, [editing]);
+  const latest = useRef({ graphs, onChange });
+  useLayoutEffect(() => {
+    latest.current = { graphs, onChange };
+  }, [graphs, onChange]);
+  const mounted = useRef(true),
+    deriving = useRef(false),
+    generation = useRef(0);
+  useEffect(() => {
+    mounted.current = true;
+    const generationAtMount = generation.current;
+    return () => {
+      mounted.current = false;
+      generation.current = generationAtMount + 1;
+      deriving.current = false;
+    };
+  }, []);
+  const commitGraphs = (next: GraphSpec[]) => {
+    latest.current.graphs = next;
+    latest.current.onChange(next);
+  };
+  const addGraph = () => {
+    if (latest.current.graphs.length >= MAX_GRAPHS) {
+      setError(
+        "Use at most 100 graphs per notebook. Delete a graph before adding another.",
+      );
+      return;
+    }
+    commitGraphs([
+      ...latest.current.graphs,
+      makeGraph("sin(x)", "cartesian", latest.current.graphs.length),
+    ]);
+  };
   const current = graphs.find((g) => g.id === selection) || graphs[0],
     scope = useMemo(
       () => graphScope(definitions, settings, a),
@@ -101,11 +145,21 @@ export default function GraphWorkspace({
         try {
           return { g, ...graphFunctions(g, scope), error: "" };
         } catch (e) {
-          return { g, f: () => NaN, second: () => NaN, error: String(e) };
+          return {
+            g,
+            f: () => NaN,
+            second: () => NaN,
+            warning: "",
+            error: String(e),
+          };
         }
       }),
     [graphs, scope],
   );
+  const diagnostic =
+    error ||
+    prepared.find((p) => p.error)?.error ||
+    prepared.find((p) => p.warning)?.warning;
   useEffect(() => {
     if (!holder.current) return;
     const ro = new ResizeObserver(([e]) =>
@@ -121,29 +175,26 @@ export default function GraphWorkspace({
   }, []);
   const zoom = (f: number) =>
     setRange((r) => {
-      const x = (r[0] + r[1]) / 2,
-        y = (r[2] + r[3]) / 2;
-      return [
+      const x = r[0] + (r[1] - r[0]) / 2,
+        y = r[2] + (r[3] - r[2]) / 2;
+      const next = [
         x - ((r[1] - r[0]) * f) / 2,
         x + ((r[1] - r[0]) * f) / 2,
         y - ((r[3] - r[2]) * f) / 2,
         y + ((r[3] - r[2]) * f) / 2,
       ];
+      return drawableGraphRange(next) ? next : r;
     });
   const fit = () => {
-    const pts = graphs
-      .filter((g) => g.visible && g.type === "data")
-      .flatMap((g) => g.points || []);
-    if (pts.length) {
-      const xs = pts.map((p) => p[0]),
-        ys = pts.map((p) => p[1]),
-        l = Math.min(...xs),
-        r = Math.max(...xs),
-        b = Math.min(...ys),
-        t = Math.max(...ys),
-        xp = Math.max(0.1, (r - l) * 0.1),
-        yp = Math.max(0.1, (t - b) * 0.1);
-      setRange([l - xp, r + xp, b - yp, t + yp]);
+    try {
+      const dataRange = graphDataRange(latest.current.graphs);
+      if (dataRange) {
+        setRange(dataRange);
+        setError("");
+        return;
+      }
+    } catch (e) {
+      setError(String(e));
       return;
     }
     const ys = prepared
@@ -155,7 +206,13 @@ export default function GraphWorkspace({
     const l = ys[Math.floor(ys.length * 0.05)],
       h = ys[Math.floor(ys.length * 0.95)],
       pad = Math.max(1, (h - l) * 0.15);
-    setRange([-6, 6, l - pad, h + pad]);
+    const next = [-6, 6, l - pad, h + pad];
+    if (!drawableGraphRange(next)) {
+      setError("Data coordinates exceed the drawable range.");
+      return;
+    }
+    setRange(next);
+    setError("");
   };
   useEffect(() => {
     const c = canvas.current;
@@ -423,7 +480,11 @@ export default function GraphWorkspace({
     current?.id,
   ]);
   const update = (id: string, changes: Partial<GraphSpec>) =>
-    onChange(graphs.map((g) => (g.id === id ? { ...g, ...changes } : g)));
+    commitGraphs(
+      latest.current.graphs.map((g) =>
+        g.id === id ? { ...g, ...changes } : g,
+      ),
+    );
   const screen = (e: React.PointerEvent) => {
     const b = canvas.current!.getBoundingClientRect();
     return { x: e.clientX - b.left, y: e.clientY - b.top };
@@ -467,16 +528,30 @@ export default function GraphWorkspace({
     }
     const dx = ((p.x - d.p.x) / size.w) * (d.range[1] - d.range[0]),
       dy = ((p.y - d.p.y) / size.h) * (d.range[3] - d.range[2]);
-    setRange([
+    const next = [
       d.range[0] - dx,
       d.range[1] - dx,
       d.range[2] + dy,
       d.range[3] + dy,
-    ]);
+    ];
+    if (drawableGraphRange(next)) setRange(next);
   };
   const derived = async (operation: string) => {
-    if (!current) return;
+    if (
+      !current ||
+      deriving.current ||
+      latest.current.graphs.length >= MAX_GRAPHS
+    ) {
+      if (latest.current.graphs.length >= MAX_GRAPHS)
+        setError(
+          "Use at most 100 graphs per notebook. Delete a graph before adding another.",
+        );
+      return;
+    }
+    const requestGeneration = generation.current;
+    deriving.current = true;
     setBusy(true);
+    setError("");
     try {
       const r = await calculate({
         operation,
@@ -495,16 +570,31 @@ export default function GraphWorkspace({
       });
       if (r.status === "error" || r.status === "unresolved" || !r.reusable)
         throw Error(r.text);
+      if (!mounted.current || generation.current !== requestGeneration) return;
+      const source = latest.current.graphs.find((g) => g.id === current.id);
+      if (
+        !source ||
+        source.expression !== current.expression ||
+        source.type !== current.type
+      )
+        return;
+      if (latest.current.graphs.length >= MAX_GRAPHS)
+        throw Error(
+          "Use at most 100 graphs per notebook. Delete a graph before adding another.",
+        );
       const g = {
-        ...makeGraph(r.reusable, "cartesian", graphs.length),
+        ...makeGraph(r.reusable, "cartesian", latest.current.graphs.length),
         radians: true,
       };
-      onChange([...graphs, g]);
+      commitGraphs([...latest.current.graphs, g]);
       select(g.id);
     } catch (e) {
-      setError(String(e));
+      if (mounted.current && generation.current === requestGeneration)
+        setError(String(e));
     } finally {
-      setBusy(false);
+      if (generation.current === requestGeneration) deriving.current = false;
+      if (mounted.current && generation.current === requestGeneration)
+        setBusy(false);
     }
   };
   const analyze = () => {
@@ -522,48 +612,59 @@ export default function GraphWorkspace({
     });
     if (["integral", "area"].includes(action)) setShade(true);
   };
-  const openMath = async (g: GraphSpec, field: "expression" | "second") =>
-    setEditing({
-      id: g.id,
-      field,
-      latex: (await import("mathlive")).convertAsciiMathToLatex(g[field]),
-    });
-  const rows = useMemo(() => {
-    if (!current) return [];
-    if (current.type === "data")
-      return (current.points || [])
-        .filter((_, i) => i % 5 === 0)
-        .map(([x, y]) => ({ t: x, x, y }));
-    const p = prepared.find((p) => p.g.id === current.id);
-    if (!p) return [];
+  const openMath = async (g: GraphSpec, field: "expression" | "second") => {
     try {
-      const param = ["parametric", "polar"].includes(current.type),
-        lo = param ? numeric(compileMath(current.min), scope) : Number(lower),
-        hi = param ? numeric(compileMath(current.max), scope) : Number(upper);
-      return Array.from({ length: 11 }, (_, i) => {
-        const t = lo + ((hi - lo) * i) / 10,
-          r = p.f(t),
-          angle = t * (settings.angle === "deg" ? Math.PI / 180 : 1);
-        return {
-          t,
-          x:
-            current.type === "parametric"
-              ? r
-              : current.type === "polar"
-                ? r * Math.cos(angle)
-                : t,
-          y:
-            current.type === "parametric"
-              ? p.second(t)
-              : current.type === "polar"
-                ? r * Math.sin(angle)
-                : r,
-        };
+      const converted = await sourceToMath(g[field]);
+      if (
+        !mounted.current ||
+        latest.current.graphs.find((item) => item.id === g.id)?.[field] !==
+          g[field]
+      )
+        return;
+      if (converted.latex === undefined) {
+        setError(converted.reason || "Keep the original graph expression.");
+        return;
+      }
+      setError("");
+      setEditing({
+        id: g.id,
+        field,
+        original: g[field],
+        latex: converted.latex,
       });
     } catch {
-      return [];
+      if (mounted.current)
+        setError(
+          "Math editor could not load. Your graph is preserved. Try again.",
+        );
     }
-  }, [current, prepared, scope, lower, upper, settings]);
+  };
+  const tableInterval = useMemo(
+    () => graphTableInterval(lower, upper),
+    [lower, upper],
+  );
+  const tableIntervalError =
+    current &&
+    !["data", "parametric", "polar"].includes(current.type) &&
+    !tableInterval;
+  const tableData = useMemo(() => {
+    if (tableIntervalError) return { headers: [], rows: [] };
+    if (!current) return { headers: [], rows: [] };
+    const p = prepared.find((p) => p.g.id === current.id);
+    if (!p) return { headers: [], rows: [] };
+    try {
+      return graphTable(
+        current,
+        p,
+        scope,
+        settings,
+        tableInterval?.[0] ?? 0,
+        tableInterval?.[1] ?? 0,
+      );
+    } catch {
+      return { headers: [], rows: [] };
+    }
+  }, [current, prepared, scope, tableInterval, tableIntervalError, settings]);
   return (
     <section>
       <div className="section-heading">
@@ -571,15 +672,7 @@ export default function GraphWorkspace({
           <span className="section-label">GRAPHS</span>
           <h1>Plot and explore.</h1>
         </div>
-        <button
-          className="subtle"
-          onClick={() =>
-            onChange([
-              ...graphs,
-              makeGraph("sin(x)", "cartesian", graphs.length),
-            ])
-          }
-        >
+        <button className="subtle" onClick={addGraph}>
           <Plus size={17} /> Add
         </button>
       </div>
@@ -649,10 +742,7 @@ export default function GraphWorkspace({
           />
           {!graphs.length && (
             <div className="graph-empty">
-              <button
-                className="primary"
-                onClick={() => onChange([makeGraph()])}
-              >
+              <button className="primary" onClick={addGraph}>
                 Plot a function
               </button>
             </div>
@@ -660,7 +750,16 @@ export default function GraphWorkspace({
         </div>
         {trace && (
           <div className="trace-bar">
-            x = {trace[0].toPrecision(6)} · y = {trace[1].toPrecision(6)}{" "}
+            x ={" "}
+            {formatDisplayApprox(
+              String(trace[0]),
+              settings.displayDecimals ?? 9,
+            )}{" "}
+            · y ={" "}
+            {formatDisplayApprox(
+              String(trace[1]),
+              settings.displayDecimals ?? 9,
+            )}{" "}
             <button onClick={() => onReuse(JSON.stringify(trace))}>
               Use point
             </button>
@@ -684,9 +783,9 @@ export default function GraphWorkspace({
           />
         </div>
       </div>
-      {(error || prepared.find((p) => p.error)?.error) && (
-        <p className="warning">
-          {error || prepared.find((p) => p.error)?.error}
+      {diagnostic && (
+        <p className="warning" role="status">
+          {diagnostic}
         </p>
       )}
       <div className="graph-list">
@@ -744,7 +843,7 @@ export default function GraphWorkspace({
                     aria-label={`Math editor for graph ${i + 1}`}
                     onClick={() => openMath(g, "expression")}
                   >
-                    ƒx
+                    Math
                   </button>
                 </div>
               )}
@@ -755,7 +854,12 @@ export default function GraphWorkspace({
                     value={g.second}
                     onChange={(e) => update(g.id, { second: e.target.value })}
                   />
-                  <button onClick={() => openMath(g, "second")}>ƒx</button>
+                  <button
+                    aria-label={`Math editor for graph ${i + 1} y(t)`}
+                    onClick={() => openMath(g, "second")}
+                  >
+                    Math
+                  </button>
                 </div>
               )}
               {["parametric", "polar"].includes(g.type) && (
@@ -782,7 +886,9 @@ export default function GraphWorkspace({
             <button
               className="icon-btn"
               aria-label={`Delete graph ${i + 1}`}
-              onClick={() => onChange(graphs.filter((p) => p.id !== g.id))}
+              onClick={() =>
+                commitGraphs(latest.current.graphs.filter((p) => p.id !== g.id))
+              }
             >
               <Trash2 size={16} />
             </button>
@@ -809,14 +915,22 @@ export default function GraphWorkspace({
           <div className="row wrap">
             <button
               className="subtle"
-              disabled={busy || current.type !== "cartesian"}
+              disabled={
+                busy ||
+                graphs.length >= MAX_GRAPHS ||
+                current.type !== "cartesian"
+              }
               onClick={() => derived("graph_derivative")}
             >
               Plot derivative
             </button>
             <button
               className="subtle"
-              disabled={busy || current.type !== "cartesian"}
+              disabled={
+                busy ||
+                graphs.length >= MAX_GRAPHS ||
+                current.type !== "cartesian"
+              }
               onClick={() => derived("graph_accumulation")}
             >
               Plot integral from x₀
@@ -895,29 +1009,37 @@ export default function GraphWorkspace({
           </div>
           {table && (
             <div className="table-scroll">
+              {tableIntervalError && (
+                <p className="warning" role="alert">
+                  Use finite numbers for the table interval.
+                </p>
+              )}
               <table>
                 <thead>
                   <tr>
-                    <th>t / x</th>
-                    <th>x</th>
-                    <th>y</th>
+                    {tableData.headers.map((header) => (
+                      <th key={header}>{header}</th>
+                    ))}
                     <th>Reuse</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r, i) => (
+                  {tableData.rows.map((r, i) => (
                     <tr key={i}>
-                      <td>{r.t.toPrecision(5)}</td>
-                      <td>{r.x.toPrecision(5)}</td>
-                      <td>
-                        {Number.isFinite(r.y)
-                          ? r.y.toPrecision(7)
-                          : "undefined"}
-                      </td>
+                      {r.cells.map((value, j) => (
+                        <td key={j}>
+                          {Number.isFinite(value)
+                            ? formatDisplayApprox(
+                                String(value),
+                                settings.displayDecimals ?? 9,
+                              )
+                            : "undefined"}
+                        </td>
+                      ))}
                       <td>
                         <button
-                          disabled={!Number.isFinite(r.x + r.y)}
-                          onClick={() => onReuse(`[${r.x},${r.y}]`)}
+                          disabled={!r.reuse.every(Number.isFinite)}
+                          onClick={() => onReuse(JSON.stringify(r.reuse))}
                         >
                           Use
                         </button>
@@ -946,6 +1068,11 @@ export default function GraphWorkspace({
         }}
       >
         <DialogContent>
+          {error && (
+            <p role="alert" className="warning">
+              {error}
+            </p>
+          )}
           <DialogHeader>
             <DialogTitle>Graph expression</DialogTitle>
             <DialogDescription>
@@ -969,9 +1096,19 @@ export default function GraphWorkspace({
               onClick={async () => {
                 if (!editing) return;
                 try {
-                  const ex = (await import("mathlive")).convertLatexToAsciiMath(
-                    editing.latex,
-                  );
+                  const ex = await mathToSource(editing.latex);
+                  if (!mounted.current || editingLatest.current !== editing)
+                    return;
+                  if (
+                    latest.current.graphs.find((g) => g.id === editing.id)?.[
+                      editing.field
+                    ] !== editing.original
+                  ) {
+                    setError(
+                      "This graph changed. Close the editor and reopen the current expression.",
+                    );
+                    return;
+                  }
                   compileMath(ex);
                   update(editing.id, { [editing.field]: ex });
                   setEditing(null);

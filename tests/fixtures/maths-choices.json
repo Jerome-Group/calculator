@@ -1,0 +1,6996 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "distribution.normal.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "normal",
+        "index": 0
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "pdf/pmf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.3989422804014327,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.normal.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "normal",
+        "index": 0
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.normal.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "normal",
+        "index": 0
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "sf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.normal.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "normal",
+        "index": 0
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.normal.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "normal",
+        "index": 0
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.normal.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "normal",
+        "index": 0
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "action": "moments",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.student-t.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "student-t",
+        "index": 1
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "student-t",
+          "parameters": "[4]",
+          "action": "pdf/pmf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.375,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.student-t.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "student-t",
+        "index": 1
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "student-t",
+          "parameters": "[4]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.student-t.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "student-t",
+        "index": 1
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "student-t",
+          "parameters": "[4]",
+          "action": "sf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.student-t.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "student-t",
+        "index": 1
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "student-t",
+          "parameters": "[4]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.student-t.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "student-t",
+        "index": 1
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "student-t",
+          "parameters": "[4]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.student-t.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "student-t",
+        "index": 1
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "student-t",
+          "parameters": "[4]",
+          "action": "moments",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 2,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.chi-square.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "chi-square",
+        "index": 2
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "chi-square",
+          "parameters": "[2]",
+          "action": "pdf/pmf",
+          "value": "2*log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.25,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.chi-square.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "chi-square",
+        "index": 2
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "chi-square",
+          "parameters": "[2]",
+          "action": "cdf",
+          "value": "2*log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.chi-square.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "chi-square",
+        "index": 2
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "chi-square",
+          "parameters": "[2]",
+          "action": "sf",
+          "value": "2*log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.chi-square.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "chi-square",
+        "index": 2
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "chi-square",
+          "parameters": "[2]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1.3862943611198906,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.chi-square.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "chi-square",
+        "index": 2
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "chi-square",
+          "parameters": "[2]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1.3862943611198906,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.chi-square.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "chi-square",
+        "index": 2
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "chi-square",
+          "parameters": "[2]",
+          "action": "moments",
+          "value": "2*log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 2,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 4,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.F.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "F",
+        "index": 3
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "F",
+          "parameters": "[6,6]",
+          "action": "pdf/pmf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.46875,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.F.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "F",
+        "index": 3
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "F",
+          "parameters": "[6,6]",
+          "action": "cdf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.F.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "F",
+        "index": 3
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "F",
+          "parameters": "[6,6]",
+          "action": "sf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.F.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "F",
+        "index": 3
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "F",
+          "parameters": "[6,6]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.F.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "F",
+        "index": 3
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "F",
+          "parameters": "[6,6]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.F.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "F",
+        "index": 3
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "F",
+          "parameters": "[6,6]",
+          "action": "moments",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 1.5,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 3.75,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.binomial.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "binomial",
+        "index": 4
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "binomial",
+          "parameters": "[2,1/2]",
+          "action": "pdf/pmf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.binomial.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "binomial",
+        "index": 4
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "binomial",
+          "parameters": "[2,1/2]",
+          "action": "cdf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.75,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.binomial.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "binomial",
+        "index": 4
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "binomial",
+          "parameters": "[2,1/2]",
+          "action": "sf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.25,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.binomial.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "binomial",
+        "index": 4
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "binomial",
+          "parameters": "[2,1/2]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.binomial.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "binomial",
+        "index": 4
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "binomial",
+          "parameters": "[2,1/2]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.binomial.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "binomial",
+        "index": 4
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "binomial",
+          "parameters": "[2,1/2]",
+          "action": "moments",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 1,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 0.5,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.poisson.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "poisson",
+        "index": 5
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[1]",
+          "action": "pdf/pmf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.36787944117144233,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.poisson.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "poisson",
+        "index": 5
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[1]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.36787944117144233,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.poisson.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "poisson",
+        "index": 5
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[1]",
+          "action": "sf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.6321205588285577,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.poisson.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "poisson",
+        "index": 5
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[1]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.poisson.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "poisson",
+        "index": 5
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[1]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.poisson.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "poisson",
+        "index": 5
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[1]",
+          "action": "moments",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 1,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.geometric.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "geometric",
+        "index": 6
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "geometric",
+          "parameters": "[1/2]",
+          "action": "pdf/pmf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.geometric.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "geometric",
+        "index": 6
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "geometric",
+          "parameters": "[1/2]",
+          "action": "cdf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.geometric.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "geometric",
+        "index": 6
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "geometric",
+          "parameters": "[1/2]",
+          "action": "sf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.geometric.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "geometric",
+        "index": 6
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "geometric",
+          "parameters": "[1/2]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.geometric.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "geometric",
+        "index": 6
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "geometric",
+          "parameters": "[1/2]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.geometric.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "geometric",
+        "index": 6
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "geometric",
+          "parameters": "[1/2]",
+          "action": "moments",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 2,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 2,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.hypergeometric.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "hypergeometric",
+        "index": 7
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "hypergeometric",
+          "parameters": "[4,2,2]",
+          "action": "pdf/pmf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.6666666666666666,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.hypergeometric.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "hypergeometric",
+        "index": 7
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "hypergeometric",
+          "parameters": "[4,2,2]",
+          "action": "cdf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.8333333333333334,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.hypergeometric.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "hypergeometric",
+        "index": 7
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "hypergeometric",
+          "parameters": "[4,2,2]",
+          "action": "sf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.16666666666666666,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.hypergeometric.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "hypergeometric",
+        "index": 7
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "hypergeometric",
+          "parameters": "[4,2,2]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.hypergeometric.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "hypergeometric",
+        "index": 7
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "hypergeometric",
+          "parameters": "[4,2,2]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.hypergeometric.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "hypergeometric",
+        "index": 7
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "hypergeometric",
+          "parameters": "[4,2,2]",
+          "action": "moments",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 1,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 0.3333333333333333,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.uniform.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "uniform",
+        "index": 8
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "uniform",
+          "parameters": "[0,2]",
+          "action": "pdf/pmf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.uniform.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "uniform",
+        "index": 8
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "uniform",
+          "parameters": "[0,2]",
+          "action": "cdf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.uniform.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "uniform",
+        "index": 8
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "uniform",
+          "parameters": "[0,2]",
+          "action": "sf",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.uniform.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "uniform",
+        "index": 8
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "uniform",
+          "parameters": "[0,2]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.uniform.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "uniform",
+        "index": 8
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "uniform",
+          "parameters": "[0,2]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.uniform.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "uniform",
+        "index": 8
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "uniform",
+          "parameters": "[0,2]",
+          "action": "moments",
+          "value": "1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 1,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 0.3333333333333333,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.exponential.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "exponential",
+        "index": 9
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[1]",
+          "action": "pdf/pmf",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.exponential.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "exponential",
+        "index": 9
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[1]",
+          "action": "cdf",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.exponential.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "exponential",
+        "index": 9
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[1]",
+          "action": "sf",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.exponential.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "exponential",
+        "index": 9
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[1]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.6931471805599453,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.exponential.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "exponential",
+        "index": 9
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[1]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.6931471805599453,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.exponential.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "exponential",
+        "index": 9
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[1]",
+          "action": "moments",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 1,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.gamma.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "gamma",
+        "index": 10
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "gamma",
+          "parameters": "[1,1]",
+          "action": "pdf/pmf",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.gamma.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "gamma",
+        "index": 10
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "gamma",
+          "parameters": "[1,1]",
+          "action": "cdf",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.gamma.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "gamma",
+        "index": 10
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "gamma",
+          "parameters": "[1,1]",
+          "action": "sf",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.gamma.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "gamma",
+        "index": 10
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "gamma",
+          "parameters": "[1,1]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.6931471805599453,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.gamma.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "gamma",
+        "index": 10
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "gamma",
+          "parameters": "[1,1]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.6931471805599453,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.gamma.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "gamma",
+        "index": 10
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "gamma",
+          "parameters": "[1,1]",
+          "action": "moments",
+          "value": "log(2)"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 1,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.beta.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "beta",
+        "index": 11
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "beta",
+          "parameters": "[1,1]",
+          "action": "pdf/pmf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.beta.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "beta",
+        "index": 11
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "beta",
+          "parameters": "[1,1]",
+          "action": "cdf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.beta.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "beta",
+        "index": 11
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "beta",
+          "parameters": "[1,1]",
+          "action": "sf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.beta.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "beta",
+        "index": 11
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "beta",
+          "parameters": "[1,1]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.beta.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "beta",
+        "index": 11
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "beta",
+          "parameters": "[1,1]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.5,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.beta.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "beta",
+        "index": 11
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "beta",
+          "parameters": "[1,1]",
+          "action": "moments",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 0.5,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 0.08333333333333333,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.negative-binomial.pdf-pmf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "negative-binomial",
+        "index": 12
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "negative-binomial",
+          "parameters": "[2,1/2]",
+          "action": "pdf/pmf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.25,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.negative-binomial.cdf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "negative-binomial",
+        "index": 12
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "negative-binomial",
+          "parameters": "[2,1/2]",
+          "action": "cdf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.25,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.negative-binomial.sf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "negative-binomial",
+        "index": 12
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "negative-binomial",
+          "parameters": "[2,1/2]",
+          "action": "sf",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 0.75,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.negative-binomial.ppf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "negative-binomial",
+        "index": 12
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "negative-binomial",
+          "parameters": "[2,1/2]",
+          "action": "ppf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.negative-binomial.isf",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "negative-binomial",
+        "index": 12
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "negative-binomial",
+          "parameters": "[2,1/2]",
+          "action": "isf",
+          "value": "1/2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "distribution.negative-binomial.moments",
+      "surfaceId": "form.distribution",
+      "choice": {
+        "field": "distribution",
+        "value": "negative-binomial",
+        "index": 12
+      },
+      "request": {
+        "operation": "distribution",
+        "params": {
+          "distribution": "negative-binomial",
+          "parameters": "[2,1/2]",
+          "action": "moments",
+          "value": "0"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "mean": {
+              "$near": 2,
+              "atol": 1e-10
+            },
+            "variance": {
+              "$near": 4,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.system.kind.0",
+      "surfaceId": "form.system",
+      "choice": {
+        "field": "kind",
+        "value": "linear",
+        "index": 0
+      },
+      "request": {
+        "operation": "system",
+        "params": {
+          "equations": "[x+y-3,x-y-1]",
+          "variables": "[x,y]",
+          "kind": "linear"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "solutionSet",
+          "variables": ["x", "y"],
+          "expected": [["2", "1"]]
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.system.kind.1",
+      "surfaceId": "form.system",
+      "choice": {
+        "field": "kind",
+        "value": "nonlinear",
+        "index": 1
+      },
+      "request": {
+        "operation": "system",
+        "params": {
+          "equations": "[x+y-3,x-y-1]",
+          "variables": "[x,y]",
+          "kind": "nonlinear"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "solutionSet",
+          "variables": ["x", "y"],
+          "expected": [["2", "1"]]
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.limit.direction.0",
+      "surfaceId": "form.limit",
+      "choice": {
+        "field": "direction",
+        "value": "+-",
+        "index": 0
+      },
+      "request": {
+        "operation": "limit",
+        "params": {
+          "expression": "sin(x)/x",
+          "variable": "x",
+          "point": "0",
+          "direction": "+-"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.limit.direction.1",
+      "surfaceId": "form.limit",
+      "choice": {
+        "field": "direction",
+        "value": "+",
+        "index": 1
+      },
+      "request": {
+        "operation": "limit",
+        "params": {
+          "expression": "sin(x)/x",
+          "variable": "x",
+          "point": "0",
+          "direction": "+"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.limit.direction.2",
+      "surfaceId": "form.limit",
+      "choice": {
+        "field": "direction",
+        "value": "-",
+        "index": 2
+      },
+      "request": {
+        "operation": "limit",
+        "params": {
+          "expression": "sin(x)/x",
+          "variable": "x",
+          "point": "0",
+          "direction": "-"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "1"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.series.direction.0",
+      "surfaceId": "form.series",
+      "choice": {
+        "field": "direction",
+        "value": "+",
+        "index": 0
+      },
+      "request": {
+        "operation": "series",
+        "params": {
+          "expression": "exp(x)",
+          "variable": "x",
+          "point": "0",
+          "order": "6",
+          "direction": "+"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "seriesCoefficients",
+          "variable": "x",
+          "point": 0,
+          "coefficients": ["1", "1", "1/2", "1/6", "1/24", "1/120"],
+          "order": 6
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.series.direction.1",
+      "surfaceId": "form.series",
+      "choice": {
+        "field": "direction",
+        "value": "-",
+        "index": 1
+      },
+      "request": {
+        "operation": "series",
+        "params": {
+          "expression": "exp(x)",
+          "variable": "x",
+          "point": "0",
+          "order": "6",
+          "direction": "-"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "seriesCoefficients",
+          "variable": "x",
+          "point": 0,
+          "coefficients": ["1", "1", "1/2", "1/6", "1/24", "1/120"],
+          "order": 6
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.proportion.action.0",
+      "surfaceId": "form.proportion",
+      "choice": {
+        "field": "action",
+        "value": "one-sample interval",
+        "index": 0
+      },
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[50,100]",
+          "action": "one-sample interval",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "proportion": {
+              "$near": 0.5,
+              "atol": 1e-10
+            },
+            "Wilson lower": {
+              "$near": 0.4038315303659956,
+              "atol": 1e-10
+            },
+            "Wilson upper": {
+              "$near": 0.5961684696340044,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.proportion.action.1",
+      "surfaceId": "form.proportion",
+      "choice": {
+        "field": "action",
+        "value": "one-sample test",
+        "index": 1
+      },
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[50,100]",
+          "action": "one-sample test",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "z": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.proportion.action.2",
+      "surfaceId": "form.proportion",
+      "choice": {
+        "field": "action",
+        "value": "two-sample interval",
+        "index": 2
+      },
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[50,100,50,100]",
+          "action": "two-sample interval",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "difference p1\u2212p2": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "Wald lower": {
+              "$near": -0.13859038243496777,
+              "atol": 1e-10
+            },
+            "Wald upper": {
+              "$near": 0.13859038243496777,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.proportion.action.3",
+      "surfaceId": "form.proportion",
+      "choice": {
+        "field": "action",
+        "value": "two-sample test",
+        "index": 3
+      },
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[50,100,50,100]",
+          "action": "two-sample test",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "z": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.proportion.tail.0",
+      "surfaceId": "form.proportion",
+      "choice": {
+        "field": "tail",
+        "value": "two-sided",
+        "index": 0
+      },
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[50,100]",
+          "action": "one-sample test",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "z": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.proportion.tail.1",
+      "surfaceId": "form.proportion",
+      "choice": {
+        "field": "tail",
+        "value": "less",
+        "index": 1
+      },
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[50,100]",
+          "action": "one-sample test",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "less"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "z": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 0.5,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.proportion.tail.2",
+      "surfaceId": "form.proportion",
+      "choice": {
+        "field": "tail",
+        "value": "greater",
+        "index": 2
+      },
+      "request": {
+        "operation": "proportion",
+        "params": {
+          "counts": "[50,100]",
+          "action": "one-sample test",
+          "level": "0.95",
+          "null": "0.5",
+          "tail": "greater"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "z": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 0.5,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.two_mean_interval.kind.0",
+      "surfaceId": "form.two_mean_interval",
+      "choice": {
+        "field": "kind",
+        "value": "Welch",
+        "index": 0
+      },
+      "request": {
+        "operation": "two_mean_interval",
+        "params": {
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "level": "0.95",
+          "kind": "Welch"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "lower": {
+              "$near": -3.306004135204166,
+              "atol": 1e-10
+            },
+            "upper": {
+              "$near": 1.306004135204166,
+              "atol": 1e-10
+            },
+            "degrees of freedom": {
+              "$near": 8,
+              "atol": 1e-12
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.two_mean_interval.kind.1",
+      "surfaceId": "form.two_mean_interval",
+      "choice": {
+        "field": "kind",
+        "value": "paired",
+        "index": 1
+      },
+      "request": {
+        "operation": "two_mean_interval",
+        "params": {
+          "data": "[1,2,3,4,5]",
+          "other": "[2,3,4,5,6]",
+          "level": "0.95",
+          "kind": "paired"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "lower": {
+              "$near": -1,
+              "atol": 1e-10
+            },
+            "upper": {
+              "$near": -1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.expectation.kind.0",
+      "surfaceId": "form.expectation",
+      "choice": {
+        "field": "kind",
+        "value": "continuous",
+        "index": 0
+      },
+      "request": {
+        "operation": "expectation",
+        "params": {
+          "value": "x",
+          "weight": "2*x",
+          "variable": "x",
+          "lower": "0",
+          "upper": "1",
+          "kind": "continuous"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "expectation": {
+              "$math": "2/3"
+            },
+            "variance": {
+              "$math": "1/18"
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.expectation.kind.1",
+      "surfaceId": "form.expectation",
+      "choice": {
+        "field": "kind",
+        "value": "discrete",
+        "index": 1
+      },
+      "request": {
+        "operation": "expectation",
+        "params": {
+          "value": "x",
+          "weight": "1/6",
+          "variable": "x",
+          "lower": "1",
+          "upper": "6",
+          "kind": "discrete"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "normalisation": {
+              "$math": "1"
+            },
+            "expectation": {
+              "$math": "7/2"
+            },
+            "variance": {
+              "$math": "35/12"
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.regression.model.0",
+      "surfaceId": "form.regression",
+      "choice": {
+        "field": "model",
+        "value": "linear",
+        "index": 0
+      },
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[1,2,3,4,5]",
+          "y": "[3,5,7,9,11]",
+          "model": "linear",
+          "degree": "2",
+          "initial": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "2*x+1",
+              "samples": {
+                "x": [1, 2, 3]
+              },
+              "atol": 1e-7
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-8
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.regression.model.1",
+      "surfaceId": "form.regression",
+      "choice": {
+        "field": "model",
+        "value": "polynomial",
+        "index": 1
+      },
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[0,1,2,3]",
+          "y": "[1,2,5,10]",
+          "model": "polynomial",
+          "degree": "2",
+          "initial": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "x**2+1",
+              "samples": {
+                "x": [1, 2, 3]
+              },
+              "atol": 1e-7
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-8
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.regression.model.2",
+      "surfaceId": "form.regression",
+      "choice": {
+        "field": "model",
+        "value": "exponential",
+        "index": 2
+      },
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[0,1,2,3]",
+          "y": "[1,exp(1),exp(2),exp(3)]",
+          "model": "exponential",
+          "degree": "2",
+          "initial": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "exp(x)",
+              "samples": {
+                "x": [1, 2, 3]
+              },
+              "atol": 1e-7
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-8
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.regression.model.3",
+      "surfaceId": "form.regression",
+      "choice": {
+        "field": "model",
+        "value": "logarithmic",
+        "index": 3
+      },
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[1,exp(1),exp(2),exp(3)]",
+          "y": "[1,3,5,7]",
+          "model": "logarithmic",
+          "degree": "2",
+          "initial": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "2*log(x)+1",
+              "samples": {
+                "x": [1, 2, 3]
+              },
+              "atol": 1e-7
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-8
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.regression.model.4",
+      "surfaceId": "form.regression",
+      "choice": {
+        "field": "model",
+        "value": "power",
+        "index": 4
+      },
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[1,2,3,4]",
+          "y": "[3,12,27,48]",
+          "model": "power",
+          "degree": "2",
+          "initial": "[]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "3*x**2",
+              "samples": {
+                "x": [1, 2, 3]
+              },
+              "atol": 1e-7
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-8
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.regression.model.5",
+      "surfaceId": "form.regression",
+      "choice": {
+        "field": "model",
+        "value": "sinusoidal",
+        "index": 5
+      },
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[0,1,2,3,4,5]",
+          "y": "[0,sin(1),sin(2),sin(3),sin(4),sin(5)]",
+          "model": "sinusoidal",
+          "degree": "2",
+          "initial": "[1,1,0,0]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "sin(x)",
+              "samples": {
+                "x": [1, 2, 3]
+              },
+              "atol": 1e-7
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-8
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.regression.model.6",
+      "surfaceId": "form.regression",
+      "choice": {
+        "field": "model",
+        "value": "logistic",
+        "index": 6
+      },
+      "request": {
+        "operation": "regression",
+        "params": {
+          "x": "[-2,-1,0,1,2]",
+          "y": "[1/(1+exp(2)),1/(1+exp(1)),1/2,1/(1+exp(-1)),1/(1+exp(-2))]",
+          "model": "logistic",
+          "degree": "2",
+          "initial": "[1,1,0]"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "model": {
+              "$mathNear": "1/(1+exp(-x))",
+              "samples": {
+                "x": [1, 2, 3]
+              },
+              "atol": 1e-7
+            },
+            "R\u00b2": {
+              "$near": 1,
+              "atol": 1e-8
+            },
+            "residual sum of squares": {
+              "$near": 0,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.0",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "one-sample t",
+        "index": 0
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "one-sample t",
+          "data": "[-1,0,1]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.1",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "Welch t",
+        "index": 1
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "Welch t",
+          "data": "[1,2,3,4,5]",
+          "other": "[1,2,3,4,5]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.2",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "paired t",
+        "index": 2
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "paired t",
+          "data": "[1,2,3]",
+          "other": "[2,2,2]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.3",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "equal-variance t",
+        "index": 3
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "equal-variance t",
+          "data": "[1,2,3,4,5]",
+          "other": "[1,2,3,4,5]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.4",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "chi-square goodness",
+        "index": 4
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "chi-square goodness",
+          "data": "[10,10]",
+          "other": "[10,10]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.5",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "chi-square independence",
+        "index": 5
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "chi-square independence",
+          "data": "[[10,10],[10,10]]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.6",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "ANOVA",
+        "index": 6
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "ANOVA",
+          "data": "[[1,2,3],[1,2,3]]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.test.7",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "test",
+        "value": "binomial",
+        "index": 7
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "binomial",
+          "data": "[1,2]",
+          "other": "[2,3,4,5,6]",
+          "null": "1/2",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0.5,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.tail.0",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "tail",
+        "value": "two-sided",
+        "index": 0
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "one-sample t",
+          "data": "[-1,0,1]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "two-sided"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 1,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.tail.1",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "tail",
+        "value": "less",
+        "index": 1
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "one-sample t",
+          "data": "[-1,0,1]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "less"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 0.5,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.test.tail.2",
+      "surfaceId": "form.test",
+      "choice": {
+        "field": "tail",
+        "value": "greater",
+        "index": 2
+      },
+      "request": {
+        "operation": "test",
+        "params": {
+          "test": "one-sample t",
+          "data": "[-1,0,1]",
+          "other": "[2,3,4,5,6]",
+          "null": "0",
+          "tail": "greater"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "statistic": {
+              "$near": 0,
+              "atol": 1e-10
+            },
+            "p-value": {
+              "$near": 0.5,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.combinatorics.kind.0",
+      "surfaceId": "form.combinatorics",
+      "choice": {
+        "field": "kind",
+        "value": "combinations",
+        "index": 0
+      },
+      "request": {
+        "operation": "combinatorics",
+        "params": {
+          "n": "10",
+          "k": "3",
+          "kind": "combinations"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "120"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.combinatorics.kind.1",
+      "surfaceId": "form.combinatorics",
+      "choice": {
+        "field": "kind",
+        "value": "permutations",
+        "index": 1
+      },
+      "request": {
+        "operation": "combinatorics",
+        "params": {
+          "n": "10",
+          "k": "3",
+          "kind": "permutations"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "720"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.combinatorics.kind.2",
+      "surfaceId": "form.combinatorics",
+      "choice": {
+        "field": "kind",
+        "value": "factorial",
+        "index": 2
+      },
+      "request": {
+        "operation": "combinatorics",
+        "params": {
+          "n": "10",
+          "k": "3",
+          "kind": "factorial"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "3628800"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.sets.operation.0",
+      "surfaceId": "form.sets",
+      "choice": {
+        "field": "operation",
+        "value": "union",
+        "index": 0
+      },
+      "request": {
+        "operation": "sets",
+        "params": {
+          "left": "[1,2,3]",
+          "right": "[2,3,4]",
+          "operation": "union"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "FiniteSet(1,2,3,4)"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.sets.operation.1",
+      "surfaceId": "form.sets",
+      "choice": {
+        "field": "operation",
+        "value": "intersection",
+        "index": 1
+      },
+      "request": {
+        "operation": "sets",
+        "params": {
+          "left": "[1,2,3]",
+          "right": "[2,3,4]",
+          "operation": "intersection"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "FiniteSet(2,3)"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.sets.operation.2",
+      "surfaceId": "form.sets",
+      "choice": {
+        "field": "operation",
+        "value": "difference",
+        "index": 2
+      },
+      "request": {
+        "operation": "sets",
+        "params": {
+          "left": "[1,2,3]",
+          "right": "[2,3,4]",
+          "operation": "difference"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "FiniteSet(1)"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.sets.operation.3",
+      "surfaceId": "form.sets",
+      "choice": {
+        "field": "operation",
+        "value": "product",
+        "index": 3
+      },
+      "request": {
+        "operation": "sets",
+        "params": {
+          "left": "[1,2,3]",
+          "right": "[2,3,4]",
+          "operation": "product"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "ProductSet(FiniteSet(1,2,3),FiniteSet(2,3,4))"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.sets.operation.4",
+      "surfaceId": "form.sets",
+      "choice": {
+        "field": "operation",
+        "value": "symmetric difference",
+        "index": 4
+      },
+      "request": {
+        "operation": "sets",
+        "params": {
+          "left": "[1,2,3]",
+          "right": "[2,3,4]",
+          "operation": "symmetric difference"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "FiniteSet(1,4)"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.directed.0",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "directed",
+        "value": "no",
+        "index": 0
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "summary",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "degrees": {
+              "0": 2,
+              "1": 2,
+              "2": 2
+            },
+            "bipartite": false,
+            "planar (underlying graph)": true,
+            "components": {
+              "$length": 1
+            },
+            "cycles": {
+              "$length": 1
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.directed.1",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "directed",
+        "value": "yes",
+        "index": 1
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "yes",
+          "action": "summary",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "degrees": {
+              "0": 2,
+              "1": 2,
+              "2": 2
+            },
+            "bipartite": false,
+            "planar (underlying graph)": true,
+            "components": {
+              "$length": 3
+            },
+            "cycles": {
+              "$length": 0
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.action.0",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "action",
+        "value": "summary",
+        "index": 0
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "summary",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "nodes": ["0", "1", "2"],
+            "degrees": {
+              "0": 2,
+              "1": 2,
+              "2": 2
+            },
+            "bipartite": false,
+            "planar (underlying graph)": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.action.1",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "action",
+        "value": "path",
+        "index": 1
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "path",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "path": ["0", "1", "2"],
+            "distance": {
+              "$near": 3,
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.action.2",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "action",
+        "value": "spanning tree",
+        "index": 2
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "spanning tree",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "[('0','1',1.0),('1','2',2.0)]"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.action.3",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "action",
+        "value": "flow",
+        "index": 3
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "flow",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "tupleFirst",
+          "expected": 5,
+          "atol": 1e-10
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.action.4",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "action",
+        "value": "adjacency",
+        "index": 4
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "adjacency",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[0,1,4],[1,0,2],[4,2,0]])"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.graph_theory.action.5",
+      "surfaceId": "form.graph_theory",
+      "choice": {
+        "field": "action",
+        "value": "laplacian",
+        "index": 5
+      },
+      "request": {
+        "operation": "graph_theory",
+        "params": {
+          "nodes": "[]",
+          "edges": "[(0,1,1),(1,2,2),(0,2,4)]",
+          "directed": "no",
+          "action": "laplacian",
+          "start": "0",
+          "end": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([[5,-1,-4],[-1,3,-2],[-4,-2,6]])"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.0",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "gcd",
+        "index": 0
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "gcd",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "6"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.1",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "lcm",
+        "index": 1
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "lcm",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "420"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.2",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "B\u00e9zout",
+        "index": 2
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "B\u00e9zout",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "(-1,3,6)"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.3",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "modular inverse",
+        "index": 3
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "3",
+          "b": "7",
+          "action": "modular inverse",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "5"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.4",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "modular power",
+        "index": 4
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "modular power",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "24"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.5",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "factor",
+        "index": 5
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "factor",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "{2:2,3:1,7:1}"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.6",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "prime",
+        "index": 6
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "prime",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "False"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.7",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "totient",
+        "index": 7
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "totient",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "24"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.8",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "divisors",
+        "index": 8
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "divisors",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "[1,2,3,4,6,7,12,14,21,28,42,84]"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.number_theory.action.9",
+      "surfaceId": "form.number_theory",
+      "choice": {
+        "field": "action",
+        "value": "continued fraction",
+        "index": 9
+      },
+      "request": {
+        "operation": "number_theory",
+        "params": {
+          "a": "84",
+          "b": "30",
+          "action": "continued fraction",
+          "exponent": "13"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "[2,1,4]"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.structure.0",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "structure",
+        "value": "field",
+        "index": 0
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "inverse",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "a+1"
+            },
+            "order": 4,
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.structure.1",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "structure",
+        "value": "ring",
+        "index": 1
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+1",
+          "structure": "ring",
+          "left": "a",
+          "action": "inverse",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "is_field": false,
+            "is_unit": true,
+            "result": {
+              "$math": "a"
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.action.0",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "action",
+        "value": "reduce",
+        "index": 0
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "reduce",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "a"
+            },
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.action.1",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "action",
+        "value": "add",
+        "index": 1
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "add",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "1"
+            },
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.action.2",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "action",
+        "value": "subtract",
+        "index": 2
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "subtract",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "1"
+            },
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.action.3",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "action",
+        "value": "multiply",
+        "index": 3
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "multiply",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "1"
+            },
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.action.4",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "action",
+        "value": "divide",
+        "index": 4
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "divide",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "a+1"
+            },
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.action.5",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "action",
+        "value": "inverse",
+        "index": 5
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "inverse",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "a+1"
+            },
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.quotient.action.6",
+      "surfaceId": "form.quotient",
+      "choice": {
+        "field": "action",
+        "value": "power",
+        "index": 6
+      },
+      "request": {
+        "operation": "quotient",
+        "params": {
+          "prime": "2",
+          "variable": "a",
+          "modulus": "a^2+a+1",
+          "structure": "field",
+          "left": "a",
+          "action": "power",
+          "right": "a+1",
+          "exponent": "2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "result": {
+              "$math": "a+1"
+            },
+            "is_field": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.polynomial.action.0",
+      "surfaceId": "form.polynomial",
+      "choice": {
+        "field": "action",
+        "value": "factor",
+        "index": 0
+      },
+      "request": {
+        "operation": "polynomial",
+        "params": {
+          "expression": "x^4-1",
+          "variable": "x",
+          "modulus": "0",
+          "action": "factor",
+          "other": "x^2+1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "(x-1)*(x+1)*(x**2+1)"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.polynomial.action.1",
+      "surfaceId": "form.polynomial",
+      "choice": {
+        "field": "action",
+        "value": "divide",
+        "index": 1
+      },
+      "request": {
+        "operation": "polynomial",
+        "params": {
+          "expression": "x^4-1",
+          "variable": "x",
+          "modulus": "0",
+          "action": "divide",
+          "other": "x^2+1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "(x**2-1,0)"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.polynomial.action.2",
+      "surfaceId": "form.polynomial",
+      "choice": {
+        "field": "action",
+        "value": "gcd",
+        "index": 2
+      },
+      "request": {
+        "operation": "polynomial",
+        "params": {
+          "expression": "x^4-1",
+          "variable": "x",
+          "modulus": "0",
+          "action": "gcd",
+          "other": "x^2+1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "x**2+1"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.polynomial.action.3",
+      "surfaceId": "form.polynomial",
+      "choice": {
+        "field": "action",
+        "value": "resultant",
+        "index": 3
+      },
+      "request": {
+        "operation": "polynomial",
+        "params": {
+          "expression": "x^4-1",
+          "variable": "x",
+          "modulus": "0",
+          "action": "resultant",
+          "other": "x^2+1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "0"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.polynomial.action.4",
+      "surfaceId": "form.polynomial",
+      "choice": {
+        "field": "action",
+        "value": "discriminant",
+        "index": 4
+      },
+      "request": {
+        "operation": "polynomial",
+        "params": {
+          "expression": "x^4-1",
+          "variable": "x",
+          "modulus": "0",
+          "action": "discriminant",
+          "other": "x^2+1"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "-256"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.ideal.order.0",
+      "surfaceId": "form.ideal",
+      "choice": {
+        "field": "order",
+        "value": "lex",
+        "index": 0
+      },
+      "request": {
+        "operation": "ideal",
+        "params": {
+          "generators": "[x*y-1,y^2-1]",
+          "variables": "[x,y]",
+          "expression": "x-y",
+          "order": "lex"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "Groebner basis": {
+              "$mathSet": ["x-y", "y**2-1"]
+            },
+            "remainder": {
+              "$math": "0"
+            },
+            "member of ideal": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.ideal.order.1",
+      "surfaceId": "form.ideal",
+      "choice": {
+        "field": "order",
+        "value": "grlex",
+        "index": 1
+      },
+      "request": {
+        "operation": "ideal",
+        "params": {
+          "generators": "[x*y-1,y^2-1]",
+          "variables": "[x,y]",
+          "expression": "x-y",
+          "order": "grlex"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "Groebner basis": {
+              "$mathSet": ["x-y", "y**2-1"]
+            },
+            "remainder": {
+              "$math": "0"
+            },
+            "member of ideal": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.ideal.order.2",
+      "surfaceId": "form.ideal",
+      "choice": {
+        "field": "order",
+        "value": "grevlex",
+        "index": 2
+      },
+      "request": {
+        "operation": "ideal",
+        "params": {
+          "generators": "[x*y-1,y^2-1]",
+          "variables": "[x,y]",
+          "expression": "x-y",
+          "order": "grevlex"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "Groebner basis": {
+              "$mathSet": ["x-y", "y**2-1"]
+            },
+            "remainder": {
+              "$math": "0"
+            },
+            "member of ideal": true
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.geometry.action.0",
+      "surfaceId": "form.geometry",
+      "choice": {
+        "field": "action",
+        "value": "intersection",
+        "index": 0
+      },
+      "request": {
+        "operation": "geometry",
+        "params": {
+          "left": "Circle(Point(0,0),1)",
+          "right": "Line(Point(-2,0),Point(2,0))",
+          "action": "intersection"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "pointSet",
+          "expected": [
+            [-1, 0],
+            [1, 0]
+          ]
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.geometry.action.1",
+      "surfaceId": "form.geometry",
+      "choice": {
+        "field": "action",
+        "value": "distance",
+        "index": 1
+      },
+      "request": {
+        "operation": "geometry",
+        "params": {
+          "left": "Point(0,0)",
+          "right": "Point(3,4)",
+          "action": "distance"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "5"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.spline.kind.0",
+      "surfaceId": "form.spline",
+      "choice": {
+        "field": "kind",
+        "value": "PCHIP",
+        "index": 0
+      },
+      "request": {
+        "operation": "spline",
+        "params": {
+          "x": "[0,1,2,3]",
+          "y": "[0,1,2,3]",
+          "points": "[0.5,1.5,2.5]",
+          "kind": "PCHIP"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "y": {
+              "$nearArray": [0.5, 1.5, 2.5],
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.spline.kind.1",
+      "surfaceId": "form.spline",
+      "choice": {
+        "field": "kind",
+        "value": "cubic",
+        "index": 1
+      },
+      "request": {
+        "operation": "spline",
+        "params": {
+          "x": "[0,1,2,3]",
+          "y": "[0,1,2,3]",
+          "points": "[0.5,1.5,2.5]",
+          "kind": "cubic"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "y": {
+              "$nearArray": [0.5, 1.5, 2.5],
+              "atol": 1e-10
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.fft.action.0",
+      "surfaceId": "form.fft",
+      "choice": {
+        "field": "action",
+        "value": "FFT",
+        "index": 0
+      },
+      "request": {
+        "operation": "fft",
+        "params": {
+          "data": "[1,0,-1,0]",
+          "action": "FFT"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([0,2,0,2])"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.fft.action.1",
+      "surfaceId": "form.fft",
+      "choice": {
+        "field": "action",
+        "value": "inverse FFT",
+        "index": 1
+      },
+      "request": {
+        "operation": "fft",
+        "params": {
+          "data": "[1,0,-1,0]",
+          "action": "inverse FFT"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([0,1/2,0,1/2])"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.convolution.mode.0",
+      "surfaceId": "form.convolution",
+      "choice": {
+        "field": "mode",
+        "value": "full",
+        "index": 0
+      },
+      "request": {
+        "operation": "convolution",
+        "params": {
+          "left": "[1,2,1]",
+          "right": "[1,-1]",
+          "mode": "full"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([1,1,-1,-1])"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.convolution.mode.1",
+      "surfaceId": "form.convolution",
+      "choice": {
+        "field": "mode",
+        "value": "same",
+        "index": 1
+      },
+      "request": {
+        "operation": "convolution",
+        "params": {
+          "left": "[1,2,1]",
+          "right": "[1,-1]",
+          "mode": "same"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([1,1,-1])"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.convolution.mode.2",
+      "surfaceId": "form.convolution",
+      "choice": {
+        "field": "mode",
+        "value": "valid",
+        "index": 2
+      },
+      "request": {
+        "operation": "convolution",
+        "params": {
+          "left": "[1,2,1]",
+          "right": "[1,-1]",
+          "mode": "valid"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "mathEqual",
+          "path": ["text"],
+          "expected": "Matrix([1,-1])"
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.finance.action.0",
+      "surfaceId": "form.finance",
+      "choice": {
+        "field": "action",
+        "value": "future value",
+        "index": 0
+      },
+      "request": {
+        "operation": "finance",
+        "params": {
+          "principal": "1000",
+          "rate": "0.05",
+          "periods": "12",
+          "action": "future value"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 1795.8563260221301,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.finance.action.1",
+      "surfaceId": "form.finance",
+      "choice": {
+        "field": "action",
+        "value": "payment",
+        "index": 1
+      },
+      "request": {
+        "operation": "finance",
+        "params": {
+          "principal": "1000",
+          "rate": "0.05",
+          "periods": "12",
+          "action": "payment"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "numeric",
+      "assertions": [
+        {
+          "kind": "nearScalar",
+          "expected": 112.82541002081534,
+          "atol": 1e-9
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.symbolic_expectation.distribution.0",
+      "surfaceId": "form.symbolic_expectation",
+      "choice": {
+        "field": "distribution",
+        "value": "normal",
+        "index": 0
+      },
+      "request": {
+        "operation": "symbolic_expectation",
+        "params": {
+          "distribution": "normal",
+          "parameters": "[0,1]",
+          "variable": "X",
+          "expression": "X^2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "expected value": {
+              "$math": "1"
+            },
+            "variance": {
+              "$math": "2"
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.symbolic_expectation.distribution.1",
+      "surfaceId": "form.symbolic_expectation",
+      "choice": {
+        "field": "distribution",
+        "value": "exponential",
+        "index": 1
+      },
+      "request": {
+        "operation": "symbolic_expectation",
+        "params": {
+          "distribution": "exponential",
+          "parameters": "[1]",
+          "variable": "X",
+          "expression": "X^2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "expected value": {
+              "$math": "2"
+            },
+            "variance": {
+              "$math": "20"
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    },
+    {
+      "id": "choice.symbolic_expectation.distribution.2",
+      "surfaceId": "form.symbolic_expectation",
+      "choice": {
+        "field": "distribution",
+        "value": "poisson",
+        "index": 2
+      },
+      "request": {
+        "operation": "symbolic_expectation",
+        "params": {
+          "distribution": "poisson",
+          "parameters": "[1]",
+          "variable": "X",
+          "expression": "X^2"
+        },
+        "settings": {
+          "angle": "rad",
+          "domain": "real",
+          "precision": 30,
+          "assumptions": ""
+        },
+        "mode": "text"
+      },
+      "expectedStatus": "exact",
+      "assertions": [
+        {
+          "kind": "partialObject",
+          "path": ["details"],
+          "expected": {
+            "expected value": {
+              "$math": "2"
+            },
+            "variance": {
+              "$math": "11"
+            }
+          }
+        }
+      ],
+      "oracleProvenance": {
+        "method": "independent analytic identities/hand derivation; serialization paths source-read only",
+        "reviewState": "independent typed assertions; execution and browser evidence stored separately"
+      }
+    }
+  ],
+  "coverage": {
+    "catalogueChoiceFields": 27,
+    "catalogueChoiceOptions": 112,
+    "distributionCombinations": 78,
+    "validVariantFixtures": 171
+  }
+}

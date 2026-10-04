@@ -54,6 +54,20 @@ for (const asset of assets.values()) {
   );
   assert(data.length < 25 * 1024 * 1024);
 }
+const coverage = await fs.readFile(root + "/coverage.html", "utf8");
+const coverageUrl = new URL("https://calculator.test/coverage.html");
+const runtimeRoutes = new Set(["/", "/coverage"]);
+for (const [, , href] of coverage.matchAll(/\bhref\s*=\s*(["'])(.*?)\1/gi)) {
+  const target = new URL(href, coverageUrl);
+  if (
+    target.origin !== coverageUrl.origin ||
+    runtimeRoutes.has(target.pathname)
+  )
+    continue;
+  const pathname = decodeURIComponent(target.pathname);
+  assert(assets.has(pathname), "Missing coverage link target " + pathname);
+  await fs.access(root + pathname);
+}
 const sw = await fs.readFile(root + "/sw.js", "utf8");
 assert(!sw.includes("__BUILD_VERSION__"));
 assert(sw.includes(manifest.version));

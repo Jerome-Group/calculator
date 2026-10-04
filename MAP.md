@@ -15,4 +15,8 @@ Start with README.md, then app/page.tsx and components/calculator/CalculatorGate
 | `tests/`, `examples/`  | Release, sync, persistence and asset checks               | `tests/sync.mjs`                       |
 | `docs/`                | Decisions, product scope and validation                   | `docs/VALIDATION.md`                   |
 | `.openai/`, `.github/` | Site binding and organisation CI                          | `.github/workflows/ci.yml`             |
-| `hooks/`, `vendor/`    | Shared UI support and retained third-party notices        | `hooks/`, `vendor/`                    |
+| `vendor/`              | Retained third-party notices                              | `vendor/`                              |
+
+Verification starts at `pnpm --silent verify --help`, [the command contract](docs/verification.md) and [versioned map](docs/verification-map.json). Local and CI checks share `pnpm --silent verify run --group core --json`; browser evidence remains separate.
+
+Pinned dependency patches live in `scripts/patches/`, configured by `pnpm-workspace.yaml`.

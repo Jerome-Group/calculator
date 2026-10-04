@@ -81,3 +81,52 @@ export function acknowledgeDraft(
     localStorage.removeItem(key);
   else localStorage.setItem(key, JSON.stringify({ ...draft, revision }));
 }
+
+export async function recoveryNotebooks(
+  account: string,
+  state: SavedState,
+  existing: SavedState["notebooks"],
+): Promise<SavedState["notebooks"]> {
+  const copies: SavedState["notebooks"] = [];
+  for (const notebook of state.notebooks) {
+    const unchanged = existing.find(
+      (book) =>
+        book.id === notebook.id &&
+        JSON.stringify(book) === JSON.stringify(notebook),
+    );
+    if (unchanged) {
+      copies.push(unchanged);
+      continue;
+    }
+    const snapshot = JSON.stringify({
+      account,
+      settings: state.settings,
+      notebook,
+    });
+    let conflict = "";
+    for (;;) {
+      const digest = await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(snapshot + conflict),
+      );
+      const id =
+        "recovered-" +
+        Array.from(new Uint8Array(digest), (byte) =>
+          byte.toString(16).padStart(2, "0"),
+        ).join("");
+      const suffix = " (offline copy)";
+      const copy = {
+        ...notebook,
+        id,
+        name: notebook.name.slice(0, 100 - suffix.length) + suffix,
+      };
+      const occupied = [...existing, ...copies].find((book) => book.id === id);
+      if (!occupied || JSON.stringify(occupied) === JSON.stringify(copy)) {
+        copies.push(copy);
+        break;
+      }
+      conflict += JSON.stringify(occupied);
+    }
+  }
+  return copies;
+}
