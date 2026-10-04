@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { pnpmInvocation } from "../../scripts/verification-runner.mjs";
+import { sourceProvenanceChecks } from "./source-provenance.mjs";
 import { browserContractChecks } from "./browser-contract.mjs";
 import { controlCoverageChecks } from "./control-coverage.mjs";
 import { spawnSync } from "node:child_process";
@@ -161,6 +162,7 @@ for (const [id, args, expected] of [
     assert.equal(report.exitCode, expected);
     assert.equal(result.stderr, "");
   });
+checks.push(...sourceProvenanceChecks());
 checks.push(...browserContractChecks(root));
 checks.push(...controlCoverageChecks(root));
 console.log(

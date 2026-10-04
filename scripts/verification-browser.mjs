@@ -7,6 +7,7 @@ import {
   sourceIdentity,
   mathContractFingerprint,
 } from "./verification-contract.mjs";
+import { checkRuntimeProvenance } from "./verification-source-provenance.mjs";
 export function checkBrowserEvidence(root, map, file) {
   if (!file) failure("Browser evidence unavailable: --evidence required", 3);
   const evidence = readJson(file),
@@ -14,6 +15,14 @@ export function checkBrowserEvidence(root, map, file) {
     checks = [];
   const add = (id, passed) =>
     checks.push({ id, status: passed ? "pass" : "fail" });
+  const provenance =
+    evidence.runtimeProvenance === undefined
+      ? null
+      : checkRuntimeProvenance(root, evidence, current);
+  if (provenance) checks.push(...provenance.checks);
+  const observationIdentity = provenance?.valid
+    ? provenance.observationIdentity
+    : evidence;
   add("schema", evidence.schemaVersion === 1);
   add("kind", evidence.kind === "browser-runtime");
   add("revision", evidence.revision === current.revision);
@@ -184,9 +193,9 @@ export function checkBrowserEvidence(root, map, file) {
     } catch {}
     add(
       "mathMatcher.captureIdentity",
-      captured?.revision === evidence.revision &&
-        captured?.sourceFingerprint === evidence.sourceFingerprint &&
-        captured?.buildFingerprint === evidence.buildFingerprint &&
+      captured?.revision === observationIdentity.revision &&
+        captured?.sourceFingerprint === observationIdentity.sourceFingerprint &&
+        captured?.buildFingerprint === observationIdentity.buildFingerprint &&
         captured?.runtime === "production-build",
     );
     const captures = Array.isArray(captured?.captures) ? captured.captures : [];
