@@ -70,6 +70,7 @@ if (!chosen || chosen === "catalogue.mapping") {
       "scripts/verification-contract.mjs",
       "scripts/verification-coverage.mjs",
       "scripts/verification-browser.mjs",
+      "scripts/verification-source-provenance.mjs",
       "scripts/verification-runner.mjs",
     ])
       fs.copyFileSync(root + "/" + file, temp + "/" + file);

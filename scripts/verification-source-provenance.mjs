@@ -10,6 +10,7 @@ const contractPaths = new Set([
   "scripts/verification-browser.mjs",
   "scripts/verification-source-provenance.mjs",
   "tests/verification/cli.mjs",
+  "tests/verification/detectors.mjs",
   "tests/verification/source-provenance.mjs",
 ]);
 const revisionPattern = /^[a-f0-9]{40}$/;
