@@ -173,6 +173,7 @@ export default forwardRef<
             "alphabetic",
             {
               label: "Structures",
+              displayEditToolbar: true,
               rows: [
                 [
                   structureTemplates.Fraction,
