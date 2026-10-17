@@ -77,11 +77,12 @@ async function main() {
     report = { commands: map.commands, examples: map.examples };
   else if (command === "list")
     report = {
-      suites: map.suites,
-      surfaces: map.surfaces,
-      controls: map.controls,
-      routes: map.routes,
-      features: map.features,
+      kind: "verification-discovery-summary",
+      suites: map.suites.map(({ id }) => ({ id })),
+      surfaces: map.surfaces.map(({ id }) => ({ id })),
+      controls: map.controls.map(({ id }) => ({ id })),
+      routes: map.routes.map(({ id }) => ({ id })),
+      features: map.features.map(({ id }) => ({ id })),
       groups: map.groups,
     };
   else if (command === "show") {
@@ -212,6 +213,22 @@ async function main() {
         2,
       ),
     );
+    report = {
+      ...report,
+      kind: "verification-run-summary",
+      manifest: path.join(evidenceDirectory, "manifest.json"),
+      suites: suites.map(({ id, status, checks = [], prerequisites = [] }) => ({
+        id,
+        status,
+        checkCount: checks.length,
+        nonPassingCheckCount: checks.filter((check) => check.status !== "pass")
+          .length,
+        prerequisiteCount: prerequisites.length,
+        nonPassingPrerequisiteCount: prerequisites.filter(
+          (check) => check.status !== "pass",
+        ).length,
+      })),
+    };
   } else failure(`Unknown command ${command}`);
   const exitCode =
     report.status === "blocked"
@@ -224,7 +241,9 @@ async function main() {
   console.log(
     JSON.stringify(
       {
-        schemaVersion: 1,
+        schemaVersion: ["run", "prove-detectors", "list"].includes(command)
+          ? 2
+          : 1,
         command,
         startedAt,
         completedAt: new Date().toISOString(),

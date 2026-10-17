@@ -38,15 +38,20 @@ export function checkBrowserEvidence(root, map, file) {
   );
   add(
     "completed",
-    !!evidence.startedAt &&
-      !!evidence.completedAt &&
+    typeof evidence.startedAt === "string" &&
+      typeof evidence.completedAt === "string" &&
+      Number.isFinite(Date.parse(evidence.startedAt)) &&
+      Number.isFinite(Date.parse(evidence.completedAt)) &&
+      Date.parse(evidence.startedAt) <= Date.parse(evidence.completedAt) &&
       evidence.status === "pass",
   );
   add("origin", /^https?:\/\//.test(evidence.origin || ""));
   add(
     "viewport",
     Number.isFinite(evidence.viewport?.width) &&
-      Number.isFinite(evidence.viewport?.height),
+      evidence.viewport.width > 0 &&
+      Number.isFinite(evidence.viewport?.height) &&
+      evidence.viewport.height > 0,
   );
   add("browser", typeof evidence.browser === "string" && !!evidence.browser);
   add(
@@ -56,21 +61,27 @@ export function checkBrowserEvidence(root, map, file) {
   const checksList = Array.isArray(evidence.checks) ? evidence.checks : [];
   add(
     "checks.unique",
-    new Set(checksList.map((check) => check.id)).size === checksList.length,
+    new Set(checksList.map((check) => check?.id)).size === checksList.length,
   );
   const passed = new Set(
     checksList
       .filter(
         (check) =>
+          typeof check?.id === "string" &&
+          check.id.trim() &&
           check.status === "pass" &&
-          check.steps?.length &&
-          check.assertions?.length,
+          [check.steps, check.assertions].every(
+            (items) =>
+              Array.isArray(items) &&
+              items.length > 0 &&
+              items.every((item) => typeof item === "string" && item.trim()),
+          ),
       )
       .map((check) => check.id),
   );
   add(
     "checks.allPass",
-    checksList.every((check) => check.status === "pass"),
+    checksList.every((check) => check && passed.has(check.id)),
   );
   for (const id of [
     ...map.evidenceSchema.requiredBrowserFixtureIds,

@@ -2,6 +2,8 @@
 
 The source inventory, mathematical oracle, rendered application and disconnected runtime establish different facts. A correct engine answer cannot establish that a form represents its inputs correctly, its controls work, or the browser can reopen without its origin.
 
+`list` returns IDs for targeted `show <ID>` lookup. `run` and `prove-detectors` return suite statuses and counts plus a `manifest` path to the complete report. These three stdout envelopes use schema version 2. Detailed manifests, other commands and error envelopes retain version 1. Read the manifest for every check, prerequisite, child exit code and hashed log; summaries never replace evidence or change verdicts.
+
 Start with `pnpm --silent verify --help`, `list --json`, then `show <ID> --json`. The versioned contract is [verification-map.json](verification-map.json). Independent default and choice fixtures live in `tests/fixtures/`; command contracts and evidence checks live in `scripts/verification-*.mjs`. `pnpm --silent verify doctor --suite math --json` reports prerequisites without preparing assets. `doctor --group core --json` checks every selected suite and blocks if any prerequisite is unavailable; plain `doctor` checks only Node. `show core --json` lists the group’s suites.
 
 `show editor.menu --json` follows the fixtures’ grouping tag to their IDs and owning feature IDs; vendor-menu groups remain separate from the catalogue’s operation surfaces.
@@ -9,6 +11,8 @@ Start with `pnpm --silent verify --help`, `list --json`, then `show <ID> --json`
 `pnpm --silent verify run --group core --json` provides one local/CI entrypoint. It runs the owned checks and build closure; its result explicitly records browser verification as `not-run`. The map declares preparation's possible network use and writes separately from no-fetch mathematical execution. Default fixtures and choice fixtures are independent mathematical expectations, not captured implementation snapshots. Approximate values use finite tolerances; bases and solution families also check dimensions or independent parameters, avoiding sign-sensitive snapshots and incomplete residual-only checks.
 
 `pnpm --silent verify run --group deep-math --json` runs valid/invalid mathematical contracts, the observed-result adapter and failure detectors. `--group regressions` isolates editor, notation, display, graph, worker, result-validation and async-component regressions. These regressions also run once through canonical `pnpm test`, which `core` invokes.
+
+The map must retain every fixture's rendered outcome and all required phone dialogs. Empty, duplicate, unknown or incomplete inventories fail validation. Unknown prerequisites block doctor. Each suite removes its own previous structured report before launching, so a child that omits its report cannot reuse an earlier pass. Browser records require ordered parseable timestamps, positive viewport dimensions and nonempty string arrays for actions and assertions. These checks validate the evidence contract, not browser execution.
 
 `pnpm --silent verify run --suite math --fixture form.matrix_inverse.default --json` runs one fixture. Omitting `--fixture` runs all mathematics fixtures. The runner records standard output/error and structured results in a temporary evidence directory; `--evidence-dir` chooses a directory. Nothing here writes an account workspace or publishes a deployment.
 

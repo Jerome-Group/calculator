@@ -9,7 +9,6 @@ import {
   mathContractFingerprint,
 } from "../../scripts/verification-contract.mjs";
 
-// Synthetic contract mutations only; never browser execution evidence.
 export function browserContractChecks(root) {
   const checks = [],
     temp = fs.mkdtempSync(path.join(os.tmpdir(), "calculator-contract-test-"));
@@ -57,8 +56,8 @@ export function browserContractChecks(root) {
     buildFingerprint: fs.existsSync(manifest)
       ? digest(fs.readFileSync(manifest))
       : "unbuilt",
-    startedAt: "fixture-start",
-    completedAt: "fixture-end",
+    startedAt: "2026-01-01T00:00:00Z",
+    completedAt: "2026-01-01T00:00:01Z",
     status: "pass",
     origin: "http://localhost:4173",
     viewport: { width: 360, height: 800 },
@@ -129,6 +128,41 @@ export function browserContractChecks(root) {
     }
   };
   try {
+    for (const [id, field, value] of [
+      ["invalid-time", "startedAt", "fixture-start"],
+      ["reversed-time", "completedAt", "2025-12-31T23:59:59Z"],
+      ["zero-viewport", "viewport", { width: 0, height: 800 }],
+      ["negative-viewport", "viewport", { width: 360, height: -1 }],
+    ]) {
+      check("browser." + id, () => {
+        const target = field === "viewport" ? "viewport" : "completed";
+        assert.equal(status(valid, target), "pass");
+        assert.equal(status({ ...valid, [field]: value }, target), "fail");
+      });
+    }
+    for (const field of ["steps", "assertions"]) {
+      for (const value of ["claimed", [""], [null], []]) {
+        check(`browser.${field}.${JSON.stringify(value)}`, () => {
+          const mutant = structuredClone(valid);
+          mutant.checks[0][field] = value;
+          assert.equal(status(mutant, "browser.form.simplify.default"), "fail");
+          assert.equal(status(valid, "browser.form.simplify.default"), "pass");
+        });
+      }
+    }
+    check("browser.malformed-extra-record", () => {
+      const mutant = structuredClone(valid);
+      mutant.checks.push({
+        id: "extra",
+        status: "pass",
+        steps: "claimed",
+        assertions: [null],
+      });
+      assert.equal(status(mutant, "checks.allPass"), "fail");
+      mutant.checks[2] = null;
+      assert.equal(status(mutant, "checks.allPass"), "fail");
+      assert.equal(status(valid, "checks.allPass"), "pass");
+    });
     check("browser.control-mapping-mutation", () => {
       assert.equal(status(valid, "control.001"), "pass");
       const mutant = structuredClone(valid);
