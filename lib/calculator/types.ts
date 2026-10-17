@@ -24,12 +24,7 @@ export type Result = {
   latex: string;
   approx?: string;
   status:
-    | "exact"
-    | "numeric"
-    | "unresolved"
-    | "conditional"
-    | "divergent"
-    | "error";
+    "exact" | "numeric" | "unresolved" | "conditional" | "divergent" | "error";
   notes: string[];
   display?: any;
   detailDisplay?: any;
