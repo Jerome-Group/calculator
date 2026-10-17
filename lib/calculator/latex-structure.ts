@@ -30,7 +30,7 @@ export function latexStructure(source: string): Structure[] {
   if (source.length > 4000) throw Error("Keep the original source");
   const tokens: string[] = [];
   const token = /\\[A-Za-z]+|(?:\d+(?:\.\d*)?|\.\d+)|[A-Za-z{}()+\-*/^=!]/y;
-  for (let position = 0; position < source.length; ) {
+  for (let position = 0; position < source.length;) {
     if (/\s/.test(source[position])) {
       position++;
       continue;

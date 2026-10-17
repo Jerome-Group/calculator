@@ -3,9 +3,8 @@ import fs from "node:fs";
 import ts from "typescript";
 
 await import("./resolve-types.mjs");
-const { prepareMathLiveMenu } = await import(
-  "../lib/calculator/mathlive-menu.ts"
-);
+const { prepareMathLiveMenu } =
+  await import("../lib/calculator/mathlive-menu.ts");
 
 const source = fs.readFileSync(
   new URL("../node_modules/mathlive/mathlive.mjs", import.meta.url),
@@ -244,9 +243,8 @@ console.log(
   "Pinned menu labels, matrix insertion selection and first-placeholder regressions passed",
 );
 
-const { cutMathLiveSelection } = await import(
-  "../lib/calculator/mathlive-cut.ts"
-);
+const { cutMathLiveSelection } =
+  await import("../lib/calculator/mathlive-cut.ts");
 const originalClipboard = Object.getOwnPropertyDescriptor(
   navigator,
   "clipboard",

@@ -12,9 +12,8 @@ import {
 } from "./verification/editor-geometry.mjs";
 
 await import("./resolve-types.mjs");
-const { prepareMathLiveMenu } = await import(
-  "../lib/calculator/mathlive-menu.ts"
-);
+const { prepareMathLiveMenu } =
+  await import("../lib/calculator/mathlive-menu.ts");
 
 const navigationGeometry = {
   tabs: Object.fromEntries(

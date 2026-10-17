@@ -32,9 +32,8 @@ globalThis.fetch = async () =>
     state: null,
     revision: 0,
   });
-const { initializeAccount, forgetAccount } = await import(
-  "../lib/calculator/sync.ts"
-);
+const { initializeAccount, forgetAccount } =
+  await import("../lib/calculator/sync.ts");
 const {
   validateState,
   loadState,
@@ -43,9 +42,8 @@ const {
   STORAGE_KEY,
   BACKUP_KEY,
 } = await import("../lib/calculator/storage.ts");
-const { newNotebook, DEFAULT_SETTINGS } = await import(
-  "../lib/calculator/types.ts"
-);
+const { newNotebook, DEFAULT_SETTINGS } =
+  await import("../lib/calculator/types.ts");
 await initializeAccount();
 navigator.onLine = false;
 const key = accountStorage(STORAGE_KEY),
