@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { stripTypeScriptTypes } from "node:module";
-import { webcrypto } from "node:crypto";
+import { createHash, webcrypto } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -389,6 +389,91 @@ await check(
     );
   },
 );
+
+for (const tampered of [false, true])
+  await check(
+    tampered
+      ? "offline preparation rejects tampered HTML despite AJAX delivery"
+      : "offline preparation preserves original HTML through AJAX delivery",
+    async () => {
+      const html = "<html>Coverage original</html>",
+        asset = {
+          url: "/coverage.html",
+          bytes: Buffer.byteLength(html),
+          sha256: createHash("sha256").update(html).digest("hex"),
+        },
+        listeners = {},
+        entries = new Map(),
+        reports = [];
+      const context = vm.createContext({
+        Response,
+        URL,
+        crypto: webcrypto,
+        Uint8Array,
+        fetch: async (url, options) => {
+          if (url === "/offline-manifest.json")
+            return Response.json({
+              version: "__BUILD_VERSION__",
+              assets: [asset],
+              bytes: asset.bytes,
+            });
+          if (url === "/") return new Response("<html>Signed-in app</html>");
+          assert.equal(url, asset.url);
+          assert.equal(options.credentials, "same-origin");
+          const ajax =
+              new Headers(options.headers).get("X-Requested-With") ===
+              "XMLHttpRequest",
+            body = tampered ? html.replace("original", "tampered") : html,
+            response = new Response(
+              body + (ajax ? "" : "<script>HTML detection</script>"),
+            );
+          Object.defineProperty(response, "url", {
+            value: "https://example.test/coverage",
+          });
+          return response;
+        },
+        caches: {
+          open: async () => ({
+            match: async (key) => entries.get(key)?.clone(),
+            put: async (key, response) => entries.set(key, response.clone()),
+          }),
+          keys: async () => [],
+        },
+        self: {
+          location: { origin: "https://example.test" },
+          clients: {
+            matchAll: async () => [
+              { postMessage: (message) => reports.push(message) },
+            ],
+          },
+          addEventListener: (type, fn) => (listeners[type] = fn),
+        },
+      });
+      vm.runInContext(readSource("public/sw.js"), context);
+      let preparing;
+      listeners.message({
+        data: { type: "PREPARE" },
+        waitUntil: (promise) => (preparing = promise),
+      });
+      await preparing;
+      if (tampered) {
+        assert.match(
+          reports.at(-1)?.status.state,
+          /^Interrupted: Could not verify/,
+        );
+        assert(!entries.has(asset.url));
+        assert(!entries.has("/__calculator_offline_ready__"));
+        assert(!reports.some((report) => report.status.state === "Ready"));
+      } else {
+        assert.equal(reports.at(-1)?.status.state, "Ready");
+        assert.equal(await entries.get(asset.url).text(), html);
+        assert.equal(
+          (await entries.get("/__calculator_offline_ready__").json()).state,
+          "Ready",
+        );
+      }
+    },
+  );
 
 await check(
   "account discovered through initialization never submits previous-account pending data",
