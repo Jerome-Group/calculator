@@ -57,5 +57,8 @@ updates:
       interval: weekly
     labels: []
     rebase-strategy: auto
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     cooldown:
       default-days: 7
