@@ -18,4 +18,8 @@ Open **Explore**, **Find an operation** or Cmd/Ctrl K. **Help and coverage** ope
 
 ## Gotchas
 
+Hosted [HTML detection](https://developers.cloudflare.com/cloudflare-challenges/challenge-types/javascript-detections/) can inject scripts into HTML page views but excludes AJAX. For deployed offline delivery, retain the actual asset prefetch's `X-Requested-With: XMLHttpRequest` header, final same-origin URL, response byte count, and SHA-256 against the deployed manifest. Preserve transformed-response failures.
+
+Synthetic preview identities and successful HTTP asset checks do not prove hosted Sites sign-in, **Ready**, or disconnected reopening. Record any SSO prerequisite and the attempted browser route. Claim those results only after observing the signed-in browser journey.
+
 Stopping only Wrangler leaves a proxy HTTP 502, which does not exercise the service worker's network-failure fallback. Stop the proxy, reload and make a fresh calculation. A healthy cached shell does not prove all engine capabilities were prepared. Service workers require a secure or loopback origin and available browser storage. Offline cleanup must restore the network and stop remaining owned sessions. Browser emulation does not certify physical touch. Retain all six required modal records for full release evidence.

@@ -84,6 +84,7 @@ self.addEventListener("message", (event) => {
                 r = await fetch(asset.url, {
                   cache: "reload",
                   credentials: "same-origin",
+                  headers: { "X-Requested-With": "XMLHttpRequest" },
                 });
                 if (
                   !r.ok ||
