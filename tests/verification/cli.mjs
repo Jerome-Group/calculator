@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { pnpmInvocation } from "../../scripts/verification-runner.mjs";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {
+  pnpmInvocation,
+  checkPrerequisites,
+  runSuite,
+} from "../../scripts/verification-runner.mjs";
 import { sourceProvenanceChecks } from "./source-provenance.mjs";
 import { browserContractChecks } from "./browser-contract.mjs";
 import { controlCoverageChecks } from "./control-coverage.mjs";
@@ -28,7 +35,10 @@ function cli(argv, expected, env = {}) {
   );
   assert.equal(result.status, expected, result.stderr);
   const parsed = JSON.parse(result.stdout);
-  assert.equal(parsed.schemaVersion, 1);
+  assert.equal(
+    parsed.schemaVersion,
+    ["run", "prove-detectors", "list"].includes(parsed.command) ? 2 : 1,
+  );
   assert.equal(parsed.exitCode, expected);
   return parsed;
 }
@@ -112,8 +122,7 @@ check("cli.menu.fixture.discovery", () => {
   );
 });
 check("cli.evidence.metadata", () => {
-  const report = cli(["list"], 0);
-  const suite = (id) => report.suites.find((row) => row.id === id);
+  const suite = (id) => cli(["show", id], 0);
   assert.deepEqual(suite("format").evidence, [
     "format.stdout.log",
     "format.stderr.log",
@@ -124,6 +133,38 @@ check("cli.evidence.metadata", () => {
     "manifest.json suites[].checks",
   ]);
 });
+check("cli.discovery.summary", () => {
+  const report = cli(["list"], 0);
+  const map = readJson(root + "docs/verification-map.json");
+  assert.equal(report.kind, "verification-discovery-summary");
+  for (const field of ["suites", "surfaces", "controls", "routes", "features"])
+    assert.deepEqual(
+      report[field],
+      map[field].map(({ id }) => ({ id })),
+    );
+  assert(JSON.stringify(report).length < 32768);
+});
+check("cli.run.summary-retains-evidence", () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "calculator-summary-"));
+  try {
+    const report = cli(
+      ["run", "--suite", "coverage", "--evidence-dir", temp],
+      0,
+    );
+    const full = readJson(report.manifest);
+    assert.equal(report.kind, "verification-run-summary");
+    assert.equal(full.schemaVersion, 1);
+    assert.equal(full.status, report.status);
+    assert.equal(full.sourceFingerprint, report.sourceFingerprint);
+    assert(full.suites[0].checks.length > 100);
+    assert.equal(report.suites[0].checkCount, full.suites[0].checks.length);
+    assert.equal(report.suites[0].nonPassingCheckCount, 0);
+    assert.equal(report.suites[0].checks, undefined);
+    assert(JSON.stringify(report).length < 4096);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
 check("cli.unknown.argument", () => cli(["--unknown"], 2));
 check("cli.conflicting.group", () =>
   cli(["run", "--suite", "math", "--group", "core"], 2),
@@ -133,18 +174,107 @@ check("cli.duplicate.argument", () => cli(["--json"], 2));
 check("map.unsupported.version", () =>
   assert.throws(() => validateMap({ schemaVersion: 99 }, [])),
 );
-check("map.empty.assertions", () =>
-  assert.throws(() =>
-    validateMap({ schemaVersion: 1, suites: [], surfaces: [] }, [
-      {
-        id: "fixture",
-        request: { operation: "simplify" },
-        expectedStatus: "exact",
-        assertions: [],
-      },
-    ]),
-  ),
-);
+check("map.empty.assertions", () => {
+  const map = readJson(root + "docs/verification-map.json");
+  const fixtures = readFixtures(root);
+  fixtures[0].assertions = [];
+  assert.throws(() => validateMap(map, fixtures), /Incomplete fixture/);
+});
+check("map.invalid.groups", () => {
+  const map = readJson(root + "docs/verification-map.json");
+  for (const groups of [
+    undefined,
+    null,
+    [],
+    {},
+    { core: [] },
+    { core: "math" },
+    { core: ["missing-suite"] },
+    { core: ["math", "math"] },
+    { " ": ["math"] },
+  ])
+    assert.throws(
+      () => validateMap({ ...map, groups }, readFixtures(root)),
+      /Invalid verification group/,
+    );
+  const temp = fs.mkdtempSync(
+    path.join(os.tmpdir(), "calculator-empty-group-"),
+  );
+  try {
+    fs.cpSync(root + "tests/fixtures", temp + "/tests/fixtures", {
+      recursive: true,
+    });
+    fs.mkdirSync(temp + "/docs");
+    fs.writeFileSync(
+      temp + "/docs/verification-map.json",
+      JSON.stringify({ ...map, groups: { core: [] } }),
+    );
+    for (const command of ["doctor", "run"])
+      assert.match(
+        cli([command, "--group", "core"], 2, { CALCULATOR_ROOT: temp }).error,
+        /Invalid verification group/,
+      );
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+for (const field of ["requiredBrowserFixtureIds", "requiredPhoneModalIds"]) {
+  for (const mutation of [
+    "missing",
+    "empty",
+    "duplicate",
+    "incomplete",
+    "unknown",
+  ]) {
+    check(`map.${field}.${mutation}`, () => {
+      const map = readJson(root + "docs/verification-map.json");
+      const required = map.evidenceSchema[field];
+      if (mutation === "missing") delete map.evidenceSchema[field];
+      if (mutation === "empty") map.evidenceSchema[field] = [];
+      if (mutation === "duplicate") required.push(required[0]);
+      if (mutation === "incomplete") required.pop();
+      if (mutation === "unknown") required[0] = "unknown-obligation";
+      assert.throws(
+        () => validateMap(map, readFixtures(root)),
+        /required inventory/,
+      );
+    });
+  }
+}
+check("runner.unknown-prerequisite", () => {
+  const report = checkPrerequisites(root, {
+    prerequisites: ["unchecked-typo"],
+  });
+  assert.equal(report.status, "blocked");
+  assert(
+    report.checks.some(
+      (row) => row.id === "unchecked-typo" && row.status === "blocked",
+    ),
+  );
+});
+check("runner.stale-report", () => {
+  const temp = fs.mkdtempSync(
+    path.join(os.tmpdir(), "calculator-stale-report-"),
+  );
+  try {
+    fs.writeFileSync(
+      path.join(temp, "math.result.json"),
+      JSON.stringify({
+        schemaVersion: 1,
+        status: "pass",
+        checks: [{ id: "old", status: "pass" }],
+      }),
+    );
+    const map = {
+      suites: [{ id: "math", argv: ["node", "-e", ""], prerequisites: [] }],
+    };
+    const result = runSuite(root, map, new Map(), "math", temp);
+    assert.equal(result.status, "fail");
+    assert(!fs.existsSync(path.join(temp, "math.result.json")));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
 for (const [id, args, expected] of [
   ["pnpm.silent.success-json", ["--help"], 0],
   ["pnpm.silent.blocked-json", ["browser", "validate"], 3],
