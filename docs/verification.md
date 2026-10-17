@@ -2,6 +2,8 @@
 
 The source inventory, mathematical oracle, rendered application and disconnected runtime establish different facts. A correct engine answer cannot establish that a form represents its inputs correctly, its controls work, or the browser can reopen without its origin.
 
+Choose checks for the changed behavior and use the project verify skill for real user journeys. Use TDD when requested or when a failing check helps isolate a defect. Reuse existing coverage and remove duplicate checks only when the stronger check preserves the same contract.
+
 `list` returns IDs for targeted `show <ID>` lookup. `run` and `prove-detectors` return suite statuses and counts plus a `manifest` path to the complete report. These three stdout envelopes use schema version 2. Detailed manifests, other commands and error envelopes retain version 1. Read the manifest for every check, prerequisite, child exit code and hashed log; summaries never replace evidence or change verdicts.
 
 Start with `pnpm --silent verify --help`, `list --json`, then `show <ID> --json`. The versioned contract is [verification-map.json](verification-map.json). Independent default and choice fixtures live in `tests/fixtures/`; command contracts and evidence checks live in `scripts/verification-*.mjs`. `pnpm --silent verify doctor --suite math --json` reports prerequisites without preparing assets. `doctor --group core --json` checks every selected suite and blocks if any prerequisite is unavailable; plain `doctor` checks only Node. `show core --json` lists the group’s suites.

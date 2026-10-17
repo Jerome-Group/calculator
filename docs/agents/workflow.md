@@ -32,11 +32,9 @@ one context window's worth of implementation. When it is not, go from the grilli
 `/implement` in the same window — a spec for work that fits in one session is ceremony that buys
 nothing.
 
-`/implement` chooses checks for the changed behavior and uses the project verify skill for real
-user journeys. Use `/tdd` when requested or when a failing check helps isolate a defect. Reuse
-existing coverage and remove duplicate checks only when the stronger check preserves the same
-contract. Run `/code-review` before committing. The pull request that follows is not optional:
-**How work flows** in `AGENTS.md` is the rule.
+`/implement` drives `/tdd` at the agreed seams and closes by running `/code-review` before
+anything is committed, so the review the Owner reads is a conclusion rather than a promise. The
+pull request that follows is not optional: **How work flows** in `AGENTS.md` is the rule.
 
 ## From a cleared map, `/to-spec` is mandatory
 
