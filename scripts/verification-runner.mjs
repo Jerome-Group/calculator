@@ -28,7 +28,7 @@ export function checkPrerequisites(root, suite) {
           id: file,
           status: fs.existsSync(path.join(root, file)) ? "pass" : "blocked",
         });
-    if (prerequisite === "lockedInstall")
+    else if (prerequisite === "lockedInstall")
       checks.push({
         id: prerequisite,
         status:
@@ -39,7 +39,7 @@ export function checkPrerequisites(root, suite) {
             ? "pass"
             : "blocked",
       });
-    if (prerequisite === "productionBuild")
+    else if (prerequisite === "productionBuild")
       checks.push({
         id: prerequisite,
         status: fs.existsSync(
@@ -48,7 +48,7 @@ export function checkPrerequisites(root, suite) {
           ? "pass"
           : "blocked",
       });
-    if (prerequisite === "pnpm") {
+    else if (prerequisite === "pnpm") {
       const invocation = pnpmInvocation();
       const result = spawnSync(
         invocation.executable,
@@ -63,7 +63,12 @@ export function checkPrerequisites(root, suite) {
             : "blocked",
         actual: result.stdout?.trim() || result.error?.message,
       });
-    }
+    } else
+      checks.push({
+        id: prerequisite,
+        status: "blocked",
+        actual: "Unknown prerequisite",
+      });
   }
   return {
     status: checks.every((check) => check.status === "pass")
@@ -99,6 +104,7 @@ export function runSuite(root, map, flags, id, evidenceDirectory) {
   argv.unshift(...invocation.prefix);
   const startedAt = new Date().toISOString(),
     resultFile = path.join(evidenceDirectory, id + ".result.json");
+  fs.rmSync(resultFile, { force: true });
   const child = spawnSync(executable, argv, {
     cwd: root,
     encoding: "utf8",

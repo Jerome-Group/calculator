@@ -79,6 +79,23 @@ export function validateMap(map, fixtures) {
       failure(`Invalid or duplicate ${kind} IDs`);
   }
   const ids = new Set(fixtures.map((fixture) => fixture.id));
+  if (
+    !map.groups ||
+    typeof map.groups !== "object" ||
+    Array.isArray(map.groups) ||
+    !Object.keys(map.groups).length
+  )
+    failure("Invalid verification groups");
+  const suiteIds = new Set(map.suites.map((suite) => suite.id));
+  for (const [group, members] of Object.entries(map.groups))
+    if (
+      !group.trim() ||
+      !Array.isArray(members) ||
+      !members.length ||
+      new Set(members).size !== members.length ||
+      members.some((id) => !suiteIds.has(id))
+    )
+      failure(`Invalid verification group ${group}`);
   for (const suite of map.suites) {
     if (
       !suite.argv?.length ||
@@ -101,6 +118,36 @@ export function validateMap(map, fixtures) {
       !fixture.expectedStatus
     )
       failure(`Incomplete fixture ${fixture.id}`);
+  for (const field of [
+    "requiredBrowserFixtureIds",
+    "requiredBrowserScenarioIds",
+    "requiredPhoneModalIds",
+  ]) {
+    const required = map.evidenceSchema?.[field];
+    if (
+      !Array.isArray(required) ||
+      !required.length ||
+      required.some((id) => typeof id !== "string" || !id.trim()) ||
+      new Set(required).size !== required.length
+    )
+      failure(`Invalid required inventory ${field}`);
+  }
+  for (const [field, expected] of [
+    ["requiredBrowserFixtureIds", fixtures.map((row) => row.id)],
+    [
+      "requiredPhoneModalIds",
+      ["finder", "settings", "object", "notebook", "nested-math", "sign-out"],
+    ],
+  ]) {
+    const required = map.evidenceSchema[field].map((id) =>
+      field === "requiredBrowserFixtureIds" ? id.replace(/^browser\./, "") : id,
+    );
+    if (
+      required.length !== expected.length ||
+      expected.some((id) => !required.includes(id))
+    )
+      failure(`Incomplete required inventory ${field}`);
+  }
 }
 
 export function mathContractFingerprint(root) {
