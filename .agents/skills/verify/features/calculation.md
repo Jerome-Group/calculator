@@ -6,12 +6,12 @@ Expression calculation, Math/Text/LaTeX modes, vendor menus, structured operatio
 
 ## How to get to it (user POV)
 
-Open **Calculate**. Choose **Text**, **Math** or **LaTeX**. **Explore** and **Find an operation** open structured tasks. Result cards expose **Edit problem** and **Copy LaTeX**. **Calculation details** requires LaTeX and details; **Conditions and diagnostics** requires notes.
+Open **Calculate**. Choose **Text**, **Math** or **LaTeX**. **Explore** and **Find an operation** open structured tasks. Result cards expose **Edit problem** and **Copy LaTeX**. **Calculation details** requires a nonempty result LaTeX field and details, regardless of input mode. **Conditions and diagnostics** requires notes.
 
 ## Driving it with the browser
 
 1. Choose **Text**, fill **Text expression** with `1/3+1/6`, click **Calculate**, and observe exact `1/2` in the new `article.calculation`.
-2. Edit the same problem. Switch between Math and Text, preserve binding and source, then calculate again. Exercise Undo/Redo and **Expression menu** with real inputs.
+2. Edit the same problem. Switch between Math and Text, preserve binding and source, then calculate again. Exercise editor Undo/Redo inside **Structures & editing** and **Expression menu** with real inputs. History has a separate **Undo**.
 3. Find **Probability distributions**. Use **Distribution**, **Probability operation** and their actual parameter labels. Standard normal CDF at zero equals `0.5`. Retain the problem preview and resulting answer.
 4. Use the machine-map recipes for nested input, matrices/lists, logic, malformed saved distribution inputs and every vendor menu leaf. Open required result disclosures before capturing semantic answers.
 5. Cancel a running calculation, retain its input, then compute a fresh expression successfully. Preserve action order and visible engine status.
