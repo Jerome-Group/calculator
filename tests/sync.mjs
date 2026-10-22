@@ -2070,6 +2070,106 @@ await check(
   },
 );
 await check(
+  "acknowledged recovery stays deleted after another same-tab save and reload",
+  async () => {
+    const { values, cloud, merged, reloaded } =
+      await offlineRecoveryRace("unchanged");
+    let call = cloud.calls.at(-1);
+    cloud.state = copyState(call.body.state);
+    cloud.revision++;
+    call.resolve(Response.json({ revision: cloud.revision }));
+    await flush();
+    const afterInitialAck = reloaded.drafts.readDrafts("a").length;
+    const deleted = {
+      ...merged,
+      active: "b",
+      notebooks: merged.notebooks.filter((book) => book.id === "b"),
+    };
+    reloaded.storage.persist(deleted);
+    call = cloud.calls.at(-1);
+    cloud.state = copyState(call.body.state);
+    cloud.revision++;
+    call.resolve(Response.json({ revision: cloud.revision }));
+    await flush();
+    const afterDeletionAck = reloaded.drafts.readDrafts("a").length;
+    const reopened = await tab("acknowledged-recovery-deletion", values, cloud);
+    await reopened.sync.initializeAccount();
+    assert.deepEqual(
+      {
+        afterInitialAck,
+        afterDeletionAck,
+        acknowledgedCloudCount: cloud.state.notebooks.length,
+        reopenedCount: reopened.sync.sessionWorkspace().notebooks.length,
+      },
+      {
+        afterInitialAck: 0,
+        afterDeletionAck: 0,
+        acknowledgedCloudCount: 1,
+        reopenedCount: 1,
+      },
+    );
+    assert.deepEqual(copyState(reopened.sync.sessionWorkspace()), deleted);
+  },
+);
+await check(
+  "an old recovery acknowledgement preserves newer lineage after its draft write fails",
+  async () => {
+    const { values, cloud, merged, reloaded } =
+      await offlineRecoveryRace("unchanged");
+    const [key, serialized] = [...values.entries()].find(
+      ([key, value]) =>
+        key.startsWith("calculator.pending.v1:a:") &&
+        JSON.parse(value).recovery,
+    );
+    const newer = initial("Newer offline work");
+    newer.settings.angle = "deg";
+    const copies = await reloaded.drafts.recoveryNotebooks(
+      "a",
+      newer,
+      merged.notebooks,
+    );
+    const latest = { ...merged, notebooks: [...merged.notebooks, ...copies] };
+    values.set = function (name, value) {
+      if (name === key) throw Error("Draft quota exceeded");
+      return Map.prototype.set.call(this, name, value);
+    };
+    assert.throws(
+      () =>
+        reloaded.drafts.writeRecoveryDraft("a", cloud.revision, latest, [
+          ...JSON.parse(serialized).recovery.sources,
+          {
+            revision: cloud.revision,
+            state: newer,
+            notebookIds: copies.map((book) => book.id),
+          },
+        ]),
+      /Draft quota exceeded/,
+    );
+    const call = cloud.calls.at(-1);
+    cloud.state = copyState(call.body.state);
+    cloud.revision++;
+    call.resolve(Response.json({ revision: cloud.revision }));
+    await flush();
+    delete values.set;
+    reloaded.storage.persist(latest);
+    assert(
+      reloaded.drafts
+        .readDrafts("a")
+        .flatMap((draft) => reloaded.drafts.draftSources(draft))
+        .some(
+          (source) => JSON.stringify(source.state) === JSON.stringify(newer),
+        ),
+      "Old acknowledgement erased newer content and settings evidence",
+    );
+    const reopened = await tab("newer-recovery-after-old-ack", values, cloud);
+    await reopened.sync.initializeAccount();
+    assert.deepEqual(
+      copyState(reopened.sync.sessionWorkspace()),
+      copyState(latest),
+    );
+  },
+);
+await check(
   "recovery lineage is self-contained, flat and validated before replay",
   async () => {
     const { values, cloud, merged, offline } =
