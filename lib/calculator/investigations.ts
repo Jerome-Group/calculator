@@ -1,6 +1,7 @@
 import { operations } from "./catalog";
 import { investigationLabs } from "./investigation-labs";
 import { newNotebook, uid } from "./types";
+import { isSettings, isDefinition } from "./workspace-values";
 import type { Definition, Entry, Notebook, Settings } from "./types";
 
 export type CalculationRequest = Pick<
@@ -77,39 +78,6 @@ const id = (value: unknown): value is string =>
   str(value, 100) && value.length > 0;
 const natural = (value: unknown): value is number =>
   typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
-export function isSettings(value: unknown): value is Settings {
-  return (
-    record(value) &&
-    (value.angle === "rad" || value.angle === "deg") &&
-    (value.domain === "real" || value.domain === "complex") &&
-    typeof value.precision === "number" &&
-    Number.isInteger(value.precision) &&
-    value.precision >= 5 &&
-    value.precision <= 200 &&
-    (value.displayDecimals === undefined ||
-      (typeof value.displayDecimals === "number" &&
-        Number.isInteger(value.displayDecimals) &&
-        value.displayDecimals >= 0 &&
-        value.displayDecimals <= 30)) &&
-    str(value.assumptions, 1000)
-  );
-}
-export function isDefinition(value: unknown): value is Definition {
-  return (
-    record(value) &&
-    str(value.id, 100) &&
-    str(value.name, 24) &&
-    /^[A-Za-z][A-Za-z0-9_]*$/.test(value.name) &&
-    str(value.expression) &&
-    (value.kind === "expression" ||
-      value.kind === "matrix" ||
-      value.kind === "dataset" ||
-      value.kind === "function" ||
-      value.kind === "object") &&
-    (value.args === undefined || str(value.args, 100)) &&
-    natural(value.updated)
-  );
-}
 function isDefinitions(value: unknown): value is Definition[] {
   return (
     Array.isArray(value) &&
@@ -198,6 +166,48 @@ function sameSettings(a: Settings, b: Settings) {
     a.assumptions === b.assumptions
   );
 }
+function requestValues(request: CalculationRequest) {
+  return {
+    operation: request.operation,
+    input: request.input,
+    mode: request.mode,
+    params: Object.entries(request.params).sort(([a], [b]) =>
+      a.localeCompare(b),
+    ),
+  };
+}
+function definitionValues(definitions: Definition[]) {
+  return definitions
+    .map((d) => ({
+      name: d.name,
+      expression: d.expression,
+      kind: d.kind,
+      args: d.args || "",
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+function boundCaseDefinitions(run: InvestigationRun, c: InvestigationCase) {
+  const definitions = run.snapshot.context.definitions.filter(
+    (d) => !run.snapshot.plan.parameters.includes(d.name),
+  );
+  for (const parameter of run.snapshot.plan.parameters) {
+    const original = run.snapshot.context.definitions.find(
+      (d) => d.name === parameter,
+    );
+    definitions.push({
+      id: original?.id || "parameter:" + parameter,
+      name: parameter,
+      kind: "expression",
+      expression: c.values[parameter],
+      updated: original?.updated || run.createdAt,
+    });
+  }
+  if (definitions.length > 500)
+    throw Error(
+      "Case bindings would exceed 500 objects. Remove an object before running.",
+    );
+  return definitions;
+}
 function isRun(value: unknown): value is InvestigationRun {
   return (
     record(value) &&
@@ -251,14 +261,20 @@ export function validateInvestigation(
     const cell = entry.investigation;
     if (!isCell(cell)) throw Error("Invalid investigation cell.");
     const run = runs.find((r) => r.id === cell.runId);
+    const c = run?.snapshot.plan.cases.find((c) => c.id === cell.caseId);
+    const step = run?.snapshot.plan.steps.find((s) => s.id === cell.stepId);
     const address = cellKey(cell);
-    if (
-      !run ||
-      !run.snapshot.plan.cases.some((c) => c.id === cell.caseId) ||
-      !run.snapshot.plan.steps.some((s) => s.id === cell.stepId) ||
-      cells.has(address)
-    )
+    if (!run || !c || !step || cells.has(address))
       throw Error("Invalid or duplicate investigation cell reference.");
+    if (
+      JSON.stringify(requestValues(entry)) !==
+        JSON.stringify(requestValues(step.request)) ||
+      !sameSettings(entry.settings, run.snapshot.context.settings) ||
+      entry.revision !== run.snapshot.context.revision ||
+      JSON.stringify(definitionValues(entry.definitions)) !==
+        JSON.stringify(definitionValues(boundCaseDefinitions(run, c)))
+    )
+      throw Error("Investigation cell inputs do not match its original run.");
     cells.add(address);
   }
   return {
@@ -379,30 +395,14 @@ export function prepareInvestigationRun({
             step.request.operation +
             ". Edit the next plan or retain this historical run.",
         );
-      const definitions = run.snapshot.context.definitions.filter(
-        (d) => !run.snapshot.plan.parameters.includes(d.name),
-      );
-      for (const parameter of run.snapshot.plan.parameters) {
-        const original = run.snapshot.context.definitions.find(
-          (d) => d.name === parameter,
-        );
-        definitions.push({
-          id: original?.id || "parameter:" + parameter,
-          name: parameter,
-          kind: "expression",
-          expression: c.values[parameter],
-          updated: original?.updated || run.createdAt,
-        });
-      }
-      if (definitions.length > 500)
-        throw Error(
-          "Case bindings would exceed 500 objects. Remove an object before running.",
-        );
       return [
         {
           cell,
           request: step.request,
-          context: { ...run.snapshot.context, definitions },
+          context: {
+            ...run.snapshot.context,
+            definitions: boundCaseDefinitions(run, c),
+          },
         },
       ];
     }),
@@ -431,12 +431,7 @@ export function investigationIsCurrent(
       steps: plan.steps
         .map((s) => ({
           id: s.id,
-          request: {
-            ...s.request,
-            params: Object.entries(s.request.params).sort(([a], [b]) =>
-              a.localeCompare(b),
-            ),
-          },
+          request: requestValues(s.request),
         }))
         .sort((a, b) => a.id.localeCompare(b.id)),
       settings: {
@@ -445,15 +440,9 @@ export function investigationIsCurrent(
         precision: plan.settings.precision,
         assumptions: plan.settings.assumptions,
       },
-      definitions: definitions
-        .filter((d) => !plan.parameters.includes(d.name))
-        .map((d) => ({
-          name: d.name,
-          expression: d.expression,
-          kind: d.kind,
-          args: d.args || "",
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name)),
+      definitions: definitionValues(
+        definitions.filter((d) => !plan.parameters.includes(d.name)),
+      ),
     });
   return (
     notebook.investigation !== undefined &&

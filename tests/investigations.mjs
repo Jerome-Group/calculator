@@ -90,6 +90,15 @@ const state = {
   notebooks: [notebook],
 };
 assert.deepEqual(validateState(structuredClone(state)), state);
+const legacy = structuredClone(state);
+delete legacy.notebooks[0].investigation;
+for (const definition of legacy.notebooks[0].definitions)
+  delete definition.updated;
+for (const entry of legacy.notebooks[0].history) {
+  delete entry.investigation;
+  for (const definition of entry.definitions) delete definition.updated;
+}
+assert.deepEqual(validateState(legacy), legacy);
 const snapshot = JSON.stringify(prepared.run);
 notebook.investigation.plan.cases[0].values.a = "3";
 assert.equal(investigationIsCurrent(notebook, prepared.run), false);
@@ -151,6 +160,30 @@ for (const mutate of [
   (s) => (s.notebooks[0].investigation.runs[0].notebookId = "foreign"),
   (s) => (s.notebooks[0].history[0].investigation.stepId = "absent"),
   (s) => (s.notebooks[0].history[0].investigation.caseId = "absent"),
+  (s) => (s.notebooks[0].history[0].operation = "approx"),
+  (s) => (s.notebooks[0].history[0].input = "A+1"),
+  (s) => (s.notebooks[0].history[0].mode = "math"),
+  (s) => {
+    s.notebooks[0].history[0].params = {
+      ...s.notebooks[0].history[0].params,
+      expression: "A+1",
+    };
+  },
+  (s) => {
+    s.notebooks[0].history[0].settings = {
+      ...s.notebooks[0].history[0].settings,
+      precision: 20,
+    };
+  },
+  (s) => s.notebooks[0].history[0].revision++,
+  (s) => {
+    s.notebooks[0].history[0].definitions = structuredClone(
+      s.notebooks[0].history[0].definitions,
+    );
+    s.notebooks[0].history[0].definitions.find(
+      (d) => d.name === "a",
+    ).expression = "99";
+  },
   (s) =>
     s.notebooks[0].investigation.runs[0].snapshot.context.definitions.push(
       s.notebooks[0].definitions[0],
@@ -164,6 +197,15 @@ const copied = structuredClone(state);
 copied.notebooks[0].id = "imported";
 copied.active = "imported";
 validateState(copied);
+const cosmetic = structuredClone(state);
+for (const entry of cosmetic.notebooks[0].history) {
+  entry.definitions = structuredClone(entry.definitions).reverse();
+  entry.definitions.forEach((d, i) => {
+    d.id = "copied-" + i;
+    delete d.updated;
+  });
+}
+validateState(cosmetic);
 const kept = removeInvestigation(notebook, true);
 assert.equal(kept.investigation, undefined);
 assert(kept.history.every((e) => e.investigation === undefined));

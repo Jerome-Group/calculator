@@ -18,7 +18,7 @@ export type Definition = {
   expression: string;
   kind: "expression" | "matrix" | "dataset" | "function" | "object";
   args?: string;
-  updated: number;
+  updated?: number;
 };
 export type Result = {
   text: string;

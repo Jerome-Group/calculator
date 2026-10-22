@@ -1,8 +1,5 @@
-import {
-  isSettings,
-  isDefinition,
-  validateInvestigation,
-} from "./investigations";
+import { isSettings, isDefinition } from "./workspace-values";
+import { validateInvestigation } from "./investigations";
 import { currentAccount, syncWorkspace, sessionWorkspace } from "./sync";
 import { validateResult } from "./result-validation";
 import type { SavedState } from "./types";

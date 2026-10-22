@@ -21,9 +21,16 @@
   "suites": [
     {
       "id": "format",
-      "argv": ["pnpm", "format:check"],
-      "prerequisites": ["pnpm"],
-      "reads": ["repo source/fixtures/locked dependencies"],
+      "argv": [
+        "pnpm",
+        "format:check"
+      ],
+      "prerequisites": [
+        "pnpm"
+      ],
+      "reads": [
+        "repo source/fixtures/locked dependencies"
+      ],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -35,13 +42,23 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["format.stdout.log", "format.stderr.log"]
+      "evidence": [
+        "format.stdout.log",
+        "format.stderr.log"
+      ]
     },
     {
       "id": "lint",
-      "argv": ["pnpm", "lint"],
-      "prerequisites": ["pnpm"],
-      "reads": ["repo source/fixtures/locked dependencies"],
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "prerequisites": [
+        "pnpm"
+      ],
+      "reads": [
+        "repo source/fixtures/locked dependencies"
+      ],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -53,13 +70,23 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["lint.stdout.log", "lint.stderr.log"]
+      "evidence": [
+        "lint.stdout.log",
+        "lint.stderr.log"
+      ]
     },
     {
       "id": "types",
-      "argv": ["pnpm", "typecheck"],
-      "prerequisites": ["pnpm"],
-      "reads": ["repo source/fixtures/locked dependencies"],
+      "argv": [
+        "pnpm",
+        "typecheck"
+      ],
+      "prerequisites": [
+        "pnpm"
+      ],
+      "reads": [
+        "repo source/fixtures/locked dependencies"
+      ],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -71,14 +98,26 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["types.stdout.log", "types.stderr.log"]
+      "evidence": [
+        "types.stdout.log",
+        "types.stderr.log"
+      ]
     },
     {
       "id": "existing-tests",
-      "argv": ["pnpm", "test"],
-      "prerequisites": ["pnpm"],
-      "reads": ["repo source/fixtures/locked dependencies"],
-      "writes": ["ignored engine cache"],
+      "argv": [
+        "pnpm",
+        "test"
+      ],
+      "prerequisites": [
+        "pnpm"
+      ],
+      "reads": [
+        "repo source/fixtures/locked dependencies"
+      ],
+      "writes": [
+        "ignored engine cache"
+      ],
       "network": "prepare may download pinned engine",
       "risk": "local owned source checks; no account data",
       "fixtures": [],
@@ -89,17 +128,27 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["existing-tests.stdout.log", "existing-tests.stderr.log"]
+      "evidence": [
+        "existing-tests.stdout.log",
+        "existing-tests.stderr.log"
+      ]
     },
     {
       "id": "math",
-      "argv": ["node", "tests/maths-oracle.mjs"],
-      "prerequisites": ["preparedEngine"],
+      "argv": [
+        "node",
+        "tests/maths-oracle.mjs"
+      ],
+      "prerequisites": [
+        "preparedEngine"
+      ],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "tests/maths-assertions.py"
       ],
-      "writes": ["selected evidence directory"],
+      "writes": [
+        "selected evidence directory"
+      ],
       "network": "forbidden",
       "risk": "local owned source checks; no account data",
       "fixtures": [
@@ -439,13 +488,24 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["math.stdout.log", "math.stderr.log", "math.result.json"]
+      "evidence": [
+        "math.stdout.log",
+        "math.stderr.log",
+        "math.result.json"
+      ]
     },
     {
       "id": "coverage",
-      "argv": ["node", "scripts/verify.mjs", "coverage", "--json"],
+      "argv": [
+        "node",
+        "scripts/verify.mjs",
+        "coverage",
+        "--json"
+      ],
       "prerequisites": [],
-      "reads": ["repo source/fixtures/locked dependencies"],
+      "reads": [
+        "repo source/fixtures/locked dependencies"
+      ],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -457,14 +517,26 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["manifest.json suites[].checks"]
+      "evidence": [
+        "manifest.json suites[].checks"
+      ]
     },
     {
       "id": "build",
-      "argv": ["pnpm", "build"],
-      "prerequisites": ["pnpm"],
-      "reads": ["repo source/fixtures/locked dependencies"],
-      "writes": ["dist/", "ignored engine cache"],
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "prerequisites": [
+        "pnpm"
+      ],
+      "reads": [
+        "repo source/fixtures/locked dependencies"
+      ],
+      "writes": [
+        "dist/",
+        "ignored engine cache"
+      ],
       "network": "prepare may download pinned engine",
       "risk": "writes generated output; no remote deployment",
       "fixtures": [],
@@ -475,12 +547,21 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["build.stdout.log", "build.stderr.log"]
+      "evidence": [
+        "build.stdout.log",
+        "build.stderr.log"
+      ]
     },
     {
       "id": "assets",
-      "argv": ["pnpm", "test:assets"],
-      "prerequisites": ["pnpm", "productionBuild"],
+      "argv": [
+        "pnpm",
+        "test:assets"
+      ],
+      "prerequisites": [
+        "pnpm",
+        "productionBuild"
+      ],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "built coverage local href targets and offline manifest"
@@ -496,17 +577,31 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": ["assets.stdout.log", "assets.stderr.log"]
+      "evidence": [
+        "assets.stdout.log",
+        "assets.stderr.log"
+      ]
     },
     {
       "id": "detectors",
-      "argv": ["node", "tests/verification/detectors.mjs"],
-      "prerequisites": ["preparedEngine"],
-      "reads": ["map, fixtures, source, prepared engine"],
-      "writes": ["private temporary files"],
+      "argv": [
+        "node",
+        "tests/verification/detectors.mjs"
+      ],
+      "prerequisites": [
+        "preparedEngine"
+      ],
+      "reads": [
+        "map, fixtures, source, prepared engine"
+      ],
+      "writes": [
+        "private temporary files"
+      ],
       "network": "forbidden",
       "risk": "disposable output/source mutation; no app data",
-      "fixtures": ["form.matrix_inverse.default"],
+      "fixtures": [
+        "form.matrix_inverse.default"
+      ],
       "exitCodes": {
         "0": "pass",
         "1": "detector failed",
@@ -527,8 +622,12 @@
         "--experimental-vm-modules",
         "tests/engine-lifecycle.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "owned source and controlled async fixtures"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -540,7 +639,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["engine-lifecycle.stdout.log", "engine-lifecycle.stderr.log"]
+      "evidence": [
+        "engine-lifecycle.stdout.log",
+        "engine-lifecycle.stderr.log"
+      ]
     },
     {
       "id": "result-validation",
@@ -550,8 +652,12 @@
         "./tests/resolve-types.mjs",
         "tests/result-validation.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "owned source and controlled async fixtures"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -570,9 +676,16 @@
     },
     {
       "id": "component-async",
-      "argv": ["node", "tests/component-async.mjs"],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "argv": [
+        "node",
+        "tests/component-async.mjs"
+      ],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "owned source and controlled async fixtures"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -584,13 +697,23 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["component-async.stdout.log", "component-async.stderr.log"]
+      "evidence": [
+        "component-async.stdout.log",
+        "component-async.stderr.log"
+      ]
     },
     {
       "id": "verification-cli",
-      "argv": ["node", "tests/verification/cli.mjs"],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["verification contract and owned fixture metadata"],
+      "argv": [
+        "node",
+        "tests/verification/cli.mjs"
+      ],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "verification contract and owned fixture metadata"
+      ],
       "writes": [],
       "network": "none",
       "risk": "read-only command probes",
@@ -602,17 +725,27 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["verification-cli.stdout.log", "verification-cli.stderr.log"]
+      "evidence": [
+        "verification-cli.stdout.log",
+        "verification-cli.stderr.log"
+      ]
     },
     {
       "id": "math-invalid",
-      "argv": ["node", "tests/maths-invalid.mjs"],
-      "prerequisites": ["preparedEngine"],
+      "argv": [
+        "node",
+        "tests/maths-invalid.mjs"
+      ],
+      "prerequisites": [
+        "preparedEngine"
+      ],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "tests/maths-assertions.py"
       ],
-      "writes": ["selected evidence directory"],
+      "writes": [
+        "selected evidence directory"
+      ],
       "network": "forbidden",
       "risk": "local owned source checks; no account data",
       "fixtures": [
@@ -659,13 +792,20 @@
     },
     {
       "id": "observed-matcher",
-      "argv": ["node", "tests/verification/observed-matcher.test.mjs"],
-      "prerequisites": ["preparedEngine"],
+      "argv": [
+        "node",
+        "tests/verification/observed-matcher.test.mjs"
+      ],
+      "prerequisites": [
+        "preparedEngine"
+      ],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "tests/maths-assertions.py"
       ],
-      "writes": ["selected evidence directory"],
+      "writes": [
+        "selected evidence directory"
+      ],
       "network": "forbidden",
       "risk": "local owned source checks; no account data",
       "fixtures": [],
@@ -684,8 +824,13 @@
     },
     {
       "id": "math-editor",
-      "argv": ["node", "tests/math-editor.mjs"],
-      "prerequisites": ["lockedInstall"],
+      "argv": [
+        "node",
+        "tests/math-editor.mjs"
+      ],
+      "prerequisites": [
+        "lockedInstall"
+      ],
       "reads": [
         "owned source and controlled async fixtures",
         "tests/mathlive-loader.mjs",
@@ -708,7 +853,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["math-editor.stdout.log", "math-editor.stderr.log"]
+      "evidence": [
+        "math-editor.stdout.log",
+        "math-editor.stderr.log"
+      ]
     },
     {
       "id": "notation",
@@ -718,8 +866,12 @@
         "./tests/resolve-types.mjs",
         "tests/notation.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "owned source and controlled async fixtures"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -731,7 +883,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["notation.stdout.log", "notation.stderr.log"]
+      "evidence": [
+        "notation.stdout.log",
+        "notation.stderr.log"
+      ]
     },
     {
       "id": "notation-previews",
@@ -741,7 +896,9 @@
         "./tests/resolve-types.mjs",
         "tests/notation-previews.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
       "reads": [
         "owned source and controlled async fixtures",
         "components/calculator/StructuredFields.tsx",
@@ -771,8 +928,12 @@
         "./tests/resolve-types.mjs",
         "tests/display-format.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "owned source and controlled async fixtures"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -784,7 +945,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["display-format.stdout.log", "display-format.stderr.log"]
+      "evidence": [
+        "display-format.stdout.log",
+        "display-format.stderr.log"
+      ]
     },
     {
       "id": "graph-semantics",
@@ -794,8 +958,12 @@
         "./tests/resolve-types.mjs",
         "tests/graph-semantics.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["owned source and controlled async fixtures"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "owned source and controlled async fixtures"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -807,7 +975,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["graph-semantics.stdout.log", "graph-semantics.stderr.log"]
+      "evidence": [
+        "graph-semantics.stdout.log",
+        "graph-semantics.stderr.log"
+      ]
     },
     {
       "id": "graph-resources",
@@ -818,8 +989,12 @@
         "./tests/resolve-types.mjs",
         "tests/graph-resources.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
-      "reads": ["actual graph resource guard and MathJS expression evaluation"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "actual graph resource guard and MathJS expression evaluation"
+      ],
       "writes": [],
       "network": "mocked only",
       "risk": "bounded graph-expression constructor/multiply allocation checks under128MB heap; no browser allocations",
@@ -831,12 +1006,20 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["graph-resources.stdout.log", "graph-resources.stderr.log"]
+      "evidence": [
+        "graph-resources.stdout.log",
+        "graph-resources.stderr.log"
+      ]
     },
     {
       "id": "gate-recovery",
-      "argv": ["node", "tests/gate-recovery.mjs"],
-      "prerequisites": ["lockedInstall"],
+      "argv": [
+        "node",
+        "tests/gate-recovery.mjs"
+      ],
+      "prerequisites": [
+        "lockedInstall"
+      ],
       "reads": [
         "actual CalculatorGate in-app Dialog/backup/navigation callbacks; controlled sync and browser seams"
       ],
@@ -851,7 +1034,10 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": ["gate-recovery.stdout.log", "gate-recovery.stderr.log"]
+      "evidence": [
+        "gate-recovery.stdout.log",
+        "gate-recovery.stderr.log"
+      ]
     },
     {
       "id": "workspace-request",
@@ -861,7 +1047,9 @@
         "./tests/resolve-types.mjs",
         "tests/workspace-request.mjs"
       ],
-      "prerequisites": ["lockedInstall"],
+      "prerequisites": [
+        "lockedInstall"
+      ],
       "reads": [
         "shared workspace request byte preflight and exact JSON envelope"
       ],
@@ -883,8 +1071,13 @@
     },
     {
       "id": "persistence-warning",
-      "argv": ["node", "tests/persistence-warning.mjs"],
-      "prerequisites": ["lockedInstall"],
+      "argv": [
+        "node",
+        "tests/persistence-warning.mjs"
+      ],
+      "prerequisites": [
+        "lockedInstall"
+      ],
       "reads": [
         "actual Calculator autosave effect; controlled persistence/timer seam"
       ],
@@ -903,6 +1096,66 @@
         "persistence-warning.stdout.log",
         "persistence-warning.stderr.log"
       ]
+    },
+    {
+      "id": "investigations",
+      "argv": [
+        "node",
+        "--import",
+        "./tests/resolve-types.mjs",
+        "tests/investigations.mjs"
+      ],
+      "prerequisites": [
+        "preparedEngine"
+      ],
+      "reads": [
+        "pure investigation domain, shared storage validation, real bundled Pyodide engine and independent mathematical values"
+      ],
+      "writes": [],
+      "network": "forbidden",
+      "risk": "isolated test contexts, no browser account data",
+      "fixtures": [],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "blocked",
+        "4": "runner failure"
+      },
+      "evidence": [
+        "investigations.stdout.log",
+        "investigations.stderr.log"
+      ]
+    },
+    {
+      "id": "investigation-async",
+      "argv": [
+        "node",
+        "--import",
+        "./tests/resolve-types.mjs",
+        "tests/investigation-async.mjs"
+      ],
+      "prerequisites": [
+        "lockedInstall"
+      ],
+      "reads": [
+        "Calculator's actual execution and append actions under controlled promise/session timing"
+      ],
+      "writes": [],
+      "network": "mocked only",
+      "risk": "isolated test contexts, no browser account data",
+      "fixtures": [],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "blocked",
+        "4": "runner failure"
+      },
+      "evidence": [
+        "investigation-async.stdout.log",
+        "investigation-async.stderr.log"
+      ]
     }
   ],
   "surfaces": [
@@ -919,7 +1172,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.simplify.default"],
+      "fixtures": [
+        "form.simplify.default"
+      ],
       "browserEvidenceId": "browser.form.simplify.default",
       "browserVariants": [],
       "run": [
@@ -948,7 +1203,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.expand.default"],
+      "fixtures": [
+        "form.expand.default"
+      ],
       "browserEvidenceId": "browser.form.expand.default",
       "browserVariants": [],
       "run": [
@@ -977,7 +1234,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.factor.default"],
+      "fixtures": [
+        "form.factor.default"
+      ],
       "browserEvidenceId": "browser.form.factor.default",
       "browserVariants": [],
       "run": [
@@ -1011,7 +1270,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.apart.default"],
+      "fixtures": [
+        "form.apart.default"
+      ],
       "browserEvidenceId": "browser.form.apart.default",
       "browserVariants": [],
       "run": [
@@ -1040,7 +1301,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.cancel.default"],
+      "fixtures": [
+        "form.cancel.default"
+      ],
       "browserEvidenceId": "browser.form.cancel.default",
       "browserVariants": [],
       "run": [
@@ -1069,7 +1332,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.trigsimp.default"],
+      "fixtures": [
+        "form.trigsimp.default"
+      ],
       "browserEvidenceId": "browser.form.trigsimp.default",
       "browserVariants": [],
       "run": [
@@ -1098,7 +1363,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.approx.default"],
+      "fixtures": [
+        "form.approx.default"
+      ],
       "browserEvidenceId": "browser.form.approx.default",
       "browserVariants": [],
       "run": [
@@ -1132,7 +1399,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.substitute.default"],
+      "fixtures": [
+        "form.substitute.default"
+      ],
       "browserEvidenceId": "browser.form.substitute.default",
       "browserVariants": [],
       "run": [
@@ -1166,7 +1435,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.solve.default"],
+      "fixtures": [
+        "form.solve.default"
+      ],
       "browserEvidenceId": "browser.form.solve.default",
       "browserVariants": [],
       "run": [
@@ -1201,7 +1472,10 @@
         },
         "kind": {
           "label": "System type",
-          "choices": ["linear", "nonlinear"],
+          "choices": [
+            "linear",
+            "nonlinear"
+          ],
           "required": true
         }
       },
@@ -1264,7 +1538,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.inequality.default"],
+      "fixtures": [
+        "form.inequality.default"
+      ],
       "browserEvidenceId": "browser.form.inequality.default",
       "browserVariants": [],
       "run": [
@@ -1303,7 +1579,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.differentiate.default"],
+      "fixtures": [
+        "form.differentiate.default"
+      ],
       "browserEvidenceId": "browser.form.differentiate.default",
       "browserVariants": [],
       "run": [
@@ -1347,7 +1625,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.integrate.default"],
+      "fixtures": [
+        "form.integrate.default"
+      ],
       "browserEvidenceId": "browser.form.integrate.default",
       "browserVariants": [],
       "run": [
@@ -1381,7 +1661,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.multiple_integral.default"],
+      "fixtures": [
+        "form.multiple_integral.default"
+      ],
       "browserEvidenceId": "browser.form.multiple_integral.default",
       "browserVariants": [],
       "run": [
@@ -1421,7 +1703,11 @@
         },
         "direction": {
           "label": "Approach direction",
-          "choices": ["+-", "+", "-"],
+          "choices": [
+            "+-",
+            "+",
+            "-"
+          ],
           "required": true
         }
       },
@@ -1506,7 +1792,10 @@
         },
         "direction": {
           "label": "Approach direction",
-          "choices": ["+", "-"],
+          "choices": [
+            "+",
+            "-"
+          ],
           "required": true
         }
       },
@@ -1579,7 +1868,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.sum.default"],
+      "fixtures": [
+        "form.sum.default"
+      ],
       "browserEvidenceId": "browser.form.sum.default",
       "browserVariants": [],
       "run": [
@@ -1623,7 +1914,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.product.default"],
+      "fixtures": [
+        "form.product.default"
+      ],
       "browserEvidenceId": "browser.form.product.default",
       "browserVariants": [],
       "run": [
@@ -1662,7 +1955,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.convergence.default"],
+      "fixtures": [
+        "form.convergence.default"
+      ],
       "browserEvidenceId": "browser.form.convergence.default",
       "browserVariants": [],
       "run": [
@@ -1696,7 +1991,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.sequence_limit.default"],
+      "fixtures": [
+        "form.sequence_limit.default"
+      ],
       "browserEvidenceId": "browser.form.sequence_limit.default",
       "browserVariants": [],
       "run": [
@@ -1745,7 +2042,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.multilimit.default"],
+      "fixtures": [
+        "form.multilimit.default"
+      ],
       "browserEvidenceId": "browser.form.multilimit.default",
       "browserVariants": [],
       "run": [
@@ -1784,7 +2083,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.residue.default"],
+      "fixtures": [
+        "form.residue.default"
+      ],
       "browserEvidenceId": "browser.form.residue.default",
       "browserVariants": [],
       "run": [
@@ -1818,7 +2119,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.singularities.default"],
+      "fixtures": [
+        "form.singularities.default"
+      ],
       "browserEvidenceId": "browser.form.singularities.default",
       "browserVariants": [],
       "run": [
@@ -1852,7 +2155,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.domain.default"],
+      "fixtures": [
+        "form.domain.default"
+      ],
       "browserEvidenceId": "browser.form.domain.default",
       "browserVariants": [],
       "run": [
@@ -1881,7 +2186,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_det.default"],
+      "fixtures": [
+        "form.matrix_det.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_det.default",
       "browserVariants": [],
       "run": [
@@ -1942,7 +2249,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_transpose.default"],
+      "fixtures": [
+        "form.matrix_transpose.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_transpose.default",
       "browserVariants": [],
       "run": [
@@ -1971,7 +2280,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_adjoint.default"],
+      "fixtures": [
+        "form.matrix_adjoint.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_adjoint.default",
       "browserVariants": [],
       "run": [
@@ -2000,7 +2311,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_adjugate.default"],
+      "fixtures": [
+        "form.matrix_adjugate.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_adjugate.default",
       "browserVariants": [],
       "run": [
@@ -2029,7 +2342,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_cofactors.default"],
+      "fixtures": [
+        "form.matrix_cofactors.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_cofactors.default",
       "browserVariants": [],
       "run": [
@@ -2058,7 +2373,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_rref.default"],
+      "fixtures": [
+        "form.matrix_rref.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_rref.default",
       "browserVariants": [],
       "run": [
@@ -2087,7 +2404,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_rank.default"],
+      "fixtures": [
+        "form.matrix_rank.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_rank.default",
       "browserVariants": [],
       "run": [
@@ -2116,7 +2435,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_null.default"],
+      "fixtures": [
+        "form.matrix_null.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_null.default",
       "browserVariants": [],
       "run": [
@@ -2145,7 +2466,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_row.default"],
+      "fixtures": [
+        "form.matrix_row.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_row.default",
       "browserVariants": [],
       "run": [
@@ -2174,7 +2497,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_column.default"],
+      "fixtures": [
+        "form.matrix_column.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_column.default",
       "browserVariants": [],
       "run": [
@@ -2203,7 +2528,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_eigenvalues.default"],
+      "fixtures": [
+        "form.matrix_eigenvalues.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_eigenvalues.default",
       "browserVariants": [],
       "run": [
@@ -2232,7 +2559,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_eigenvectors.default"],
+      "fixtures": [
+        "form.matrix_eigenvectors.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_eigenvectors.default",
       "browserVariants": [],
       "run": [
@@ -2261,7 +2590,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_lu.default"],
+      "fixtures": [
+        "form.matrix_lu.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_lu.default",
       "browserVariants": [],
       "run": [
@@ -2290,7 +2621,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_qr.default"],
+      "fixtures": [
+        "form.matrix_qr.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_qr.default",
       "browserVariants": [],
       "run": [
@@ -2319,7 +2652,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_svd.default"],
+      "fixtures": [
+        "form.matrix_svd.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_svd.default",
       "browserVariants": [],
       "run": [
@@ -2348,7 +2683,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_pinverse.default"],
+      "fixtures": [
+        "form.matrix_pinverse.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_pinverse.default",
       "browserVariants": [],
       "run": [
@@ -2377,7 +2714,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_trace.default"],
+      "fixtures": [
+        "form.matrix_trace.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_trace.default",
       "browserVariants": [],
       "run": [
@@ -2406,7 +2745,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_condition.default"],
+      "fixtures": [
+        "form.matrix_condition.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_condition.default",
       "browserVariants": [],
       "run": [
@@ -2440,7 +2781,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_characteristic.default"],
+      "fixtures": [
+        "form.matrix_characteristic.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_characteristic.default",
       "browserVariants": [],
       "run": [
@@ -2474,7 +2817,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_solve.default"],
+      "fixtures": [
+        "form.matrix_solve.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_solve.default",
       "browserVariants": [],
       "run": [
@@ -2508,7 +2853,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.gradient.default"],
+      "fixtures": [
+        "form.gradient.default"
+      ],
       "browserEvidenceId": "browser.form.gradient.default",
       "browserVariants": [],
       "run": [
@@ -2542,7 +2889,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.jacobian.default"],
+      "fixtures": [
+        "form.jacobian.default"
+      ],
       "browserEvidenceId": "browser.form.jacobian.default",
       "browserVariants": [],
       "run": [
@@ -2576,7 +2925,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.hessian.default"],
+      "fixtures": [
+        "form.hessian.default"
+      ],
       "browserEvidenceId": "browser.form.hessian.default",
       "browserVariants": [],
       "run": [
@@ -2610,7 +2961,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.divergence.default"],
+      "fixtures": [
+        "form.divergence.default"
+      ],
       "browserEvidenceId": "browser.form.divergence.default",
       "browserVariants": [],
       "run": [
@@ -2644,7 +2997,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.curl.default"],
+      "fixtures": [
+        "form.curl.default"
+      ],
       "browserEvidenceId": "browser.form.curl.default",
       "browserVariants": [],
       "run": [
@@ -2678,7 +3033,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.jacobian_factor.default"],
+      "fixtures": [
+        "form.jacobian_factor.default"
+      ],
       "browserEvidenceId": "browser.form.jacobian_factor.default",
       "browserVariants": [],
       "run": [
@@ -2712,7 +3069,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.dot.default"],
+      "fixtures": [
+        "form.dot.default"
+      ],
       "browserEvidenceId": "browser.form.dot.default",
       "browserVariants": [],
       "run": [
@@ -2746,7 +3105,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.cross.default"],
+      "fixtures": [
+        "form.cross.default"
+      ],
       "browserEvidenceId": "browser.form.cross.default",
       "browserVariants": [],
       "run": [
@@ -2790,7 +3151,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.line_integral.default"],
+      "fixtures": [
+        "form.line_integral.default"
+      ],
       "browserEvidenceId": "browser.form.line_integral.default",
       "browserVariants": [],
       "run": [
@@ -2834,7 +3197,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.surface_integral.default"],
+      "fixtures": [
+        "form.surface_integral.default"
+      ],
       "browserEvidenceId": "browser.form.surface_integral.default",
       "browserVariants": [],
       "run": [
@@ -2878,7 +3243,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.contour.default"],
+      "fixtures": [
+        "form.contour.default"
+      ],
       "browserEvidenceId": "browser.form.contour.default",
       "browserVariants": [],
       "run": [
@@ -2917,7 +3284,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.ode.default"],
+      "fixtures": [
+        "form.ode.default"
+      ],
       "browserEvidenceId": "browser.form.ode.default",
       "browserVariants": [],
       "run": [
@@ -2976,7 +3345,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.ivp.default"],
+      "fixtures": [
+        "form.ivp.default"
+      ],
       "browserEvidenceId": "browser.form.ivp.default",
       "browserVariants": [],
       "run": [
@@ -3030,7 +3401,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.bvp.default"],
+      "fixtures": [
+        "form.bvp.default"
+      ],
       "browserEvidenceId": "browser.form.bvp.default",
       "browserVariants": [],
       "run": [
@@ -3069,7 +3442,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.stability.default"],
+      "fixtures": [
+        "form.stability.default"
+      ],
       "browserEvidenceId": "browser.form.stability.default",
       "browserVariants": [],
       "run": [
@@ -3103,7 +3478,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.pde.default"],
+      "fixtures": [
+        "form.pde.default"
+      ],
       "browserEvidenceId": "browser.form.pde.default",
       "browserVariants": [],
       "run": [
@@ -3152,7 +3529,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.heat.default"],
+      "fixtures": [
+        "form.heat.default"
+      ],
       "browserEvidenceId": "browser.form.heat.default",
       "browserVariants": [],
       "run": [
@@ -3206,7 +3585,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.wave.default"],
+      "fixtures": [
+        "form.wave.default"
+      ],
       "browserEvidenceId": "browser.form.wave.default",
       "browserVariants": [],
       "run": [
@@ -3245,7 +3626,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.poisson.default"],
+      "fixtures": [
+        "form.poisson.default"
+      ],
       "browserEvidenceId": "browser.form.poisson.default",
       "browserVariants": [],
       "run": [
@@ -3284,7 +3667,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.laplace.default"],
+      "fixtures": [
+        "form.laplace.default"
+      ],
       "browserEvidenceId": "browser.form.laplace.default",
       "browserVariants": [],
       "run": [
@@ -3323,7 +3708,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.inverse_laplace.default"],
+      "fixtures": [
+        "form.inverse_laplace.default"
+      ],
       "browserEvidenceId": "browser.form.inverse_laplace.default",
       "browserVariants": [],
       "run": [
@@ -3362,7 +3749,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.fourier.default"],
+      "fixtures": [
+        "form.fourier.default"
+      ],
       "browserEvidenceId": "browser.form.fourier.default",
       "browserVariants": [],
       "run": [
@@ -3401,7 +3790,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.inverse_fourier.default"],
+      "fixtures": [
+        "form.inverse_fourier.default"
+      ],
       "browserEvidenceId": "browser.form.inverse_fourier.default",
       "browserVariants": [],
       "run": [
@@ -3450,7 +3841,14 @@
         },
         "action": {
           "label": "Probability operation",
-          "choices": ["pdf/pmf", "cdf", "sf", "ppf", "isf", "moments"],
+          "choices": [
+            "pdf/pmf",
+            "cdf",
+            "sf",
+            "ppf",
+            "isf",
+            "moments"
+          ],
           "required": true
         },
         "value": {
@@ -4382,7 +4780,11 @@
         },
         "tail": {
           "label": "Alternative",
-          "choices": ["two-sided", "less", "greater"],
+          "choices": [
+            "two-sided",
+            "less",
+            "greater"
+          ],
           "required": true
         }
       },
@@ -4508,7 +4910,10 @@
         },
         "kind": {
           "label": "Method",
-          "choices": ["Welch", "paired"],
+          "choices": [
+            "Welch",
+            "paired"
+          ],
           "required": true
         }
       },
@@ -4587,7 +4992,10 @@
         },
         "kind": {
           "label": "Distribution kind",
-          "choices": ["continuous", "discrete"],
+          "choices": [
+            "continuous",
+            "discrete"
+          ],
           "required": true
         }
       },
@@ -4646,7 +5054,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.describe.default"],
+      "fixtures": [
+        "form.describe.default"
+      ],
       "browserEvidenceId": "browser.form.describe.default",
       "browserVariants": [],
       "run": [
@@ -4818,7 +5228,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.confidence.default"],
+      "fixtures": [
+        "form.confidence.default"
+      ],
       "browserEvidenceId": "browser.form.confidence.default",
       "browserVariants": [],
       "run": [
@@ -4872,7 +5284,11 @@
         },
         "tail": {
           "label": "Alternative",
-          "choices": ["two-sided", "less", "greater"],
+          "choices": [
+            "two-sided",
+            "less",
+            "greater"
+          ],
           "required": true
         }
       },
@@ -5039,7 +5455,11 @@
         },
         "kind": {
           "label": "Method",
-          "choices": ["combinations", "permutations", "factorial"],
+          "choices": [
+            "combinations",
+            "permutations",
+            "factorial"
+          ],
           "required": true
         }
       },
@@ -5118,7 +5538,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.recurrence.default"],
+      "fixtures": [
+        "form.recurrence.default"
+      ],
       "browserEvidenceId": "browser.form.recurrence.default",
       "browserVariants": [],
       "run": [
@@ -5157,7 +5579,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.generating.default"],
+      "fixtures": [
+        "form.generating.default"
+      ],
       "browserEvidenceId": "browser.form.generating.default",
       "browserVariants": [],
       "run": [
@@ -5289,7 +5713,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.logic.default"],
+      "fixtures": [
+        "form.logic.default"
+      ],
       "browserEvidenceId": "browser.form.logic.default",
       "browserVariants": [],
       "run": [
@@ -5323,7 +5749,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.relation.default"],
+      "fixtures": [
+        "form.relation.default"
+      ],
       "browserEvidenceId": "browser.form.relation.default",
       "browserVariants": [],
       "run": [
@@ -5358,7 +5786,10 @@
         },
         "directed": {
           "label": "Directed",
-          "choices": ["no", "yes"],
+          "choices": [
+            "no",
+            "yes"
+          ],
           "required": true
         },
         "action": {
@@ -5680,7 +6111,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.crt.default"],
+      "fixtures": [
+        "form.crt.default"
+      ],
       "browserEvidenceId": "browser.form.crt.default",
       "browserVariants": [],
       "run": [
@@ -5709,7 +6142,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.diophantine.default"],
+      "fixtures": [
+        "form.diophantine.default"
+      ],
       "browserEvidenceId": "browser.form.diophantine.default",
       "browserVariants": [],
       "run": [
@@ -5748,7 +6183,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.group.default"],
+      "fixtures": [
+        "form.group.default"
+      ],
       "browserEvidenceId": "browser.form.group.default",
       "browserVariants": [],
       "run": [
@@ -5788,7 +6225,10 @@
         },
         "structure": {
           "label": "Structure",
-          "choices": ["field", "ring"],
+          "choices": [
+            "field",
+            "ring"
+          ],
           "required": true
         },
         "left": {
@@ -5964,7 +6404,13 @@
         },
         "action": {
           "label": "Operation",
-          "choices": ["factor", "divide", "gcd", "resultant", "discriminant"],
+          "choices": [
+            "factor",
+            "divide",
+            "gcd",
+            "resultant",
+            "discriminant"
+          ],
           "required": true
         },
         "other": {
@@ -6071,7 +6517,11 @@
         },
         "order": {
           "label": "Monomial order",
-          "choices": ["lex", "grlex", "grevlex"],
+          "choices": [
+            "lex",
+            "grlex",
+            "grevlex"
+          ],
           "required": true
         }
       },
@@ -6140,7 +6590,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.homology.default"],
+      "fixtures": [
+        "form.homology.default"
+      ],
       "browserEvidenceId": "browser.form.homology.default",
       "browserVariants": [],
       "run": [
@@ -6179,7 +6631,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.topology.default"],
+      "fixtures": [
+        "form.topology.default"
+      ],
       "browserEvidenceId": "browser.form.topology.default",
       "browserVariants": [],
       "run": [
@@ -6228,7 +6682,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.topology_map.default"],
+      "fixtures": [
+        "form.topology_map.default"
+      ],
       "browserEvidenceId": "browser.form.topology_map.default",
       "browserVariants": [],
       "run": [
@@ -6267,7 +6723,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.surface_geometry.default"],
+      "fixtures": [
+        "form.surface_geometry.default"
+      ],
       "browserEvidenceId": "browser.form.surface_geometry.default",
       "browserVariants": [],
       "run": [
@@ -6301,7 +6759,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.curve_geometry.default"],
+      "fixtures": [
+        "form.curve_geometry.default"
+      ],
       "browserEvidenceId": "browser.form.curve_geometry.default",
       "browserVariants": [],
       "run": [
@@ -6336,7 +6796,10 @@
         },
         "action": {
           "label": "Operation",
-          "choices": ["intersection", "distance"],
+          "choices": [
+            "intersection",
+            "distance"
+          ],
           "required": true
         }
       },
@@ -6410,7 +6873,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.root.default"],
+      "fixtures": [
+        "form.root.default"
+      ],
       "browserEvidenceId": "browser.form.root.default",
       "browserVariants": [],
       "run": [
@@ -6454,7 +6919,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.numeric_integral.default"],
+      "fixtures": [
+        "form.numeric_integral.default"
+      ],
       "browserEvidenceId": "browser.form.numeric_integral.default",
       "browserVariants": [],
       "run": [
@@ -6498,7 +6965,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.numeric_derivative.default"],
+      "fixtures": [
+        "form.numeric_derivative.default"
+      ],
       "browserEvidenceId": "browser.form.numeric_derivative.default",
       "browserVariants": [],
       "run": [
@@ -6537,7 +7006,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.numeric_system.default"],
+      "fixtures": [
+        "form.numeric_system.default"
+      ],
       "browserEvidenceId": "browser.form.numeric_system.default",
       "browserVariants": [],
       "run": [
@@ -6586,7 +7057,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.minimize.default"],
+      "fixtures": [
+        "form.minimize.default"
+      ],
       "browserEvidenceId": "browser.form.minimize.default",
       "browserVariants": [],
       "run": [
@@ -6640,7 +7113,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.linear_program.default"],
+      "fixtures": [
+        "form.linear_program.default"
+      ],
       "browserEvidenceId": "browser.form.linear_program.default",
       "browserVariants": [],
       "run": [
@@ -6674,7 +7149,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.interpolate.default"],
+      "fixtures": [
+        "form.interpolate.default"
+      ],
       "browserEvidenceId": "browser.form.interpolate.default",
       "browserVariants": [],
       "run": [
@@ -6714,7 +7191,10 @@
         },
         "kind": {
           "label": "Spline",
-          "choices": ["PCHIP", "cubic"],
+          "choices": [
+            "PCHIP",
+            "cubic"
+          ],
           "required": true
         }
       },
@@ -6773,7 +7253,10 @@
         },
         "action": {
           "label": "Operation",
-          "choices": ["FFT", "inverse FFT"],
+          "choices": [
+            "FFT",
+            "inverse FFT"
+          ],
           "required": true
         }
       },
@@ -6837,7 +7320,11 @@
         },
         "mode": {
           "label": "Output mode",
-          "choices": ["full", "same", "valid"],
+          "choices": [
+            "full",
+            "same",
+            "valid"
+          ],
           "required": true
         }
       },
@@ -6911,7 +7398,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.markov.default"],
+      "fixtures": [
+        "form.markov.default"
+      ],
       "browserEvidenceId": "browser.form.markov.default",
       "browserVariants": [],
       "run": [
@@ -6945,7 +7434,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.units.default"],
+      "fixtures": [
+        "form.units.default"
+      ],
       "browserEvidenceId": "browser.form.units.default",
       "browserVariants": [],
       "run": [
@@ -6985,7 +7476,10 @@
         },
         "action": {
           "label": "Operation",
-          "choices": ["future value", "payment"],
+          "choices": [
+            "future value",
+            "payment"
+          ],
           "required": true
         }
       },
@@ -7043,7 +7537,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.together.default"],
+      "fixtures": [
+        "form.together.default"
+      ],
       "browserEvidenceId": "browser.form.together.default",
       "browserVariants": [],
       "run": [
@@ -7072,7 +7568,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.radsimp.default"],
+      "fixtures": [
+        "form.radsimp.default"
+      ],
       "browserEvidenceId": "browser.form.radsimp.default",
       "browserVariants": [],
       "run": [
@@ -7111,7 +7609,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.compose.default"],
+      "fixtures": [
+        "form.compose.default"
+      ],
       "browserEvidenceId": "browser.form.compose.default",
       "browserVariants": [],
       "run": [
@@ -7140,7 +7640,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.piecewise.default"],
+      "fixtures": [
+        "form.piecewise.default"
+      ],
       "browserEvidenceId": "browser.form.piecewise.default",
       "browserVariants": [],
       "run": [
@@ -7169,7 +7671,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.matrix_cholesky.default"],
+      "fixtures": [
+        "form.matrix_cholesky.default"
+      ],
       "browserEvidenceId": "browser.form.matrix_cholesky.default",
       "browserVariants": [],
       "run": [
@@ -7203,7 +7707,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.least_squares.default"],
+      "fixtures": [
+        "form.least_squares.default"
+      ],
       "browserEvidenceId": "browser.form.least_squares.default",
       "browserVariants": [],
       "run": [
@@ -7232,7 +7738,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.numeric_svd.default"],
+      "fixtures": [
+        "form.numeric_svd.default"
+      ],
       "browserEvidenceId": "browser.form.numeric_svd.default",
       "browserVariants": [],
       "run": [
@@ -7266,7 +7774,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.ode_system.default"],
+      "fixtures": [
+        "form.ode_system.default"
+      ],
       "browserEvidenceId": "browser.form.ode_system.default",
       "browserVariants": [],
       "run": [
@@ -7295,7 +7805,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.divisor_count.default"],
+      "fixtures": [
+        "form.divisor_count.default"
+      ],
       "browserEvidenceId": "browser.form.divisor_count.default",
       "browserVariants": [],
       "run": [
@@ -7324,7 +7836,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.mobius.default"],
+      "fixtures": [
+        "form.mobius.default"
+      ],
       "browserEvidenceId": "browser.form.mobius.default",
       "browserVariants": [],
       "run": [
@@ -7358,7 +7872,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.metric.default"],
+      "fixtures": [
+        "form.metric.default"
+      ],
       "browserEvidenceId": "browser.form.metric.default",
       "browserVariants": [],
       "run": [
@@ -7402,7 +7918,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.uncertainty.default"],
+      "fixtures": [
+        "form.uncertainty.default"
+      ],
       "browserEvidenceId": "browser.form.uncertainty.default",
       "browserVariants": [],
       "run": [
@@ -7446,7 +7964,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.critical_points.default"],
+      "fixtures": [
+        "form.critical_points.default"
+      ],
       "browserEvidenceId": "browser.form.critical_points.default",
       "browserVariants": [],
       "run": [
@@ -7480,7 +8000,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.histogram.default"],
+      "fixtures": [
+        "form.histogram.default"
+      ],
       "browserEvidenceId": "browser.form.histogram.default",
       "browserVariants": [],
       "run": [
@@ -7509,7 +8031,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.boxplot.default"],
+      "fixtures": [
+        "form.boxplot.default"
+      ],
       "browserEvidenceId": "browser.form.boxplot.default",
       "browserVariants": [],
       "run": [
@@ -7543,7 +8067,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.correlation.default"],
+      "fixtures": [
+        "form.correlation.default"
+      ],
       "browserEvidenceId": "browser.form.correlation.default",
       "browserVariants": [],
       "run": [
@@ -7577,7 +8103,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.finite_expectation.default"],
+      "fixtures": [
+        "form.finite_expectation.default"
+      ],
       "browserEvidenceId": "browser.form.finite_expectation.default",
       "browserVariants": [],
       "run": [
@@ -7602,7 +8130,11 @@
       "fields": {
         "distribution": {
           "label": "Distribution",
-          "choices": ["normal", "exponential", "poisson"],
+          "choices": [
+            "normal",
+            "exponential",
+            "poisson"
+          ],
           "required": true
         },
         "parameters": {
@@ -7696,7 +8228,9 @@
           "required": true
         }
       },
-      "fixtures": ["form.surface_area.default"],
+      "fixtures": [
+        "form.surface_area.default"
+      ],
       "browserEvidenceId": "browser.form.surface_area.default",
       "browserVariants": [],
       "run": [
@@ -7728,7 +8262,12 @@
       "observed-matcher",
       "detectors"
     ],
-    "deep-math": ["math", "math-invalid", "observed-matcher", "detectors"],
+    "deep-math": [
+      "math",
+      "math-invalid",
+      "observed-matcher",
+      "detectors"
+    ],
     "regressions": [
       "math-editor",
       "notation",
@@ -7741,13 +8280,19 @@
       "graph-resources",
       "gate-recovery",
       "workspace-request",
-      "persistence-warning"
+      "persistence-warning",
+      "investigations",
+      "investigation-async"
     ]
   },
   "evidenceSchema": {
     "schemaVersion": 1,
     "browserKind": "browser-runtime",
-    "identity": ["revision", "sourceFingerprint", "buildFingerprint"],
+    "identity": [
+      "revision",
+      "sourceFingerprint",
+      "buildFingerprint"
+    ],
     "requiredBrowserFixtureIds": [
       "browser.form.simplify.default",
       "browser.form.expand.default",
@@ -8209,7 +8754,18 @@
       "sync.initialization-timeout",
       "editor.vendor-menu-coverage",
       "editor.menu-clipboard-safety",
-      "distribution.saved-input-recovery"
+      "distribution.saved-input-recovery",
+      "investigation.matrix",
+      "investigation.derivatives",
+      "investigation.paths",
+      "investigation.tails",
+      "investigation.edit-snapshots",
+      "investigation.cancel-resume",
+      "investigation.ownership",
+      "investigation.limits",
+      "investigation.backup-recovery",
+      "investigation.phone-offline",
+      "investigation.deletions"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -8227,7 +8783,7 @@
       "id": "control.001",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 158,
+        "line": 178,
         "signature": "c85f633db85b83d02c444af53d72ad4a8dab7fb445916e8e7315aee27f0bc4af"
       },
       "kind": "button",
@@ -8242,7 +8798,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8265,7 +8823,7 @@
       "id": "control.002",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 857,
+        "line": 1206,
         "signature": "1bd2749a8e2a65fa60daa93a11e514867eaa73b512025f6373ac11aa2b6befcb"
       },
       "kind": "button",
@@ -8280,7 +8838,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8303,7 +8863,7 @@
       "id": "control.003",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 876,
+        "line": 1225,
         "signature": "106894d07ac11fc0e008ca08882b5882ae419032504cb8f566f8e00168d05003"
       },
       "kind": "a",
@@ -8318,7 +8878,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8341,7 +8903,7 @@
       "id": "control.004",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 891,
+        "line": 1240,
         "signature": "ad6ddea7ab54766f0e5be8589ac4839c0c0e4579b4916b42e08125ee980cd1e2"
       },
       "kind": "button",
@@ -8356,7 +8918,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8379,7 +8943,7 @@
       "id": "control.005",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 900,
+        "line": 1249,
         "signature": "6e78804f81e7ff252dc44079b47aee1ec7d4586eed8920927e7f8d4c06f22306"
       },
       "kind": "button",
@@ -8394,7 +8958,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8417,7 +8983,7 @@
       "id": "control.006",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 907,
+        "line": 1256,
         "signature": "667a33f0df4ddba0bdcfb4db3e0e9cb7967d0acc6aa76deeeeb113c9f29620f7"
       },
       "kind": "button",
@@ -8432,7 +8998,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8455,7 +9023,7 @@
       "id": "control.007",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 917,
+        "line": 1266,
         "signature": "2db96ef79f4f039bd4402330a8e15bc18836cc30da323750d5784c11bae0982b"
       },
       "kind": "button",
@@ -8470,7 +9038,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8493,7 +9063,7 @@
       "id": "control.008",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 921,
+        "line": 1270,
         "signature": "6ecfcea61c020b03459dc2cfef5a8cf159ac6416f8a4fd45713d5850847e02fc"
       },
       "kind": "button",
@@ -8508,7 +9078,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8531,7 +9103,7 @@
       "id": "control.009",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 997,
+        "line": 1349,
         "signature": "476227989a3250ee768eafd91bc08e72f61cbce5e63f9c8b763c51099b7d77fa"
       },
       "kind": "button",
@@ -8546,7 +9118,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8569,7 +9143,7 @@
       "id": "control.010",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1015,
+        "line": 1367,
         "signature": "2263a7e1f50521b5582a530f73d8594bbd977f97e5477a80e248a792c5b8ac58"
       },
       "kind": "button",
@@ -8584,7 +9158,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8607,7 +9183,7 @@
       "id": "control.011",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1029,
+        "line": 1381,
         "signature": "d632f0244a8e36b24812a2f450db90cd95007aca30bc225ac663b97f78fb3848"
       },
       "kind": "MathEditor",
@@ -8622,7 +9198,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8645,7 +9223,7 @@
       "id": "control.012",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1036,
+        "line": 1388,
         "signature": "d4b5b5328e924677bb2bc10e298bd5249c8de732ca7dbb636f73f23fb686e9a8"
       },
       "kind": "textarea",
@@ -8660,7 +9238,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8683,7 +9263,7 @@
       "id": "control.013",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1056,
+        "line": 1408,
         "signature": "3e51a425774c735b05eb42341b3b87876bf71ddcff4d4ceb8a996771d91f3cd6"
       },
       "kind": "button",
@@ -8698,7 +9278,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8721,8 +9303,8 @@
       "id": "control.014",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1068,
-        "signature": "d2f169e979808efd2cd0abb3c6ebef8160c317f267ce29596a9fe0d82c0251fe"
+        "line": 1420,
+        "signature": "94c2ba18df869882a7d4724b483b9ba523aec9ee66ed3b2c95043b2e6767dbe8"
       },
       "kind": "button",
       "label": "Cancel",
@@ -8736,7 +9318,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8759,7 +9343,7 @@
       "id": "control.015",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1075,
+        "line": 1424,
         "signature": "038ffb3343b98232c2a94488039a0044fecfd6569784acd6c27e60b98192545d"
       },
       "kind": "button",
@@ -8774,7 +9358,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8797,7 +9383,7 @@
       "id": "control.016",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1087,
+        "line": 1436,
         "signature": "2ab5f14a6d418da32502b753de114ca0d9872e19b2a03c617a85ae3e085cb239"
       },
       "kind": "button",
@@ -8812,7 +9398,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8835,7 +9423,7 @@
       "id": "control.017",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1110,
+        "line": 1459,
         "signature": "d156f0d144252b7ed3dad9c88b4e76ea9bca935b2089a340d71304970554771f"
       },
       "kind": "button",
@@ -8850,7 +9438,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8873,7 +9463,7 @@
       "id": "control.018",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1113,
+        "line": 1462,
         "signature": "4daf31c6ae930aa142d3ac76239a9c9c0b50c8c6305e8007bf7c104a4740940a"
       },
       "kind": "button",
@@ -8888,7 +9478,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8911,8 +9503,8 @@
       "id": "control.019",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1126,
-        "signature": "45094f11a5ff20d221813331a7d0d944d59f85098455a9a5d4fc4e08876239f9"
+        "line": 1475,
+        "signature": "f76cb6fde8a59628ff6c9d413cf111ca64c69464841f6c96e3df0ab1d07ec53c"
       },
       "kind": "button",
       "label": "Retry",
@@ -8926,7 +9518,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8949,7 +9543,7 @@
       "id": "control.020",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1137,
+        "line": 1486,
         "signature": "983148481ad249f8253f49b10aeeb4dc6523198659cc534da5973d85a7ee82a1"
       },
       "kind": "button",
@@ -8964,7 +9558,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8987,7 +9583,7 @@
       "id": "control.021",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1171,
+        "line": 1520,
         "signature": "1fd28a49ac104f6e259b373e24acf8e74d131570a903a0332ff57851a971e315"
       },
       "kind": "button",
@@ -9002,7 +9598,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9025,7 +9623,7 @@
       "id": "control.022",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1187,
+        "line": 1542,
         "signature": "3c6b88ed21271a7a1624b157d3d57dd9783a16773591179f743251cfd7178858"
       },
       "kind": "button",
@@ -9040,7 +9638,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9063,7 +9663,7 @@
       "id": "control.023",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1298,
+        "line": 1654,
         "signature": "3859972b3a4bfed15876d5a2e3c486df51d7f2d1488ea8533cfd6addeefdbffb"
       },
       "kind": "button",
@@ -9078,7 +9678,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9101,7 +9703,7 @@
       "id": "control.024",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1311,
+        "line": 1667,
         "signature": "6fca7ef1f7468131ee98d414bb8dbee71b5ccca1b236fd8f504e4eca5bab1f01"
       },
       "kind": "button",
@@ -9116,7 +9718,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9139,7 +9743,7 @@
       "id": "control.025",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1314,
+        "line": 1670,
         "signature": "2454cf1595898d86d78710bc2d846e3642b3490fa9f96934bd3fe6fc4adc46ea"
       },
       "kind": "button",
@@ -9154,7 +9758,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9177,7 +9783,7 @@
       "id": "control.026",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1317,
+        "line": 1673,
         "signature": "9a1e9750bdbc58eef4fd0e7b8e335b11b58bb0d587f5b51ce5f6a3e7d6bd85fe"
       },
       "kind": "button",
@@ -9192,7 +9798,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9215,7 +9823,7 @@
       "id": "control.027",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1325,
+        "line": 1681,
         "signature": "ad357bc93193af186db12b2a0d781f57b6c3d46eab7b6015104e7613d1db2d7f"
       },
       "kind": "button",
@@ -9230,7 +9838,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9253,7 +9863,7 @@
       "id": "control.028",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1340,
+        "line": 1696,
         "signature": "a75d5a95e6ecd6498e4ac2f05e2bf07434e1e12f091f15c993ad4c808e7f90e0"
       },
       "kind": "button",
@@ -9268,7 +9878,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9291,7 +9903,7 @@
       "id": "control.029",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1344,
+        "line": 1700,
         "signature": "244291d76aa1ab8e1314bd901e67f3a7dea4ba8d17c55a74de276714a59b21c3"
       },
       "kind": "button",
@@ -9306,7 +9918,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9329,7 +9943,7 @@
       "id": "control.030",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1350,
+        "line": 1706,
         "signature": "4b66fa56d22056294c3e3e1a523781bf61b1673f1f57225f3af57aaa280eac96"
       },
       "kind": "button",
@@ -9344,7 +9958,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9367,7 +9983,7 @@
       "id": "control.031",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1375,
+        "line": 1731,
         "signature": "fbb612136d8fd37a970ea488f7d162ccd869cd42ae6d1c7d5897e2018c1d79c1"
       },
       "kind": "button",
@@ -9382,7 +9998,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9405,7 +10023,7 @@
       "id": "control.032",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1383,
+        "line": 1739,
         "signature": "cb063da00454446a4b5bf01607d9c8f8920b9abbab9a0ba1c1f6de02669a091a"
       },
       "kind": "button",
@@ -9420,7 +10038,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9443,8 +10063,8 @@
       "id": "control.033",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1399,
-        "signature": "4311b5f6a595020324d9d05012a89bd4ecea5a79612cf8efa0cc308deaa0a363"
+        "line": 1821,
+        "signature": "6ca7683add56fddc65a3ea0bbcadd3798cd183177a62aa69aad2ed0be39ac127"
       },
       "kind": "GraphWorkspace",
       "label": "dynamic/accessibility label requires browser observation",
@@ -9458,7 +10078,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9481,7 +10103,7 @@
       "id": "control.034",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1423,
+        "line": 1847,
         "signature": "0e2e40c4fe8dceaa47e762664abf4c8f863293fbf93fdb73b743699bce8f29fd"
       },
       "kind": "button",
@@ -9496,7 +10118,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9519,7 +10143,7 @@
       "id": "control.035",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1435,
+        "line": 1859,
         "signature": "99721e895e6db84a2fb2b5598ccac02cc9169f6b8a11ff4245b27d30c23659dd"
       },
       "kind": "button",
@@ -9534,7 +10158,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9557,7 +10183,7 @@
       "id": "control.036",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1466,
+        "line": 1890,
         "signature": "06b50c4c4e73bbae6abde7b5c0fd10dccadfeced21dce12c70fc0a901ae81f08"
       },
       "kind": "button",
@@ -9572,7 +10198,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9595,7 +10223,7 @@
       "id": "control.037",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1492,
+        "line": 1916,
         "signature": "e422655705368b5e86de6d6bb2d82ba464288a8b692c0b246673ef328f7f3d6e"
       },
       "kind": "button",
@@ -9610,7 +10238,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9633,7 +10263,7 @@
       "id": "control.038",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1493,
+        "line": 1917,
         "signature": "d5937cd2d16faf97023b07cf5a7e921fdd2d0d58f43d30542fdc23e62ab72bcd"
       },
       "kind": "button",
@@ -9648,7 +10278,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9671,7 +10303,7 @@
       "id": "control.039",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1502,
+        "line": 1926,
         "signature": "a0797ca484dece7a353b1f042e4cd3979a047b9d44329c450a40a03cda841f84"
       },
       "kind": "button",
@@ -9686,7 +10318,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9709,7 +10343,7 @@
       "id": "control.040",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1506,
+        "line": 1930,
         "signature": "1aca6944e3a84786a1c033d4be99e51d68d4290765af59c94561683698a6ad57"
       },
       "kind": "button",
@@ -9724,7 +10358,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9747,7 +10383,7 @@
       "id": "control.041",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1516,
+        "line": 1940,
         "signature": "e422655705368b5e86de6d6bb2d82ba464288a8b692c0b246673ef328f7f3d6e"
       },
       "kind": "button",
@@ -9762,7 +10398,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9785,7 +10423,7 @@
       "id": "control.042",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1521,
+        "line": 1945,
         "signature": "0031d2e5cd3f8eba2d9f14aaad01d0a537d9a57fa874a59b5a3231bd9f16abc7"
       },
       "kind": "button",
@@ -9800,7 +10438,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9823,7 +10463,7 @@
       "id": "control.043",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1545,
+        "line": 1969,
         "signature": "5739dd685d8de5fefab339630bf0a39382d01b2e771d7f52b63a5aaa216b317b"
       },
       "kind": "button",
@@ -9838,7 +10478,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9861,7 +10503,7 @@
       "id": "control.044",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1555,
+        "line": 1979,
         "signature": "21c0c339d54c74f3bfcf7b7e1f18c3764b48501d75a02d8423bd7cb36b4dbc53"
       },
       "kind": "button",
@@ -9876,7 +10518,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9899,7 +10543,7 @@
       "id": "control.045",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1573,
+        "line": 1997,
         "signature": "e4f49332fc912c449c55d2c00eb050e1a641214e07b4da19e9f115cee5b710e5"
       },
       "kind": "CommandInput",
@@ -9914,7 +10558,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9937,7 +10583,7 @@
       "id": "control.046",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1583,
+        "line": 2007,
         "signature": "cda20ba9cd4df31675dda33ac72df1c9b2d53181f3192b6d5506bac4c71cdfe1"
       },
       "kind": "CommandItem",
@@ -9952,7 +10598,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9975,7 +10623,7 @@
       "id": "control.047",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1614,
+        "line": 2038,
         "signature": "3ec04757f196ecfcdcb4645f883f995ff689b79dcfaa3910b44c7b518aeafd00"
       },
       "kind": "StructuredFields",
@@ -9990,7 +10638,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10013,8 +10663,8 @@
       "id": "control.048",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1625,
-        "signature": "59cbaf8ad6f028f3fb4d1b435fc83ec6f5c1f1709f8bd6ff77dac5a71eb556f6"
+        "line": 2049,
+        "signature": "8df8683694da36b6fcd0195e24ed5701da3fd9e658a96f408b0da42881f2575e"
       },
       "kind": "button",
       "label": "Operations",
@@ -10028,7 +10678,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10051,8 +10703,8 @@
       "id": "control.049",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1628,
-        "signature": "ce4b13158400530a68c6d304f384dbbb13dae999295b9b1a35307bc9fcee6039"
+        "line": 2058,
+        "signature": "8665de672ea07bbc244df5e78977362eea3627d9a710a6f4f0c2a9e44d70ebf0"
       },
       "kind": "button",
       "label": "Calculate",
@@ -10066,7 +10718,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10089,7 +10743,7 @@
       "id": "control.050",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1655,
+        "line": 2122,
         "signature": "90af04fe32c901d39e5a0b933a770848e622233951820cfea2b06a3b6eab1050"
       },
       "kind": "MathEditor",
@@ -10104,7 +10758,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10127,7 +10783,7 @@
       "id": "control.051",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1661,
+        "line": 2128,
         "signature": "295e3e1d9ce56f4cedb9a9860bdd148b1890b04275303c6e304aa6a5035770d2"
       },
       "kind": "button",
@@ -10142,7 +10798,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10165,7 +10823,7 @@
       "id": "control.052",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1667,
+        "line": 2134,
         "signature": "e2fbd54a7091c4a1549a76d37aad66b1332d782fe9f930a97ee254b45c635717"
       },
       "kind": "button",
@@ -10180,7 +10838,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10203,7 +10863,7 @@
       "id": "control.053",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1701,
+        "line": 2168,
         "signature": "8488f2eed25566f0d0bdbe53896800affce9d4ae4676d510b9cc45045f2e92f8"
       },
       "kind": "input",
@@ -10218,7 +10878,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10241,7 +10903,7 @@
       "id": "control.054",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1709,
+        "line": 2176,
         "signature": "241e6607551dff11e290e1b32c16370e4dcaf50e8915424fea723edf8379e8c5"
       },
       "kind": "Choice",
@@ -10256,7 +10918,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10279,7 +10943,7 @@
       "id": "control.055",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1726,
+        "line": 2193,
         "signature": "ae7a5856d2ebd60947b1e64579c97ba6386287f3b14251536a38ef51594de5d6"
       },
       "kind": "input",
@@ -10294,7 +10958,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10317,7 +10983,7 @@
       "id": "control.056",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1738,
+        "line": 2205,
         "signature": "7c4b209812f754cf4b89d4ebaf70d6a9c37bcc52e502e74cd0e79884e81de06b"
       },
       "kind": "input",
@@ -10332,7 +10998,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10355,7 +11023,7 @@
       "id": "control.057",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1762,
+        "line": 2229,
         "signature": "d19683ade3968966b48d95c654edb719806bc278e2e97d577849e0c0be72dd00"
       },
       "kind": "input",
@@ -10370,7 +11038,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10393,7 +11063,7 @@
       "id": "control.058",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1796,
+        "line": 2263,
         "signature": "f2a29a0011b521f642a0265b6b4b5f6e0c8655fd45d1b208399b1fc1dfb26ad5"
       },
       "kind": "input",
@@ -10408,7 +11078,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10431,7 +11103,7 @@
       "id": "control.059",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1819,
+        "line": 2286,
         "signature": "888ac94c06b6a0131aba16769ef8884a6fe86ba644ac6acc79f43866c86bea72"
       },
       "kind": "ListInput",
@@ -10446,7 +11118,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10469,7 +11143,7 @@
       "id": "control.060",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1827,
+        "line": 2294,
         "signature": "39ecd325b0a4f3da883b6949558503509382b7e50d5bf4ce2cdb0dd36df7bba0"
       },
       "kind": "textarea",
@@ -10484,7 +11158,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10507,7 +11183,7 @@
       "id": "control.061",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1837,
+        "line": 2304,
         "signature": "8b98810504ce42e6d6c944dbbfa8b126de42ffdd9471456cabbefb173a0b0c00"
       },
       "kind": "button",
@@ -10522,7 +11198,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10545,7 +11223,7 @@
       "id": "control.062",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1840,
+        "line": 2307,
         "signature": "6e825ac79164a2b054f0fb0bb7783672d4e9bae33a3f4afe4bbb0f7591a2c9a4"
       },
       "kind": "button",
@@ -10560,7 +11238,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10583,7 +11263,7 @@
       "id": "control.063",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1864,
+        "line": 2331,
         "signature": "9d64c548cb57f1ed449239ddb10f364b9e3b6d41e38fb07ebe689946c17d16fd"
       },
       "kind": "button",
@@ -10598,7 +11278,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10621,7 +11303,7 @@
       "id": "control.064",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1885,
+        "line": 2352,
         "signature": "63eddb2c0bcf1d9705c74ca498abf5d69f8803ebdc3bbecd75da690bf64418e7"
       },
       "kind": "input",
@@ -10636,7 +11318,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10659,7 +11343,7 @@
       "id": "control.065",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1891,
+        "line": 2358,
         "signature": "18c6ddae16604285e74a7811987a08b34fbdf2e2a8ca24be3986e7abc482966c"
       },
       "kind": "button",
@@ -10674,7 +11358,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10697,7 +11383,7 @@
       "id": "control.066",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1914,
+        "line": 2381,
         "signature": "cf3b5ed247518b677c08b6e63acb76d6a518cfcb096362e1c3ecf63f636e1863"
       },
       "kind": "input",
@@ -10712,7 +11398,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10735,7 +11423,7 @@
       "id": "control.067",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1937,
+        "line": 2404,
         "signature": "a797d1385fd95e5b300d0615c024378a75ee98de8d9e37c9e977a0987e44da43"
       },
       "kind": "Choice",
@@ -10750,7 +11438,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10773,7 +11463,7 @@
       "id": "control.068",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1957,
+        "line": 2424,
         "signature": "fde14052262f70ef62be79c275a9279a45a5fb2eaef90efc68659e85fc025fd6"
       },
       "kind": "Choice",
@@ -10788,7 +11478,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10811,7 +11503,7 @@
       "id": "control.069",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1974,
+        "line": 2441,
         "signature": "db76932f2602c869a08438c4c9a3a96839268ad2c4235a09b79779d87bb3ea29"
       },
       "kind": "input",
@@ -10826,7 +11518,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10849,7 +11543,7 @@
       "id": "control.070",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1998,
+        "line": 2465,
         "signature": "02da84c0af322fd91de50e17e36cba33ced9c3411def140805464845bd3bd63e"
       },
       "kind": "input",
@@ -10864,7 +11558,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10887,7 +11583,7 @@
       "id": "control.071",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2020,
+        "line": 2487,
         "signature": "b89e8f9ed03046a5ec42871a24836bb8aec129230abb8b081f9e04501a38ea40"
       },
       "kind": "input",
@@ -10902,7 +11598,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10925,7 +11623,7 @@
       "id": "control.072",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2036,
+        "line": 2503,
         "signature": "2f3c3f9ae559a6772c29d0f2db151b4d3448e9fbffcac800a22b675da5cec48f"
       },
       "kind": "Choice",
@@ -10940,7 +11638,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10963,7 +11663,7 @@
       "id": "control.073",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2060,
+        "line": 2527,
         "signature": "3e6fa53aee221a97a3949af46e19fae308f2c9653dbf33fcc3defe30a595189a"
       },
       "kind": "button",
@@ -10978,7 +11678,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11001,7 +11703,7 @@
       "id": "control.074",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2112,
+        "line": 2579,
         "signature": "afacb7db8c7da7e3301ca5d467bb94fdb9c9a64b1f7536d11f8eb3338c5b607b"
       },
       "kind": "button",
@@ -11016,7 +11718,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11039,7 +11743,7 @@
       "id": "control.075",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2131,
+        "line": 2598,
         "signature": "375215f46b1220ae73ff4fab4ad1406fca0da99f1ca6dedd7e7091bc648df08f"
       },
       "kind": "button",
@@ -11054,7 +11758,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11077,7 +11783,7 @@
       "id": "control.076",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2142,
+        "line": 2609,
         "signature": "482aebee25fdac280c3269c175989b5026a3ccfa7462df7f0a7b23a2e9ec25d2"
       },
       "kind": "button",
@@ -11092,7 +11798,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11115,7 +11823,7 @@
       "id": "control.077",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2146,
+        "line": 2613,
         "signature": "695d8444d6e861e2daa3aa4e913be3d14660a9feb7f678d9ed1c2d9e31a87312"
       },
       "kind": "input",
@@ -11130,7 +11838,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11153,7 +11863,7 @@
       "id": "control.078",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2185,
+        "line": 2652,
         "signature": "11b08a53ef4c0d2e44ea3aa2b79d1b149d5e08ad00559dec0e57568baf217a32"
       },
       "kind": "button",
@@ -11168,7 +11878,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11191,7 +11903,7 @@
       "id": "control.079",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2207,
+        "line": 2674,
         "signature": "efc8337060ded27391ef66d1ab9d276a8622c58ab5b77a0b8a457f571fd69eab"
       },
       "kind": "button",
@@ -11206,7 +11918,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11229,7 +11943,7 @@
       "id": "control.080",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2335,
+        "line": 2802,
         "signature": "ee5932715263bf2d3aa8c412bc65042e61c073abc3a5027d4ea31a9d4557c410"
       },
       "kind": "Choice",
@@ -11244,7 +11958,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11282,7 +11998,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11320,7 +12038,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11358,7 +12078,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11396,7 +12118,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11419,7 +12143,7 @@
       "id": "control.085",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 662,
+        "line": 667,
         "signature": "cb3b50e8462a9a7595c3db25eeee0c8519156cc34b49809d230b2a4bb36d55dc"
       },
       "kind": "button",
@@ -11434,7 +12158,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11457,7 +12183,7 @@
       "id": "control.086",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 669,
+        "line": 674,
         "signature": "60caddbb8a88c671fa6274a145def41f25456a91403e3f9f31540b4f9db0cfef"
       },
       "kind": "button",
@@ -11472,7 +12198,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11495,7 +12223,7 @@
       "id": "control.087",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 676,
+        "line": 681,
         "signature": "1fb19097468171a476f921a57720dd6f9e675748a470e6bf68f050a795283288"
       },
       "kind": "button",
@@ -11510,7 +12238,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11533,7 +12263,7 @@
       "id": "control.088",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 688,
+        "line": 693,
         "signature": "240fdd4b6455f3e445ebd02178067d819aa72c314eed3e5ff44df8d98011e975"
       },
       "kind": "button",
@@ -11548,7 +12278,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11571,7 +12303,7 @@
       "id": "control.089",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 695,
+        "line": 700,
         "signature": "26e9b05b985b2e79cc50d859ecd574e439f4e53139abdacd3abd7c407dbfec77"
       },
       "kind": "button",
@@ -11586,7 +12318,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11609,7 +12343,7 @@
       "id": "control.090",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 702,
+        "line": 707,
         "signature": "84c906ea6111186e8c988e33e45aafb5ff7e38d925ff4602a7185da5165f633e"
       },
       "kind": "button",
@@ -11624,7 +12358,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11647,7 +12383,7 @@
       "id": "control.091",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 705,
+        "line": 710,
         "signature": "418ded7fa61ac685e1db6b13d2599075568915a147e136affea5e7e10c10435e"
       },
       "kind": "button",
@@ -11662,7 +12398,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11685,7 +12423,7 @@
       "id": "control.092",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 715,
+        "line": 720,
         "signature": "c7f42460eed081ba1a995238c67d465276a1a6fc949b0cd55cd7eb3aabdd81b4"
       },
       "kind": "canvas",
@@ -11700,7 +12438,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11723,7 +12463,7 @@
       "id": "control.093",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 732,
+        "line": 737,
         "signature": "ed73e949eea7a564ab24d406a454102fcb7a3314c7c4a0d88112f4060f957462"
       },
       "kind": "button",
@@ -11738,7 +12478,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11761,7 +12503,7 @@
       "id": "control.094",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 750,
+        "line": 755,
         "signature": "1c02fde1625b02cd2e76c8257b813e45886123cd86bd0cd1d4da678840b054ce"
       },
       "kind": "button",
@@ -11776,7 +12518,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11799,7 +12543,7 @@
       "id": "control.095",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 757,
+        "line": 762,
         "signature": "bd5f4c94379277f8416009d4430ca2213f64aa6cf22629a0f7934efaa8ce7673"
       },
       "kind": "Slider",
@@ -11814,7 +12558,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11837,7 +12583,7 @@
       "id": "control.096",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 765,
+        "line": 770,
         "signature": "0eff355260d1eaad7fa32aac367ef973976cb515773c140c0543fcec6be11bfa"
       },
       "kind": "input",
@@ -11852,7 +12598,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11875,7 +12623,7 @@
       "id": "control.097",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 780,
+        "line": 785,
         "signature": "15821a2d83fa65e4a5ff5a3891bca004db7333398be107cc45705a9fe673dec3"
       },
       "kind": "div",
@@ -11890,7 +12638,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11913,7 +12663,7 @@
       "id": "control.098",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 788,
+        "line": 793,
         "signature": "be9192860eda2be077844da7b8f955c38f49aed77248c310e965fe80d7c06532"
       },
       "kind": "button",
@@ -11928,7 +12678,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11951,7 +12703,7 @@
       "id": "control.099",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 797,
+        "line": 802,
         "signature": "ccde511792ebb1fd8f8e2b64ac8f46027ec6d61a80402bd875ce10ea1297579f"
       },
       "kind": "Choice",
@@ -11966,7 +12718,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11989,7 +12743,7 @@
       "id": "control.100",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 821,
+        "line": 826,
         "signature": "ffa776c5a276df728319e52975554bd8f3e5a9af5a189bb62e6fbbc27cd785a2"
       },
       "kind": "input",
@@ -12004,7 +12758,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12027,7 +12783,7 @@
       "id": "control.101",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 828,
+        "line": 833,
         "signature": "b806560cf3b20d81a9ff0f35df2cfbe447b5e573cb095c17107153fb233c93e9"
       },
       "kind": "button",
@@ -12042,7 +12798,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12065,7 +12823,7 @@
       "id": "control.102",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 839,
+        "line": 844,
         "signature": "f48c8d0eb91c2a579aa63da2a476f2ddf97d394e26821ff7f95afd63c6473abe"
       },
       "kind": "input",
@@ -12080,7 +12838,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12103,7 +12863,7 @@
       "id": "control.103",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 844,
+        "line": 849,
         "signature": "beb6b06f8d1ccfb95ae7d0d0d81b2858c14caa7a55f26448ae8bf9ff3795597c"
       },
       "kind": "button",
@@ -12118,7 +12878,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12141,7 +12903,7 @@
       "id": "control.104",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 854,
+        "line": 859,
         "signature": "dd408096196ad36298827c63606bc31cb553e4dbd08a0797bc76e310cbf8ce72"
       },
       "kind": "input",
@@ -12156,7 +12918,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12179,7 +12943,7 @@
       "id": "control.105",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 860,
+        "line": 865,
         "signature": "dc495b482834212563ef41be5ab464326fecb82bc0eb7c6401daeed6be55f3ca"
       },
       "kind": "input",
@@ -12194,7 +12958,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12217,7 +12983,7 @@
       "id": "control.106",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 873,
+        "line": 878,
         "signature": "a49f6546663dd193718c9ea9ba3b869a5575af5389adb834480ace0913b04e75"
       },
       "kind": "button",
@@ -12232,7 +12998,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12255,7 +13023,7 @@
       "id": "control.107",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 898,
+        "line": 903,
         "signature": "36bc7cf0cee742dab032fb8af1c81fc84cdb0dc2536436737d92d8318ee0ccf6"
       },
       "kind": "button",
@@ -12270,7 +13038,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12293,7 +13063,7 @@
       "id": "control.108",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 903,
+        "line": 908,
         "signature": "cdf1a4d3b97c8f860356be8ac47245a76bb8e758b5024022a1cc452b4c79a858"
       },
       "kind": "button",
@@ -12308,7 +13078,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12331,7 +13103,7 @@
       "id": "control.109",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 914,
+        "line": 919,
         "signature": "16b44d9d277498e1fbf475b31323ab0fe271cd36f2218d182b281af6ad4a9267"
       },
       "kind": "button",
@@ -12346,7 +13118,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12369,7 +13143,7 @@
       "id": "control.110",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 929,
+        "line": 934,
         "signature": "59a20d26221407542c49a2dcfe5fe3a9726c37ad143d75de2db7b68f73668300"
       },
       "kind": "Choice",
@@ -12384,7 +13158,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12407,7 +13183,7 @@
       "id": "control.111",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 948,
+        "line": 953,
         "signature": "bd64f7159f56c2bc29e97e507136d51e1a766467f1934837639c9552c97c1cd9"
       },
       "kind": "input",
@@ -12422,7 +13198,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12445,7 +13223,7 @@
       "id": "control.112",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 956,
+        "line": 961,
         "signature": "edab9773bb979012fcdb4fc1f6d2ace267637bcc8ab672f934bf050a9f7249c9"
       },
       "kind": "input",
@@ -12460,7 +13238,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12483,7 +13263,7 @@
       "id": "control.113",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 960,
+        "line": 965,
         "signature": "21425269c0387a47686090c89511083dcd8a9ee76e8fa0653b3ab3f5fe71754b"
       },
       "kind": "input",
@@ -12498,7 +13278,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12521,7 +13303,7 @@
       "id": "control.114",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 966,
+        "line": 971,
         "signature": "d08354b0bba0212a2da83fbf4ef4075c800341221bf1cd2c7f42c92765d118bb"
       },
       "kind": "Choice",
@@ -12536,7 +13318,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12559,7 +13343,7 @@
       "id": "control.115",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 983,
+        "line": 988,
         "signature": "32a5ba8a14ae88ef5f2204a6caf1b2a29d355eb7dacafb08db7c906faf089f88"
       },
       "kind": "Checkbox",
@@ -12574,7 +13358,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12597,7 +13383,7 @@
       "id": "control.116",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 989,
+        "line": 994,
         "signature": "cec9e8e4c786a935562792fede8623dd15abe34b3af78c04cd39ceb6cb7b3d3b"
       },
       "kind": "button",
@@ -12612,7 +13398,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12635,7 +13423,7 @@
       "id": "control.117",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1028,
+        "line": 1033,
         "signature": "e12776a15010c7264e0ae1a3579c4341369f6feafa5dc3853d08bc7bcf5aef1f"
       },
       "kind": "button",
@@ -12650,7 +13438,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12673,7 +13463,7 @@
       "id": "control.118",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1070,
+        "line": 1075,
         "signature": "34805ce268e632a44c26245ad43293a1250ee69f67ff6c732e8fd26d5c949e11"
       },
       "kind": "MathEditor",
@@ -12688,7 +13478,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12711,7 +13503,7 @@
       "id": "control.119",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1076,
+        "line": 1081,
         "signature": "8b0fd7e63069dd523096355dad2c8f26e5725d5214cd7828fef9715641ef3964"
       },
       "kind": "button",
@@ -12726,7 +13518,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12749,7 +13543,7 @@
       "id": "control.120",
       "source": {
         "file": "components/calculator/GraphWorkspace.tsx",
-        "line": 1082,
+        "line": 1087,
         "signature": "875e65024101d4d487dc351c4f3753850e23574d3f9d8ae3f7a575e443a4939a"
       },
       "kind": "button",
@@ -12764,7 +13558,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12802,7 +13598,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12840,7 +13638,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12878,7 +13678,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12916,7 +13718,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12954,7 +13758,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12992,7 +13798,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13030,7 +13838,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13068,7 +13878,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13106,7 +13918,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13144,7 +13958,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13182,7 +13998,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13220,7 +14038,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13258,7 +14078,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13296,7 +14118,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13334,7 +14158,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13372,7 +14198,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13410,7 +14238,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13448,7 +14278,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13486,7 +14318,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13524,7 +14358,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13562,7 +14398,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13600,7 +14438,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13638,7 +14478,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13676,7 +14518,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13714,7 +14558,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13752,7 +14598,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13790,7 +14638,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13828,7 +14678,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13866,7 +14718,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13904,7 +14758,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13942,7 +14798,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13980,7 +14838,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14018,7 +14878,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14056,7 +14918,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14094,7 +14958,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14132,7 +14998,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14170,7 +15038,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14208,7 +15078,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14246,7 +15118,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14284,7 +15158,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14322,7 +15198,9 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14360,7 +15238,969 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": ["rendered control and resulting DOM/state"],
+      "reads": [
+        "rendered control and resulting DOM/state"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.163",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 179,
+        "signature": "da52685e5eafc9f64e216f8357a7a3baed4ab2a8c6cc86ef16fbca91b98a2dd1"
+      },
+      "kind": "button",
+      "label": "Run investigation calculations",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.163 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.164",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 193,
+        "signature": "5b6f001a36a31fb0b7c5440601d15d898c83d5d1ce7cf3ddd14febfd0dc126a5"
+      },
+      "kind": "button",
+      "label": "Stop investigation",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.164 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.165",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 197,
+        "signature": "ef94b94ffbed8f3b1cba77a42620ff398c48dcfd00ccbefdc6d9484a5678ea2a"
+      },
+      "kind": "button",
+      "label": "Edit shared objects",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.165 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.166",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 229,
+        "signature": "22f090704b76632d42715325f7e2729fe62b609f779c7bcf5c9d40a09bfaf4ae"
+      },
+      "kind": "textarea",
+      "label": "Investigation question",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.166 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.167",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 239,
+        "signature": "459f763b427ec2c83743af4735296bcc26288e13c9ad42c02e883ea5861dbf53"
+      },
+      "kind": "textarea",
+      "label": "Guide",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.167 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.168",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 251,
+        "signature": "5f6821bafde6c23bb92a7ba60d50077392bfcc3187efa51abfb377f92fc71cf9"
+      },
+      "kind": "Choice",
+      "label": "Investigation angle",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.168 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.169",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 269,
+        "signature": "ff148cf4d37691c554f194803133eab7d955ee4e46c4e19579093be84cad1bd0"
+      },
+      "kind": "Choice",
+      "label": "Investigation domain",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.169 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.170",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 287,
+        "signature": "f1c7d21b284ca9740948ff15a4e2a3a8f3eae9787d74d4582627c324f81613e7"
+      },
+      "kind": "input",
+      "label": "Precision",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.170 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.171",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 312,
+        "signature": "4bee0109bb266480c873b2882904644d0a000b5e548ff2d66b58e4b8f8296f22"
+      },
+      "kind": "input",
+      "label": "Assumptions",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.171 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.172",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 337,
+        "signature": "718973485a338ddd46aca6c86496e7beb7ae82da0dd79f31dd6bf8ea4d7271d6"
+      },
+      "kind": "input",
+      "label": "Case label",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.172 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.173",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 355,
+        "signature": "87c959ef21fe1744fa9104aed87e878b43289d38a83c0a72dbf2188395b9d162"
+      },
+      "kind": "input",
+      "label": "Case parameter value",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.173 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.174",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 378,
+        "signature": "788e50271201422220bedb2badf9c7cd25669c4b10b8a3d187b6bcfce87dd0aa"
+      },
+      "kind": "button",
+      "label": "Remove case",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.174 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.175",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 395,
+        "signature": "555d1cae782b2ffad79cf8ea70634a0a7e3f2caa6c336c70f327d09aa053e27c"
+      },
+      "kind": "button",
+      "label": "Add case",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.175 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.176",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 426,
+        "signature": "17d577662b5af8da0f894cb3d6e8d2c2d3c5350bfb1b3196d0e2df2ff744ab74"
+      },
+      "kind": "input",
+      "label": "Step question",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.176 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.177",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 437,
+        "signature": "fd483926a6fcdd880225304a38bd2f724a863b4e843a61b9be33baf66238255a"
+      },
+      "kind": "Choice",
+      "label": "Step operation",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.177 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.178",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 465,
+        "signature": "85d35a2240ec00b2c83291cd5c500f61f34ec75f8c0360313a034866d65863d4"
+      },
+      "kind": "button",
+      "label": "Edit step inputs",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.178 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.179",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 488,
+        "signature": "71d60739ab63d5c70fd9c09cd645bdec02259cd199b6668944ee80b608c1fdb1"
+      },
+      "kind": "Choice",
+      "label": "Saved investigation run",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.179 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.180",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 517,
+        "signature": "94e00a632b7bffd9dd469f77cd08d53e68d174bfe89df8cefaa721108f7cacd7"
+      },
+      "kind": "button",
+      "label": "Resume missing calculations",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.180 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.181",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 528,
+        "signature": "4aeb13b9ff573212de4a68d50eaf01d057566e217c4fff5401bcea4816dead86"
+      },
+      "kind": "Choice",
+      "label": "Comparison case",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.181 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.182",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 607,
+        "signature": "6268159ed4838ff74c6171352a9e1b26d7755bc5359d42f2ee081a854db93436"
+      },
+      "kind": "textarea",
+      "label": "My observation",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.182 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.183",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 621,
+        "signature": "9ac377f2f794602659b7a092ff3ef774fc0d13ebc907dd52c1c5f4e56ec2b02c"
+      },
+      "kind": "button",
+      "label": "Delete selected run and its results",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.183 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.184",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 636,
+        "signature": "a5fce153160c8299552911ba0ac91ed5a1b56219366cd1e83d3c6a137a31ffb9"
+      },
+      "kind": "button",
+      "label": "Remove plan, keep calculations",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.184 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.185",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 639,
+        "signature": "660a4c94ff4a2bbf58d50d3dd74937934a092f3b8f68bb97d41eb157f1dd99b3"
+      },
+      "kind": "button",
+      "label": "Remove plan and its calculations",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.185 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.186",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 662,
+        "signature": "13b83c4f081b78f4bb8d503e400859d1fc127ebf716cddf842f5ee992ba83596"
+      },
+      "kind": "button",
+      "label": "Start in a new notebook",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.186 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "actual investigation controls, saved snapshots and visible comparison cells"
+      ],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14395,8 +16235,12 @@
         "production fixture browser",
         "scoped fixture identity for API route"
       ],
-      "reads": ["rendered page"],
-      "writes": ["local browser state"],
+      "reads": [
+        "rendered page"
+      ],
+      "writes": [
+        "local browser state"
+      ],
       "exitCodes": {
         "0": "pass",
         "1": "assertion failure",
@@ -14412,7 +16256,10 @@
     {
       "path": "/api/workspace",
       "file": "app/api/workspace/route.ts",
-      "methods": ["GET", "PUT"],
+      "methods": [
+        "GET",
+        "PUT"
+      ],
       "id": "route.workspace",
       "verification": "tests/sync.mjs plus scoped authenticated browser roundtrip",
       "risk": "GET reads scoped D1 workspace; PUT writes it; fixture identity only",
@@ -14424,8 +16271,12 @@
         "production fixture browser",
         "scoped fixture identity for API route"
       ],
-      "reads": ["scoped D1 fixture workspace"],
-      "writes": ["PUT scoped D1 fixture workspace"],
+      "reads": [
+        "scoped D1 fixture workspace"
+      ],
+      "writes": [
+        "PUT scoped D1 fixture workspace"
+      ],
       "exitCodes": {
         "0": "pass",
         "1": "assertion failure",
@@ -14457,7 +16308,9 @@
         "built coverage page, local link target and offline manifest",
         "actual licence route response"
       ],
-      "writes": ["external evidence directory"],
+      "writes": [
+        "external evidence directory"
+      ],
       "network": "local production origin; no external calculation API",
       "risk": "read-only public coverage/licence documents",
       "exitCodes": {
@@ -14491,7 +16344,9 @@
         "built coverage page, local link target and offline manifest",
         "actual licence route response"
       ],
-      "writes": ["external evidence directory"],
+      "writes": [
+        "external evidence directory"
+      ],
       "network": "local production origin; no external calculation API",
       "risk": "read-only public coverage/licence documents",
       "exitCodes": {
@@ -14549,7 +16404,9 @@
         "graph.resource-recovery",
         "graph.fit-drawability"
       ],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -14563,7 +16420,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -14604,7 +16464,9 @@
         "conversion-function-quotient",
         "objects.kind-draft-preservation"
       ],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -14618,7 +16480,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -14638,14 +16503,18 @@
     },
     {
       "id": "feature.notebooks",
-      "source": ["components/calculator/Calculator.tsx"],
+      "source": [
+        "components/calculator/Calculator.tsx"
+      ],
       "browserScenarioIds": [
         "result-copy",
         "result-details",
         "result-use-undo",
         "notebook-isolation"
       ],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -14659,7 +16528,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -14736,7 +16608,9 @@
         "editor.menu-clipboard-safety",
         "distribution.saved-input-recovery"
       ],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -14750,7 +16624,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -14848,7 +16725,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -14879,7 +16759,9 @@
         "settings-reload",
         "settings-math"
       ],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -14893,7 +16775,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -14924,7 +16809,9 @@
         "identity.sites-vs-loopback",
         "sync.scoped-browser-roundtrip"
       ],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -14938,7 +16825,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -14964,8 +16854,12 @@
         "public/sw.js",
         "components/calculator/Calculator.tsx"
       ],
-      "browserScenarioIds": ["offline.production-disconnected-reload"],
-      "run": ["pnpm --silent verify browser validate --evidence FILE"],
+      "browserScenarioIds": [
+        "offline.production-disconnected-reload"
+      ],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -14979,7 +16873,10 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": ["local fixture workspace", "chosen evidence directory"],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -15012,7 +16909,10 @@
         "pnpm --silent verify run --suite engine-lifecycle --json",
         "pnpm --silent verify browser validate --evidence FILE"
       ],
-      "prerequisites": ["actual fixture browser", "prepared local engine"],
+      "prerequisites": [
+        "actual fixture browser",
+        "prepared local engine"
+      ],
       "reads": [
         "visible engine readiness, expression input and result",
         "independent mathematical identities"
@@ -15038,6 +16938,70 @@
         "revision + dirty source + built asset fingerprints"
       ],
       "statusPolicy": "Main text % syntax is currently unavailable; expected error must be recorded separately from graph percent conventions. Source lifecycle tests do not substitute browser cancellation/restart evidence."
+    },
+    {
+      "id": "feature.investigations",
+      "source": [
+        "components/calculator/Investigations.tsx",
+        "lib/calculator/investigations.ts",
+        "lib/calculator/investigation-labs.ts",
+        "lib/calculator/storage.ts",
+        "lib/calculator/sync.ts",
+        "components/calculator/Calculator.tsx",
+        "tests/investigations.mjs",
+        "tests/investigation-async.mjs",
+        "lib/calculator/workspace-values.ts"
+      ],
+      "browserScenarioIds": [
+        "investigation.matrix",
+        "investigation.derivatives",
+        "investigation.paths",
+        "investigation.tails",
+        "investigation.edit-snapshots",
+        "investigation.cancel-resume",
+        "investigation.ownership",
+        "investigation.limits",
+        "investigation.backup-recovery",
+        "investigation.phone-offline",
+        "investigation.deletions"
+      ],
+      "run": [
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "production build",
+        "isolated fixture workspace",
+        "current revision and dirty fingerprint",
+        "browser automation capability"
+      ],
+      "risk": "creates isolated notebooks and calculations; tests cancellation, scoped identity and recovery",
+      "statusPolicy": "Missing/blocked/failed interaction remains non-pass; catalogue/math execution cannot substitute",
+      "reads": [
+        "rendered semantic DOM",
+        "isolated fixture workspace",
+        "independent expectations"
+      ],
+      "writes": [
+        "local fixture workspace",
+        "chosen evidence directory"
+      ],
+      "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "ordered visible-control actions and mathematical assertions for all four real-engine labs",
+        "original snapshots, requests, statuses and results before and after edits",
+        "partial cancellation, reload and missing-only resume",
+        "synthetic account generation and target-removal isolation with limitations",
+        "exported/imported/recovered notebook-local references and observation",
+        "history, cloud input and real output ceilings with retained oversized evidence",
+        "320px/390px case switching, desktop comparison, keyboard focus and genuine offline run"
+      ]
     }
   ]
 }

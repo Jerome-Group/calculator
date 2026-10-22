@@ -5,6 +5,7 @@ These files group the existing machine-map owners. Read one feature at a time. U
 | Feature                                                  | Existing owners                                                   |
 | -------------------------------------------------------- | ----------------------------------------------------------------- |
 | [Calculation and editor](calculation.md)                 | `feature.editor`, `feature.expression-worker`, catalogue fixtures |
+| [Guided investigations](investigations.md)               | `feature.investigations`                                          |
 | [Graphs and analysis](graphs.md)                         | `feature.graphs`                                                  |
 | [Notebooks and objects](workspaces.md)                   | `feature.notebooks`, `feature.objects`                            |
 | [Accounts, settings and recovery](recovery.md)           | `feature.identity-sync`, `feature.settings-recovery`              |
