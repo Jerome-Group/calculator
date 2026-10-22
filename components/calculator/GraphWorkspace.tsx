@@ -82,7 +82,7 @@ export default function GraphWorkspace({
     [a, setA] = useState(1),
     [mode, setMode] = useState("pan"),
     [rotation, setRotation] = useState(0.6),
-    [trace, setTrace] = useState<[number, number] | null>(null),
+    [traceX, setTraceX] = useState<number | null>(null),
     [table, setTable] = useState(false),
     [action, setAction] = useState("value"),
     [point, setPoint] = useState("0"),
@@ -156,6 +156,18 @@ export default function GraphWorkspace({
       }),
     [graphs, scope],
   );
+  const trace = useMemo<[number, number] | null>(() => {
+    const p = prepared.find((p) => p.g.id === (selection || current?.id));
+    if (
+      traceX === null ||
+      !p?.g.visible ||
+      !["cartesian", "sequence"].includes(p.g.type)
+    )
+      return null;
+    const x = p.g.type === "sequence" ? Math.round(traceX) : traceX,
+      y = p.f(x);
+    return Number.isFinite(x) && Number.isFinite(y) ? [x, y] : null;
+  }, [traceX, prepared, selection, current?.id]);
   const diagnostic =
     error ||
     prepared.find((p) => p.error)?.error ||
@@ -494,8 +506,8 @@ export default function GraphWorkspace({
     if (!p || !["cartesian", "sequence"].includes(p.g.type)) return;
     let x = range[0] + (px / size.w) * (range[1] - range[0]);
     if (p.g.type === "sequence") x = Math.round(x);
-    const y = p.f(x);
-    setTrace(Number.isFinite(y) ? [x, y] : null);
+    select(p.g.id);
+    setTraceX(x);
   };
   const down = (e: React.PointerEvent) => {
     canvas.current?.setPointerCapture(e.pointerId);

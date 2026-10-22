@@ -248,7 +248,13 @@ export function graphTable(
   const lo = parametric ? numeric(compileMath(graph.min), scope) : lower;
   const hi = parametric ? numeric(compileMath(graph.max), scope) : upper;
   if (!Number.isFinite(lo) || !Number.isFinite(hi) || hi < lo) return result;
-  const sample = (i: number) => lo + ((hi - lo) * i) / 10;
+  const sample = (i: number) => {
+    if (i === 0) return lo;
+    if (i === 10) return hi;
+    const t = i / 10,
+      span = hi - lo;
+    return Number.isFinite(span) ? lo + span * t : lo * (1 - t) + hi * t;
+  };
   if (["implicit", "inequality", "surface", "field"].includes(graph.type)) {
     result.headers = [
       "x",

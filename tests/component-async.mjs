@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import * as displayFormat from "../lib/calculator/display-format.ts";
 import {
   componentHarness,
   definition,
@@ -191,6 +192,146 @@ function objectKindControl(tree) {
   }
   return null;
 }
+function graphTrace(expressions = ["x^2"]) {
+  const harness = componentHarness(
+      "GraphWorkspace",
+      [],
+      {},
+      {
+        "@/lib/calculator/display-format": displayFormat,
+      },
+    ),
+    reused = [];
+  let graphs = expressions.map((expression) =>
+      harness.exports.makeGraph(expression),
+    ),
+    definitions = [],
+    graphSettings = settings;
+  const render = () =>
+    harness.render({
+      graphs,
+      onChange: (value) => (graphs = value),
+      definitions,
+      settings: graphSettings,
+      onAnalyze() {},
+      onReuse: (value) => reused.push(JSON.parse(value)),
+    }).tree;
+  const nodes = (tree) =>
+    !tree || typeof tree !== "object"
+      ? []
+      : [tree, ...[tree.props?.children].flat(Infinity).flatMap(nodes)];
+  const control = (label) =>
+    nodes(render()).find(
+      (node) =>
+        node.props?.["aria-label"] === label || node.props?.label === label,
+    );
+  const usePoint = () =>
+    nodes(render()).find(
+      (node) => node.type === "button" && node.props.children === "Use point",
+    );
+  const text = (tree) =>
+    tree && typeof tree === "object"
+      ? [tree.props?.children].flat(Infinity).map(text).join("")
+      : String(tree ?? "");
+  return {
+    control,
+    usePoint,
+    reused,
+    traceText: () =>
+      text(
+        nodes(render()).find((node) => node.props?.className === "trace-bar"),
+      ),
+    definitions: (value) => (definitions = value),
+    settings: (value) => (graphSettings = value),
+    select(index) {
+      nodes(render())
+        .filter((node) =>
+          node.props?.className?.startsWith("graph-expression "),
+        )
+        [index].props.onClick();
+    },
+    trace(x) {
+      control("Trace graph").props.onClick();
+      const canvas = nodes(render()).find((node) => node.type === "canvas");
+      canvas.props.ref.current = {
+        setPointerCapture() {},
+        getBoundingClientRect: () => ({ left: 0, top: 0 }),
+      };
+      canvas.props.onPointerDown({
+        pointerId: 1,
+        clientX: ((x + 6) / 12) * 640,
+        clientY: 200,
+      });
+      canvas.props.onPointerUp({ pointerId: 1 });
+    },
+  };
+}
+await check(
+  "trace and Use point follow expression and scope edits",
+  async () => {
+    const graph = graphTrace();
+    graph.trace(0);
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [0, 0]);
+    graph.control("Graph 1 expression").props.onChange({
+      target: { value: "x^2+1" },
+    });
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [0, 1]);
+    assert.match(graph.traceText(), /x = 0 · y = 1/);
+    graph.definitions([definition("b", "1")]);
+    graph.control("Graph 1 expression").props.onChange({
+      target: { value: "a*x+b+sin(30)" },
+    });
+    graph.trace(3);
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [3, 4 + Math.sin(30)]);
+    graph.control("Parameter a").props.onValueChange([2]);
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [3, 7 + Math.sin(30)]);
+    graph.definitions([definition("b", "5")]);
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [3, 11 + Math.sin(30)]);
+    graph.settings({ ...settings, angle: "deg" });
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [3, 11.5]);
+  },
+);
+await check(
+  "trace follows the selected curve and sequence domain",
+  async () => {
+    const graph = graphTrace(["x^2", "2*x"]);
+    graph.trace(1.5);
+    graph.select(1);
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [1.5, 3]);
+    graph.control("Graph 2 type").props.onChange("sequence");
+    graph.control("Graph 2 expression").props.onChange({
+      target: { value: "n^2" },
+    });
+    graph.usePoint().props.onClick();
+    assert.deepEqual(graph.reused.at(-1), [2, 4]);
+  },
+);
+await check("trace hides stale points for unavailable curves", async () => {
+  for (const change of [
+    (graph) => graph.control("Hide graph 1").props.onClick(),
+    (graph) => graph.control("Graph 1 type").props.onChange("parametric"),
+    (graph) => graph.control("Delete graph 1").props.onClick(),
+    ...["x+", "missing(x)", "1/0"].map(
+      (expression) => (graph) =>
+        graph.control("Graph 1 expression").props.onChange({
+          target: { value: expression },
+        }),
+    ),
+  ]) {
+    const graph = graphTrace(["x^2", "2*x"]);
+    graph.trace(0);
+    assert(graph.usePoint());
+    change(graph);
+    assert.equal(graph.usePoint(), undefined);
+  }
+});
 await check(
   "assignment matrix draft survives object kind selection and save",
   async () => {
