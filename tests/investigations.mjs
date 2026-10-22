@@ -206,6 +206,39 @@ for (const entry of cosmetic.notebooks[0].history) {
   });
 }
 validateState(cosmetic);
+const collision = structuredClone(state);
+const collisionBook = collision.notebooks[0];
+collisionBook.investigation.runs = [];
+collisionBook.history = [];
+collisionBook.definitions = [
+  { id: "parameter:a", name: "A", kind: "matrix", expression: "Matrix([[a]])" },
+  { id: "parameter:a:1", name: "b", kind: "expression", expression: "1" },
+];
+validateState(collision);
+const collisionRun = prepareInvestigationRun({
+  notebook: collisionBook,
+  action: { kind: "new" },
+});
+collisionBook.investigation.runs.push(collisionRun.run);
+const collisionCell = collisionRun.missing[0];
+assert.equal(
+  collisionCell.context.definitions.find((d) => d.name === "a").id,
+  "parameter:a:2",
+);
+collisionBook.history.push({
+  ...collisionCell.request,
+  ...collisionCell.context,
+  id: "collision-cell",
+  time: 1,
+  investigation: collisionCell.cell,
+  result: JSON.parse(
+    compute(
+      JSON.stringify({ ...collisionCell.request, ...collisionCell.context }),
+    ),
+  ),
+});
+assert.equal(collisionBook.history[0].result.text, "2");
+assert.deepEqual(validateState(collision), collision);
 const kept = removeInvestigation(notebook, true);
 assert.equal(kept.investigation, undefined);
 assert(kept.history.every((e) => e.investigation === undefined));

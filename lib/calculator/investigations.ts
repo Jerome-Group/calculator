@@ -194,8 +194,15 @@ function boundCaseDefinitions(run: InvestigationRun, c: InvestigationCase) {
     const original = run.snapshot.context.definitions.find(
       (d) => d.name === parameter,
     );
+    let id = original?.id || "parameter:" + parameter;
+    for (
+      let suffix = 1;
+      suffix <= definitions.length && definitions.some((d) => d.id === id);
+      suffix++
+    )
+      id = "parameter:" + parameter + ":" + suffix;
     definitions.push({
-      id: original?.id || "parameter:" + parameter,
+      id,
       name: parameter,
       kind: "expression",
       expression: c.values[parameter],

@@ -21,16 +21,9 @@
   "suites": [
     {
       "id": "format",
-      "argv": [
-        "pnpm",
-        "format:check"
-      ],
-      "prerequisites": [
-        "pnpm"
-      ],
-      "reads": [
-        "repo source/fixtures/locked dependencies"
-      ],
+      "argv": ["pnpm", "format:check"],
+      "prerequisites": ["pnpm"],
+      "reads": ["repo source/fixtures/locked dependencies"],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -42,23 +35,13 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "format.stdout.log",
-        "format.stderr.log"
-      ]
+      "evidence": ["format.stdout.log", "format.stderr.log"]
     },
     {
       "id": "lint",
-      "argv": [
-        "pnpm",
-        "lint"
-      ],
-      "prerequisites": [
-        "pnpm"
-      ],
-      "reads": [
-        "repo source/fixtures/locked dependencies"
-      ],
+      "argv": ["pnpm", "lint"],
+      "prerequisites": ["pnpm"],
+      "reads": ["repo source/fixtures/locked dependencies"],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -70,23 +53,13 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "lint.stdout.log",
-        "lint.stderr.log"
-      ]
+      "evidence": ["lint.stdout.log", "lint.stderr.log"]
     },
     {
       "id": "types",
-      "argv": [
-        "pnpm",
-        "typecheck"
-      ],
-      "prerequisites": [
-        "pnpm"
-      ],
-      "reads": [
-        "repo source/fixtures/locked dependencies"
-      ],
+      "argv": ["pnpm", "typecheck"],
+      "prerequisites": ["pnpm"],
+      "reads": ["repo source/fixtures/locked dependencies"],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -98,26 +71,14 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "types.stdout.log",
-        "types.stderr.log"
-      ]
+      "evidence": ["types.stdout.log", "types.stderr.log"]
     },
     {
       "id": "existing-tests",
-      "argv": [
-        "pnpm",
-        "test"
-      ],
-      "prerequisites": [
-        "pnpm"
-      ],
-      "reads": [
-        "repo source/fixtures/locked dependencies"
-      ],
-      "writes": [
-        "ignored engine cache"
-      ],
+      "argv": ["pnpm", "test"],
+      "prerequisites": ["pnpm"],
+      "reads": ["repo source/fixtures/locked dependencies"],
+      "writes": ["ignored engine cache"],
       "network": "prepare may download pinned engine",
       "risk": "local owned source checks; no account data",
       "fixtures": [],
@@ -128,27 +89,17 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "existing-tests.stdout.log",
-        "existing-tests.stderr.log"
-      ]
+      "evidence": ["existing-tests.stdout.log", "existing-tests.stderr.log"]
     },
     {
       "id": "math",
-      "argv": [
-        "node",
-        "tests/maths-oracle.mjs"
-      ],
-      "prerequisites": [
-        "preparedEngine"
-      ],
+      "argv": ["node", "tests/maths-oracle.mjs"],
+      "prerequisites": ["preparedEngine"],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "tests/maths-assertions.py"
       ],
-      "writes": [
-        "selected evidence directory"
-      ],
+      "writes": ["selected evidence directory"],
       "network": "forbidden",
       "risk": "local owned source checks; no account data",
       "fixtures": [
@@ -488,24 +439,13 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "math.stdout.log",
-        "math.stderr.log",
-        "math.result.json"
-      ]
+      "evidence": ["math.stdout.log", "math.stderr.log", "math.result.json"]
     },
     {
       "id": "coverage",
-      "argv": [
-        "node",
-        "scripts/verify.mjs",
-        "coverage",
-        "--json"
-      ],
+      "argv": ["node", "scripts/verify.mjs", "coverage", "--json"],
       "prerequisites": [],
-      "reads": [
-        "repo source/fixtures/locked dependencies"
-      ],
+      "reads": ["repo source/fixtures/locked dependencies"],
       "writes": [],
       "network": "none",
       "risk": "local owned source checks; no account data",
@@ -517,26 +457,14 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "manifest.json suites[].checks"
-      ]
+      "evidence": ["manifest.json suites[].checks"]
     },
     {
       "id": "build",
-      "argv": [
-        "pnpm",
-        "build"
-      ],
-      "prerequisites": [
-        "pnpm"
-      ],
-      "reads": [
-        "repo source/fixtures/locked dependencies"
-      ],
-      "writes": [
-        "dist/",
-        "ignored engine cache"
-      ],
+      "argv": ["pnpm", "build"],
+      "prerequisites": ["pnpm"],
+      "reads": ["repo source/fixtures/locked dependencies"],
+      "writes": ["dist/", "ignored engine cache"],
       "network": "prepare may download pinned engine",
       "risk": "writes generated output; no remote deployment",
       "fixtures": [],
@@ -547,21 +475,12 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "build.stdout.log",
-        "build.stderr.log"
-      ]
+      "evidence": ["build.stdout.log", "build.stderr.log"]
     },
     {
       "id": "assets",
-      "argv": [
-        "pnpm",
-        "test:assets"
-      ],
-      "prerequisites": [
-        "pnpm",
-        "productionBuild"
-      ],
+      "argv": ["pnpm", "test:assets"],
+      "prerequisites": ["pnpm", "productionBuild"],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "built coverage local href targets and offline manifest"
@@ -577,31 +496,17 @@
         "3": "prerequisite blocked",
         "4": "harness error"
       },
-      "evidence": [
-        "assets.stdout.log",
-        "assets.stderr.log"
-      ]
+      "evidence": ["assets.stdout.log", "assets.stderr.log"]
     },
     {
       "id": "detectors",
-      "argv": [
-        "node",
-        "tests/verification/detectors.mjs"
-      ],
-      "prerequisites": [
-        "preparedEngine"
-      ],
-      "reads": [
-        "map, fixtures, source, prepared engine"
-      ],
-      "writes": [
-        "private temporary files"
-      ],
+      "argv": ["node", "tests/verification/detectors.mjs"],
+      "prerequisites": ["preparedEngine"],
+      "reads": ["map, fixtures, source, prepared engine"],
+      "writes": ["private temporary files"],
       "network": "forbidden",
       "risk": "disposable output/source mutation; no app data",
-      "fixtures": [
-        "form.matrix_inverse.default"
-      ],
+      "fixtures": ["form.matrix_inverse.default"],
       "exitCodes": {
         "0": "pass",
         "1": "detector failed",
@@ -622,12 +527,8 @@
         "--experimental-vm-modules",
         "tests/engine-lifecycle.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "owned source and controlled async fixtures"
-      ],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["owned source and controlled async fixtures"],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -639,10 +540,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "engine-lifecycle.stdout.log",
-        "engine-lifecycle.stderr.log"
-      ]
+      "evidence": ["engine-lifecycle.stdout.log", "engine-lifecycle.stderr.log"]
     },
     {
       "id": "result-validation",
@@ -652,12 +550,8 @@
         "./tests/resolve-types.mjs",
         "tests/result-validation.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "owned source and controlled async fixtures"
-      ],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["owned source and controlled async fixtures"],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -676,16 +570,9 @@
     },
     {
       "id": "component-async",
-      "argv": [
-        "node",
-        "tests/component-async.mjs"
-      ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "owned source and controlled async fixtures"
-      ],
+      "argv": ["node", "tests/component-async.mjs"],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["owned source and controlled async fixtures"],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -697,23 +584,13 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "component-async.stdout.log",
-        "component-async.stderr.log"
-      ]
+      "evidence": ["component-async.stdout.log", "component-async.stderr.log"]
     },
     {
       "id": "verification-cli",
-      "argv": [
-        "node",
-        "tests/verification/cli.mjs"
-      ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "verification contract and owned fixture metadata"
-      ],
+      "argv": ["node", "tests/verification/cli.mjs"],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["verification contract and owned fixture metadata"],
       "writes": [],
       "network": "none",
       "risk": "read-only command probes",
@@ -725,27 +602,17 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "verification-cli.stdout.log",
-        "verification-cli.stderr.log"
-      ]
+      "evidence": ["verification-cli.stdout.log", "verification-cli.stderr.log"]
     },
     {
       "id": "math-invalid",
-      "argv": [
-        "node",
-        "tests/maths-invalid.mjs"
-      ],
-      "prerequisites": [
-        "preparedEngine"
-      ],
+      "argv": ["node", "tests/maths-invalid.mjs"],
+      "prerequisites": ["preparedEngine"],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "tests/maths-assertions.py"
       ],
-      "writes": [
-        "selected evidence directory"
-      ],
+      "writes": ["selected evidence directory"],
       "network": "forbidden",
       "risk": "local owned source checks; no account data",
       "fixtures": [
@@ -792,20 +659,13 @@
     },
     {
       "id": "observed-matcher",
-      "argv": [
-        "node",
-        "tests/verification/observed-matcher.test.mjs"
-      ],
-      "prerequisites": [
-        "preparedEngine"
-      ],
+      "argv": ["node", "tests/verification/observed-matcher.test.mjs"],
+      "prerequisites": ["preparedEngine"],
       "reads": [
         "repo source/fixtures/locked dependencies",
         "tests/maths-assertions.py"
       ],
-      "writes": [
-        "selected evidence directory"
-      ],
+      "writes": ["selected evidence directory"],
       "network": "forbidden",
       "risk": "local owned source checks; no account data",
       "fixtures": [],
@@ -824,13 +684,8 @@
     },
     {
       "id": "math-editor",
-      "argv": [
-        "node",
-        "tests/math-editor.mjs"
-      ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
+      "argv": ["node", "tests/math-editor.mjs"],
+      "prerequisites": ["lockedInstall"],
       "reads": [
         "owned source and controlled async fixtures",
         "tests/mathlive-loader.mjs",
@@ -853,10 +708,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "math-editor.stdout.log",
-        "math-editor.stderr.log"
-      ]
+      "evidence": ["math-editor.stdout.log", "math-editor.stderr.log"]
     },
     {
       "id": "notation",
@@ -866,12 +718,8 @@
         "./tests/resolve-types.mjs",
         "tests/notation.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "owned source and controlled async fixtures"
-      ],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["owned source and controlled async fixtures"],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -883,10 +731,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "notation.stdout.log",
-        "notation.stderr.log"
-      ]
+      "evidence": ["notation.stdout.log", "notation.stderr.log"]
     },
     {
       "id": "notation-previews",
@@ -896,9 +741,7 @@
         "./tests/resolve-types.mjs",
         "tests/notation-previews.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
+      "prerequisites": ["lockedInstall"],
       "reads": [
         "owned source and controlled async fixtures",
         "components/calculator/StructuredFields.tsx",
@@ -928,12 +771,8 @@
         "./tests/resolve-types.mjs",
         "tests/display-format.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "owned source and controlled async fixtures"
-      ],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["owned source and controlled async fixtures"],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -945,10 +784,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "display-format.stdout.log",
-        "display-format.stderr.log"
-      ]
+      "evidence": ["display-format.stdout.log", "display-format.stderr.log"]
     },
     {
       "id": "graph-semantics",
@@ -958,12 +794,8 @@
         "./tests/resolve-types.mjs",
         "tests/graph-semantics.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "owned source and controlled async fixtures"
-      ],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["owned source and controlled async fixtures"],
       "writes": [],
       "network": "mocked only",
       "risk": "isolated test contexts, no browser account data",
@@ -975,10 +807,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "graph-semantics.stdout.log",
-        "graph-semantics.stderr.log"
-      ]
+      "evidence": ["graph-semantics.stdout.log", "graph-semantics.stderr.log"]
     },
     {
       "id": "graph-resources",
@@ -989,12 +818,8 @@
         "./tests/resolve-types.mjs",
         "tests/graph-resources.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
-      "reads": [
-        "actual graph resource guard and MathJS expression evaluation"
-      ],
+      "prerequisites": ["lockedInstall"],
+      "reads": ["actual graph resource guard and MathJS expression evaluation"],
       "writes": [],
       "network": "mocked only",
       "risk": "bounded graph-expression constructor/multiply allocation checks under128MB heap; no browser allocations",
@@ -1006,20 +831,12 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "graph-resources.stdout.log",
-        "graph-resources.stderr.log"
-      ]
+      "evidence": ["graph-resources.stdout.log", "graph-resources.stderr.log"]
     },
     {
       "id": "gate-recovery",
-      "argv": [
-        "node",
-        "tests/gate-recovery.mjs"
-      ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
+      "argv": ["node", "tests/gate-recovery.mjs"],
+      "prerequisites": ["lockedInstall"],
       "reads": [
         "actual CalculatorGate in-app Dialog/backup/navigation callbacks; controlled sync and browser seams"
       ],
@@ -1034,10 +851,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "gate-recovery.stdout.log",
-        "gate-recovery.stderr.log"
-      ]
+      "evidence": ["gate-recovery.stdout.log", "gate-recovery.stderr.log"]
     },
     {
       "id": "workspace-request",
@@ -1047,9 +861,7 @@
         "./tests/resolve-types.mjs",
         "tests/workspace-request.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
+      "prerequisites": ["lockedInstall"],
       "reads": [
         "shared workspace request byte preflight and exact JSON envelope"
       ],
@@ -1071,13 +883,8 @@
     },
     {
       "id": "persistence-warning",
-      "argv": [
-        "node",
-        "tests/persistence-warning.mjs"
-      ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
+      "argv": ["node", "tests/persistence-warning.mjs"],
+      "prerequisites": ["lockedInstall"],
       "reads": [
         "actual Calculator autosave effect; controlled persistence/timer seam"
       ],
@@ -1105,9 +912,7 @@
         "./tests/resolve-types.mjs",
         "tests/investigations.mjs"
       ],
-      "prerequisites": [
-        "preparedEngine"
-      ],
+      "prerequisites": ["preparedEngine"],
       "reads": [
         "pure investigation domain, shared storage validation, real bundled Pyodide engine and independent mathematical values"
       ],
@@ -1122,10 +927,7 @@
         "3": "blocked",
         "4": "runner failure"
       },
-      "evidence": [
-        "investigations.stdout.log",
-        "investigations.stderr.log"
-      ]
+      "evidence": ["investigations.stdout.log", "investigations.stderr.log"]
     },
     {
       "id": "investigation-async",
@@ -1135,9 +937,7 @@
         "./tests/resolve-types.mjs",
         "tests/investigation-async.mjs"
       ],
-      "prerequisites": [
-        "lockedInstall"
-      ],
+      "prerequisites": ["lockedInstall"],
       "reads": [
         "Calculator's actual execution and append actions under controlled promise/session timing"
       ],
@@ -1172,9 +972,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.simplify.default"
-      ],
+      "fixtures": ["form.simplify.default"],
       "browserEvidenceId": "browser.form.simplify.default",
       "browserVariants": [],
       "run": [
@@ -1203,9 +1001,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.expand.default"
-      ],
+      "fixtures": ["form.expand.default"],
       "browserEvidenceId": "browser.form.expand.default",
       "browserVariants": [],
       "run": [
@@ -1234,9 +1030,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.factor.default"
-      ],
+      "fixtures": ["form.factor.default"],
       "browserEvidenceId": "browser.form.factor.default",
       "browserVariants": [],
       "run": [
@@ -1270,9 +1064,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.apart.default"
-      ],
+      "fixtures": ["form.apart.default"],
       "browserEvidenceId": "browser.form.apart.default",
       "browserVariants": [],
       "run": [
@@ -1301,9 +1093,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.cancel.default"
-      ],
+      "fixtures": ["form.cancel.default"],
       "browserEvidenceId": "browser.form.cancel.default",
       "browserVariants": [],
       "run": [
@@ -1332,9 +1122,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.trigsimp.default"
-      ],
+      "fixtures": ["form.trigsimp.default"],
       "browserEvidenceId": "browser.form.trigsimp.default",
       "browserVariants": [],
       "run": [
@@ -1363,9 +1151,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.approx.default"
-      ],
+      "fixtures": ["form.approx.default"],
       "browserEvidenceId": "browser.form.approx.default",
       "browserVariants": [],
       "run": [
@@ -1399,9 +1185,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.substitute.default"
-      ],
+      "fixtures": ["form.substitute.default"],
       "browserEvidenceId": "browser.form.substitute.default",
       "browserVariants": [],
       "run": [
@@ -1435,9 +1219,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.solve.default"
-      ],
+      "fixtures": ["form.solve.default"],
       "browserEvidenceId": "browser.form.solve.default",
       "browserVariants": [],
       "run": [
@@ -1472,10 +1254,7 @@
         },
         "kind": {
           "label": "System type",
-          "choices": [
-            "linear",
-            "nonlinear"
-          ],
+          "choices": ["linear", "nonlinear"],
           "required": true
         }
       },
@@ -1538,9 +1317,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.inequality.default"
-      ],
+      "fixtures": ["form.inequality.default"],
       "browserEvidenceId": "browser.form.inequality.default",
       "browserVariants": [],
       "run": [
@@ -1579,9 +1356,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.differentiate.default"
-      ],
+      "fixtures": ["form.differentiate.default"],
       "browserEvidenceId": "browser.form.differentiate.default",
       "browserVariants": [],
       "run": [
@@ -1625,9 +1400,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.integrate.default"
-      ],
+      "fixtures": ["form.integrate.default"],
       "browserEvidenceId": "browser.form.integrate.default",
       "browserVariants": [],
       "run": [
@@ -1661,9 +1434,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.multiple_integral.default"
-      ],
+      "fixtures": ["form.multiple_integral.default"],
       "browserEvidenceId": "browser.form.multiple_integral.default",
       "browserVariants": [],
       "run": [
@@ -1703,11 +1474,7 @@
         },
         "direction": {
           "label": "Approach direction",
-          "choices": [
-            "+-",
-            "+",
-            "-"
-          ],
+          "choices": ["+-", "+", "-"],
           "required": true
         }
       },
@@ -1792,10 +1559,7 @@
         },
         "direction": {
           "label": "Approach direction",
-          "choices": [
-            "+",
-            "-"
-          ],
+          "choices": ["+", "-"],
           "required": true
         }
       },
@@ -1868,9 +1632,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.sum.default"
-      ],
+      "fixtures": ["form.sum.default"],
       "browserEvidenceId": "browser.form.sum.default",
       "browserVariants": [],
       "run": [
@@ -1914,9 +1676,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.product.default"
-      ],
+      "fixtures": ["form.product.default"],
       "browserEvidenceId": "browser.form.product.default",
       "browserVariants": [],
       "run": [
@@ -1955,9 +1715,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.convergence.default"
-      ],
+      "fixtures": ["form.convergence.default"],
       "browserEvidenceId": "browser.form.convergence.default",
       "browserVariants": [],
       "run": [
@@ -1991,9 +1749,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.sequence_limit.default"
-      ],
+      "fixtures": ["form.sequence_limit.default"],
       "browserEvidenceId": "browser.form.sequence_limit.default",
       "browserVariants": [],
       "run": [
@@ -2042,9 +1798,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.multilimit.default"
-      ],
+      "fixtures": ["form.multilimit.default"],
       "browserEvidenceId": "browser.form.multilimit.default",
       "browserVariants": [],
       "run": [
@@ -2083,9 +1837,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.residue.default"
-      ],
+      "fixtures": ["form.residue.default"],
       "browserEvidenceId": "browser.form.residue.default",
       "browserVariants": [],
       "run": [
@@ -2119,9 +1871,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.singularities.default"
-      ],
+      "fixtures": ["form.singularities.default"],
       "browserEvidenceId": "browser.form.singularities.default",
       "browserVariants": [],
       "run": [
@@ -2155,9 +1905,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.domain.default"
-      ],
+      "fixtures": ["form.domain.default"],
       "browserEvidenceId": "browser.form.domain.default",
       "browserVariants": [],
       "run": [
@@ -2186,9 +1934,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_det.default"
-      ],
+      "fixtures": ["form.matrix_det.default"],
       "browserEvidenceId": "browser.form.matrix_det.default",
       "browserVariants": [],
       "run": [
@@ -2249,9 +1995,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_transpose.default"
-      ],
+      "fixtures": ["form.matrix_transpose.default"],
       "browserEvidenceId": "browser.form.matrix_transpose.default",
       "browserVariants": [],
       "run": [
@@ -2280,9 +2024,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_adjoint.default"
-      ],
+      "fixtures": ["form.matrix_adjoint.default"],
       "browserEvidenceId": "browser.form.matrix_adjoint.default",
       "browserVariants": [],
       "run": [
@@ -2311,9 +2053,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_adjugate.default"
-      ],
+      "fixtures": ["form.matrix_adjugate.default"],
       "browserEvidenceId": "browser.form.matrix_adjugate.default",
       "browserVariants": [],
       "run": [
@@ -2342,9 +2082,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_cofactors.default"
-      ],
+      "fixtures": ["form.matrix_cofactors.default"],
       "browserEvidenceId": "browser.form.matrix_cofactors.default",
       "browserVariants": [],
       "run": [
@@ -2373,9 +2111,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_rref.default"
-      ],
+      "fixtures": ["form.matrix_rref.default"],
       "browserEvidenceId": "browser.form.matrix_rref.default",
       "browserVariants": [],
       "run": [
@@ -2404,9 +2140,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_rank.default"
-      ],
+      "fixtures": ["form.matrix_rank.default"],
       "browserEvidenceId": "browser.form.matrix_rank.default",
       "browserVariants": [],
       "run": [
@@ -2435,9 +2169,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_null.default"
-      ],
+      "fixtures": ["form.matrix_null.default"],
       "browserEvidenceId": "browser.form.matrix_null.default",
       "browserVariants": [],
       "run": [
@@ -2466,9 +2198,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_row.default"
-      ],
+      "fixtures": ["form.matrix_row.default"],
       "browserEvidenceId": "browser.form.matrix_row.default",
       "browserVariants": [],
       "run": [
@@ -2497,9 +2227,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_column.default"
-      ],
+      "fixtures": ["form.matrix_column.default"],
       "browserEvidenceId": "browser.form.matrix_column.default",
       "browserVariants": [],
       "run": [
@@ -2528,9 +2256,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_eigenvalues.default"
-      ],
+      "fixtures": ["form.matrix_eigenvalues.default"],
       "browserEvidenceId": "browser.form.matrix_eigenvalues.default",
       "browserVariants": [],
       "run": [
@@ -2559,9 +2285,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_eigenvectors.default"
-      ],
+      "fixtures": ["form.matrix_eigenvectors.default"],
       "browserEvidenceId": "browser.form.matrix_eigenvectors.default",
       "browserVariants": [],
       "run": [
@@ -2590,9 +2314,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_lu.default"
-      ],
+      "fixtures": ["form.matrix_lu.default"],
       "browserEvidenceId": "browser.form.matrix_lu.default",
       "browserVariants": [],
       "run": [
@@ -2621,9 +2343,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_qr.default"
-      ],
+      "fixtures": ["form.matrix_qr.default"],
       "browserEvidenceId": "browser.form.matrix_qr.default",
       "browserVariants": [],
       "run": [
@@ -2652,9 +2372,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_svd.default"
-      ],
+      "fixtures": ["form.matrix_svd.default"],
       "browserEvidenceId": "browser.form.matrix_svd.default",
       "browserVariants": [],
       "run": [
@@ -2683,9 +2401,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_pinverse.default"
-      ],
+      "fixtures": ["form.matrix_pinverse.default"],
       "browserEvidenceId": "browser.form.matrix_pinverse.default",
       "browserVariants": [],
       "run": [
@@ -2714,9 +2430,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_trace.default"
-      ],
+      "fixtures": ["form.matrix_trace.default"],
       "browserEvidenceId": "browser.form.matrix_trace.default",
       "browserVariants": [],
       "run": [
@@ -2745,9 +2459,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_condition.default"
-      ],
+      "fixtures": ["form.matrix_condition.default"],
       "browserEvidenceId": "browser.form.matrix_condition.default",
       "browserVariants": [],
       "run": [
@@ -2781,9 +2493,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_characteristic.default"
-      ],
+      "fixtures": ["form.matrix_characteristic.default"],
       "browserEvidenceId": "browser.form.matrix_characteristic.default",
       "browserVariants": [],
       "run": [
@@ -2817,9 +2527,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_solve.default"
-      ],
+      "fixtures": ["form.matrix_solve.default"],
       "browserEvidenceId": "browser.form.matrix_solve.default",
       "browserVariants": [],
       "run": [
@@ -2853,9 +2561,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.gradient.default"
-      ],
+      "fixtures": ["form.gradient.default"],
       "browserEvidenceId": "browser.form.gradient.default",
       "browserVariants": [],
       "run": [
@@ -2889,9 +2595,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.jacobian.default"
-      ],
+      "fixtures": ["form.jacobian.default"],
       "browserEvidenceId": "browser.form.jacobian.default",
       "browserVariants": [],
       "run": [
@@ -2925,9 +2629,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.hessian.default"
-      ],
+      "fixtures": ["form.hessian.default"],
       "browserEvidenceId": "browser.form.hessian.default",
       "browserVariants": [],
       "run": [
@@ -2961,9 +2663,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.divergence.default"
-      ],
+      "fixtures": ["form.divergence.default"],
       "browserEvidenceId": "browser.form.divergence.default",
       "browserVariants": [],
       "run": [
@@ -2997,9 +2697,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.curl.default"
-      ],
+      "fixtures": ["form.curl.default"],
       "browserEvidenceId": "browser.form.curl.default",
       "browserVariants": [],
       "run": [
@@ -3033,9 +2731,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.jacobian_factor.default"
-      ],
+      "fixtures": ["form.jacobian_factor.default"],
       "browserEvidenceId": "browser.form.jacobian_factor.default",
       "browserVariants": [],
       "run": [
@@ -3069,9 +2765,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.dot.default"
-      ],
+      "fixtures": ["form.dot.default"],
       "browserEvidenceId": "browser.form.dot.default",
       "browserVariants": [],
       "run": [
@@ -3105,9 +2799,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.cross.default"
-      ],
+      "fixtures": ["form.cross.default"],
       "browserEvidenceId": "browser.form.cross.default",
       "browserVariants": [],
       "run": [
@@ -3151,9 +2843,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.line_integral.default"
-      ],
+      "fixtures": ["form.line_integral.default"],
       "browserEvidenceId": "browser.form.line_integral.default",
       "browserVariants": [],
       "run": [
@@ -3197,9 +2887,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.surface_integral.default"
-      ],
+      "fixtures": ["form.surface_integral.default"],
       "browserEvidenceId": "browser.form.surface_integral.default",
       "browserVariants": [],
       "run": [
@@ -3243,9 +2931,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.contour.default"
-      ],
+      "fixtures": ["form.contour.default"],
       "browserEvidenceId": "browser.form.contour.default",
       "browserVariants": [],
       "run": [
@@ -3284,9 +2970,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.ode.default"
-      ],
+      "fixtures": ["form.ode.default"],
       "browserEvidenceId": "browser.form.ode.default",
       "browserVariants": [],
       "run": [
@@ -3345,9 +3029,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.ivp.default"
-      ],
+      "fixtures": ["form.ivp.default"],
       "browserEvidenceId": "browser.form.ivp.default",
       "browserVariants": [],
       "run": [
@@ -3401,9 +3083,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.bvp.default"
-      ],
+      "fixtures": ["form.bvp.default"],
       "browserEvidenceId": "browser.form.bvp.default",
       "browserVariants": [],
       "run": [
@@ -3442,9 +3122,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.stability.default"
-      ],
+      "fixtures": ["form.stability.default"],
       "browserEvidenceId": "browser.form.stability.default",
       "browserVariants": [],
       "run": [
@@ -3478,9 +3156,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.pde.default"
-      ],
+      "fixtures": ["form.pde.default"],
       "browserEvidenceId": "browser.form.pde.default",
       "browserVariants": [],
       "run": [
@@ -3529,9 +3205,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.heat.default"
-      ],
+      "fixtures": ["form.heat.default"],
       "browserEvidenceId": "browser.form.heat.default",
       "browserVariants": [],
       "run": [
@@ -3585,9 +3259,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.wave.default"
-      ],
+      "fixtures": ["form.wave.default"],
       "browserEvidenceId": "browser.form.wave.default",
       "browserVariants": [],
       "run": [
@@ -3626,9 +3298,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.poisson.default"
-      ],
+      "fixtures": ["form.poisson.default"],
       "browserEvidenceId": "browser.form.poisson.default",
       "browserVariants": [],
       "run": [
@@ -3667,9 +3337,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.laplace.default"
-      ],
+      "fixtures": ["form.laplace.default"],
       "browserEvidenceId": "browser.form.laplace.default",
       "browserVariants": [],
       "run": [
@@ -3708,9 +3376,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.inverse_laplace.default"
-      ],
+      "fixtures": ["form.inverse_laplace.default"],
       "browserEvidenceId": "browser.form.inverse_laplace.default",
       "browserVariants": [],
       "run": [
@@ -3749,9 +3415,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.fourier.default"
-      ],
+      "fixtures": ["form.fourier.default"],
       "browserEvidenceId": "browser.form.fourier.default",
       "browserVariants": [],
       "run": [
@@ -3790,9 +3454,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.inverse_fourier.default"
-      ],
+      "fixtures": ["form.inverse_fourier.default"],
       "browserEvidenceId": "browser.form.inverse_fourier.default",
       "browserVariants": [],
       "run": [
@@ -3841,14 +3503,7 @@
         },
         "action": {
           "label": "Probability operation",
-          "choices": [
-            "pdf/pmf",
-            "cdf",
-            "sf",
-            "ppf",
-            "isf",
-            "moments"
-          ],
+          "choices": ["pdf/pmf", "cdf", "sf", "ppf", "isf", "moments"],
           "required": true
         },
         "value": {
@@ -4780,11 +4435,7 @@
         },
         "tail": {
           "label": "Alternative",
-          "choices": [
-            "two-sided",
-            "less",
-            "greater"
-          ],
+          "choices": ["two-sided", "less", "greater"],
           "required": true
         }
       },
@@ -4910,10 +4561,7 @@
         },
         "kind": {
           "label": "Method",
-          "choices": [
-            "Welch",
-            "paired"
-          ],
+          "choices": ["Welch", "paired"],
           "required": true
         }
       },
@@ -4992,10 +4640,7 @@
         },
         "kind": {
           "label": "Distribution kind",
-          "choices": [
-            "continuous",
-            "discrete"
-          ],
+          "choices": ["continuous", "discrete"],
           "required": true
         }
       },
@@ -5054,9 +4699,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.describe.default"
-      ],
+      "fixtures": ["form.describe.default"],
       "browserEvidenceId": "browser.form.describe.default",
       "browserVariants": [],
       "run": [
@@ -5228,9 +4871,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.confidence.default"
-      ],
+      "fixtures": ["form.confidence.default"],
       "browserEvidenceId": "browser.form.confidence.default",
       "browserVariants": [],
       "run": [
@@ -5284,11 +4925,7 @@
         },
         "tail": {
           "label": "Alternative",
-          "choices": [
-            "two-sided",
-            "less",
-            "greater"
-          ],
+          "choices": ["two-sided", "less", "greater"],
           "required": true
         }
       },
@@ -5455,11 +5092,7 @@
         },
         "kind": {
           "label": "Method",
-          "choices": [
-            "combinations",
-            "permutations",
-            "factorial"
-          ],
+          "choices": ["combinations", "permutations", "factorial"],
           "required": true
         }
       },
@@ -5538,9 +5171,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.recurrence.default"
-      ],
+      "fixtures": ["form.recurrence.default"],
       "browserEvidenceId": "browser.form.recurrence.default",
       "browserVariants": [],
       "run": [
@@ -5579,9 +5210,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.generating.default"
-      ],
+      "fixtures": ["form.generating.default"],
       "browserEvidenceId": "browser.form.generating.default",
       "browserVariants": [],
       "run": [
@@ -5713,9 +5342,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.logic.default"
-      ],
+      "fixtures": ["form.logic.default"],
       "browserEvidenceId": "browser.form.logic.default",
       "browserVariants": [],
       "run": [
@@ -5749,9 +5376,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.relation.default"
-      ],
+      "fixtures": ["form.relation.default"],
       "browserEvidenceId": "browser.form.relation.default",
       "browserVariants": [],
       "run": [
@@ -5786,10 +5411,7 @@
         },
         "directed": {
           "label": "Directed",
-          "choices": [
-            "no",
-            "yes"
-          ],
+          "choices": ["no", "yes"],
           "required": true
         },
         "action": {
@@ -6111,9 +5733,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.crt.default"
-      ],
+      "fixtures": ["form.crt.default"],
       "browserEvidenceId": "browser.form.crt.default",
       "browserVariants": [],
       "run": [
@@ -6142,9 +5762,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.diophantine.default"
-      ],
+      "fixtures": ["form.diophantine.default"],
       "browserEvidenceId": "browser.form.diophantine.default",
       "browserVariants": [],
       "run": [
@@ -6183,9 +5801,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.group.default"
-      ],
+      "fixtures": ["form.group.default"],
       "browserEvidenceId": "browser.form.group.default",
       "browserVariants": [],
       "run": [
@@ -6225,10 +5841,7 @@
         },
         "structure": {
           "label": "Structure",
-          "choices": [
-            "field",
-            "ring"
-          ],
+          "choices": ["field", "ring"],
           "required": true
         },
         "left": {
@@ -6404,13 +6017,7 @@
         },
         "action": {
           "label": "Operation",
-          "choices": [
-            "factor",
-            "divide",
-            "gcd",
-            "resultant",
-            "discriminant"
-          ],
+          "choices": ["factor", "divide", "gcd", "resultant", "discriminant"],
           "required": true
         },
         "other": {
@@ -6517,11 +6124,7 @@
         },
         "order": {
           "label": "Monomial order",
-          "choices": [
-            "lex",
-            "grlex",
-            "grevlex"
-          ],
+          "choices": ["lex", "grlex", "grevlex"],
           "required": true
         }
       },
@@ -6590,9 +6193,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.homology.default"
-      ],
+      "fixtures": ["form.homology.default"],
       "browserEvidenceId": "browser.form.homology.default",
       "browserVariants": [],
       "run": [
@@ -6631,9 +6232,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.topology.default"
-      ],
+      "fixtures": ["form.topology.default"],
       "browserEvidenceId": "browser.form.topology.default",
       "browserVariants": [],
       "run": [
@@ -6682,9 +6281,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.topology_map.default"
-      ],
+      "fixtures": ["form.topology_map.default"],
       "browserEvidenceId": "browser.form.topology_map.default",
       "browserVariants": [],
       "run": [
@@ -6723,9 +6320,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.surface_geometry.default"
-      ],
+      "fixtures": ["form.surface_geometry.default"],
       "browserEvidenceId": "browser.form.surface_geometry.default",
       "browserVariants": [],
       "run": [
@@ -6759,9 +6354,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.curve_geometry.default"
-      ],
+      "fixtures": ["form.curve_geometry.default"],
       "browserEvidenceId": "browser.form.curve_geometry.default",
       "browserVariants": [],
       "run": [
@@ -6796,10 +6389,7 @@
         },
         "action": {
           "label": "Operation",
-          "choices": [
-            "intersection",
-            "distance"
-          ],
+          "choices": ["intersection", "distance"],
           "required": true
         }
       },
@@ -6873,9 +6463,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.root.default"
-      ],
+      "fixtures": ["form.root.default"],
       "browserEvidenceId": "browser.form.root.default",
       "browserVariants": [],
       "run": [
@@ -6919,9 +6507,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.numeric_integral.default"
-      ],
+      "fixtures": ["form.numeric_integral.default"],
       "browserEvidenceId": "browser.form.numeric_integral.default",
       "browserVariants": [],
       "run": [
@@ -6965,9 +6551,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.numeric_derivative.default"
-      ],
+      "fixtures": ["form.numeric_derivative.default"],
       "browserEvidenceId": "browser.form.numeric_derivative.default",
       "browserVariants": [],
       "run": [
@@ -7006,9 +6590,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.numeric_system.default"
-      ],
+      "fixtures": ["form.numeric_system.default"],
       "browserEvidenceId": "browser.form.numeric_system.default",
       "browserVariants": [],
       "run": [
@@ -7057,9 +6639,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.minimize.default"
-      ],
+      "fixtures": ["form.minimize.default"],
       "browserEvidenceId": "browser.form.minimize.default",
       "browserVariants": [],
       "run": [
@@ -7113,9 +6693,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.linear_program.default"
-      ],
+      "fixtures": ["form.linear_program.default"],
       "browserEvidenceId": "browser.form.linear_program.default",
       "browserVariants": [],
       "run": [
@@ -7149,9 +6727,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.interpolate.default"
-      ],
+      "fixtures": ["form.interpolate.default"],
       "browserEvidenceId": "browser.form.interpolate.default",
       "browserVariants": [],
       "run": [
@@ -7191,10 +6767,7 @@
         },
         "kind": {
           "label": "Spline",
-          "choices": [
-            "PCHIP",
-            "cubic"
-          ],
+          "choices": ["PCHIP", "cubic"],
           "required": true
         }
       },
@@ -7253,10 +6826,7 @@
         },
         "action": {
           "label": "Operation",
-          "choices": [
-            "FFT",
-            "inverse FFT"
-          ],
+          "choices": ["FFT", "inverse FFT"],
           "required": true
         }
       },
@@ -7320,11 +6890,7 @@
         },
         "mode": {
           "label": "Output mode",
-          "choices": [
-            "full",
-            "same",
-            "valid"
-          ],
+          "choices": ["full", "same", "valid"],
           "required": true
         }
       },
@@ -7398,9 +6964,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.markov.default"
-      ],
+      "fixtures": ["form.markov.default"],
       "browserEvidenceId": "browser.form.markov.default",
       "browserVariants": [],
       "run": [
@@ -7434,9 +6998,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.units.default"
-      ],
+      "fixtures": ["form.units.default"],
       "browserEvidenceId": "browser.form.units.default",
       "browserVariants": [],
       "run": [
@@ -7476,10 +7038,7 @@
         },
         "action": {
           "label": "Operation",
-          "choices": [
-            "future value",
-            "payment"
-          ],
+          "choices": ["future value", "payment"],
           "required": true
         }
       },
@@ -7537,9 +7096,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.together.default"
-      ],
+      "fixtures": ["form.together.default"],
       "browserEvidenceId": "browser.form.together.default",
       "browserVariants": [],
       "run": [
@@ -7568,9 +7125,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.radsimp.default"
-      ],
+      "fixtures": ["form.radsimp.default"],
       "browserEvidenceId": "browser.form.radsimp.default",
       "browserVariants": [],
       "run": [
@@ -7609,9 +7164,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.compose.default"
-      ],
+      "fixtures": ["form.compose.default"],
       "browserEvidenceId": "browser.form.compose.default",
       "browserVariants": [],
       "run": [
@@ -7640,9 +7193,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.piecewise.default"
-      ],
+      "fixtures": ["form.piecewise.default"],
       "browserEvidenceId": "browser.form.piecewise.default",
       "browserVariants": [],
       "run": [
@@ -7671,9 +7222,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.matrix_cholesky.default"
-      ],
+      "fixtures": ["form.matrix_cholesky.default"],
       "browserEvidenceId": "browser.form.matrix_cholesky.default",
       "browserVariants": [],
       "run": [
@@ -7707,9 +7256,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.least_squares.default"
-      ],
+      "fixtures": ["form.least_squares.default"],
       "browserEvidenceId": "browser.form.least_squares.default",
       "browserVariants": [],
       "run": [
@@ -7738,9 +7285,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.numeric_svd.default"
-      ],
+      "fixtures": ["form.numeric_svd.default"],
       "browserEvidenceId": "browser.form.numeric_svd.default",
       "browserVariants": [],
       "run": [
@@ -7774,9 +7319,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.ode_system.default"
-      ],
+      "fixtures": ["form.ode_system.default"],
       "browserEvidenceId": "browser.form.ode_system.default",
       "browserVariants": [],
       "run": [
@@ -7805,9 +7348,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.divisor_count.default"
-      ],
+      "fixtures": ["form.divisor_count.default"],
       "browserEvidenceId": "browser.form.divisor_count.default",
       "browserVariants": [],
       "run": [
@@ -7836,9 +7377,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.mobius.default"
-      ],
+      "fixtures": ["form.mobius.default"],
       "browserEvidenceId": "browser.form.mobius.default",
       "browserVariants": [],
       "run": [
@@ -7872,9 +7411,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.metric.default"
-      ],
+      "fixtures": ["form.metric.default"],
       "browserEvidenceId": "browser.form.metric.default",
       "browserVariants": [],
       "run": [
@@ -7918,9 +7455,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.uncertainty.default"
-      ],
+      "fixtures": ["form.uncertainty.default"],
       "browserEvidenceId": "browser.form.uncertainty.default",
       "browserVariants": [],
       "run": [
@@ -7964,9 +7499,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.critical_points.default"
-      ],
+      "fixtures": ["form.critical_points.default"],
       "browserEvidenceId": "browser.form.critical_points.default",
       "browserVariants": [],
       "run": [
@@ -8000,9 +7533,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.histogram.default"
-      ],
+      "fixtures": ["form.histogram.default"],
       "browserEvidenceId": "browser.form.histogram.default",
       "browserVariants": [],
       "run": [
@@ -8031,9 +7562,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.boxplot.default"
-      ],
+      "fixtures": ["form.boxplot.default"],
       "browserEvidenceId": "browser.form.boxplot.default",
       "browserVariants": [],
       "run": [
@@ -8067,9 +7596,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.correlation.default"
-      ],
+      "fixtures": ["form.correlation.default"],
       "browserEvidenceId": "browser.form.correlation.default",
       "browserVariants": [],
       "run": [
@@ -8103,9 +7630,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.finite_expectation.default"
-      ],
+      "fixtures": ["form.finite_expectation.default"],
       "browserEvidenceId": "browser.form.finite_expectation.default",
       "browserVariants": [],
       "run": [
@@ -8130,11 +7655,7 @@
       "fields": {
         "distribution": {
           "label": "Distribution",
-          "choices": [
-            "normal",
-            "exponential",
-            "poisson"
-          ],
+          "choices": ["normal", "exponential", "poisson"],
           "required": true
         },
         "parameters": {
@@ -8228,9 +7749,7 @@
           "required": true
         }
       },
-      "fixtures": [
-        "form.surface_area.default"
-      ],
+      "fixtures": ["form.surface_area.default"],
       "browserEvidenceId": "browser.form.surface_area.default",
       "browserVariants": [],
       "run": [
@@ -8262,12 +7781,7 @@
       "observed-matcher",
       "detectors"
     ],
-    "deep-math": [
-      "math",
-      "math-invalid",
-      "observed-matcher",
-      "detectors"
-    ],
+    "deep-math": ["math", "math-invalid", "observed-matcher", "detectors"],
     "regressions": [
       "math-editor",
       "notation",
@@ -8288,11 +7802,7 @@
   "evidenceSchema": {
     "schemaVersion": 1,
     "browserKind": "browser-runtime",
-    "identity": [
-      "revision",
-      "sourceFingerprint",
-      "buildFingerprint"
-    ],
+    "identity": ["revision", "sourceFingerprint", "buildFingerprint"],
     "requiredBrowserFixtureIds": [
       "browser.form.simplify.default",
       "browser.form.expand.default",
@@ -8798,9 +8308,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8838,9 +8346,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8878,9 +8384,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8918,9 +8422,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8958,9 +8460,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -8998,9 +8498,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9038,9 +8536,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9078,9 +8574,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9118,9 +8612,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9158,9 +8650,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9198,9 +8688,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9238,9 +8726,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9278,9 +8764,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9318,9 +8802,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9358,9 +8840,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9398,9 +8878,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9438,9 +8916,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9478,9 +8954,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9518,9 +8992,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9558,9 +9030,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9598,9 +9068,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9638,9 +9106,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9678,9 +9144,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9718,9 +9182,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9758,9 +9220,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9798,9 +9258,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9838,9 +9296,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9878,9 +9334,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9918,9 +9372,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9958,9 +9410,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -9998,9 +9448,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10038,9 +9486,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10078,9 +9524,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10118,9 +9562,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10158,9 +9600,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10198,9 +9638,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10238,9 +9676,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10278,9 +9714,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10318,9 +9752,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10358,9 +9790,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10398,9 +9828,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10438,9 +9866,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10478,9 +9904,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10518,9 +9942,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10558,9 +9980,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10598,9 +10018,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10638,9 +10056,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10678,9 +10094,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10718,9 +10132,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10758,9 +10170,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10798,9 +10208,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10838,9 +10246,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10878,9 +10284,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10918,9 +10322,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10958,9 +10360,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -10998,9 +10398,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11038,9 +10436,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11078,9 +10474,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11118,9 +10512,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11158,9 +10550,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11198,9 +10588,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11238,9 +10626,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11278,9 +10664,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11318,9 +10702,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11358,9 +10740,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11398,9 +10778,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11438,9 +10816,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11478,9 +10854,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11518,9 +10892,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11558,9 +10930,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11598,9 +10968,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11638,9 +11006,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11678,9 +11044,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11718,9 +11082,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11758,9 +11120,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11798,9 +11158,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11838,9 +11196,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11878,9 +11234,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11918,9 +11272,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11958,9 +11310,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -11998,9 +11348,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12038,9 +11386,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12078,9 +11424,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12118,9 +11462,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12158,9 +11500,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12198,9 +11538,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12238,9 +11576,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12278,9 +11614,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12318,9 +11652,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12358,9 +11690,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12398,9 +11728,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12438,9 +11766,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12478,9 +11804,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12518,9 +11842,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12558,9 +11880,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12598,9 +11918,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12638,9 +11956,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12678,9 +11994,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12718,9 +12032,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12758,9 +12070,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12798,9 +12108,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12838,9 +12146,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12878,9 +12184,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12918,9 +12222,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12958,9 +12260,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -12998,9 +12298,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13038,9 +12336,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13078,9 +12374,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13118,9 +12412,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13158,9 +12450,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13198,9 +12488,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13238,9 +12526,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13278,9 +12564,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13318,9 +12602,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13358,9 +12640,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13398,9 +12678,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13438,9 +12716,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13478,9 +12754,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13518,9 +12792,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13558,9 +12830,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13598,9 +12868,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13638,9 +12906,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13678,9 +12944,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13718,9 +12982,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13758,9 +13020,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13798,9 +13058,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13838,9 +13096,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13878,9 +13134,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13918,9 +13172,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13958,9 +13210,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -13998,9 +13248,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14038,9 +13286,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14078,9 +13324,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14118,9 +13362,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14158,9 +13400,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14198,9 +13438,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14238,9 +13476,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14278,9 +13514,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14318,9 +13552,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14358,9 +13590,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14398,9 +13628,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14438,9 +13666,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14478,9 +13704,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14518,9 +13742,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14558,9 +13780,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14598,9 +13818,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14638,9 +13856,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14678,9 +13894,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14718,9 +13932,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14758,9 +13970,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14798,9 +14008,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14838,9 +14046,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14878,9 +14084,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14918,9 +14122,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14958,9 +14160,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -14998,9 +14198,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -15038,9 +14236,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -15078,9 +14274,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -15118,9 +14312,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -15158,9 +14350,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -15198,9 +14388,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -15238,9 +14426,7 @@
         "actual browser automation",
         "isolated fixture workspace"
       ],
-      "reads": [
-        "rendered control and resulting DOM/state"
-      ],
+      "reads": ["rendered control and resulting DOM/state"],
       "writes": [
         "local fixture state when the control changes state",
         "external evidence directory"
@@ -16235,12 +15421,8 @@
         "production fixture browser",
         "scoped fixture identity for API route"
       ],
-      "reads": [
-        "rendered page"
-      ],
-      "writes": [
-        "local browser state"
-      ],
+      "reads": ["rendered page"],
+      "writes": ["local browser state"],
       "exitCodes": {
         "0": "pass",
         "1": "assertion failure",
@@ -16256,10 +15438,7 @@
     {
       "path": "/api/workspace",
       "file": "app/api/workspace/route.ts",
-      "methods": [
-        "GET",
-        "PUT"
-      ],
+      "methods": ["GET", "PUT"],
       "id": "route.workspace",
       "verification": "tests/sync.mjs plus scoped authenticated browser roundtrip",
       "risk": "GET reads scoped D1 workspace; PUT writes it; fixture identity only",
@@ -16271,12 +15450,8 @@
         "production fixture browser",
         "scoped fixture identity for API route"
       ],
-      "reads": [
-        "scoped D1 fixture workspace"
-      ],
-      "writes": [
-        "PUT scoped D1 fixture workspace"
-      ],
+      "reads": ["scoped D1 fixture workspace"],
+      "writes": ["PUT scoped D1 fixture workspace"],
       "exitCodes": {
         "0": "pass",
         "1": "assertion failure",
@@ -16308,9 +15483,7 @@
         "built coverage page, local link target and offline manifest",
         "actual licence route response"
       ],
-      "writes": [
-        "external evidence directory"
-      ],
+      "writes": ["external evidence directory"],
       "network": "local production origin; no external calculation API",
       "risk": "read-only public coverage/licence documents",
       "exitCodes": {
@@ -16344,9 +15517,7 @@
         "built coverage page, local link target and offline manifest",
         "actual licence route response"
       ],
-      "writes": [
-        "external evidence directory"
-      ],
+      "writes": ["external evidence directory"],
       "network": "local production origin; no external calculation API",
       "risk": "read-only public coverage/licence documents",
       "exitCodes": {
@@ -16404,9 +15575,7 @@
         "graph.resource-recovery",
         "graph.fit-drawability"
       ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16420,10 +15589,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16464,9 +15630,7 @@
         "conversion-function-quotient",
         "objects.kind-draft-preservation"
       ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16480,10 +15644,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16503,18 +15664,14 @@
     },
     {
       "id": "feature.notebooks",
-      "source": [
-        "components/calculator/Calculator.tsx"
-      ],
+      "source": ["components/calculator/Calculator.tsx"],
       "browserScenarioIds": [
         "result-copy",
         "result-details",
         "result-use-undo",
         "notebook-isolation"
       ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16528,10 +15685,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16608,9 +15762,7 @@
         "editor.menu-clipboard-safety",
         "distribution.saved-input-recovery"
       ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16624,10 +15776,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16725,10 +15874,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16759,9 +15905,7 @@
         "settings-reload",
         "settings-math"
       ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16775,10 +15919,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16809,9 +15950,7 @@
         "identity.sites-vs-loopback",
         "sync.scoped-browser-roundtrip"
       ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16825,10 +15964,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16854,12 +15990,8 @@
         "public/sw.js",
         "components/calculator/Calculator.tsx"
       ],
-      "browserScenarioIds": [
-        "offline.production-disconnected-reload"
-      ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "browserScenarioIds": ["offline.production-disconnected-reload"],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16873,10 +16005,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
@@ -16909,10 +16038,7 @@
         "pnpm --silent verify run --suite engine-lifecycle --json",
         "pnpm --silent verify browser validate --evidence FILE"
       ],
-      "prerequisites": [
-        "actual fixture browser",
-        "prepared local engine"
-      ],
+      "prerequisites": ["actual fixture browser", "prepared local engine"],
       "reads": [
         "visible engine readiness, expression input and result",
         "independent mathematical identities"
@@ -16965,9 +16091,7 @@
         "investigation.phone-offline",
         "investigation.deletions"
       ],
-      "run": [
-        "pnpm --silent verify browser validate --evidence FILE"
-      ],
+      "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
         "production build",
         "isolated fixture workspace",
@@ -16981,10 +16105,7 @@
         "isolated fixture workspace",
         "independent expectations"
       ],
-      "writes": [
-        "local fixture workspace",
-        "chosen evidence directory"
-      ],
+      "writes": ["local fixture workspace", "chosen evidence directory"],
       "network": "scoped fixture sync only; genuinely disconnect for offline scenarios",
       "exitCodes": {
         "0": "pass",
