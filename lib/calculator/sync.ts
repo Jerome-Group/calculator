@@ -427,6 +427,7 @@ export function syncWorkspace(state: SavedState) {
     storageUnavailable = true;
   }
   pending = state;
+  emit("Saving your latest changes…");
   if (
     storageReadable &&
     readLocal(accountStorage(STORAGE_KEY)) === JSON.stringify(state)

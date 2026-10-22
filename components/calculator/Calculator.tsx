@@ -1,5 +1,11 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Sigma,
   Compass,
@@ -188,6 +194,11 @@ function Details({
   );
 }
 export default function Calculator() {
+  const [saveLease] = useState(captureAccountSession);
+  const [saveAttempt, setSaveAttempt] = useState<{
+    state: SavedState;
+    result: "saved" | "failed";
+  } | null>(null);
   const [historyCount, setHistoryCount] = useState(30);
   const [runActivity, setRunActivity] = useState<RunActivity>({ kind: "idle" });
   const [stepEditor, setStepEditor] = useState<{
@@ -237,6 +248,7 @@ export default function Calculator() {
     file = useRef<HTMLInputElement>(null),
     undo = useRef<SavedState[]>([]),
     current = useRef(state),
+    pendingSave = useRef<SavedState | null>(null),
     busyRef = useRef(false),
     computationGeneration = useRef(0),
     mounted = useRef(true),
@@ -263,6 +275,7 @@ export default function Calculator() {
   }, []);
   useLayoutEffect(() => {
     current.current = state;
+    pendingSave.current = paused ? null : state;
     if (objectModal.current !== modal) fieldConversionGeneration.current++;
     objectModal.current = modal;
     editingSource.current = {
@@ -273,9 +286,16 @@ export default function Calculator() {
       op: op?.id,
       params,
     };
-  }, [state, modal, mode, input, latex, op, params]);
+  }, [state, paused, modal, mode, input, latex, op, params]);
   const book = state?.notebooks.find((b) => b.id === state.active),
-    settings = state?.settings || DEFAULT_SETTINGS;
+    settings = state?.settings || DEFAULT_SETTINGS,
+    saveStatus = paused
+      ? "Automatic saving is paused · export a backup"
+      : saveAttempt?.state !== state
+        ? "Saving your latest changes…"
+        : saveAttempt?.result === "failed"
+          ? "Device save failed · export a backup"
+          : syncStatus;
   useEffect(() => {
     const listener = (event: Event) =>
       setSyncStatus((event as CustomEvent).detail);
@@ -305,25 +325,34 @@ export default function Calculator() {
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
   }, []);
+  const flushSave = useCallback(() => {
+    const snapshot = pendingSave.current;
+    if (!snapshot || !mounted.current || !saveLease.isCurrent()) return;
+    try {
+      persist(snapshot);
+      setSaveAttempt({ state: snapshot, result: "saved" });
+      setWarning((current) =>
+        current ===
+        "The latest changes could not be saved. Export a backup before closing."
+          ? ""
+          : current,
+      );
+    } catch {
+      setSaveAttempt({ state: snapshot, result: "failed" });
+      setWarning(
+        "The latest changes could not be saved. Export a backup before closing.",
+      );
+    }
+  }, [saveLease]);
+  useEffect(() => {
+    window.addEventListener("pagehide", flushSave);
+    return () => window.removeEventListener("pagehide", flushSave);
+  }, [flushSave]);
   useEffect(() => {
     if (!state || paused) return;
-    const t = setTimeout(() => {
-      try {
-        persist(state);
-        setWarning((current) =>
-          current ===
-          "The latest changes could not be saved. Export a backup before closing."
-            ? ""
-            : current,
-        );
-      } catch {
-        setWarning(
-          "The latest changes could not be saved. Export a backup before closing.",
-        );
-      }
-    }, 200);
+    const t = setTimeout(flushSave, 200);
     return () => clearTimeout(t);
-  }, [state, paused]);
+  }, [state, paused, flushSave]);
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(() => setNotice(""), 6000);
@@ -1236,7 +1265,7 @@ export default function Calculator() {
           <strong>Calculator</strong>
         </a>
         <div className="row">
-          <span className="device-label small muted">{syncStatus}</span>
+          <span className="device-label small muted">{saveStatus}</span>
           <button
             className="mode-indicator"
             title={`Calculation precision: ${settings.precision} digits`}
@@ -1971,7 +2000,7 @@ export default function Calculator() {
             ? "Prepared for offline reopening"
             : "Offline preparation"}
         </button>
-        <span>{syncStatus}</span>
+        <span>{saveStatus}</span>
       </footer>
       {notice && !modal && !mathField && (
         <div role="status" className="toast">

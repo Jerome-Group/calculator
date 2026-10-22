@@ -117,9 +117,11 @@ export function componentHarness(
     effects = [],
     layouts = [],
     cleanups = [],
-    effectSlots = [];
+    effectSlots = [],
+    callbacks = [];
   let refIndex = 0,
     effectIndex = 0,
+    callbackIndex = 0,
     captured,
     nextId = 0,
     deferWorkspaceUpdates = false;
@@ -178,6 +180,16 @@ export function componentHarness(
     },
     useLayoutEffect(callback) {
       layouts.push(callback);
+    },
+    useCallback(callback, dependencies) {
+      const index = callbackIndex++,
+        previous = callbacks[index];
+      if (
+        !previous ||
+        dependencies.some((value, i) => value !== previous.dependencies[i])
+      )
+        callbacks[index] = { callback, dependencies };
+      return callbacks[index].callback;
     },
     useMemo: (calculate) => calculate(),
   };
@@ -287,6 +299,7 @@ export function componentHarness(
     render(props) {
       refIndex = 0;
       effectIndex = 0;
+      callbackIndex = 0;
       effects.length = 0;
       layouts.length = 0;
       const tree = loadedModule.exports.default(props);
