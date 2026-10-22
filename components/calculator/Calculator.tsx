@@ -56,6 +56,7 @@ import {
   mathToSource,
 } from "@/lib/calculator/notation";
 import { initialOperationParams } from "@/lib/calculator/operation-params";
+import { definitionDependenciesChanged } from "@/lib/calculator/definition-dependencies";
 import { formatDisplayApprox } from "@/lib/calculator/display-format";
 import GraphWorkspace, { makeGraph } from "./GraphWorkspace";
 import { operations, categories } from "@/lib/calculator/catalog";
@@ -1269,14 +1270,7 @@ export default function Calculator() {
                         ))}
                       </details>
                     )}
-                    {h.definitions.some(
-                      (d) =>
-                        new RegExp("\\b" + d.name + "\\b").test(
-                          h.input + " " + Object.values(h.params).join(" "),
-                        ) &&
-                        book.definitions.find((x) => x.id === d.id)
-                          ?.expression !== d.expression,
-                    ) && (
+                    {definitionDependenciesChanged(h, book.definitions) && (
                       <p className="stale-note">
                         Definitions have changed since this result.{" "}
                         <button
