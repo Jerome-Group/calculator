@@ -110,6 +110,7 @@ export function componentHarness(
   moduleOverrides = {},
 ) {
   const state = new Map(Object.entries(initialState)),
+    navigator = {},
     refs = [],
     requests = [],
     effects = [],
@@ -222,11 +223,12 @@ export function componentHarness(
     (value) => (captured = value),
     {},
     {},
-    {},
+    navigator,
     { getItem: () => null },
   );
   return {
     state,
+    navigator,
     requests,
     unmount() {
       for (const cleanup of cleanups) cleanup?.();
