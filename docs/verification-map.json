@@ -11229,7 +11229,7 @@
       "id": "control.080",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2308,
+        "line": 2322,
         "signature": "ee5932715263bf2d3aa8c412bc65042e61c073abc3a5027d4ea31a9d4557c410"
       },
       "kind": "Choice",
@@ -14810,7 +14810,9 @@
     {
       "id": "feature.navigation",
       "source": [
+        "components/calculator/Calculator.tsx",
         "components/calculator/TaskBrowser.tsx",
+        "lib/calculator/catalog.ts",
         "public/coverage.html",
         "public/licenses.txt"
       ],
@@ -14857,6 +14859,7 @@
     {
       "id": "feature.settings-recovery",
       "source": [
+        "components/calculator/Calculator.tsx",
         "components/calculator/RecoveryBackups.tsx",
         "lib/calculator/storage.ts"
       ],
