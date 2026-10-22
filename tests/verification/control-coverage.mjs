@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { execFileSync, spawnSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 import {
   checkControlCoverage,
   checkScenarioCoverage,
@@ -209,5 +211,124 @@ export function controlCoverageChecks(root) {
     }
   });
   check("controls.restored", () => assert(passes(controls)));
+  check("controls.refresh-file-ownership", () => {
+    const temp = fs.mkdtempSync(path.join(os.tmpdir(), "calculator-refresh-"));
+    try {
+      for (const directory of [
+        "components/calculator",
+        "docs",
+        "scripts",
+        "hooks",
+      ])
+        fs.mkdirSync(path.join(temp, directory), { recursive: true });
+      const files = ["First", "Second"].map(
+        (name) => "components/calculator/" + name + ".tsx",
+      );
+      const fixtureControls = files.map((file, index) => {
+        const source = `export function Action${index}() {\n  return <button onClick={() => {}}>Action ${index}</button>;\n}\n`;
+        fs.writeFileSync(path.join(temp, file), source);
+        const { kind, ...site } = controlSourceSites(file, source)[0];
+        return {
+          id: "control.00" + (index + 1),
+          kind,
+          label: "Action " + index,
+          source: { file, ...site },
+        };
+      });
+      const fixtureMap = path.join(temp, "docs/verification-map.json");
+      const write = (rows) =>
+        fs.writeFileSync(
+          fixtureMap,
+          JSON.stringify({ controls: rows }, null, 2),
+        );
+      write(fixtureControls);
+      fs.writeFileSync(
+        path.join(temp, "scripts/verification-coverage.mjs"),
+        `export { controlSourceSites, checkControlCoverage } from ${JSON.stringify(pathToFileURL(path.join(root, "scripts/verification-coverage.mjs")).href)};\n`,
+      );
+      const git = (...args) =>
+        execFileSync(
+          "git",
+          [
+            "-c",
+            "user.name=Verification fixture",
+            "-c",
+            "user.email=fixture@verification.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "-c",
+            "core.hooksPath=" + path.join(temp, "hooks"),
+            ...args,
+          ],
+          { cwd: temp, encoding: "utf8" },
+        );
+      git("init", "--quiet", "--initial-branch=main");
+      git("add", "components", "docs", "scripts");
+      git(
+        "commit",
+        "--quiet",
+        "-m",
+        "test: record control ownership fixture\n\nAssisted-by: gpt-6.1-sol xhigh\nCo-authored-by: Codex <noreply@openai.com>",
+      );
+      const base = git("rev-parse", "HEAD").trim();
+      const refresh = (...ids) =>
+        spawnSync(
+          process.execPath,
+          [
+            path.join(root, "scripts/refresh-verification-controls.mjs"),
+            base,
+            ...ids,
+          ],
+          { cwd: temp, encoding: "utf8" },
+        );
+      const original = fs.readFileSync(fixtureMap, "utf8");
+      const valid = refresh();
+      assert.equal(valid.status, 0, valid.stderr);
+      assert.deepEqual(JSON.parse(valid.stdout), {
+        base,
+        updated: 0,
+        changed: [],
+      });
+      assert.equal(fs.readFileSync(fixtureMap, "utf8"), original);
+      const swapped = structuredClone(fixtureControls);
+      [swapped[0].source.file, swapped[1].source.file] = files.toReversed();
+      write(swapped);
+      const invalid = fs.readFileSync(fixtureMap, "utf8");
+      for (const ids of [[], swapped.map((control) => control.id)]) {
+        const rejected = refresh(...ids);
+        assert.equal(rejected.status, 1);
+        assert.match(
+          rejected.stderr,
+          /AssertionError \[ERR_ASSERTION\]: control\.001 recorded source file\n/,
+        );
+        assert.equal(fs.readFileSync(fixtureMap, "utf8"), invalid);
+      }
+      write(fixtureControls);
+      for (const file of files)
+        fs.writeFileSync(
+          path.join(temp, file),
+          "\n" + fs.readFileSync(path.join(temp, file), "utf8"),
+        );
+      const moved = refresh();
+      assert.equal(moved.status, 0, moved.stderr);
+      assert.equal(JSON.parse(moved.stdout).updated, 2);
+      assert.deepEqual(
+        JSON.parse(fs.readFileSync(fixtureMap, "utf8")).controls.map(
+          (control) => control.source,
+        ),
+        fixtureControls.map((control) => ({
+          ...control.source,
+          line: control.source.line + 1,
+        })),
+      );
+      const updated = fs.readFileSync(fixtureMap, "utf8");
+      const repeated = refresh();
+      assert.equal(repeated.status, 0, repeated.stderr);
+      assert.equal(JSON.parse(repeated.stdout).updated, 0);
+      assert.equal(fs.readFileSync(fixtureMap, "utf8"), updated);
+    } finally {
+      fs.rmSync(temp, { recursive: true, force: true });
+    }
+  });
   return checks;
 }
