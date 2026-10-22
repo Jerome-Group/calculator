@@ -175,6 +175,45 @@ export function finiteSegment(a: number, m: number, b: number, span: number) {
   );
 }
 
+function sampleInterval(lo: number, hi: number, fraction: number) {
+  if (fraction === 0) return lo;
+  if (fraction === 1) return hi;
+  const span = hi - lo;
+  return Number.isFinite(span)
+    ? lo + span * fraction
+    : lo * (1 - fraction) + hi * fraction;
+}
+
+export function graphParameterSamples(
+  graph: GraphSpec,
+  { f, second }: Pick<ReturnType<typeof graphFunctions>, "f" | "second">,
+  scope: Record<string, unknown>,
+  settings: Settings,
+  intervals: 10 | 1000,
+) {
+  if (graph.type !== "parametric" && graph.type !== "polar") return [];
+  let lo = NaN,
+    hi = NaN;
+  try {
+    lo = numeric(compileMath(graph.min), scope);
+    hi = numeric(compileMath(graph.max), scope);
+  } catch {}
+  if (!Number.isFinite(lo) || !Number.isFinite(hi) || hi < lo) return [];
+  const angleUnit =
+    settings.angle === "deg" && !graph.radians ? Math.PI / 180 : 1;
+  return Array.from({ length: intervals + 1 }, (_, i) => {
+    const parameter = sampleInterval(lo, hi, i / intervals),
+      value = f(parameter),
+      angle = parameter * angleUnit;
+    return {
+      parameter,
+      value,
+      x: graph.type === "polar" ? value * Math.cos(angle) : value,
+      y: graph.type === "polar" ? value * Math.sin(angle) : second(parameter),
+    };
+  });
+}
+
 export const MAX_GRAPHS = 100;
 export function drawableGraphRange(range: number[]): boolean {
   return (
@@ -185,21 +224,12 @@ export function drawableGraphRange(range: number[]): boolean {
     )
   );
 }
-export function graphDataRange(graphs: GraphSpec[]): number[] | null {
-  let left = Infinity,
-    right = -Infinity,
-    bottom = Infinity,
-    top = -Infinity;
-  for (const graph of graphs) {
-    if (!graph.visible || graph.type !== "data") continue;
-    for (const [x, y] of graph.points || []) {
-      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-      left = Math.min(left, x);
-      right = Math.max(right, x);
-      bottom = Math.min(bottom, y);
-      top = Math.max(top, y);
-    }
-  }
+function graphRange(
+  left: number,
+  right: number,
+  bottom: number,
+  top: number,
+): number[] | null {
   if (!Number.isFinite(left)) return null;
   const xp = Math.max(
     0.1,
@@ -213,8 +243,84 @@ export function graphDataRange(graphs: GraphSpec[]): number[] | null {
   );
   const range = [left - xp, right + xp, bottom - yp, top + yp];
   if (!drawableGraphRange(range))
-    throw Error("Data coordinates exceed the drawable range.");
+    throw Error("Graph coordinates exceed the drawable range.");
   return range;
+}
+export function graphFitRange(
+  prepared: ({ g: GraphSpec } & Pick<
+    ReturnType<typeof graphFunctions>,
+    "f" | "second"
+  >)[],
+  scope: Record<string, unknown>,
+  settings: Settings,
+): { range: number[] | null; warning: string } {
+  let left = Infinity,
+    right = -Infinity,
+    bottom = Infinity,
+    top = -Infinity,
+    unsupported = false,
+    empty = false;
+  for (const { g, f, second } of prepared) {
+    if (!g.visible) continue;
+    let count = 0;
+    const include = (x: number, y: number) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      count++;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      bottom = Math.min(bottom, y);
+      top = Math.max(top, y);
+    };
+    switch (g.type) {
+      case "cartesian":
+        for (let i = 0; i <= 120; i++) {
+          const x = -6 + i / 10;
+          include(x, f(x));
+        }
+        break;
+      case "sequence":
+        for (let n = -6; n <= 6; n++) include(n, f(n));
+        break;
+      case "data":
+        for (const [x, y] of g.points || []) include(x, y);
+        break;
+      case "parametric":
+      case "polar":
+        for (const { x, y } of graphParameterSamples(
+          g,
+          { f, second },
+          scope,
+          settings,
+          1000,
+        ))
+          include(x, y);
+        break;
+      case "implicit":
+      case "inequality":
+      case "surface":
+      case "field":
+        unsupported = true;
+        continue;
+      default: {
+        const exhaustive: never = g.type;
+        return exhaustive;
+      }
+    }
+    if (!count) empty = true;
+  }
+  const range = graphRange(left, right, bottom, top),
+    warnings = [];
+  if (unsupported)
+    warnings.push(
+      "Fit supports Cartesian, parametric, polar, sequence and data curves. Use pan and zoom for other graph types.",
+    );
+  if (empty)
+    warnings.push(
+      "Some visible curves have no finite points to fit. Check their expressions and parameter bounds.",
+    );
+  if (!range && !warnings.length)
+    warnings.push("Show a graph with finite points before using Fit.");
+  return { range, warning: warnings.join(" ") };
 }
 export function graphTable(
   graph: GraphSpec,
@@ -244,17 +350,26 @@ export function graphTable(
     );
     return result;
   }
-  const parametric = graph.type === "parametric" || graph.type === "polar";
-  const lo = parametric ? numeric(compileMath(graph.min), scope) : lower;
-  const hi = parametric ? numeric(compileMath(graph.max), scope) : upper;
+  if (graph.type === "parametric" || graph.type === "polar") {
+    result.headers =
+      graph.type === "polar" ? ["θ", "r", "x", "y"] : ["t", "x", "y"];
+    result.rows = graphParameterSamples(
+      graph,
+      { f, second },
+      scope,
+      settings,
+      10,
+    ).map(({ parameter, value, x, y }) => ({
+      cells:
+        graph.type === "polar" ? [parameter, value, x, y] : [parameter, x, y],
+      reuse: [x, y],
+    }));
+    return result;
+  }
+  const lo = lower,
+    hi = upper;
   if (!Number.isFinite(lo) || !Number.isFinite(hi) || hi < lo) return result;
-  const sample = (i: number) => {
-    if (i === 0) return lo;
-    if (i === 10) return hi;
-    const t = i / 10,
-      span = hi - lo;
-    return Number.isFinite(span) ? lo + span * t : lo * (1 - t) + hi * t;
-  };
+  const sample = (i: number) => sampleInterval(lo, hi, i / 10);
   if (["implicit", "inequality", "surface", "field"].includes(graph.type)) {
     result.headers = [
       "x",
@@ -286,24 +401,10 @@ export function graphTable(
       return { cells: [n, value], reuse: [n, value] };
     });
   } else {
-    result.headers =
-      graph.type === "polar"
-        ? ["θ", "r", "x", "y"]
-        : graph.type === "parametric"
-          ? ["t", "x", "y"]
-          : ["x", "y"];
+    result.headers = ["x", "y"];
     result.rows = Array.from({ length: 11 }, (_, i) => {
       const t = sample(i),
         value = f(t);
-      if (graph.type === "polar") {
-        const angle =
-          t * (settings.angle === "deg" && !graph.radians ? Math.PI / 180 : 1);
-        const x = value * Math.cos(angle),
-          y = value * Math.sin(angle);
-        return { cells: [t, value, x, y], reuse: [x, y] };
-      }
-      if (graph.type === "parametric")
-        return { cells: [t, value, second(t)], reuse: [value, second(t)] };
       return { cells: [t, value], reuse: [t, value] };
     });
   }

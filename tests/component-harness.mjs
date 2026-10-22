@@ -174,6 +174,7 @@ export function componentHarness(
     },
     "@/lib/calculator/catalog": { operations: [], categories: [] },
     "@/lib/calculator/operation-params": require("../lib/calculator/operation-params.ts"),
+    "@/lib/calculator/graph-table-interval": require("../lib/calculator/graph-table-interval.ts"),
     "@/lib/calculator/storage": {
       accountStorage: (key) => key,
       readDeviceSave: () => null,
@@ -232,6 +233,9 @@ export function componentHarness(
     requests,
     unmount() {
       for (const cleanup of cleanups) cleanup?.();
+    },
+    runEffects() {
+      for (const effect of effects) cleanups.push(effect());
     },
     render(props) {
       refIndex = 0;

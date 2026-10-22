@@ -4,5 +4,7 @@ export function graphTableInterval(
 ): [number, number] | null {
   if (!lower.trim() || !upper.trim()) return null;
   const bounds: [number, number] = [Number(lower), Number(upper)];
-  return bounds.every(Number.isFinite) ? bounds : null;
+  return bounds.every(Number.isFinite) && bounds[0] <= bounds[1]
+    ? bounds
+    : null;
 }

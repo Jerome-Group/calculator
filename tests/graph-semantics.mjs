@@ -3,7 +3,8 @@ import {
   graphTable,
   graphFunctions,
   graphScope,
-  graphDataRange,
+  graphFitRange,
+  graphParameterSamples,
   compileMath,
   numeric,
 } from "../lib/calculator/graph.ts";
@@ -24,6 +25,12 @@ const graph = (type, expression = "x^2", extra = {}) => ({
 });
 const table = (g, s = settings, lo = -2, hi = 2) =>
   graphTable(g, graphFunctions(g, graphScope([], s, 1)), scope, s, lo, hi);
+const fit = (graphs) =>
+  graphFitRange(
+    graphs.map((g) => ({ g, ...graphFunctions(g, scope) })),
+    scope,
+    settings,
+  ).range;
 assert.deepEqual(table(graph("cartesian")).rows[0].cells, [-2, 4]);
 for (const [lo, hi, midpoint] of [
   [-1e308, 1e308, 0],
@@ -61,6 +68,79 @@ assert.deepEqual(wideParametric.rows[0].cells, [-1e308, -1e308, -1e308]);
 assert.deepEqual(wideParametric.rows[5].cells, [0, 0, 0]);
 assert.deepEqual(wideParametric.rows.at(-1).cells, [1e308, 1e308, 1e308]);
 assert(wideParametric.rows.every((row) => row.cells.every(Number.isFinite)));
+const scaledParametric = graph("parametric", "t/1e308", {
+  second: "0",
+  min: "-1e308",
+  max: "1e308",
+});
+const scaledTable = table(scaledParametric);
+assert.equal(scaledTable.rows.length, 11);
+scaledTable.rows.forEach(({ cells, reuse }, index) => {
+  assert(cells.every(Number.isFinite));
+  assert(Math.abs(cells[1] - (-1 + index / 5)) < 1e-14);
+  assert.equal(cells[2], 0);
+  assert.deepEqual(reuse, cells.slice(1));
+});
+assert.deepEqual(fit([scaledParametric]), [-1.2, 1.2, -0.1, 0.1]);
+for (const angle of ["rad", "deg"])
+  for (const radians of [false, true]) {
+    const angularSettings = { ...settings, angle },
+      angularScope = graphScope([], angularSettings, 1),
+      max = angle === "deg" && !radians ? "360" : "2*pi";
+    for (const type of ["parametric", "polar"]) {
+      const circle = graph(type, type === "polar" ? "2" : "2*cos(t)", {
+          second: "2*sin(t)",
+          min: "0",
+          max,
+          radians,
+        }),
+        functions = graphFunctions(circle, angularScope),
+        samples = graphParameterSamples(
+          circle,
+          functions,
+          angularScope,
+          angularSettings,
+          1000,
+        ),
+        rows = graphTable(
+          circle,
+          functions,
+          angularScope,
+          angularSettings,
+          -2,
+          2,
+        ).rows;
+      assert.equal(samples.length, 1001);
+      assert.equal(rows.length, 11);
+      for (const [index, { x, y }] of samples.entries()) {
+        const theta = (index / 1000) * 2 * Math.PI;
+        assert(Math.abs(x - 2 * Math.cos(theta)) < 1e-12);
+        assert(Math.abs(y - 2 * Math.sin(theta)) < 1e-12);
+        if (index % 100 === 0)
+          assert.deepEqual(rows[index / 100].reuse, [x, y]);
+      }
+      assert.deepEqual(
+        graphFitRange(
+          [{ g: circle, ...functions }],
+          angularScope,
+          angularSettings,
+        ).range,
+        [-2.4, 2.4, -2.4, 2.4],
+      );
+    }
+  }
+const singleParameter = table(
+  graph("parametric", "t", { second: "t^2", min: "2", max: "2" }),
+);
+assert.equal(singleParameter.rows.length, 11);
+assert(singleParameter.rows.every(({ cells }) => cells.join(",") === "2,2,4"));
+for (const bounds of [
+  { min: "3", max: "1" },
+  { min: "1/0", max: "3" },
+  { min: "0", max: "1/0" },
+  { min: "unknown", max: "3" },
+])
+  assert.deepEqual(table(graph("parametric", "t", bounds)).rows, []);
 const wideSurface = table(graph("surface", "x"), settings, -1e308, 1e308);
 assert.equal(wideSurface.rows.length, 121);
 assert.deepEqual(wideSurface.rows[0].cells, [-1e308, -1e308, -1e308]);
@@ -103,6 +183,7 @@ assert.equal(table(data).rows.length, 11);
 assert.deepEqual(table(data).rows.at(-1).cells, [19999, 39998]);
 assert.equal(table(graph("sequence"), settings, 0, 1e9).rows.length, 101);
 assert.deepEqual(table(graph("cartesian"), settings, 2, -2).rows, []);
+assert.equal(graphTableInterval("2", "-2"), null);
 for (const invalid of ["", " ", "pi", "Infinity", "-Infinity", "NaN"])
   for (const bounds of [
     [invalid, "2"],
@@ -135,11 +216,9 @@ const dense = Array.from({ length: 100 }, (_, index) =>
     points: Array.from({ length: 20000 }, (_, i) => [index * 20000 + i, i]),
   }),
 );
-assert(graphDataRange(dense).every(Number.isFinite));
+assert(fit(dense).every(Number.isFinite));
 assert.deepEqual(
-  graphDataRange([
-    graph("data", "Data", { points: [[NaN, Infinity]], visible: true }),
-  ]),
+  fit([graph("data", "Data", { points: [[NaN, Infinity]], visible: true })]),
   null,
 );
 assert.equal(numeric(compileMath("200+10%"), scope), 220);
@@ -169,6 +248,36 @@ const resolved = graphFunctions(graph("cartesian", "missing*x"), {
 });
 assert.equal(resolved.warning, "");
 assert.equal(resolved.f(2), 6);
+const savedFunctions = graphScope(
+  [
+    {
+      id: "f",
+      name: "f",
+      kind: "function",
+      args: "u",
+      expression: "u^2",
+      updated: 1,
+    },
+    {
+      id: "g",
+      name: "g",
+      kind: "function",
+      args: "u,v",
+      expression: "u+2*v",
+      updated: 1,
+    },
+  ],
+  settings,
+  1,
+);
+assert.equal(
+  graphFunctions(graph("cartesian", "f(x)"), savedFunctions).f(3),
+  9,
+);
+assert.equal(
+  graphFunctions(graph("surface", "g(x,y)"), savedFunctions).f(3, 4),
+  11,
+);
 const missingSecond = graphFunctions(
   graph("parametric", "t", { second: "missing*t" }),
   scope,
@@ -176,7 +285,7 @@ const missingSecond = graphFunctions(
 assert.match(missingSecond.warning, /Undefined symbol missing/);
 assert.equal(missingSecond.f(2), 2);
 assert(Number.isNaN(missingSecond.second(2)));
-const largePointRange = graphDataRange([
+const largePointRange = fit([
   graph("data", "Point", { points: [[1e20, -1e20]] }),
 ]);
 assert(
@@ -185,7 +294,7 @@ assert(
 );
 assert.throws(
   () =>
-    graphDataRange([
+    fit([
       graph("data", "Extreme", {
         points: [
           [-Number.MAX_VALUE, 0],
