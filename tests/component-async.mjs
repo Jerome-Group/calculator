@@ -911,6 +911,10 @@ await check(
           points.every(({ x, y }) => Number.isFinite(x) && Number.isFinite(y)),
           `${type} sent nonfinite coordinates to the canvas`,
         );
+        assert(
+          points.some((point) => point.connected),
+          `${type} has no segments`,
+        );
         if (type === "parametric") {
           assert.equal(points.filter((point) => point.connected).length, 1000);
           assert(points[0].x < points.at(-1).x);

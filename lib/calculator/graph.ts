@@ -175,6 +175,45 @@ export function finiteSegment(a: number, m: number, b: number, span: number) {
   );
 }
 
+function sampleInterval(lo: number, hi: number, fraction: number) {
+  if (fraction === 0) return lo;
+  if (fraction === 1) return hi;
+  const span = hi - lo;
+  return Number.isFinite(span)
+    ? lo + span * fraction
+    : lo * (1 - fraction) + hi * fraction;
+}
+
+export function graphParameterSamples(
+  graph: GraphSpec,
+  { f, second }: Pick<ReturnType<typeof graphFunctions>, "f" | "second">,
+  scope: Record<string, unknown>,
+  settings: Settings,
+  intervals: 10 | 1000,
+) {
+  if (graph.type !== "parametric" && graph.type !== "polar") return [];
+  let lo = NaN,
+    hi = NaN;
+  try {
+    lo = numeric(compileMath(graph.min), scope);
+    hi = numeric(compileMath(graph.max), scope);
+  } catch {}
+  if (!Number.isFinite(lo) || !Number.isFinite(hi) || hi < lo) return [];
+  const angleUnit =
+    settings.angle === "deg" && !graph.radians ? Math.PI / 180 : 1;
+  return Array.from({ length: intervals + 1 }, (_, i) => {
+    const parameter = sampleInterval(lo, hi, i / intervals),
+      value = f(parameter),
+      angle = parameter * angleUnit;
+    return {
+      parameter,
+      value,
+      x: graph.type === "polar" ? value * Math.cos(angle) : value,
+      y: graph.type === "polar" ? value * Math.sin(angle) : second(parameter),
+    };
+  });
+}
+
 export const MAX_GRAPHS = 100;
 export function drawableGraphRange(range: number[]): boolean {
   return (
@@ -246,27 +285,16 @@ export function graphFitRange(
         for (const [x, y] of g.points || []) include(x, y);
         break;
       case "parametric":
-      case "polar": {
-        let lo = NaN,
-          hi = NaN;
-        try {
-          lo = numeric(compileMath(g.min), scope);
-          hi = numeric(compileMath(g.max), scope);
-        } catch {}
-        if (!Number.isFinite(lo) || !Number.isFinite(hi) || lo >= hi) break;
-        for (let i = 0; i <= 1000; i++) {
-          const fraction = i / 1000,
-            t = lo * (1 - fraction) + hi * fraction,
-            value = f(t);
-          if (g.type === "parametric") include(value, second(t));
-          else {
-            const angle =
-              t * (settings.angle === "deg" && !g.radians ? Math.PI / 180 : 1);
-            include(value * Math.cos(angle), value * Math.sin(angle));
-          }
-        }
+      case "polar":
+        for (const { x, y } of graphParameterSamples(
+          g,
+          { f, second },
+          scope,
+          settings,
+          1000,
+        ))
+          include(x, y);
         break;
-      }
       case "implicit":
       case "inequality":
       case "surface":
@@ -322,17 +350,26 @@ export function graphTable(
     );
     return result;
   }
-  const parametric = graph.type === "parametric" || graph.type === "polar";
-  const lo = parametric ? numeric(compileMath(graph.min), scope) : lower;
-  const hi = parametric ? numeric(compileMath(graph.max), scope) : upper;
+  if (graph.type === "parametric" || graph.type === "polar") {
+    result.headers =
+      graph.type === "polar" ? ["θ", "r", "x", "y"] : ["t", "x", "y"];
+    result.rows = graphParameterSamples(
+      graph,
+      { f, second },
+      scope,
+      settings,
+      10,
+    ).map(({ parameter, value, x, y }) => ({
+      cells:
+        graph.type === "polar" ? [parameter, value, x, y] : [parameter, x, y],
+      reuse: [x, y],
+    }));
+    return result;
+  }
+  const lo = lower,
+    hi = upper;
   if (!Number.isFinite(lo) || !Number.isFinite(hi) || hi < lo) return result;
-  const sample = (i: number) => {
-    if (i === 0) return lo;
-    if (i === 10) return hi;
-    const t = i / 10,
-      span = hi - lo;
-    return Number.isFinite(span) ? lo + span * t : lo * (1 - t) + hi * t;
-  };
+  const sample = (i: number) => sampleInterval(lo, hi, i / 10);
   if (["implicit", "inequality", "surface", "field"].includes(graph.type)) {
     result.headers = [
       "x",
@@ -364,24 +401,10 @@ export function graphTable(
       return { cells: [n, value], reuse: [n, value] };
     });
   } else {
-    result.headers =
-      graph.type === "polar"
-        ? ["θ", "r", "x", "y"]
-        : graph.type === "parametric"
-          ? ["t", "x", "y"]
-          : ["x", "y"];
+    result.headers = ["x", "y"];
     result.rows = Array.from({ length: 11 }, (_, i) => {
       const t = sample(i),
         value = f(t);
-      if (graph.type === "polar") {
-        const angle =
-          t * (settings.angle === "deg" && !graph.radians ? Math.PI / 180 : 1);
-        const x = value * Math.cos(angle),
-          y = value * Math.sin(angle);
-        return { cells: [t, value, x, y], reuse: [x, y] };
-      }
-      if (graph.type === "parametric")
-        return { cells: [t, value, second(t)], reuse: [value, second(t)] };
       return { cells: [t, value], reuse: [t, value] };
     });
   }

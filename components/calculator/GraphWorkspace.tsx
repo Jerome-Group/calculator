@@ -32,7 +32,7 @@ import {
   compileMath,
   graphScope,
   graphFunctions,
-  numeric,
+  graphParameterSamples,
   finiteSegment,
   graphFitRange,
   drawableGraphRange,
@@ -321,29 +321,24 @@ export default function GraphWorkspace({
           ctx.globalAlpha = 1;
         }
       } else if (g.type === "parametric" || g.type === "polar") {
-        let lo = NaN,
-          hi = NaN;
-        try {
-          lo = numeric(compileMath(g.min), scope);
-          hi = numeric(compileMath(g.max), scope);
-        } catch {}
-        if (!Number.isFinite(lo + hi) || lo >= hi) continue;
-        let prev: any = null;
-        for (let i = 0; i <= 1000; i++) {
-          const t = lo + ((hi - lo) * i) / 1000,
-            r = f(t),
-            angle =
-              t * (settings.angle === "deg" && !g.radians ? Math.PI / 180 : 1),
-            x = g.type === "polar" ? r * Math.cos(angle) : r,
-            y = g.type === "polar" ? r * Math.sin(angle) : second(t);
-          if (Number.isFinite(x + y)) {
+        let prev: [number, number] | null = null;
+        for (const { x, y } of graphParameterSamples(
+          g,
+          { f, second },
+          scope,
+          settings,
+          1000,
+        )) {
+          const px = sx(x),
+            py = sy(y);
+          if (Number.isFinite(px) && Number.isFinite(py)) {
             if (
               prev &&
-              Math.hypot(sx(x) - prev[0], sy(y) - prev[1]) < Math.max(w, h) / 3
+              Math.hypot(px - prev[0], py - prev[1]) < Math.max(w, h) / 3
             )
-              ctx.lineTo(sx(x), sy(y));
-            else ctx.moveTo(sx(x), sy(y));
-            prev = [sx(x), sy(y)];
+              ctx.lineTo(px, py);
+            else ctx.moveTo(px, py);
+            prev = [px, py];
           } else prev = null;
         }
         ctx.stroke();

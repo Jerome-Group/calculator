@@ -4,6 +4,7 @@ import {
   graphFunctions,
   graphScope,
   graphFitRange,
+  graphParameterSamples,
   compileMath,
   numeric,
 } from "../lib/calculator/graph.ts";
@@ -81,6 +82,65 @@ scaledTable.rows.forEach(({ cells, reuse }, index) => {
   assert.deepEqual(reuse, cells.slice(1));
 });
 assert.deepEqual(fit([scaledParametric]), [-1.2, 1.2, -0.1, 0.1]);
+for (const angle of ["rad", "deg"])
+  for (const radians of [false, true]) {
+    const angularSettings = { ...settings, angle },
+      angularScope = graphScope([], angularSettings, 1),
+      max = angle === "deg" && !radians ? "360" : "2*pi";
+    for (const type of ["parametric", "polar"]) {
+      const circle = graph(type, type === "polar" ? "2" : "2*cos(t)", {
+          second: "2*sin(t)",
+          min: "0",
+          max,
+          radians,
+        }),
+        functions = graphFunctions(circle, angularScope),
+        samples = graphParameterSamples(
+          circle,
+          functions,
+          angularScope,
+          angularSettings,
+          1000,
+        ),
+        rows = graphTable(
+          circle,
+          functions,
+          angularScope,
+          angularSettings,
+          -2,
+          2,
+        ).rows;
+      assert.equal(samples.length, 1001);
+      assert.equal(rows.length, 11);
+      for (const [index, { x, y }] of samples.entries()) {
+        const theta = (index / 1000) * 2 * Math.PI;
+        assert(Math.abs(x - 2 * Math.cos(theta)) < 1e-12);
+        assert(Math.abs(y - 2 * Math.sin(theta)) < 1e-12);
+        if (index % 100 === 0)
+          assert.deepEqual(rows[index / 100].reuse, [x, y]);
+      }
+      assert.deepEqual(
+        graphFitRange(
+          [{ g: circle, ...functions }],
+          angularScope,
+          angularSettings,
+        ).range,
+        [-2.4, 2.4, -2.4, 2.4],
+      );
+    }
+  }
+const singleParameter = table(
+  graph("parametric", "t", { second: "t^2", min: "2", max: "2" }),
+);
+assert.equal(singleParameter.rows.length, 11);
+assert(singleParameter.rows.every(({ cells }) => cells.join(",") === "2,2,4"));
+for (const bounds of [
+  { min: "3", max: "1" },
+  { min: "1/0", max: "3" },
+  { min: "0", max: "1/0" },
+  { min: "unknown", max: "3" },
+])
+  assert.deepEqual(table(graph("parametric", "t", bounds)).rows, []);
 const wideSurface = table(graph("surface", "x"), settings, -1e308, 1e308);
 assert.equal(wideSurface.rows.length, 121);
 assert.deepEqual(wideSurface.rows[0].cells, [-1e308, -1e308, -1e308]);
