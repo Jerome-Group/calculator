@@ -1927,7 +1927,10 @@ for (const outcome of ["unchanged", "original-committed", "merge-committed"]) {
       const returned = await tab("offline-race-return", values, cloud);
       await returned.sync.initializeAccount();
       assert.equal(returned.sync.sessionWorkspace().notebooks.length, 1);
-      assert.equal(returned.sync.sessionWorkspace().notebooks[0].name, "Private B");
+      assert.equal(
+        returned.sync.sessionWorkspace().notebooks[0].name,
+        "Private B",
+      );
       cloud.account = "a";
       cloud.state = remote;
       cloud.revision = outcome === "unchanged" ? 11 : 12;
@@ -1936,12 +1939,24 @@ for (const outcome of ["unchanged", "original-committed", "merge-committed"]) {
       const fresh = recovered.notebooks.filter((book) =>
         book.history.some((entry) => entry.id === "fresh93"),
       );
-      assert.equal(fresh.length, 1, "Equivalent offline content was duplicated");
+      assert.equal(
+        fresh.length,
+        1,
+        "Equivalent offline content was duplicated",
+      );
       assert.deepEqual(fresh[0].history, offline.notebooks[0].history);
       if (outcome === "original-committed") {
-        assert.deepEqual(recovered, remote, "Old cloud base was recovered again");
+        assert.deepEqual(
+          recovered,
+          remote,
+          "Old cloud base was recovered again",
+        );
       } else {
-        assert.deepEqual(recovered, merged, "Unedited recovery identity churned");
+        assert.deepEqual(
+          recovered,
+          merged,
+          "Unedited recovery identity churned",
+        );
       }
       const pendingCount = cloud.calls.length;
       returned.storage.persist(recovered);
@@ -1989,14 +2004,142 @@ await check(
     assert.deepEqual(fresh.history, edited.notebooks[1].history);
     assert.equal(fresh.name, "My notebook (offline copy)");
     assert(
-      returned.drafts.readDrafts("a").some((draft) =>
-        JSON.stringify(draft).includes('"angle":"deg"'),
-      ),
+      returned.drafts
+        .readDrafts("a")
+        .some((draft) => JSON.stringify(draft).includes('"angle":"deg"')),
       "Divergent settings were not retained",
     );
     const again = await tab("edited-recovery-repeat", values, cloud);
     await again.sync.initializeAccount();
     assert.deepEqual(copyState(again.sync.sessionWorkspace()), recovered);
+    again.storage.persist(again.sync.sessionWorkspace());
+    const call = cloud.calls.at(-1);
+    cloud.state = copyState(call.body.state);
+    cloud.revision++;
+    call.resolve(Response.json({ revision: cloud.revision }));
+    await flush();
+    assert(
+      again.drafts
+        .readDrafts("a")
+        .some((draft) =>
+          again.drafts
+            .draftSources(draft)
+            .some((source) => source.state.settings.angle === "deg"),
+        ),
+      "Acknowledging cloud settings erased divergent settings",
+    );
+  },
+);
+await check(
+  "an edited recovery PUT already committed under its recorded alias is recovered once",
+  async () => {
+    const { values, cloud, offline, merged, reloaded } =
+      await offlineRecoveryRace("unchanged");
+    const edited = copyState(merged);
+    edited.notebooks[1].name = "Renamed recovery";
+    edited.notebooks[1].history.push({
+      ...copyState(offline.notebooks[0].history[0]),
+      id: "committed-recovery-edit",
+      input: "8*8",
+      result: { status: "exact", text: "64", latex: "64", notes: [] },
+    });
+    reloaded.storage.persist(edited);
+    cloud.state = edited;
+    cloud.revision = 12;
+    const returned = await tab("committed-edited-recovery", values, cloud);
+    await returned.sync.initializeAccount();
+    const recovered = copyState(returned.sync.sessionWorkspace());
+    const changed = recovered.notebooks.filter((book) =>
+      book.history.some((entry) => entry.id === "committed-recovery-edit"),
+    );
+    assert.equal(
+      changed.length,
+      1,
+      "Equivalent edited recovery was duplicated",
+    );
+    assert.deepEqual(changed[0], edited.notebooks[1]);
+    const distinctVersions = new Set(
+      recovered.notebooks.map(({ id, name, ...content }) =>
+        JSON.stringify(content),
+      ),
+    );
+    assert.equal(distinctVersions.size, recovered.notebooks.length);
+    const again = await tab("committed-edited-recovery-repeat", values, cloud);
+    await again.sync.initializeAccount();
+    assert.deepEqual(copyState(again.sync.sessionWorkspace()), recovered);
+  },
+);
+await check(
+  "recovery lineage is self-contained, flat and validated before replay",
+  async () => {
+    const { values, cloud, merged, offline } =
+      await offlineRecoveryRace("unchanged");
+    const generated = [...values.entries()].find(
+      ([key, value]) =>
+        key.startsWith("calculator.pending.v1:a:") &&
+        JSON.parse(value).recovery,
+    );
+    assert(generated, "Generated merge lacks durable provenance");
+    for (const [key, value] of [...values.entries()])
+      if (
+        key.startsWith("calculator.pending.v1:a:") &&
+        !JSON.parse(value).recovery
+      )
+        values.delete(key);
+    const reopened = await tab("self-contained-recovery", values, cloud);
+    await reopened.sync.initializeAccount();
+    assert.deepEqual(copyState(reopened.sync.sessionWorkspace()), merged);
+    for (const draft of reopened.drafts.readDrafts("a")) {
+      if (draft.kind !== "recovery") continue;
+      assert.equal(draft.recovery.sources.length, 1);
+      assert.deepEqual(copyState(draft.recovery.sources[0].state), offline);
+      assert.equal(draft.recovery.sources[0].recovery, undefined);
+    }
+    for (const damage of [
+      "owner",
+      "state",
+      "mapping",
+      "duplicate-mapping",
+      "base",
+      "recursive",
+      "source-limit",
+      "byte-limit",
+    ]) {
+      const payload = JSON.parse(generated[1]);
+      if (damage === "owner") payload.recovery.owner = "b";
+      if (damage === "state") payload.recovery.sources[0].state = null;
+      if (damage === "mapping")
+        payload.recovery.sources[0].notebookIds = ["missing"];
+      if (damage === "duplicate-mapping") {
+        const input = payload.recovery.sources[0];
+        input.state.notebooks.push({
+          ...input.state.notebooks[0],
+          id: "other",
+        });
+        input.notebookIds.push(input.notebookIds[0]);
+      }
+      if (damage === "base") payload.recovery.base = null;
+      if (damage === "recursive") {
+        payload.recovery.sources[0].recovery = { owner: "a", sources: [] };
+      }
+      if (damage === "source-limit")
+        payload.recovery.sources = Array(101).fill(payload.recovery.sources[0]);
+      if (damage === "byte-limit")
+        payload.recovery.extra = "x".repeat(4_000_000);
+      const serialized = JSON.stringify(payload);
+      const isolated = new Map([[generated[0], serialized]]);
+      const reader = await tab("invalid-lineage-" + damage, isolated, cloud);
+      const drafts = reader.drafts.readDrafts("a");
+      assert.equal(drafts.length, 1);
+      assert.equal(
+        drafts[0].kind,
+        "source",
+        "Invalid provenance was trusted: " + damage,
+      );
+      assert.deepEqual(copyState(drafts[0].state), merged);
+      assert.equal(isolated.get(generated[0]), serialized);
+      assert.equal(reader.drafts.readDrafts("b").length, 0);
+    }
   },
 );
 console.log(JSON.stringify(results, null, 2));
