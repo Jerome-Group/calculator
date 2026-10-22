@@ -22,6 +22,6 @@ Hosted [HTML detection](https://developers.cloudflare.com/cloudflare-challenges/
 
 Synthetic preview identities and successful HTTP asset checks do not prove hosted Sites sign-in, **Ready**, or disconnected reopening. Record any SSO prerequisite and the attempted browser route. Claim those results only after observing the signed-in browser journey.
 
-Account transitions clear the authenticated offline shell. Repeat preparation and disconnected reopening under the selected account before claiming that account can reopen offline. Do not infer its readiness from a previous account's prepared files.
+Account transitions require fresh account-specific offline evidence. Repeat preparation and disconnected reopening under the selected account before claiming that account can reopen offline. Do not infer its readiness from a previous account's prepared files.
 
 Stopping only Wrangler leaves a proxy HTTP 502, which does not exercise the service worker's network-failure fallback. Stop the proxy, reload and make a fresh calculation. A healthy cached shell does not prove all engine capabilities were prepared. Service workers require a secure or loopback origin and available browser storage. Offline cleanup must restore the network and stop remaining owned sessions. Browser emulation does not certify physical touch. Retain all six required modal records for full release evidence.
