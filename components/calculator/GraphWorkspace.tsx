@@ -63,6 +63,8 @@ export default function GraphWorkspace({
   settings,
   onAnalyze,
   onReuse,
+  onCompute = calculate,
+  workerBusy = false,
 }: {
   graphs: GraphSpec[];
   onChange: (g: GraphSpec[]) => void;
@@ -70,6 +72,8 @@ export default function GraphWorkspace({
   settings: Settings;
   onAnalyze: (op: string, p: Record<string, string>) => void;
   onReuse: (s: string) => void;
+  onCompute?: typeof calculate;
+  workerBusy?: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null),
     holder = useRef<HTMLDivElement>(null),
@@ -526,6 +530,7 @@ export default function GraphWorkspace({
   const derived = async (operation: string) => {
     if (
       !current ||
+      workerBusy ||
       deriving.current ||
       latest.current.graphs.length >= MAX_GRAPHS
     ) {
@@ -540,7 +545,7 @@ export default function GraphWorkspace({
     setBusy(true);
     setError("");
     try {
-      const r = await calculate({
+      const r = await onCompute({
         operation,
         params: {
           expression: current.expression,
@@ -585,7 +590,7 @@ export default function GraphWorkspace({
     }
   };
   const analyze = () => {
-    if (!current || current.type !== "cartesian") return;
+    if (!current || workerBusy || current.type !== "cartesian") return;
     onAnalyze("graph_analysis", {
       expression: current.expression,
       other: graphs.find((g) => g.id === other)?.expression || "0",

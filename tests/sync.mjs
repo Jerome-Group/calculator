@@ -140,6 +140,10 @@ async function tab(name, values, server, rewriteStorageWarnings = false) {
     "drafts",
     "result-validation",
     "workspace-request",
+    "workspace-values",
+    "investigations",
+    "investigation-labs",
+    "catalog",
   ])
     modules[file] = new vm.SourceTextModule(
       file === "storage" && rewriteStorageWarnings
@@ -184,6 +188,35 @@ async function check(name, fn) {
     results.push({ name, passed: false, error: error.message });
   }
 }
+
+await check(
+  "queuing a newer snapshot immediately replaces an older account acknowledgement",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      a = await tab("pending feedback", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("first"));
+    assert.equal(a.messages.at(-1), "Saving your latest changes…");
+    a.storage.persist(initial("newer"));
+    assert.equal(a.messages.at(-1), "Saving your latest changes…");
+    cloud.calls[0].resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert.equal(a.messages.at(-1), "Saving your latest changes…");
+    assert.equal(cloud.calls.length, 2);
+    cloud.calls[1].resolve(Response.json({ revision: 3 }));
+    await flush();
+    assert.equal(a.messages.at(-1), "Saved to your account");
+    const events = a.messages.length;
+    a.storage.persist(initial("newer"));
+    assert.equal(
+      a.messages.length,
+      events,
+      "A clean no-op cannot await an acknowledgement",
+    );
+    assert.equal(a.messages.at(-1), "Saved to your account");
+  },
+);
 
 await check(
   "two-tab acknowledgement preserves the other tab's dirty snapshot and base revision",
@@ -623,6 +656,10 @@ await check(
       "drafts",
       "result-validation",
       "workspace-request",
+      "workspace-values",
+      "investigations",
+      "investigation-labs",
+      "catalog",
     ])
       modules[file] = new vm.SourceTextModule(
         source(`lib/calculator/${file}.ts`),
@@ -2240,6 +2277,29 @@ await check(
       assert.equal(isolated.get(generated[0]), serialized);
       assert.equal(reader.drafts.readDrafts("b").length, 0);
     }
+  },
+);
+await check(
+  "calculation leases expire on account changes, same-account renewal and sign-out",
+  async () => {
+    const cloud = server(),
+      values = new Map(),
+      a = await tab("lease", values, cloud);
+    await a.sync.initializeAccount();
+    const first = a.sync.captureAccountSession();
+    assert.equal(first.isCurrent(), true);
+    await a.sync.initializeAccount();
+    assert.equal(first.isCurrent(), false);
+    const renewed = a.sync.captureAccountSession();
+    assert.equal(renewed.isCurrent(), true);
+    cloud.account = "b";
+    await a.sync.initializeAccount();
+    assert.equal(renewed.isCurrent(), false);
+    const b = a.sync.captureAccountSession();
+    assert.equal(b.isCurrent(), true);
+    a.sync.forgetAccount();
+    assert.equal(b.isCurrent(), false);
+    assert.equal(a.sync.captureAccountSession().isCurrent(), false);
   },
 );
 console.log(JSON.stringify(results, null, 2));

@@ -1,3 +1,5 @@
+import { isSettings, isDefinition } from "./workspace-values";
+import { validateInvestigation } from "./investigations";
 import { currentAccount, syncWorkspace, sessionWorkspace } from "./sync";
 import { validateResult } from "./result-validation";
 import type { SavedState } from "./types";
@@ -12,28 +14,8 @@ export function readDeviceSave(key: string): string | null {
 }
 export function validateState(v: any): SavedState {
   const str = (x: any, n = 12000) => typeof x === "string" && x.length <= n;
-  const settings = (x: any) =>
-    x &&
-    ["rad", "deg"].includes(x.angle) &&
-    ["real", "complex"].includes(x.domain) &&
-    Number.isInteger(x.precision) &&
-    x.precision >= 5 &&
-    x.precision <= 200 &&
-    (x.displayDecimals === undefined ||
-      (Number.isInteger(x.displayDecimals) &&
-        x.displayDecimals >= 0 &&
-        x.displayDecimals <= 30)) &&
-    str(x.assumptions, 1000);
-  const def = (d: any) =>
-    d &&
-    str(d.id, 100) &&
-    str(d.name, 24) &&
-    /^[A-Za-z][A-Za-z0-9_]*$/.test(d.name) &&
-    str(d.expression) &&
-    ["expression", "matrix", "dataset", "function", "object"].includes(
-      d.kind,
-    ) &&
-    (!d.args || str(d.args, 100));
+  const settings = isSettings,
+    def = isDefinition;
   if (
     !v ||
     v.version !== 1 ||
@@ -99,6 +81,15 @@ export function validateState(v: any): SavedState {
       validateResult(h.result, h.operation);
       historyIds.add(h.id);
     }
+    if (b.investigation !== undefined)
+      validateInvestigation(b.investigation, b.history);
+    else if (
+      b.history.some(
+        (entry: { investigation?: unknown }) =>
+          entry.investigation !== undefined,
+      )
+    )
+      throw Error("Investigation cells require their original runs.");
     const graphIds = new Set();
     for (const g of b.graphs) {
       if (

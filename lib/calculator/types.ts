@@ -1,3 +1,4 @@
+import type { Investigation, InvestigationCell } from "./investigations";
 export const uid = () =>
   typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()
@@ -17,7 +18,7 @@ export type Definition = {
   expression: string;
   kind: "expression" | "matrix" | "dataset" | "function" | "object";
   args?: string;
-  updated: number;
+  updated?: number;
 };
 export type Result = {
   text: string;
@@ -44,6 +45,7 @@ export type Entry = {
   time: number;
   revision: number;
   definitions: Definition[];
+  investigation?: InvestigationCell;
 };
 export type GraphSpec = {
   id: string;
@@ -73,6 +75,7 @@ export type Notebook = {
   history: Entry[];
   graphs: GraphSpec[];
   revision: number;
+  investigation?: Investigation;
 };
 export type SavedState = {
   version: 1;

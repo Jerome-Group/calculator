@@ -389,6 +389,20 @@ export async function initializeAccount(): Promise<User> {
 export function currentAccount() {
   return user?.id || "";
 }
+export function captureAccountSession() {
+  const generation = accountGeneration,
+    owner = currentAccount();
+  return {
+    isCurrent: () =>
+      !!owner && generation === accountGeneration && owner === currentAccount(),
+  };
+}
+export function workspaceFitsCloud(state: SavedState, additionalBytes = 0) {
+  return workspaceRequestFits(
+    serializeWorkspaceRequest(state, revision, currentAccount()),
+    additionalBytes,
+  );
+}
 export function forgetAccount() {
   accountGeneration++;
   stopSave();
@@ -413,6 +427,7 @@ export function syncWorkspace(state: SavedState) {
     storageUnavailable = true;
   }
   pending = state;
+  emit("Saving your latest changes…");
   if (
     storageReadable &&
     readLocal(accountStorage(STORAGE_KEY)) === JSON.stringify(state)

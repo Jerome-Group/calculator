@@ -108,6 +108,7 @@ export function componentHarness(
   actions,
   initialState = {},
   moduleOverrides = {},
+  environment = {},
 ) {
   const state = new Map(Object.entries(initialState)),
     navigator = {},
@@ -115,10 +116,16 @@ export function componentHarness(
     requests = [],
     effects = [],
     layouts = [],
-    cleanups = [];
+    cleanups = [],
+    effectSlots = [],
+    callbacks = [];
   let refIndex = 0,
+    effectIndex = 0,
+    callbackIndex = 0,
     captured,
-    nextId = 0;
+    nextId = 0,
+    deferWorkspaceUpdates = false;
+  const pendingWorkspaceUpdates = [];
   const source = fs.readFileSync(
     new URL(`../components/calculator/${component}.tsx`, import.meta.url),
     "utf8",
@@ -128,11 +135,16 @@ export function componentHarness(
       state.set(name, typeof initial === "function" ? initial() : initial);
     return [
       state.get(name),
-      (value) =>
-        state.set(
-          name,
-          typeof value === "function" ? value(state.get(name)) : value,
-        ),
+      (value) => {
+        const apply = () =>
+          state.set(
+            name,
+            typeof value === "function" ? value(state.get(name)) : value,
+          );
+        if (name === "state" && deferWorkspaceUpdates)
+          pendingWorkspaceUpdates.push(apply);
+        else apply();
+      },
     ];
   };
   const react = {
@@ -142,11 +154,42 @@ export function componentHarness(
     useRef(initial) {
       return (refs[refIndex++] ??= { current: initial });
     },
-    useEffect(callback) {
-      if (component === "GraphWorkspace") effects.push(callback);
+    useEffect(callback, dependencies) {
+      if (environment.effects === "all") {
+        const index = effectIndex++,
+          previous = effectSlots[index];
+        if (
+          !previous ||
+          !dependencies ||
+          dependencies.some((value, i) => value !== previous.dependencies?.[i])
+        )
+          effects.push(() => {
+            previous?.cleanup?.();
+            effectSlots[index] = {
+              dependencies,
+              cleanup: callback(),
+            };
+          });
+        return;
+      }
+      if (
+        component === "GraphWorkspace" ||
+        callback.toString().includes("mounted.current = true")
+      )
+        effects.push(callback);
     },
     useLayoutEffect(callback) {
       layouts.push(callback);
+    },
+    useCallback(callback, dependencies) {
+      const index = callbackIndex++,
+        previous = callbacks[index];
+      if (
+        !previous ||
+        dependencies.some((value, i) => value !== previous.dependencies[i])
+      )
+        callbacks[index] = { callback, dependencies };
+      return callbacks[index].callback;
     },
     useMemo: (calculate) => calculate(),
   };
@@ -167,6 +210,11 @@ export function componentHarness(
     react,
     "react/jsx-runtime": require("react/jsx-runtime"),
     "@/lib/calculator/engine": engine,
+    "@/lib/calculator/sync": {
+      sessionWorkspace: () => null,
+      captureAccountSession: () => ({ isCurrent: () => true }),
+      workspaceFitsCloud: () => true,
+    },
     "@/lib/calculator/types": {
       uid: () => `created-${++nextId}`,
       DEFAULT_SETTINGS: settings,
@@ -215,6 +263,8 @@ export function componentHarness(
     "document",
     "navigator",
     "localStorage",
+    "setTimeout",
+    "clearTimeout",
     instrument(source, component, actions),
   )(
     (specifier) => moduleOverrides[specifier] || modules[specifier] || ui,
@@ -222,28 +272,39 @@ export function componentHarness(
     loadedModule.exports,
     auditState,
     (value) => (captured = value),
-    {},
-    {},
+    environment.window || {},
+    environment.document || {},
     navigator,
-    { getItem: () => null },
+    environment.localStorage || { getItem: () => null },
+    environment.setTimeout || setTimeout,
+    environment.clearTimeout || clearTimeout,
   );
   return {
     state,
+    deferWorkspaceUpdates(value = true) {
+      deferWorkspaceUpdates = value;
+    },
+    flushWorkspaceUpdates() {
+      while (pendingWorkspaceUpdates.length) pendingWorkspaceUpdates.shift()();
+    },
     navigator,
     requests,
     unmount() {
       for (const cleanup of cleanups) cleanup?.();
+      for (const slot of effectSlots) slot?.cleanup?.();
     },
     runEffects() {
       for (const effect of effects) cleanups.push(effect());
     },
     render(props) {
       refIndex = 0;
+      effectIndex = 0;
+      callbackIndex = 0;
       effects.length = 0;
       layouts.length = 0;
       const tree = loadedModule.exports.default(props);
       for (const layout of layouts) layout();
-      if (component === "GraphWorkspace" && !cleanups.length)
+      if (effects.length && (environment.effects === "all" || !cleanups.length))
         for (const effect of effects) cleanups.push(effect());
       return { tree, actions: captured };
     },
