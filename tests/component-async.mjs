@@ -844,6 +844,91 @@ await check(
   },
 );
 await check(
+  "Fit draws finite parametric and polar segments over extreme finite domains",
+  async () => {
+    const originalPixelRatio = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "devicePixelRatio",
+    );
+    globalThis.devicePixelRatio = 1;
+    try {
+      for (const [type, expression, min, max] of [
+        ["parametric", "t/1e308", "-1e308", "1e308"],
+        ["parametric", "t/1e308", "1e308", "1.5e308"],
+        ["polar", "1", "-1e308", "1e308"],
+        ["polar", "1", "1e308", "1.5e308"],
+      ]) {
+        const harness = componentHarness("GraphWorkspace", ["fit"]);
+        const graph = {
+          ...harness.exports.makeGraph(expression, type),
+          second: "0",
+          min,
+          max,
+        };
+        const props = {
+          graphs: [graph],
+          onChange() {},
+          definitions: [],
+          settings,
+          onAnalyze() {},
+          onReuse() {},
+        };
+        const paths = [];
+        let path = [];
+        const context = {
+          scale() {},
+          fillRect() {},
+          fillText() {},
+          beginPath() {
+            path = [];
+          },
+          moveTo(x, y) {
+            path.push({ x, y, connected: false });
+          },
+          lineTo(x, y) {
+            path.push({ x, y, connected: true });
+          },
+          stroke() {
+            if (this.strokeStyle === graph.color) paths.push(path);
+          },
+        };
+        const nodes = (tree) =>
+          !tree || typeof tree !== "object"
+            ? []
+            : [tree, ...[tree.props?.children].flat(Infinity).flatMap(nodes)];
+        const initial = harness.render(props);
+        initial.actions.fit();
+        assert.equal(harness.state.get("error"), "");
+        const canvas = nodes(initial.tree).find(
+          (node) => node.type === "canvas",
+        );
+        canvas.props.ref.current = { getContext: () => context };
+        harness.render(props);
+        harness.runEffects();
+        const points = paths.flat();
+        assert.equal(points.length, 1001, `${type} lost its finite samples`);
+        assert(
+          points.every(({ x, y }) => Number.isFinite(x) && Number.isFinite(y)),
+          `${type} sent nonfinite coordinates to the canvas`,
+        );
+        if (type === "parametric") {
+          assert.equal(points.filter((point) => point.connected).length, 1000);
+          assert(points[0].x < points.at(-1).x);
+          assert(points.every(({ y }) => Math.abs(y - 200) < 1e-10));
+        }
+      }
+    } finally {
+      if (originalPixelRatio)
+        Object.defineProperty(
+          globalThis,
+          "devicePixelRatio",
+          originalPixelRatio,
+        );
+      else delete globalThis.devicePixelRatio;
+    }
+  },
+);
+await check(
   "Fit reports unsupported and empty curves then recovers on a finite curve",
   async () => {
     const harness = componentHarness("GraphWorkspace", ["fit"]);

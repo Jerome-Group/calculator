@@ -67,6 +67,20 @@ assert.deepEqual(wideParametric.rows[0].cells, [-1e308, -1e308, -1e308]);
 assert.deepEqual(wideParametric.rows[5].cells, [0, 0, 0]);
 assert.deepEqual(wideParametric.rows.at(-1).cells, [1e308, 1e308, 1e308]);
 assert(wideParametric.rows.every((row) => row.cells.every(Number.isFinite)));
+const scaledParametric = graph("parametric", "t/1e308", {
+  second: "0",
+  min: "-1e308",
+  max: "1e308",
+});
+const scaledTable = table(scaledParametric);
+assert.equal(scaledTable.rows.length, 11);
+scaledTable.rows.forEach(({ cells, reuse }, index) => {
+  assert(cells.every(Number.isFinite));
+  assert(Math.abs(cells[1] - (-1 + index / 5)) < 1e-14);
+  assert.equal(cells[2], 0);
+  assert.deepEqual(reuse, cells.slice(1));
+});
+assert.deepEqual(fit([scaledParametric]), [-1.2, 1.2, -0.1, 0.1]);
 const wideSurface = table(graph("surface", "x"), settings, -1e308, 1e308);
 assert.equal(wideSurface.rows.length, 121);
 assert.deepEqual(wideSurface.rows[0].cells, [-1e308, -1e308, -1e308]);

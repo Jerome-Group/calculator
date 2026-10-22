@@ -234,6 +234,9 @@ export function componentHarness(
     unmount() {
       for (const cleanup of cleanups) cleanup?.();
     },
+    runEffects() {
+      for (const effect of effects) cleanups.push(effect());
+    },
     render(props) {
       refIndex = 0;
       effects.length = 0;
