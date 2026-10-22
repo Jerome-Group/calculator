@@ -1,11 +1,14 @@
 import {
   beginDraftSession,
   writeDraft,
+  writeRecoveryDraft,
   preserveDraft,
   readDrafts,
   discardDraft,
   acknowledgeDraft,
   recoveryNotebooks,
+  draftSources,
+  type RecoverySource,
   type Draft,
 } from "./drafts";
 import {
@@ -38,24 +41,30 @@ let cloudAcknowledgedText = "",
   durableDraftText = "";
 type RecoveryReceipt = {
   draft: Draft;
-  notebooks: SavedState["notebooks"];
-  settings: SavedState["settings"];
+  versions: {
+    notebooks: SavedState["notebooks"];
+    settings: SavedState["settings"];
+  }[];
   localText: string | null;
 };
 let recoveryReceipts: RecoveryReceipt[] = [];
-function acknowledgeRecovery(state: SavedState) {
+function acknowledgeRecovery(state: SavedState, keepPrimaryReceipt = false) {
   recoveryReceipts = recoveryReceipts.filter((receipt) => {
     if (
-      JSON.stringify(receipt.settings) !== JSON.stringify(state.settings) ||
-      !receipt.notebooks.every((book) =>
-        state.notebooks.some(
-          (saved) => JSON.stringify(saved) === JSON.stringify(book),
-        ),
+      !receipt.versions.every(
+        (version) =>
+          JSON.stringify(version.settings) === JSON.stringify(state.settings) &&
+          version.notebooks.every((book) =>
+            state.notebooks.some(
+              (saved) => JSON.stringify(saved) === JSON.stringify(book),
+            ),
+          ),
       )
     )
       return true;
     try {
       if (receipt.draft.key) discardDraft(receipt.draft);
+      if (keepPrimaryReceipt && receipt.localText !== null) return true;
       if (
         receipt.localText !== null &&
         localStorage.getItem(accountStorage(STORAGE_KEY)) === receipt.localText
@@ -276,56 +285,77 @@ export async function initializeAccount(): Promise<User> {
           serialized: "",
           state: local,
           revision: savedRevision(),
+          kind: "source",
         });
     }
     const merged = { ...remote, notebooks: [...remote.notebooks] };
-    const seen = new Set([JSON.stringify(remote)]);
+    const groups = drafts.map((draft) => ({
+      draft,
+      sources: draftSources(draft),
+    }));
+    const projections = new Map<string, SavedState["notebooks"][]>();
+    for (const { sources } of groups)
+      for (const source of sources) {
+        const text = JSON.stringify(source.state);
+        projections.set(text, [
+          ...(projections.get(text) || []),
+          ...source.projections,
+        ]);
+      }
+    const recoveredSources = new Map<string, RecoverySource>();
     const incorporated: RecoveryReceipt[] = [];
     let keepOnlyLocalCopy = false;
-    for (const draft of drafts) {
-      const text = JSON.stringify(draft.state);
-      if (seen.has(text)) {
+    for (const { draft, sources } of groups) {
+      const versions: RecoveryReceipt["versions"] = [];
+      for (const source of sources) {
+        const text = JSON.stringify(source.state);
+        let recovered = recoveredSources.get(text);
+        if (!recovered) {
+          const copies = await recoveryNotebooks(
+            data.user.id,
+            source.state,
+            merged.notebooks,
+            projections.get(text),
+          );
+          assertCurrent();
+          const additions = copies.filter(
+            (copy) => !merged.notebooks.some((book) => book.id === copy.id),
+          );
+          const candidate = {
+            ...merged,
+            notebooks: [...merged.notebooks, ...additions],
+          };
+          if (
+            candidate.notebooks.length > 100 ||
+            !workspaceRequestFits(
+              serializeWorkspaceRequest(candidate, revision, data.user.id),
+            )
+          ) {
+            if (!draft.key) keepOnlyLocalCopy = true;
+            continue;
+          }
+          merged.notebooks = candidate.notebooks;
+          recovered = {
+            revision: source.revision,
+            state: source.state,
+            notebookIds: copies.map((book) => book.id),
+          };
+          recoveredSources.set(text, recovered);
+        }
+        versions.push({
+          notebooks: merged.notebooks.filter((book) =>
+            recovered.notebookIds.includes(book.id),
+          ),
+          settings: source.state.settings,
+        });
+      }
+      if (versions.length === sources.length)
         incorporated.push({
           draft,
-          notebooks: draft.state.notebooks,
-          settings: draft.state.settings,
-          localText: text === localText ? localText : null,
+          versions,
+          localText:
+            JSON.stringify(draft.state) === localText ? localText : null,
         });
-        continue;
-      }
-      const copies = await recoveryNotebooks(
-        data.user.id,
-        draft.state,
-        merged.notebooks,
-      );
-      assertCurrent();
-      const additions = copies.filter(
-        (copy) => !merged.notebooks.some((book) => book.id === copy.id),
-      );
-      if (merged.notebooks.length + additions.length > 100) {
-        if (!draft.key) keepOnlyLocalCopy = true;
-        continue;
-      }
-      const candidate = {
-        ...merged,
-        notebooks: [...merged.notebooks, ...additions],
-      };
-      if (
-        !workspaceRequestFits(
-          serializeWorkspaceRequest(candidate, revision, data.user.id),
-        )
-      ) {
-        if (!draft.key) keepOnlyLocalCopy = true;
-        continue;
-      }
-      merged.notebooks = candidate.notebooks;
-      seen.add(text);
-      incorporated.push({
-        draft,
-        notebooks: copies,
-        settings: draft.state.settings,
-        localText: text === localText ? localText : null,
-      });
     }
     if (keepOnlyLocalCopy && local) {
       rememberWorkspace(data.user.id, local);
@@ -336,36 +366,22 @@ export async function initializeAccount(): Promise<User> {
     }
     validateState(merged);
     rememberWorkspace(data.user.id, merged);
-    const cachedWorkspace =
-      storageReadable &&
+    recoveryReceipts = incorporated;
+    acknowledgeRecovery(remote, true);
+    if (storageReadable)
       writeLocal(accountStorage(STORAGE_KEY), JSON.stringify(merged));
-    let cachedDraft = true;
     if (merged.notebooks.length > remote.notebooks.length) {
       try {
         if (!storageReadable)
           throw Error("Browser storage reads are unavailable");
-        writeDraft(data.user.id, revision, merged);
+        writeRecoveryDraft(data.user.id, revision, merged, [
+          ...recoveredSources.values(),
+        ]);
       } catch {
         storageUnavailable = true;
-        cachedDraft = false;
       }
       if (storageReadable) writeLocal(accountStorage("dirty"), "1");
     } else if (storageReadable) removeLocal(accountStorage("dirty"));
-    recoveryReceipts = incorporated;
-    for (const receipt of incorporated) {
-      if (
-        !receipt.draft.key ||
-        !cachedWorkspace ||
-        !cachedDraft ||
-        JSON.stringify(receipt.settings) !== JSON.stringify(merged.settings)
-      )
-        continue;
-      try {
-        discardDraft(receipt.draft);
-      } catch {
-        storageUnavailable = true;
-      }
-    }
   } else if (local) rememberWorkspace(data.user.id, local);
   if (storageReadable) writeLocal(revKey(), String(revision));
   return user!;
