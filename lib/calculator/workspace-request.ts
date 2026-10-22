@@ -11,8 +11,12 @@ export function serializeWorkspaceRequest(
 ): string {
   return JSON.stringify({ state, revision, account });
 }
-export function workspaceRequestFits(body: string): boolean {
+export function workspaceRequestFits(
+  body: string,
+  additionalBytes = 0,
+): boolean {
   return (
-    new TextEncoder().encode(body).byteLength <= MAX_WORKSPACE_REQUEST_BYTES
+    new TextEncoder().encode(body).byteLength + additionalBytes <=
+    MAX_WORKSPACE_REQUEST_BYTES
   );
 }

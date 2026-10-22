@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Sigma,
   Compass,
+  FlaskConical,
   ChartNoAxesCombined,
   Shapes,
   Search,
@@ -43,10 +44,29 @@ import StructuredFields, {
 } from "./StructuredFields";
 import RichResult from "./RichResult";
 import TaskBrowser from "./TaskBrowser";
+import Investigations from "./Investigations";
+import {
+  createInvestigationNotebook,
+  prepareInvestigationRun,
+  removeInvestigation,
+} from "@/lib/calculator/investigations";
+import type {
+  CalculationRequest,
+  CalculationContext,
+  InvestigationCell,
+  InvestigationStep,
+  RunAction,
+  RunActivity,
+} from "@/lib/calculator/investigations";
+import { WORKSPACE_SIZE_ERROR } from "@/lib/calculator/workspace-request";
 import RecoveryBackups from "./RecoveryBackups";
 import ResultPlot from "./ResultPlot";
 import { accountStorage } from "@/lib/calculator/storage";
-import { sessionWorkspace } from "@/lib/calculator/sync";
+import {
+  sessionWorkspace,
+  captureAccountSession,
+  workspaceFitsCloud,
+} from "@/lib/calculator/sync";
 import Choice from "./Choice";
 import MathEditor, { MathEditorHandle } from "./MathEditor";
 import MathView from "./MathView";
@@ -169,6 +189,11 @@ function Details({
 }
 export default function Calculator() {
   const [historyCount, setHistoryCount] = useState(30);
+  const [runActivity, setRunActivity] = useState<RunActivity>({ kind: "idle" });
+  const [stepEditor, setStepEditor] = useState<{
+    notebookId: string;
+    stepId: string;
+  } | null>(null);
   const [selectedObject, setSelectedObject] = useState<string>(""),
     [syncStatus, setSyncStatus] = useState("Saved on this device"),
     [theme, setTheme] = useState("light");
@@ -213,6 +238,8 @@ export default function Calculator() {
     undo = useRef<SavedState[]>([]),
     current = useRef(state),
     busyRef = useRef(false),
+    computationGeneration = useRef(0),
+    mounted = useRef(true),
     objectGeneration = useRef(0),
     objectModal = useRef(modal),
     fieldConversionGeneration = useRef(0),
@@ -225,6 +252,15 @@ export default function Calculator() {
       op: op?.id,
       params,
     });
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      computationGeneration.current++;
+      busyRef.current = false;
+      cancelCalculation();
+    };
+  }, []);
   useLayoutEffect(() => {
     current.current = state;
     if (objectModal.current !== modal) fieldConversionGeneration.current++;
@@ -330,7 +366,9 @@ export default function Calculator() {
         undo.current.push(structuredClone(s));
         if (undo.current.length > 20) undo.current.shift();
       }
-      return fn(s);
+      const next = fn(s);
+      current.current = next;
+      return next;
     });
   const patch = (
     fn: (b: Notebook) => Notebook,
@@ -347,6 +385,12 @@ export default function Calculator() {
       saveUndo,
     );
   const openObject = (d: Partial<Definition> = {}) => {
+    if (busyRef.current && d.kind === "matrix") {
+      setNotice(
+        "Wait for the calculation or stop it before opening a matrix editor.",
+      );
+      return;
+    }
     const generation = ++objectGeneration.current;
     objectModal.current = "object";
     setObj(d);
@@ -365,11 +409,17 @@ export default function Calculator() {
       readObjectMatrix(d.expression, generation);
   };
   const readObjectMatrix = (expression: string, generation: number) => {
+    if (busyRef.current) {
+      setNotice(
+        "Wait for the calculation or stop it before converting a matrix.",
+      );
+      return;
+    }
     const stillEditing = () =>
       generation === objectGeneration.current &&
       objectModal.current === "object";
     setMatrixLoading(true);
-    calculate({
+    computeAuxiliary({
       operation: "matrix_cells",
       params: { expression },
       definitions: book?.definitions || [],
@@ -392,7 +442,7 @@ export default function Calculator() {
       });
   };
   const changeObjectKind = (next: Definition["kind"]) => {
-    if (next === kind) return;
+    if (next === kind || (next === "matrix" && busyRef.current)) return;
     const generation = ++objectGeneration.current,
       source =
         kind === "matrix" && !matrixLoading
@@ -420,7 +470,114 @@ export default function Calculator() {
     }
     objectModal.current = "";
     setModal("");
+    setStepEditor(null);
     hide();
+  };
+  const stopCalculation = () => {
+    computationGeneration.current++;
+    busyRef.current = false;
+    setBusy(false);
+    setRunActivity({ kind: "idle" });
+    cancelCalculation();
+    setNotice(
+      "Stopped. Completed results remain; missing investigation cells can be resumed.",
+    );
+  };
+  const computeAuxiliary = async (request: Parameters<typeof calculate>[0]) => {
+    if (busyRef.current)
+      throw Error("Another calculation is running. Wait or stop it first.");
+    const generation = ++computationGeneration.current,
+      lease = captureAccountSession();
+    busyRef.current = true;
+    setBusy(true);
+    try {
+      const result = await calculate(request);
+      if (
+        !mounted.current ||
+        generation !== computationGeneration.current ||
+        !lease.isCurrent()
+      )
+        throw Error("This calculation session changed. Try again.");
+      return result;
+    } finally {
+      if (mounted.current && generation === computationGeneration.current) {
+        busyRef.current = false;
+        setBusy(false);
+      }
+    }
+  };
+  const executeEntry = async ({
+    request,
+    context,
+    notebookId,
+    cell,
+    generation,
+    lease,
+  }: {
+    request: CalculationRequest;
+    context: CalculationContext;
+    notebookId: string;
+    cell?: InvestigationCell;
+    generation: number;
+    lease: ReturnType<typeof captureAccountSession>;
+  }): Promise<
+    { kind: "saved"; result: Result; oversized: boolean } | { kind: "obsolete" }
+  > => {
+    const owns = () =>
+      mounted.current &&
+      generation === computationGeneration.current &&
+      lease.isCurrent();
+    if (!owns()) return { kind: "obsolete" };
+    const result = await calculate({ ...request, ...context });
+    if (!owns()) return { kind: "obsolete" };
+    const entry: Entry = {
+      ...structuredClone(request),
+      ...structuredClone(context),
+      id: uid(),
+      result,
+      time: Date.now(),
+      ...(cell ? { investigation: cell } : {}),
+    };
+    return new Promise((resolve) => {
+      change((s) => {
+        if (!owns()) {
+          resolve({ kind: "obsolete" });
+          return s;
+        }
+        const target = s.notebooks.find((b) => b.id === notebookId);
+        if (
+          !target ||
+          (cell && !target.investigation?.runs.some((r) => r.id === cell.runId))
+        ) {
+          resolve({ kind: "obsolete" });
+          return s;
+        }
+        if (
+          cell &&
+          target.history.some(
+            (e) =>
+              e.investigation?.runId === cell.runId &&
+              e.investigation.caseId === cell.caseId &&
+              e.investigation.stepId === cell.stepId,
+          )
+        ) {
+          resolve({ kind: "obsolete" });
+          return s;
+        }
+        const next = {
+          ...s,
+          notebooks: s.notebooks.map((b) =>
+            b.id === notebookId ? { ...b, history: [entry, ...b.history] } : b,
+          ),
+        };
+        resolve({
+          kind: "saved",
+          result,
+          oversized: !workspaceFitsCloud(next),
+        });
+        return next;
+      });
+    });
   };
   const run = async (
     operation = "evaluate",
@@ -458,40 +615,213 @@ export default function Calculator() {
         return;
       }
     }
+    const generation = ++computationGeneration.current,
+      lease = captureAccountSession();
     busyRef.current = true;
     setBusy(true);
     hide();
     setModal("");
     setView("calculate");
-    let result: Result;
     try {
-      result = await calculate({
-        operation,
-        params: p,
-        input: source,
-        mode: format,
-        settings: override?.settings || s.settings,
-        definitions: override?.definitions || b.definitions,
+      const completed = await executeEntry({
+        request: { operation, params: p, input: source, mode: format },
+        context: structuredClone({
+          settings: override?.settings || s.settings,
+          definitions: override?.definitions || b.definitions,
+          revision: b.revision,
+        }),
+        notebookId: b.id,
+        generation,
+        lease,
       });
-    } catch (e) {
-      result = { status: "error", text: String(e), latex: "", notes: [] };
+      if (completed.kind === "saved") {
+        if (completed.oversized) setNotice(WORKSPACE_SIZE_ERROR);
+        return completed.result;
+      }
+    } catch (error) {
+      if (
+        mounted.current &&
+        generation === computationGeneration.current &&
+        lease.isCurrent()
+      )
+        setNotice(
+          "Calculation interrupted. No result was added. " + String(error),
+        );
+    } finally {
+      if (mounted.current && generation === computationGeneration.current) {
+        busyRef.current = false;
+        setBusy(false);
+      }
     }
-    const entry: Entry = {
-      id: uid(),
-      input: source,
-      mode: format,
-      operation,
-      params: p,
-      result,
-      settings: structuredClone(override?.settings || s.settings),
-      definitions: structuredClone(override?.definitions || b.definitions),
-      revision: b.revision,
-      time: Date.now(),
-    };
-    patch((b) => ({ ...b, history: [entry, ...b.history] }), false, b.id);
-    busyRef.current = false;
-    setBusy(false);
-    return result;
+  };
+  const startInvestigation = (labId: string) => {
+    const s = current.current;
+    if (!s || s.notebooks.length >= 100) {
+      setNotice(
+        "Use at most 100 notebooks. Export and remove a notebook first.",
+      );
+      return;
+    }
+    const created = createInvestigationNotebook({
+      labId,
+      workspaceSettings: s.settings,
+    });
+    change(
+      (s) => ({
+        ...s,
+        notebooks: [...s.notebooks, created],
+        active: created.id,
+      }),
+      true,
+    );
+    setView("investigate");
+  };
+  const runInvestigation = async (notebookId: string, action: RunAction) => {
+    const s = current.current;
+    if (!s || busyRef.current || paused) return;
+    const target = s.notebooks.find((b) => b.id === notebookId);
+    if (!target?.investigation) return;
+    try {
+      const prepared = prepareInvestigationRun({ notebook: target, action });
+      if (!prepared.missing.length) return;
+      const candidate = {
+        ...s,
+        notebooks: s.notebooks.map((b) =>
+          b.id === notebookId && b.investigation && action.kind === "new"
+            ? {
+                ...b,
+                investigation: {
+                  ...b.investigation,
+                  runs: [...b.investigation.runs, prepared.run],
+                },
+              }
+            : b,
+        ),
+      };
+      const inputBytes = new TextEncoder().encode(
+        JSON.stringify(
+          prepared.missing.map(({ cell, request, context }) => ({
+            ...request,
+            ...context,
+            investigation: cell,
+            id: uid(),
+            time: Date.now(),
+          })),
+        ),
+      ).byteLength;
+      if (!workspaceFitsCloud(candidate, inputBytes)) {
+        setNotice(WORKSPACE_SIZE_ERROR);
+        return;
+      }
+      const generation = ++computationGeneration.current,
+        lease = captureAccountSession();
+      const owns = () =>
+        mounted.current &&
+        generation === computationGeneration.current &&
+        lease.isCurrent();
+      busyRef.current = true;
+      setBusy(true);
+      hide();
+      const total =
+        prepared.run.snapshot.plan.cases.length *
+        prepared.run.snapshot.plan.steps.length;
+      let saved = total - prepared.missing.length;
+      setRunActivity({
+        kind: "running",
+        notebookId,
+        runId: prepared.run.id,
+        saved,
+        total,
+      });
+      try {
+        const retained = await new Promise<boolean>((resolve) =>
+          change((latest) => {
+            const book = latest.notebooks.find((b) => b.id === notebookId);
+            if (
+              !owns() ||
+              !book?.investigation ||
+              (action.kind === "resume" &&
+                !book.investigation.runs.some((r) => r.id === prepared.run.id))
+            ) {
+              resolve(false);
+              return latest;
+            }
+            const next =
+              action.kind === "new"
+                ? {
+                    ...latest,
+                    notebooks: latest.notebooks.map((b) =>
+                      b.id === notebookId && b.investigation
+                        ? {
+                            ...b,
+                            investigation: {
+                              ...b.investigation,
+                              runs: [...b.investigation.runs, prepared.run],
+                            },
+                          }
+                        : b,
+                    ),
+                  }
+                : latest;
+            resolve(true);
+            return next;
+          }),
+        );
+        if (!retained) return;
+        for (const cell of prepared.missing) {
+          if (
+            !owns() ||
+            !current.current?.notebooks
+              .find((b) => b.id === notebookId)
+              ?.investigation?.runs.some((r) => r.id === prepared.run.id)
+          )
+            break;
+          const completed = await executeEntry({
+            ...cell,
+            notebookId,
+            generation,
+            lease,
+          });
+          if (completed.kind === "obsolete") break;
+          saved++;
+          if (owns())
+            setRunActivity({
+              kind: "running",
+              notebookId,
+              runId: prepared.run.id,
+              saved,
+              total,
+            });
+          if (completed.oversized) {
+            setNotice(WORKSPACE_SIZE_ERROR);
+            break;
+          }
+        }
+      } catch (error) {
+        if (owns())
+          setNotice(
+            "Investigation interrupted. Completed results remain; resume missing cells. " +
+              String(error),
+          );
+      } finally {
+        if (mounted.current && generation === computationGeneration.current) {
+          busyRef.current = false;
+          setBusy(false);
+          setRunActivity({ kind: "idle" });
+        }
+      }
+    } catch (error) {
+      setNotice(String(error));
+    }
+  };
+  const editInvestigationStep = (step: InvestigationStep) => {
+    const operation = operations.find((o) => o.id === step.request.operation);
+    if (!operation || !book) return;
+    setStepEditor({ notebookId: book.id, stepId: step.id });
+    setOp(operation);
+    setParams(structuredClone(step.request.params));
+    setModal("operation");
+    hide();
   };
   const runRef = useRef(run);
   useLayoutEffect(() => {
@@ -560,6 +890,7 @@ export default function Calculator() {
     return () => lifecycle.abort();
   }, []);
   const choose = (o: Operation, expression?: string, shortcut = false) => {
+    setStepEditor(null);
     fieldConversionGeneration.current++;
     setOp(o);
     setParams(
@@ -720,6 +1051,8 @@ export default function Calculator() {
         updated: Date.now(),
       },
       defs = [...book.definitions.filter((x) => x.id !== d.id), d];
+    const validationGeneration = ++computationGeneration.current,
+      lease = captureAccountSession();
     busyRef.current = true;
     setBusy(true);
     try {
@@ -734,7 +1067,13 @@ export default function Calculator() {
         setNotice(r.text);
         return;
       }
-      if (generation !== objectGeneration.current) return;
+      if (
+        generation !== objectGeneration.current ||
+        validationGeneration !== computationGeneration.current ||
+        !lease.isCurrent() ||
+        !mounted.current
+      )
+        return;
       const latest = current.current?.notebooks.find((b) => b.id === target);
       if (!latest || latest.revision !== book.revision) {
         setNotice(
@@ -743,11 +1082,16 @@ export default function Calculator() {
         return;
       }
       patch(
-        (b) => ({
-          ...b,
-          definitions: [...b.definitions.filter((x) => x.id !== d.id), d],
-          revision: b.revision + 1,
-        }),
+        (b) =>
+          validationGeneration === computationGeneration.current &&
+          lease.isCurrent() &&
+          mounted.current
+            ? {
+                ...b,
+                definitions: [...b.definitions.filter((x) => x.id !== d.id), d],
+                revision: b.revision + 1,
+              }
+            : b,
         true,
         target,
       );
@@ -762,8 +1106,13 @@ export default function Calculator() {
     } catch (e) {
       setNotice(String(e));
     } finally {
-      busyRef.current = false;
-      setBusy(false);
+      if (
+        mounted.current &&
+        validationGeneration === computationGeneration.current
+      ) {
+        busyRef.current = false;
+        setBusy(false);
+      }
     }
   };
   const switchMode = async (s: string): Promise<boolean> => {
@@ -942,6 +1291,9 @@ export default function Calculator() {
               <Compass size={18} />
               Explore
             </TabsTrigger>
+            <TabsTrigger value="investigate">
+              <FlaskConical size={18} /> Investigate
+            </TabsTrigger>
             <TabsTrigger value="graphs">
               <ChartNoAxesCombined size={18} />
               Graphs
@@ -1065,10 +1417,7 @@ export default function Calculator() {
                   <span className="math-keyboard-label">Math keyboard</span>
                 </button>
                 {busy ? (
-                  <button
-                    className="primary"
-                    onClick={() => cancelCalculation()}
-                  >
+                  <button className="primary" onClick={stopCalculation}>
                     Cancel
                   </button>
                 ) : (
@@ -1123,7 +1472,7 @@ export default function Calculator() {
                   ? "✓ All calculation tools loaded"
                   : status}
               {status !== "Ready" && (
-                <button onClick={() => cancelCalculation()}>Retry</button>
+                <button onClick={stopCalculation}>Retry</button>
               )}
             </div>
           </div>
@@ -1184,6 +1533,12 @@ export default function Calculator() {
                         <Trash2 size={14} />
                       </button>
                     </div>
+                    {h.investigation && (
+                      <p className="small muted">
+                        Investigation case · original definitions and settings
+                        retained. Compare or resume this run in Investigate.
+                      </p>
+                    )}
                     <button
                       className="history-input"
                       title="Edit this input"
@@ -1292,21 +1647,22 @@ export default function Calculator() {
                         ))}
                       </details>
                     )}
-                    {definitionDependenciesChanged(h, book.definitions) && (
-                      <p className="stale-note">
-                        Definitions have changed since this result.{" "}
-                        <button
-                          onClick={() =>
-                            run(h.operation, h.params, {
-                              input: h.input,
-                              mode: h.mode,
-                            })
-                          }
-                        >
-                          Recalculate
-                        </button>
-                      </p>
-                    )}
+                    {!h.investigation &&
+                      definitionDependenciesChanged(h, book.definitions) && (
+                        <p className="stale-note">
+                          Definitions have changed since this result.{" "}
+                          <button
+                            onClick={() =>
+                              run(h.operation, h.params, {
+                                input: h.input,
+                                mode: h.mode,
+                              })
+                            }
+                          >
+                            Recalculate
+                          </button>
+                        </p>
+                      )}
                     <div className="result-actions">
                       <button onClick={() => edit(h)}>Edit problem</button>
                       {h.result.reusable && (
@@ -1395,6 +1751,72 @@ export default function Calculator() {
         <TabsContent value="explore">
           <TaskBrowser choose={choose} />
         </TabsContent>
+        <TabsContent value="investigate">
+          <Investigations
+            key={book.id}
+            notebook={book}
+            activity={runActivity}
+            busy={busy}
+            ready={status === "Ready" && !paused}
+            onStart={startInvestigation}
+            onPlan={(plan) =>
+              patch(
+                (b) =>
+                  b.investigation
+                    ? { ...b, investigation: { ...b.investigation, plan } }
+                    : b,
+                false,
+                book.id,
+              )
+            }
+            onRun={(action) => runInvestigation(book.id, action)}
+            onStop={stopCalculation}
+            onEditStep={editInvestigationStep}
+            onObservation={(runId, observation) =>
+              patch(
+                (b) =>
+                  b.investigation
+                    ? {
+                        ...b,
+                        investigation: {
+                          ...b.investigation,
+                          runs: b.investigation.runs.map((r) =>
+                            r.id === runId ? { ...r, observation } : r,
+                          ),
+                        },
+                      }
+                    : b,
+                false,
+                book.id,
+              )
+            }
+            onDeleteRun={(runId) =>
+              patch(
+                (b) =>
+                  b.investigation
+                    ? {
+                        ...b,
+                        investigation: {
+                          ...b.investigation,
+                          runs: b.investigation.runs.filter(
+                            (r) => r.id !== runId,
+                          ),
+                        },
+                        history: b.history.filter(
+                          (e) => e.investigation?.runId !== runId,
+                        ),
+                      }
+                    : b,
+                true,
+                book.id,
+              )
+            }
+            onRemove={(keep) =>
+              patch((b) => removeInvestigation(b, keep), true, book.id)
+            }
+            onObjects={() => setView("objects")}
+          />
+        </TabsContent>
         <TabsContent value="graphs">
           <GraphWorkspace
             key={book.id}
@@ -1410,6 +1832,8 @@ export default function Calculator() {
             }}
             definitions={book.definitions}
             settings={settings}
+            onCompute={computeAuxiliary}
+            workerBusy={busy}
             onAnalyze={run}
             onReuse={reuse}
           />
@@ -1622,15 +2046,58 @@ export default function Calculator() {
             </>
           )}
           <div className="row spread operation-footer">
-            <button className="subtle" onClick={() => setModal("search")}>
+            <button
+              className="subtle"
+              onClick={() => {
+                setStepEditor(null);
+                setModal("search");
+              }}
+            >
               Operations
             </button>
             <button
               className="primary"
-              disabled={busy || status !== "Ready"}
-              onClick={() => op && run(op.id, params)}
+              disabled={!stepEditor && (busy || status !== "Ready")}
+              onClick={() => {
+                if (!op) return;
+                if (!stepEditor) {
+                  run(op.id, params);
+                  return;
+                }
+                const editor = stepEditor;
+                patch(
+                  (b) =>
+                    b.investigation
+                      ? {
+                          ...b,
+                          investigation: {
+                            ...b.investigation,
+                            plan: {
+                              ...b.investigation.plan,
+                              steps: b.investigation.plan.steps.map((step) =>
+                                step.id === editor.stepId
+                                  ? {
+                                      ...step,
+                                      request: {
+                                        operation: op.id,
+                                        input: params.expression || "",
+                                        mode: "text",
+                                        params: structuredClone(params),
+                                      },
+                                    }
+                                  : step,
+                              ),
+                            },
+                          },
+                        }
+                      : b,
+                  false,
+                  editor.notebookId,
+                );
+                closeModal();
+              }}
             >
-              Calculate
+              {stepEditor ? "Save next run step" : "Calculate"}
             </button>
           </div>
         </DialogContent>

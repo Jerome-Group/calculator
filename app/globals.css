@@ -1608,7 +1608,7 @@ footer button {
     width: auto !important;
     z-index: 40;
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     flex-direction: row;
     gap: 4px !important;
     padding: 5px !important;
@@ -2151,5 +2151,13 @@ footer button {
 @media (max-width: 360px) {
   .ML__keyboard .MLK__toolbar > div > div {
     margin-inline: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace-tabs [data-slot="tabs-trigger"] {
+    min-width: 0;
+    font-size: 10.5px !important;
+    letter-spacing: 0;
   }
 }

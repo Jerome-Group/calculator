@@ -40,6 +40,7 @@ assert.equal(
 );
 assert(workspaceRequestFits(serializeWorkspaceRequest(state, 1, "a")));
 assert(!workspaceRequestFits(serializeWorkspaceRequest(state, 10, "a")));
+assert(!workspaceRequestFits(serializeWorkspaceRequest(state, 1, "a"), 1));
 assert(!workspaceRequestFits(serializeWorkspaceRequest(state, 1, "😀")));
 assert(validateState(state));
 book.history.at(-1).result.text += "x";

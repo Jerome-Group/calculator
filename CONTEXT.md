@@ -10,3 +10,7 @@
 - **Offline copy** — notebook preserved when local and remote revisions diverge.
 - **Account generation** — invalidates asynchronous work after identity changes or sign-out.
 - **Offline readiness** — verified asset closure plus cached signed-in shell; cleared on sign-out.
+
+- **Investigation plan** — editable parameter cases, independent calculation questions and run settings for one notebook.
+- **Investigation run** — captured plan, objects and settings with a saved observation. Later plan edits never rewrite its inputs.
+- **Investigation cell** — notebook-local run, case and step address on an ordinary history entry. History owns every calculated result.

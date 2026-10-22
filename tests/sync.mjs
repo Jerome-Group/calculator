@@ -140,6 +140,9 @@ async function tab(name, values, server, rewriteStorageWarnings = false) {
     "drafts",
     "result-validation",
     "workspace-request",
+    "investigations",
+    "investigation-labs",
+    "catalog",
   ])
     modules[file] = new vm.SourceTextModule(
       file === "storage" && rewriteStorageWarnings
@@ -623,6 +626,9 @@ await check(
       "drafts",
       "result-validation",
       "workspace-request",
+      "investigations",
+      "investigation-labs",
+      "catalog",
     ])
       modules[file] = new vm.SourceTextModule(
         source(`lib/calculator/${file}.ts`),
@@ -2240,6 +2246,29 @@ await check(
       assert.equal(isolated.get(generated[0]), serialized);
       assert.equal(reader.drafts.readDrafts("b").length, 0);
     }
+  },
+);
+await check(
+  "calculation leases expire on account changes, same-account renewal and sign-out",
+  async () => {
+    const cloud = server(),
+      values = new Map(),
+      a = await tab("lease", values, cloud);
+    await a.sync.initializeAccount();
+    const first = a.sync.captureAccountSession();
+    assert.equal(first.isCurrent(), true);
+    await a.sync.initializeAccount();
+    assert.equal(first.isCurrent(), false);
+    const renewed = a.sync.captureAccountSession();
+    assert.equal(renewed.isCurrent(), true);
+    cloud.account = "b";
+    await a.sync.initializeAccount();
+    assert.equal(renewed.isCurrent(), false);
+    const b = a.sync.captureAccountSession();
+    assert.equal(b.isCurrent(), true);
+    a.sync.forgetAccount();
+    assert.equal(b.isCurrent(), false);
+    assert.equal(a.sync.captureAccountSession().isCurrent(), false);
   },
 );
 console.log(JSON.stringify(results, null, 2));

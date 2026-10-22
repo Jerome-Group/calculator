@@ -2,6 +2,8 @@
 
 Status: Accepted
 
+The four-destination navigation count is superseded by [ADR-0008](0008-investigation-history-ownership.md). The remaining decisions stand.
+
 ## Context
 
 Calculator's 128 existing forms, graphs, objects and notebook controls must remain usable in a portrait phone and narrow desktop pane. A correct engine answer does not establish that input notation, hit targets or keyboard geometry are correct. The browser baseline exercised all 128 default forms and separately exercised MathLive menus, structured input and graph controls; integrated redesign verification remains separate.

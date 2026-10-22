@@ -118,7 +118,9 @@ export function componentHarness(
     cleanups = [];
   let refIndex = 0,
     captured,
-    nextId = 0;
+    nextId = 0,
+    deferWorkspaceUpdates = false;
+  const pendingWorkspaceUpdates = [];
   const source = fs.readFileSync(
     new URL(`../components/calculator/${component}.tsx`, import.meta.url),
     "utf8",
@@ -128,11 +130,16 @@ export function componentHarness(
       state.set(name, typeof initial === "function" ? initial() : initial);
     return [
       state.get(name),
-      (value) =>
-        state.set(
-          name,
-          typeof value === "function" ? value(state.get(name)) : value,
-        ),
+      (value) => {
+        const apply = () =>
+          state.set(
+            name,
+            typeof value === "function" ? value(state.get(name)) : value,
+          );
+        if (name === "state" && deferWorkspaceUpdates)
+          pendingWorkspaceUpdates.push(apply);
+        else apply();
+      },
     ];
   };
   const react = {
@@ -143,7 +150,11 @@ export function componentHarness(
       return (refs[refIndex++] ??= { current: initial });
     },
     useEffect(callback) {
-      if (component === "GraphWorkspace") effects.push(callback);
+      if (
+        component === "GraphWorkspace" ||
+        callback.toString().includes("mounted.current = true")
+      )
+        effects.push(callback);
     },
     useLayoutEffect(callback) {
       layouts.push(callback);
@@ -167,6 +178,11 @@ export function componentHarness(
     react,
     "react/jsx-runtime": require("react/jsx-runtime"),
     "@/lib/calculator/engine": engine,
+    "@/lib/calculator/sync": {
+      sessionWorkspace: () => null,
+      captureAccountSession: () => ({ isCurrent: () => true }),
+      workspaceFitsCloud: () => true,
+    },
     "@/lib/calculator/types": {
       uid: () => `created-${++nextId}`,
       DEFAULT_SETTINGS: settings,
@@ -229,6 +245,12 @@ export function componentHarness(
   );
   return {
     state,
+    deferWorkspaceUpdates(value = true) {
+      deferWorkspaceUpdates = value;
+    },
+    flushWorkspaceUpdates() {
+      while (pendingWorkspaceUpdates.length) pendingWorkspaceUpdates.shift()();
+    },
     navigator,
     requests,
     unmount() {
@@ -243,7 +265,7 @@ export function componentHarness(
       layouts.length = 0;
       const tree = loadedModule.exports.default(props);
       for (const layout of layouts) layout();
-      if (component === "GraphWorkspace" && !cleanups.length)
+      if (effects.length && !cleanups.length)
         for (const effect of effects) cleanups.push(effect());
       return { tree, actions: captured };
     },
