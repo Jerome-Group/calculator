@@ -49,6 +49,11 @@ for (const file of new Set(
   assert.equal(before.length, controls.length, file + " base inventory");
   assert.equal(after.length, controls.length, file + " current inventory");
   controls.forEach((control, index) => {
+    assert.equal(
+      control.source.file,
+      recorded.get(control.id).source.file,
+      control.id + " recorded source file",
+    );
     assert.deepEqual(
       {
         kind: recorded.get(control.id).kind,
