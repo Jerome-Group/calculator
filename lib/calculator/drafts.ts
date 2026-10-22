@@ -201,9 +201,7 @@ export function readDrafts(account: string): Draft[] {
             });
             continue;
           }
-        } catch {
-          // Keep the full snapshot usable if its provenance is unreadable.
-        }
+        } catch {}
         drafts.push({ ...snapshot, kind: "source" });
       } catch {
         // Leave malformed recovery data untouched for manual export.
@@ -246,9 +244,10 @@ export function acknowledgeDraft(
           );
         }),
     );
-  if (covered && JSON.stringify(draft.state) === JSON.stringify(state))
+  if (covered && JSON.stringify(draft.state) === JSON.stringify(state)) {
     localStorage.removeItem(key);
-  else localStorage.setItem(key, JSON.stringify({ ...draft, revision }));
+    if (JSON.stringify(recovery) === JSON.stringify(lineage)) recovery = null;
+  } else localStorage.setItem(key, JSON.stringify({ ...draft, revision }));
 }
 
 export async function recoveryNotebooks(
