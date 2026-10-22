@@ -103,6 +103,7 @@ assert.equal(table(data).rows.length, 11);
 assert.deepEqual(table(data).rows.at(-1).cells, [19999, 39998]);
 assert.equal(table(graph("sequence"), settings, 0, 1e9).rows.length, 101);
 assert.deepEqual(table(graph("cartesian"), settings, 2, -2).rows, []);
+assert.equal(graphTableInterval("2", "-2"), null);
 for (const invalid of ["", " ", "pi", "Infinity", "-Infinity", "NaN"])
   for (const bounds of [
     [invalid, "2"],
@@ -169,6 +170,36 @@ const resolved = graphFunctions(graph("cartesian", "missing*x"), {
 });
 assert.equal(resolved.warning, "");
 assert.equal(resolved.f(2), 6);
+const savedFunctions = graphScope(
+  [
+    {
+      id: "f",
+      name: "f",
+      kind: "function",
+      args: "u",
+      expression: "u^2",
+      updated: 1,
+    },
+    {
+      id: "g",
+      name: "g",
+      kind: "function",
+      args: "u,v",
+      expression: "u+2*v",
+      updated: 1,
+    },
+  ],
+  settings,
+  1,
+);
+assert.equal(
+  graphFunctions(graph("cartesian", "f(x)"), savedFunctions).f(3),
+  9,
+);
+assert.equal(
+  graphFunctions(graph("surface", "g(x,y)"), savedFunctions).f(3, 4),
+  11,
+);
 const missingSecond = graphFunctions(
   graph("parametric", "t", { second: "missing*t" }),
   scope,

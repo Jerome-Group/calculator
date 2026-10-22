@@ -655,6 +655,209 @@ await check(
   },
 );
 await check(
+  "saved function Graph uses unary and two-argument coordinates, and guides larger arities",
+  async () => {
+    for (const [args, expression, type] of [
+      ["u", "f(x)", "cartesian"],
+      ["u, v", "f(x,y)", "surface"],
+      ["u, v, w", null, null],
+    ]) {
+      const saved = { ...definition("f", "u^2"), kind: "function", args };
+      const graphWorkspace = componentHarness("GraphWorkspace", []);
+      const harness = componentHarness(
+        "Calculator",
+        [],
+        { state: workspace([notebook("A", [saved])]), view: "objects" },
+        { "./GraphWorkspace": graphWorkspace.exports },
+      );
+      const findGraph = (node) => {
+        if (!node || typeof node !== "object") return null;
+        if (node.type === "button" && node.props.children === "Graph")
+          return node;
+        return [node.props?.children]
+          .flat(Infinity)
+          .map(findGraph)
+          .find(Boolean);
+      };
+      const button = findGraph(harness.render().tree);
+      assert(button, "Saved function exposes a Graph action");
+      button.props.onClick();
+      const graphs = harness.state.get("state").notebooks[0].graphs;
+      if (expression) {
+        assert.equal(graphs.length, 1);
+        assert.equal(graphs[0].expression, expression);
+        assert.equal(graphs[0].type, type);
+        assert.equal(harness.state.get("view"), "graphs");
+      } else {
+        assert.equal(
+          graphs.length,
+          0,
+          "A higher-arity function created a malformed graph",
+        );
+        assert.match(harness.state.get("notice"), /argument|parameter/i);
+      }
+    }
+  },
+);
+await check(
+  "reversed graph table bounds warn and valid bounds recover all rows",
+  async () => {
+    const harness = componentHarness("GraphWorkspace", [], {
+      lower: "2",
+      upper: "-2",
+      table: true,
+    });
+    const props = {
+      graphs: [harness.exports.makeGraph("x^2")],
+      onChange() {},
+      definitions: [],
+      settings,
+      onAnalyze() {},
+      onReuse() {},
+    };
+    const text = (node) => {
+      if (node === null || node === undefined || typeof node === "boolean")
+        return "";
+      if (typeof node !== "object") return String(node);
+      return [node.props?.children].flat(Infinity).map(text).join(" ");
+    };
+    const alerts = [];
+    const collectAlerts = (node) => {
+      if (!node || typeof node !== "object") return;
+      if (node.props?.role === "alert") alerts.push(text(node));
+      for (const child of [node.props?.children].flat(Infinity))
+        collectAlerts(child);
+    };
+    collectAlerts(harness.render(props).tree);
+    assert.match(alerts.join(" "), /start.*end/i);
+    harness.state.set("lower", "-2");
+    harness.state.set("upper", "2");
+    const tree = harness.render(props).tree;
+    assert.doesNotMatch(text(tree), /Use finite numbers/);
+    const rows = [];
+    const collect = (node) => {
+      if (!node || typeof node !== "object") return;
+      if (node.type === "tbody")
+        rows.push(...[node.props.children].flat(Infinity));
+      for (const child of [node.props?.children].flat(Infinity)) collect(child);
+    };
+    collect(tree);
+    assert.equal(rows.length, 11);
+  },
+);
+await check(
+  "Fit combines visible data, Cartesian and integer sequence samples",
+  async () => {
+    const harness = componentHarness("GraphWorkspace", ["fit"]);
+    const graphs = [
+      { ...harness.exports.makeGraph("Data", "data"), points: [[100, 10]] },
+      harness.exports.makeGraph("x^2", "cartesian"),
+      harness.exports.makeGraph("n%2 == 0 ? -80 : -40", "sequence"),
+      {
+        ...harness.exports.makeGraph("Hidden", "data"),
+        visible: false,
+        points: [[-1000, -1000]],
+      },
+    ];
+    harness
+      .render({
+        graphs,
+        onChange() {},
+        definitions: [],
+        settings,
+        onAnalyze() {},
+        onReuse() {},
+      })
+      .actions.fit();
+    const [left, right, bottom, top] = harness.state.get("range");
+    assert(left <= -6 && right > 100);
+    assert(bottom < -80 && top > 36);
+    assert(left > -1000 && bottom > -1000, "Hidden data affected Fit");
+    assert.equal(harness.state.get("error"), "");
+  },
+);
+await check(
+  "Fit samples declared parametric and polar domains in matching angle units",
+  async () => {
+    for (const angle of ["rad", "deg"]) {
+      for (const radians of [false, true]) {
+        const harness = componentHarness("GraphWorkspace", ["fit"]);
+        const quarter = angle === "deg" && !radians ? "90" : "pi/2";
+        const graphs = [
+          {
+            ...harness.exports.makeGraph("100+t", "parametric"),
+            second: "200+t^2",
+            min: "0",
+            max: "2",
+          },
+          {
+            ...harness.exports.makeGraph("10", "polar"),
+            min: "0",
+            max: quarter,
+            radians,
+          },
+        ];
+        harness
+          .render({
+            graphs,
+            onChange() {},
+            definitions: [],
+            settings: { ...settings, angle },
+            onAnalyze() {},
+            onReuse() {},
+          })
+          .actions.fit();
+        const [left, right, bottom, top] = harness.state.get("range");
+        assert(left < 0 && right > 102);
+        assert(bottom < 0 && top > 204);
+        assert(bottom > -100, "Polar angle units changed the sampled quadrant");
+        assert.equal(harness.state.get("error"), "");
+        harness
+          .render({
+            graphs: [graphs[1]],
+            onChange() {},
+            definitions: [],
+            settings: { ...settings, angle },
+            onAnalyze() {},
+            onReuse() {},
+          })
+          .actions.fit();
+        const polarRange = harness.state.get("range");
+        assert(polarRange[0] >= -1.00001 && polarRange[1] <= 11.00001);
+        assert(polarRange[2] > -2 && polarRange[3] < 12);
+      }
+    }
+  },
+);
+await check(
+  "Fit reports unsupported and empty curves then recovers on a finite curve",
+  async () => {
+    const harness = componentHarness("GraphWorkspace", ["fit"]);
+    const props = {
+      onChange() {},
+      definitions: [],
+      settings,
+      onAnalyze() {},
+      onReuse() {},
+    };
+    const previous = [-6, 6, -4, 4];
+    for (const graph of [
+      harness.exports.makeGraph("x+y", "surface"),
+      harness.exports.makeGraph("sqrt(-1)", "cartesian"),
+      { ...harness.exports.makeGraph("t", "parametric"), min: "3", max: "1" },
+    ]) {
+      harness.render({ ...props, graphs: [graph] }).actions.fit();
+      assert.deepEqual(harness.state.get("range"), previous);
+      assert.match(harness.state.get("error"), /Fit|fit|finite/);
+    }
+    harness
+      .render({ ...props, graphs: [harness.exports.makeGraph("x^2")] })
+      .actions.fit();
+    assert.equal(harness.state.get("error"), "");
+    assert(harness.state.get("range")[3] > 36);
+  },
+);
+await check(
   "Fit supports the valid combined graph-data limit without spread overflow",
   async () => {
     const harness = componentHarness("GraphWorkspace", ["fit"]);
