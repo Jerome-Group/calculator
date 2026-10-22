@@ -3,7 +3,7 @@ import {
   graphTable,
   graphFunctions,
   graphScope,
-  graphDataRange,
+  graphFitRange,
   compileMath,
   numeric,
 } from "../lib/calculator/graph.ts";
@@ -24,6 +24,12 @@ const graph = (type, expression = "x^2", extra = {}) => ({
 });
 const table = (g, s = settings, lo = -2, hi = 2) =>
   graphTable(g, graphFunctions(g, graphScope([], s, 1)), scope, s, lo, hi);
+const fit = (graphs) =>
+  graphFitRange(
+    graphs.map((g) => ({ g, ...graphFunctions(g, scope) })),
+    scope,
+    settings,
+  ).range;
 assert.deepEqual(table(graph("cartesian")).rows[0].cells, [-2, 4]);
 for (const [lo, hi, midpoint] of [
   [-1e308, 1e308, 0],
@@ -136,11 +142,9 @@ const dense = Array.from({ length: 100 }, (_, index) =>
     points: Array.from({ length: 20000 }, (_, i) => [index * 20000 + i, i]),
   }),
 );
-assert(graphDataRange(dense).every(Number.isFinite));
+assert(fit(dense).every(Number.isFinite));
 assert.deepEqual(
-  graphDataRange([
-    graph("data", "Data", { points: [[NaN, Infinity]], visible: true }),
-  ]),
+  fit([graph("data", "Data", { points: [[NaN, Infinity]], visible: true })]),
   null,
 );
 assert.equal(numeric(compileMath("200+10%"), scope), 220);
@@ -207,7 +211,7 @@ const missingSecond = graphFunctions(
 assert.match(missingSecond.warning, /Undefined symbol missing/);
 assert.equal(missingSecond.f(2), 2);
 assert(Number.isNaN(missingSecond.second(2)));
-const largePointRange = graphDataRange([
+const largePointRange = fit([
   graph("data", "Point", { points: [[1e20, -1e20]] }),
 ]);
 assert(
@@ -216,7 +220,7 @@ assert(
 );
 assert.throws(
   () =>
-    graphDataRange([
+    fit([
       graph("data", "Extreme", {
         points: [
           [-Number.MAX_VALUE, 0],

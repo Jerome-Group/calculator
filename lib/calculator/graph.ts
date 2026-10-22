@@ -185,21 +185,12 @@ export function drawableGraphRange(range: number[]): boolean {
     )
   );
 }
-export function graphDataRange(graphs: GraphSpec[]): number[] | null {
-  let left = Infinity,
-    right = -Infinity,
-    bottom = Infinity,
-    top = -Infinity;
-  for (const graph of graphs) {
-    if (!graph.visible || graph.type !== "data") continue;
-    for (const [x, y] of graph.points || []) {
-      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-      left = Math.min(left, x);
-      right = Math.max(right, x);
-      bottom = Math.min(bottom, y);
-      top = Math.max(top, y);
-    }
-  }
+function graphRange(
+  left: number,
+  right: number,
+  bottom: number,
+  top: number,
+): number[] | null {
   if (!Number.isFinite(left)) return null;
   const xp = Math.max(
     0.1,
@@ -213,8 +204,95 @@ export function graphDataRange(graphs: GraphSpec[]): number[] | null {
   );
   const range = [left - xp, right + xp, bottom - yp, top + yp];
   if (!drawableGraphRange(range))
-    throw Error("Data coordinates exceed the drawable range.");
+    throw Error("Graph coordinates exceed the drawable range.");
   return range;
+}
+export function graphFitRange(
+  prepared: ({ g: GraphSpec } & Pick<
+    ReturnType<typeof graphFunctions>,
+    "f" | "second"
+  >)[],
+  scope: Record<string, unknown>,
+  settings: Settings,
+): { range: number[] | null; warning: string } {
+  let left = Infinity,
+    right = -Infinity,
+    bottom = Infinity,
+    top = -Infinity,
+    unsupported = false,
+    empty = false;
+  for (const { g, f, second } of prepared) {
+    if (!g.visible) continue;
+    let count = 0;
+    const include = (x: number, y: number) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      count++;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      bottom = Math.min(bottom, y);
+      top = Math.max(top, y);
+    };
+    switch (g.type) {
+      case "cartesian":
+        for (let i = 0; i <= 120; i++) {
+          const x = -6 + i / 10;
+          include(x, f(x));
+        }
+        break;
+      case "sequence":
+        for (let n = -6; n <= 6; n++) include(n, f(n));
+        break;
+      case "data":
+        for (const [x, y] of g.points || []) include(x, y);
+        break;
+      case "parametric":
+      case "polar": {
+        let lo = NaN,
+          hi = NaN;
+        try {
+          lo = numeric(compileMath(g.min), scope);
+          hi = numeric(compileMath(g.max), scope);
+        } catch {}
+        if (!Number.isFinite(lo) || !Number.isFinite(hi) || lo >= hi) break;
+        for (let i = 0; i <= 1000; i++) {
+          const fraction = i / 1000,
+            t = lo * (1 - fraction) + hi * fraction,
+            value = f(t);
+          if (g.type === "parametric") include(value, second(t));
+          else {
+            const angle =
+              t * (settings.angle === "deg" && !g.radians ? Math.PI / 180 : 1);
+            include(value * Math.cos(angle), value * Math.sin(angle));
+          }
+        }
+        break;
+      }
+      case "implicit":
+      case "inequality":
+      case "surface":
+      case "field":
+        unsupported = true;
+        continue;
+      default: {
+        const exhaustive: never = g.type;
+        return exhaustive;
+      }
+    }
+    if (!count) empty = true;
+  }
+  const range = graphRange(left, right, bottom, top),
+    warnings = [];
+  if (unsupported)
+    warnings.push(
+      "Fit supports Cartesian, parametric, polar, sequence and data curves. Use pan and zoom for other graph types.",
+    );
+  if (empty)
+    warnings.push(
+      "Some visible curves have no finite points to fit. Check their expressions and parameter bounds.",
+    );
+  if (!range && !warnings.length)
+    warnings.push("Show a graph with finite points before using Fit.");
+  return { range, warning: warnings.join(" ") };
 }
 export function graphTable(
   graph: GraphSpec,

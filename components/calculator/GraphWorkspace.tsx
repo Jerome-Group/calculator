@@ -34,7 +34,7 @@ import {
   graphFunctions,
   numeric,
   finiteSegment,
-  graphDataRange,
+  graphFitRange,
   drawableGraphRange,
   graphTable,
   MAX_GRAPHS,
@@ -199,32 +199,12 @@ export default function GraphWorkspace({
     });
   const fit = () => {
     try {
-      const dataRange = graphDataRange(latest.current.graphs);
-      if (dataRange) {
-        setRange(dataRange);
-        setError("");
-        return;
-      }
+      const fitted = graphFitRange(prepared, scope, settings);
+      if (fitted.range) setRange(fitted.range);
+      setError(fitted.warning);
     } catch (e) {
       setError(String(e));
-      return;
     }
-    const ys = prepared
-      .filter((p) => p.g.visible && p.g.type === "cartesian")
-      .flatMap((p) => Array.from({ length: 121 }, (_, i) => p.f(-6 + i / 10)))
-      .filter(Number.isFinite)
-      .sort((a, b) => a - b);
-    if (!ys.length) return;
-    const l = ys[Math.floor(ys.length * 0.05)],
-      h = ys[Math.floor(ys.length * 0.95)],
-      pad = Math.max(1, (h - l) * 0.15);
-    const next = [-6, 6, l - pad, h + pad];
-    if (!drawableGraphRange(next)) {
-      setError("Data coordinates exceed the drawable range.");
-      return;
-    }
-    setRange(next);
-    setError("");
   };
   useEffect(() => {
     const c = canvas.current;
@@ -1023,7 +1003,8 @@ export default function GraphWorkspace({
             <div className="table-scroll">
               {tableIntervalError && (
                 <p className="warning" role="alert">
-                  Use finite numbers for the table interval.
+                  Use finite numbers for the table interval, with start no
+                  greater than end.
                 </p>
               )}
               <table>

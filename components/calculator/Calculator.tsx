@@ -74,6 +74,7 @@ import type {
   Operation,
   Result,
   Settings,
+  GraphSpec,
 } from "@/lib/calculator/types";
 import {
   persist,
@@ -614,7 +615,13 @@ export default function Calculator() {
     hide();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const graphResult = (s: string, radians = false) => {
+  const graphResult = (
+    s: string,
+    {
+      radians = false,
+      type = "cartesian",
+    }: { radians?: boolean; type?: GraphSpec["type"] } = {},
+  ) => {
     if (!book || book.graphs.length >= 100) {
       setNotice(
         "This notebook has 100 graphs. Export a backup, then use another notebook or remove a graph.",
@@ -626,13 +633,28 @@ export default function Calculator() {
         ...b,
         graphs: [
           ...b.graphs,
-          { ...makeGraph(s, "cartesian", b.graphs.length), radians },
+          { ...makeGraph(s, type, b.graphs.length), radians },
         ],
       }),
       true,
     );
     setView("graphs");
     hide();
+  };
+  const graphFunction = (definition: Definition) => {
+    const args = (definition.args || "")
+      .split(",")
+      .map((arg) => arg.trim())
+      .filter(Boolean);
+    if (args.length !== 1 && args.length !== 2) {
+      setNotice(
+        `To graph ${definition.name}(${args.join(", ")}), open Graphs and enter a call with x (or x and y for a surface), fixing every other argument to a value.`,
+      );
+      return;
+    }
+    graphResult(`${definition.name}(${args.length === 2 ? "x,y" : "x"})`, {
+      type: args.length === 2 ? "surface" : "cartesian",
+    });
   };
   const trajectory = (entry: Entry, phase = false) => {
     const d = entry.result.details,
@@ -1302,7 +1324,9 @@ export default function Calculator() {
                           {!/^(Matrix|\[|\{|\()/.test(h.result.reusable) && (
                             <button
                               onClick={() =>
-                                graphResult(h.result.reusable!, true)
+                                graphResult(h.result.reusable!, {
+                                  radians: true,
+                                })
                               }
                             >
                               Graph
@@ -1475,9 +1499,7 @@ export default function Calculator() {
                       Use
                     </button>
                     {d.kind === "function" && (
-                      <button onClick={() => graphResult(d.name + "(x)")}>
-                        Graph
-                      </button>
+                      <button onClick={() => graphFunction(d)}>Graph</button>
                     )}
                     {d.kind === "dataset" && (
                       <>

@@ -785,10 +785,11 @@ await check(
         const quarter = angle === "deg" && !radians ? "90" : "pi/2";
         const graphs = [
           {
-            ...harness.exports.makeGraph("100+t", "parametric"),
-            second: "200+t^2",
+            ...harness.exports.makeGraph("100+cos(t)", "parametric"),
+            second: "200+sin(t)",
             min: "0",
-            max: "2",
+            max: quarter,
+            radians,
           },
           {
             ...harness.exports.makeGraph("10", "polar"),
@@ -808,10 +809,23 @@ await check(
           })
           .actions.fit();
         const [left, right, bottom, top] = harness.state.get("range");
-        assert(left < 0 && right > 102);
-        assert(bottom < 0 && top > 204);
+        assert(left < 0 && right > 101);
+        assert(bottom < 0 && top > 201);
         assert(bottom > -100, "Polar angle units changed the sampled quadrant");
         assert.equal(harness.state.get("error"), "");
+        harness
+          .render({
+            graphs: [graphs[0]],
+            onChange() {},
+            definitions: [],
+            settings: { ...settings, angle },
+            onAnalyze() {},
+            onReuse() {},
+          })
+          .actions.fit();
+        harness.state.get("range").forEach((bound, i) => {
+          assert(Math.abs(bound - [99.9, 101.1, 199.9, 201.1][i]) < 1e-8);
+        });
         harness
           .render({
             graphs: [graphs[1]],
