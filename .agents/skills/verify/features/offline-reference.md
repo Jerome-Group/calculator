@@ -10,7 +10,7 @@ Open **Explore**, **Find an operation** or Cmd/Ctrl K. **Help and coverage** ope
 
 ## Driving it with the browser
 
-1. In **Explore**, use **Search tasks or examples** and **Subject**. Open a matching operation and verify its actual fields. Search a nonsense term and observe the empty state. Repeat through **Find an operation**.
+1. In **Explore**, use **Search tasks or examples** and **Subject**. Open a matching operation and verify its actual fields. Search a nonsense term and observe the empty state. Repeat search, selection and empty-state checks through **Find an operation**. Its finder has no Subject filter.
 2. Open **Help and coverage**, follow **Coverage, validation and sources**, then **Dependency licences**. Observe readable `/licenses.txt` and return to the notebook.
 3. Choose **Prepare for offline use** and wait for **Ready**. The completed control becomes **Verify / repair offline files**. Run it and confirm readiness again. Retain the served manifest and preparation result.
 4. Stop the owned proxy session while retaining Wrangler, the browser and service worker. Reload the same origin and calculate a bundled-engine input never previously evaluated, such as `7*13+2`, independently equal to `93`. Confirm the origin refuses connections while the cached application and fresh calculation work.

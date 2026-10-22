@@ -12,9 +12,10 @@ The account strip exposes **Sign out**. **Settings and backups** opens **Setting
 
 1. As A, calculate a unique expression and wait for the actual save acknowledgement. Reload and confirm A's history.
 2. Navigate to `/_verify`, choose **Verification B**, and confirm A's work is absent. Save distinct B work. Switch A/B/A on this same origin and reload each. Confirm both saved workspaces remain separate.
-3. Open settings. Change angle/domain and display precision through their real controls. Calculate a value affected by the setting, switch theme, reload, and confirm settings and the independently expected answer.
-4. Use **Export backup**. Read the downloaded JSON and verify the latest synthetic work. Import that file through **Import backup** and observe the promised copied notebooks. Reject an invalid backup while preserving prior work.
-5. Follow machine-map recipes for concurrent saves, initialization deadlines, **Unsynced copies**, previous-valid-save recovery and volatile sign-out. Exercise **Keep working**, backup export and explicit departure only in the disposable fixture.
+3. Open settings. Change **Angle mode**, **Solution domain**, **Display decimal places** and **Calculation precision** through their real controls. Display decimals affect presentation independently of calculation precision. Calculate an affected value, switch theme, reload, and confirm settings and the independently expected answer. Check **Symbol assumptions** with a supported symbolic input.
+4. Use **Export backup**. Read the downloaded JSON and verify the latest synthetic work. Import that file through **Import backup** and observe new notebook IDs and imported names. Imports preserve current workspace settings. Reject an invalid backup while preserving prior work. Imports above 20 MB or the combined 100-notebook limit must refuse without replacing current work.
+5. **Restore previous valid save** replaces current workspace state and supports history **Undo**. **Import earlier device notebooks** requires a valid unassigned device save. **Export unreadable recovery data** requires malformed current save data. Record unavailable prerequisites rather than fabricating them.
+6. Concurrent saves, initialization deadlines, **Unsynced copies** and volatile sign-out require controlled failure conditions. The identity helper supplies none. Use an existing explicit machine-map fault recipe where present; otherwise record the missing fault setup and route attempted. Exercise **Keep working**, backup export and explicit departure only in the disposable fixture.
 
 ## Gotchas
 
