@@ -2235,6 +2235,20 @@ export default function Calculator() {
               identified. Engine failure does not prove that no closed form
               exists. Cancel stops expensive work.
             </p>
+            <h2>Choose a solving tool</h2>
+            <p>
+              In Explore, search for <strong>Solve for a variable</strong> to
+              find a solution set in the selected domain. Enter{" "}
+              <code>x^2-5*x+6</code> with variable <code>x</code> to solve the
+              expression equal to zero. The solutions are 2 and 3.
+            </p>
+            <p>
+              Search for <strong>Numerical root in a bracket</strong> to find
+              one approximate root in an interval. For <code>x^2-2</code> with
+              lower bound 0 and upper bound 2, the result is approximately
+              1.414213562. This positive interval excludes the negative root.
+              One numerical root is not a list of every solution.
+            </p>
             <h2>{operations.length} discoverable operations</h2>
             <p>{categories.join(" · ")}</p>
             <p>
