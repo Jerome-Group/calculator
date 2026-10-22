@@ -190,6 +190,35 @@ async function check(name, fn) {
 }
 
 await check(
+  "queuing a newer snapshot immediately replaces an older account acknowledgement",
+  async () => {
+    const values = new Map(),
+      cloud = server(),
+      a = await tab("pending feedback", values, cloud);
+    await a.sync.initializeAccount();
+    a.storage.persist(initial("first"));
+    assert.equal(a.messages.at(-1), "Saving your latest changes…");
+    a.storage.persist(initial("newer"));
+    assert.equal(a.messages.at(-1), "Saving your latest changes…");
+    cloud.calls[0].resolve(Response.json({ revision: 2 }));
+    await flush();
+    assert.equal(a.messages.at(-1), "Saving your latest changes…");
+    assert.equal(cloud.calls.length, 2);
+    cloud.calls[1].resolve(Response.json({ revision: 3 }));
+    await flush();
+    assert.equal(a.messages.at(-1), "Saved to your account");
+    const events = a.messages.length;
+    a.storage.persist(initial("newer"));
+    assert.equal(
+      a.messages.length,
+      events,
+      "A clean no-op cannot await an acknowledgement",
+    );
+    assert.equal(a.messages.at(-1), "Saved to your account");
+  },
+);
+
+await check(
   "two-tab acknowledgement preserves the other tab's dirty snapshot and base revision",
   async () => {
     const values = new Map(),

@@ -108,6 +108,7 @@ export function componentHarness(
   actions,
   initialState = {},
   moduleOverrides = {},
+  environment = {},
 ) {
   const state = new Map(Object.entries(initialState)),
     navigator = {},
@@ -115,8 +116,10 @@ export function componentHarness(
     requests = [],
     effects = [],
     layouts = [],
-    cleanups = [];
+    cleanups = [],
+    effectSlots = [];
   let refIndex = 0,
+    effectIndex = 0,
     captured,
     nextId = 0,
     deferWorkspaceUpdates = false;
@@ -149,7 +152,24 @@ export function componentHarness(
     useRef(initial) {
       return (refs[refIndex++] ??= { current: initial });
     },
-    useEffect(callback) {
+    useEffect(callback, dependencies) {
+      if (environment.effects === "all") {
+        const index = effectIndex++,
+          previous = effectSlots[index];
+        if (
+          !previous ||
+          !dependencies ||
+          dependencies.some((value, i) => value !== previous.dependencies?.[i])
+        )
+          effects.push(() => {
+            previous?.cleanup?.();
+            effectSlots[index] = {
+              dependencies,
+              cleanup: callback(),
+            };
+          });
+        return;
+      }
       if (
         component === "GraphWorkspace" ||
         callback.toString().includes("mounted.current = true")
@@ -231,6 +251,8 @@ export function componentHarness(
     "document",
     "navigator",
     "localStorage",
+    "setTimeout",
+    "clearTimeout",
     instrument(source, component, actions),
   )(
     (specifier) => moduleOverrides[specifier] || modules[specifier] || ui,
@@ -238,10 +260,12 @@ export function componentHarness(
     loadedModule.exports,
     auditState,
     (value) => (captured = value),
-    {},
-    {},
+    environment.window || {},
+    environment.document || {},
     navigator,
-    { getItem: () => null },
+    environment.localStorage || { getItem: () => null },
+    environment.setTimeout || setTimeout,
+    environment.clearTimeout || clearTimeout,
   );
   return {
     state,
@@ -255,17 +279,19 @@ export function componentHarness(
     requests,
     unmount() {
       for (const cleanup of cleanups) cleanup?.();
+      for (const slot of effectSlots) slot?.cleanup?.();
     },
     runEffects() {
       for (const effect of effects) cleanups.push(effect());
     },
     render(props) {
       refIndex = 0;
+      effectIndex = 0;
       effects.length = 0;
       layouts.length = 0;
       const tree = loadedModule.exports.default(props);
       for (const layout of layouts) layout();
-      if (effects.length && !cleanups.length)
+      if (effects.length && (environment.effects === "all" || !cleanups.length))
         for (const effect of effects) cleanups.push(effect());
       return { tree, actions: captured };
     },
