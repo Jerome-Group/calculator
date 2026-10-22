@@ -1872,5 +1872,132 @@ await check(
     assert.equal(values.get(key), draft);
   },
 );
+const copyState = (state) => JSON.parse(JSON.stringify(state));
+async function offlineRecoveryRace(remoteOutcome) {
+  const values = new Map(),
+    cloud = server();
+  cloud.state = initial("My notebook");
+  cloud.revision = 11;
+  const original = copyState(cloud.state),
+    offline = copyState(original);
+  offline.notebooks[0].history.push({
+    id: "fresh93",
+    operation: "evaluate",
+    input: "7*13+2",
+    mode: "text",
+    params: {},
+    settings: offline.settings,
+    definitions: [],
+    revision: 0,
+    time: 4,
+    result: { status: "exact", text: "93", latex: "93", notes: [] },
+  });
+  const first = await tab("offline-race-first", values, cloud);
+  await first.sync.initializeAccount();
+  first.setOnline(false);
+  first.storage.persist(offline);
+  first.setOnline(true);
+  first.trigger("online");
+  await flush();
+  const originalPut = cloud.calls.at(-1);
+  const reloaded = await tab("offline-race-reload", values, cloud);
+  await reloaded.sync.initializeAccount();
+  const merged = copyState(reloaded.sync.sessionWorkspace());
+  assert.equal(merged.notebooks.length, 2);
+  reloaded.storage.persist(merged);
+  const mergedPut = cloud.calls.at(-1);
+  assert.equal(cloud.calls.length, 2);
+  const remote =
+    remoteOutcome === "original-committed"
+      ? copyState(originalPut.body.state)
+      : remoteOutcome === "merge-committed"
+        ? copyState(mergedPut.body.state)
+        : original;
+  return { values, cloud, offline, merged, remote, reloaded };
+}
+for (const outcome of ["unchanged", "original-committed", "merge-committed"]) {
+  await check(
+    `offline recovery lineage survives A-B-A when remote is ${outcome}`,
+    async () => {
+      const { values, cloud, offline, merged, remote } =
+        await offlineRecoveryRace(outcome);
+      cloud.account = "b";
+      cloud.state = initial("Private B");
+      cloud.revision = 7;
+      const returned = await tab("offline-race-return", values, cloud);
+      await returned.sync.initializeAccount();
+      assert.equal(returned.sync.sessionWorkspace().notebooks.length, 1);
+      assert.equal(returned.sync.sessionWorkspace().notebooks[0].name, "Private B");
+      cloud.account = "a";
+      cloud.state = remote;
+      cloud.revision = outcome === "unchanged" ? 11 : 12;
+      await returned.sync.initializeAccount();
+      const recovered = copyState(returned.sync.sessionWorkspace());
+      const fresh = recovered.notebooks.filter((book) =>
+        book.history.some((entry) => entry.id === "fresh93"),
+      );
+      assert.equal(fresh.length, 1, "Equivalent offline content was duplicated");
+      assert.deepEqual(fresh[0].history, offline.notebooks[0].history);
+      if (outcome === "original-committed") {
+        assert.deepEqual(recovered, remote, "Old cloud base was recovered again");
+      } else {
+        assert.deepEqual(recovered, merged, "Unedited recovery identity churned");
+      }
+      const pendingCount = cloud.calls.length;
+      returned.storage.persist(recovered);
+      if (outcome === "unchanged") {
+        const call = cloud.calls.at(-1);
+        assert.equal(call.body.account, "a");
+        assert.equal(call.body.revision, 11);
+        cloud.state = copyState(call.body.state);
+        cloud.revision++;
+        call.resolve(Response.json({ revision: cloud.revision }));
+        await flush();
+      } else assert.equal(cloud.calls.length, pendingCount);
+      assert.notEqual(values.get("dirty:a"), "1");
+      const settled = await tab("offline-race-settled", values, cloud);
+      await settled.sync.initializeAccount();
+      assert.deepEqual(copyState(settled.sync.sessionWorkspace()), recovered);
+      assert.equal(settled.drafts.readDrafts("a").length, 0);
+    },
+  );
+}
+await check(
+  "editing recovered work preserves the edit, original inputs and settings without replaying the cloud base",
+  async () => {
+    const { values, cloud, offline, merged, reloaded } =
+      await offlineRecoveryRace("unchanged");
+    const edited = copyState(merged);
+    edited.settings.angle = "deg";
+    edited.notebooks[1].history.push({
+      ...copyState(offline.notebooks[0].history[0]),
+      id: "after-recovery",
+      input: "6*7",
+      result: { status: "exact", text: "42", latex: "42", notes: [] },
+    });
+    reloaded.storage.persist(edited);
+    cloud.state = offline;
+    cloud.revision = 12;
+    const returned = await tab("edited-recovery-reload", values, cloud);
+    await returned.sync.initializeAccount();
+    const recovered = copyState(returned.sync.sessionWorkspace());
+    assert.equal(recovered.notebooks.length, 2);
+    const fresh = recovered.notebooks.find((book) =>
+      book.history.some((entry) => entry.id === "after-recovery"),
+    );
+    assert(fresh, "Edited recovered notebook was lost");
+    assert.deepEqual(fresh.history, edited.notebooks[1].history);
+    assert.equal(fresh.name, "My notebook (offline copy)");
+    assert(
+      returned.drafts.readDrafts("a").some((draft) =>
+        JSON.stringify(draft).includes('"angle":"deg"'),
+      ),
+      "Divergent settings were not retained",
+    );
+    const again = await tab("edited-recovery-repeat", values, cloud);
+    await again.sync.initializeAccount();
+    assert.deepEqual(copyState(again.sync.sessionWorkspace()), recovered);
+  },
+);
 console.log(JSON.stringify(results, null, 2));
 if (results.some((result) => !result.passed)) process.exitCode = 1;
