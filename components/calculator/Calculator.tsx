@@ -1324,17 +1324,14 @@ export default function Calculator() {
                           </>
                         )}
                       <button
-                        onClick={() => {
-                          navigator.clipboard
-                            ?.writeText(h.result.latex || h.result.text)
-                            .then(() => setNotice("Copied."))
-                            .catch(() =>
-                              download(
-                                "expression.tex",
-                                h.result.latex || h.result.text,
-                                "text/plain",
-                              ),
-                            );
+                        onClick={async () => {
+                          const text = h.result.latex || h.result.text;
+                          try {
+                            await navigator.clipboard.writeText(text);
+                            setNotice("Copied.");
+                          } catch {
+                            download("expression.tex", text, "text/plain");
+                          }
                         }}
                       >
                         Copy LaTeX

@@ -33,6 +33,123 @@ async function check(name, action) {
     results.push({ name, passed: false, error: error.message });
   }
 }
+function copyResult(clipboard, latex = String.raw`\frac{x+1}{2}`) {
+  const book = notebook("clipboard");
+  book.history.push({
+    id: "result",
+    input: "(x+1)/2",
+    mode: "text",
+    operation: "evaluate",
+    params: {},
+    result: { ...exact, text: "(x+1)/2", latex },
+    settings,
+    time: 1,
+    revision: 0,
+    definitions: [],
+  });
+  const downloads = [];
+  const harness = componentHarness(
+    "Calculator",
+    [],
+    { state: workspace([book]) },
+    {
+      "@/lib/calculator/storage": {
+        readDeviceSave: () => null,
+        download: (...args) => downloads.push(args),
+      },
+    },
+  );
+  harness.navigator.clipboard = clipboard;
+  function findCopy(tree) {
+    if (!tree || typeof tree !== "object") return null;
+    if (tree.type === "button" && tree.props.children === "Copy LaTeX")
+      return tree;
+    for (const child of [tree.props?.children].flat(Infinity)) {
+      const button = findCopy(child);
+      if (button) return button;
+    }
+    return null;
+  }
+  const button = findCopy(harness.render().tree);
+  assert(button, "The result card renders its Copy LaTeX button");
+  return { harness, downloads, copy: button.props.onClick };
+}
+for (const latex of [String.raw`\frac{x+1}{2}`, ""]) {
+  const payload = latex || "(x+1)/2";
+  await check(
+    `Copy LaTeX downloads ${latex ? "LaTeX" : "text"} when clipboard is unavailable`,
+    async () => {
+      const { harness, downloads, copy } = copyResult(undefined, latex);
+      await copy();
+      await flush();
+      assert.deepEqual(downloads, [["expression.tex", payload, "text/plain"]]);
+      assert.equal(harness.state.get("notice"), "");
+    },
+  );
+  await check(
+    `Copy LaTeX writes ${latex ? "LaTeX" : "text"} and confirms clipboard success`,
+    async () => {
+      const writes = [];
+      const { harness, downloads, copy } = copyResult(
+        { writeText: async (text) => writes.push(text) },
+        latex,
+      );
+      await copy();
+      await flush();
+      assert.deepEqual(writes, [payload]);
+      assert.deepEqual(downloads, []);
+      assert.equal(harness.state.get("notice"), "Copied.");
+    },
+  );
+  for (const failure of ["rejected", "thrown"]) {
+    await check(
+      `Copy LaTeX downloads ${latex ? "LaTeX" : "text"} after a ${failure} clipboard write`,
+      async () => {
+        const writes = [];
+        const { harness, downloads, copy } = copyResult(
+          {
+            writeText(text) {
+              writes.push(text);
+              if (failure === "thrown") throw Error("Clipboard unavailable");
+              return Promise.reject(Error("Clipboard permission denied"));
+            },
+          },
+          latex,
+        );
+        await copy();
+        await flush();
+        assert.deepEqual(writes, [payload]);
+        assert.deepEqual(downloads, [
+          ["expression.tex", payload, "text/plain"],
+        ]);
+        assert.equal(harness.state.get("notice"), "");
+      },
+    );
+  }
+}
+await check(
+  "Copy LaTeX waits for the clipboard write before confirming",
+  async () => {
+    const writes = [];
+    let resolveWrite;
+    const { harness, downloads, copy } = copyResult({
+      writeText(text) {
+        writes.push(text);
+        return new Promise((resolve) => (resolveWrite = resolve));
+      },
+    });
+    const pending = copy();
+    await flush();
+    assert.deepEqual(writes, [String.raw`\frac{x+1}{2}`]);
+    assert.deepEqual(downloads, []);
+    assert.equal(harness.state.get("notice"), "");
+    resolveWrite();
+    await pending;
+    await flush();
+    assert.deepEqual(downloads, []);
+    assert.equal(harness.state.get("notice"), "Copied.");
+  },
+);
 await check(
   "protected mode conversion retains source and explains its Text notation",
   async () => {

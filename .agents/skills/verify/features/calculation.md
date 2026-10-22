@@ -15,6 +15,7 @@ Open **Calculate**. Choose **Text**, **Math** or **LaTeX**. **Explore** and **Fi
 3. Find **Probability distributions**. Use **Distribution**, **Probability operation** and their actual parameter labels. Standard normal CDF at zero equals `0.5`. Retain the problem preview and resulting answer.
 4. Use the machine-map recipes for nested input, matrices/lists, logic, malformed saved distribution inputs and every vendor menu leaf. Open required result disclosures before capturing semantic answers.
 5. Cancel a running calculation, retain its input, then compute a fresh expression successfully. Preserve action order and visible engine status.
+6. Scope **Copy LaTeX** to the fraction result. Preserve the user's clipboard, activate the button, read the copied source and restore the clipboard. A successful write shows **Copied.**; an unavailable or rejected API downloads `expression.tex` containing the actual source. Inspect the real file if that branch is naturally available. Controlled callback regressions cover unavailable and pending writes; they do not certify native browser permission behavior.
 
 ## Gotchas
 
