@@ -42,7 +42,9 @@ This read-only command checks the proxy's run identifier and upstream port, real
 
 ## Drive
 
-Use supported browser automation against visible controls. In Codex use `cua_repl`, create an in-app browser tab, and read its returned browser documentation before choosing locators. Prefer roles and the real labels in each feature file. Observe the resulting accessibility/DOM state after actions. Do not set React state, invoke internal calculation helpers, seed passing results, or substitute API calls for UI journeys.
+Use supported browser automation against visible controls. In Codex use `cua_repl` and read its returned browser documentation before choosing locators. Prefer an available in-app browser. If unavailable, inspect the browser inventory and use an available supported browser with an owned QA tab. Record the browser used. A new tab on a reused origin still shares storage.
+
+Prefer roles and the real labels in each feature file. Use a DOM snapshot for accessible names; visual uppercase styling can differ from those names. The application's comboboxes are button-based menus. Click the combobox, observe its options, then click the required option. Native `selectOption` does not operate these menus. Observe the resulting accessibility/DOM state after actions. Do not set React state, invoke internal calculation helpers, seed passing results, or substitute API calls for UI journeys.
 
 The local proxy supplies synthetic identities only at the existing Sites-header boundary. Choose A/B/guest through `/_verify`. Save work through the actual UI and real D1 API. Local identity checks do not certify live Sites sign-in. Preserve the original browser Origin through the proxy.
 
@@ -59,7 +61,7 @@ pnpm --silent verify browser match --evidence "$CALCULATOR_QA_EVIDENCE/captures.
 pnpm --silent verify browser validate --evidence "$CALCULATOR_QA_EVIDENCE/browser.json" --json
 ```
 
-Use observed semantic answers, including required details, with independent fixture expectations. Verify persistence by reload and account switching, file effects by reading downloads, and offline behavior by actually disconnecting the origin. Local fixtures do not prove production identity, physical touch or uncontrollable native clipboard branches. Record those prerequisites and the attempted route. A core pass explicitly leaves browser execution unverified.
+Use observed semantic answers, including required details, with independent fixture expectations. Verify persistence by reload and account switching, file effects by reading downloads, and offline behavior by actually disconnecting the origin. A download-event timeout can occur after the browser writes the file. Inspect the actual download destination for the named file and verify its timestamp and contents before retrying. Copy only the QA download into the evidence directory. A button click or timeout alone proves neither success nor failure. Local fixtures do not prove production identity, physical touch or uncontrollable native clipboard branches. Record those prerequisites and the attempted route. A core pass explicitly leaves browser execution unverified.
 
 ## Cleanup
 
