@@ -25,6 +25,48 @@ const graph = (type, expression = "x^2", extra = {}) => ({
 const table = (g, s = settings, lo = -2, hi = 2) =>
   graphTable(g, graphFunctions(g, graphScope([], s, 1)), scope, s, lo, hi);
 assert.deepEqual(table(graph("cartesian")).rows[0].cells, [-2, 4]);
+for (const [lo, hi, midpoint] of [
+  [-1e308, 1e308, 0],
+  [1e307, 1e308, 5.5e307],
+  [-1e308, -1e307, -5.5e307],
+  [-Number.MAX_VALUE, Number.MAX_VALUE, 0],
+  [Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE],
+  [-2, 2, 0],
+]) {
+  const { rows } = table(graph("cartesian", "x"), settings, lo, hi);
+  assert.equal(rows.length, 11);
+  assert.deepEqual(rows[0].cells, [lo, lo]);
+  assert.deepEqual(rows.at(-1).cells, [hi, hi]);
+  assert.deepEqual(rows[5].cells, [midpoint, midpoint]);
+  for (const [index, row] of rows.entries()) {
+    assert(row.cells.every(Number.isFinite));
+    assert(row.cells[0] >= lo && row.cells[0] <= hi);
+    if (index) assert(row.cells[0] >= rows[index - 1].cells[0]);
+    assert.deepEqual(row.cells, row.reuse);
+  }
+}
+assert.deepEqual(
+  table(graph("cartesian", "x"), settings, 0, 10).rows.map((row) => row.cells),
+  Array.from({ length: 11 }, (_, i) => [i, i]),
+);
+const wideParametric = table(
+  graph("parametric", "t", {
+    second: "t",
+    min: "-1e308",
+    max: "1e308",
+  }),
+);
+assert.equal(wideParametric.rows.length, 11);
+assert.deepEqual(wideParametric.rows[0].cells, [-1e308, -1e308, -1e308]);
+assert.deepEqual(wideParametric.rows[5].cells, [0, 0, 0]);
+assert.deepEqual(wideParametric.rows.at(-1).cells, [1e308, 1e308, 1e308]);
+assert(wideParametric.rows.every((row) => row.cells.every(Number.isFinite)));
+const wideSurface = table(graph("surface", "x"), settings, -1e308, 1e308);
+assert.equal(wideSurface.rows.length, 121);
+assert.deepEqual(wideSurface.rows[0].cells, [-1e308, -1e308, -1e308]);
+assert.deepEqual(wideSurface.rows[60].cells, [0, 0, 0]);
+assert.deepEqual(wideSurface.rows.at(-1).cells, [1e308, 1e308, 1e308]);
+assert(wideSurface.rows.every((row) => row.cells.every(Number.isFinite)));
 const sequence = table(graph("sequence", "n^2"), settings, -1.5, 2.5);
 assert.deepEqual(
   sequence.rows.map((row) => row.cells),
