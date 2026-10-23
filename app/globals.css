@@ -136,7 +136,8 @@ button {
   color: inherit;
   min-height: 44px;
 }
-button:disabled {
+button:disabled,
+.graph-analysis button[aria-disabled="true"] {
   opacity: 0.5;
   cursor: default;
 }
@@ -690,6 +691,23 @@ pre {
   padding: 14px 18px;
   margin: 0 0 14px;
   min-width: 0;
+}
+.calculation:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 4px;
+}
+.graph-analysis-result {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  min-width: 0;
+}
+.graph-analysis-result > .row {
+  flex-wrap: wrap;
+}
+.graph-analysis-result button {
+  white-space: normal;
+  text-align: left;
 }
 .calculation:first-of-type {
   border-color: color-mix(in srgb, var(--success) 35%, var(--border));

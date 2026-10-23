@@ -586,10 +586,11 @@ await check(
     const original = harness.exports.makeGraph("x^2"),
       added = harness.exports.makeGraph("sin(x)");
     let graphs = [original];
+    const definitions = [];
     const props = () => ({
       graphs,
       onChange: (value) => (graphs = value),
-      definitions: [],
+      definitions,
       settings,
       onAnalyze() {},
       onReuse() {},
@@ -697,6 +698,459 @@ await check(
         assert.match(harness.state.get("notice"), /argument|parameter/i);
       }
     }
+  },
+);
+function graphCanvas(initialState = {}) {
+  const harness = componentHarness("GraphWorkspace", [], initialState),
+    requests = [],
+    marks = [],
+    fills = [],
+    paths = [];
+  let path = [],
+    result = exact;
+  const context = {
+    scale() {},
+    fillText() {},
+    beginPath() {
+      path = [];
+    },
+    moveTo(x, y) {
+      path.push({ x, y, connected: false });
+    },
+    lineTo(x, y) {
+      path.push({ x, y, connected: true });
+    },
+    arc(x, y, radius) {
+      marks.push({ x, y, radius, color: this.strokeStyle });
+    },
+    stroke() {
+      paths.push({ points: path, color: this.strokeStyle });
+    },
+    fill() {},
+    fillRect(x, y, width, height) {
+      if (this.globalAlpha === 0.14) fills.push({ x, y, width, height });
+    },
+  };
+  const nodes = (tree) =>
+    !tree || typeof tree !== "object"
+      ? []
+      : [tree, ...[tree.props?.children].flat(Infinity).flatMap(nodes)];
+  const props = {
+    graphs: [],
+    history: [],
+    definitions: [],
+    settings,
+    onStop() {},
+    onOpenHistory() {},
+    onChange(graphs) {
+      props.graphs = graphs;
+    },
+    async onAnalyze(params) {
+      requests.push(params);
+      const value = await result;
+      if (!value) return;
+      const entry = {
+        id: `analysis-${requests.length}`,
+        operation: "graph_analysis",
+        params,
+        input: "",
+        mode: "text",
+        result: value,
+        settings: props.settings,
+        definitions: props.definitions,
+        revision: 0,
+        time: 1,
+      };
+      props.history = [entry, ...props.history];
+      return entry;
+    },
+    onReuse() {},
+  };
+  const render = () => nodes(harness.render(props).tree);
+  const control = (label) =>
+    render().find(
+      (node) =>
+        node.props?.label === label || node.props?.["aria-label"] === label,
+    );
+  return {
+    harness,
+    props,
+    requests,
+    marks,
+    fills,
+    paths,
+    control,
+    result(value) {
+      result = value;
+    },
+    select(index) {
+      render()
+        .filter((node) =>
+          node.props?.className?.startsWith("graph-expression "),
+        )
+        [index].props.onClick();
+    },
+    calculate() {
+      return render()
+        .find(
+          (node) =>
+            node.type === "button" && node.props.children === "Calculate",
+        )
+        .props.onClick();
+    },
+    shade(value) {
+      render()
+        .find((node) => typeof node.props?.onCheckedChange === "function")
+        .props.onCheckedChange(value);
+    },
+    draw() {
+      const previous = Object.getOwnPropertyDescriptor(
+        globalThis,
+        "devicePixelRatio",
+      );
+      globalThis.devicePixelRatio = 1;
+      try {
+        marks.length = fills.length = paths.length = 0;
+        render().find((node) => node.type === "canvas").props.ref.current = {
+          getContext: () => context,
+        };
+        render();
+        harness.runEffects();
+      } finally {
+        if (previous)
+          Object.defineProperty(globalThis, "devicePixelRatio", previous);
+        else delete globalThis.devicePixelRatio;
+      }
+    },
+  };
+}
+await check(
+  "graph comparison falls back visibly when its curve becomes selected",
+  async () => {
+    const graph = graphCanvas({ action: "area" });
+    graph.props.graphs = [
+      graph.harness.exports.makeGraph("1"),
+      { ...graph.harness.exports.makeGraph("2"), radians: true },
+    ];
+    graph.control("Comparison graph").props.onChange(graph.props.graphs[1].id);
+    graph.select(1);
+    const comparison = graph.control("Comparison graph");
+    assert.equal(
+      comparison.props.value,
+      "zero",
+      "Excluded self comparison stayed selected",
+    );
+    assert(
+      comparison.props.options.some(
+        (option) => option.value === comparison.props.value,
+      ),
+    );
+    await graph.calculate();
+    assert.equal(
+      graph.requests.at(-1).other,
+      "0",
+      "Analysis compared the curve with itself",
+    );
+    assert.equal(graph.requests.at(-1).otherCanonical, "false");
+    graph.draw();
+    assert(graph.fills.length > 0);
+    assert(graph.fills.every(({ y, height }) => y === 100 && height === 100));
+  },
+);
+await check(
+  "graph shading resolves symbolic bounds and uses the action's baseline",
+  async () => {
+    const graph = graphCanvas({ action: "integral", lower: "0", upper: "pi" });
+    graph.props.graphs = [
+      graph.harness.exports.makeGraph("1"),
+      graph.harness.exports.makeGraph("3"),
+    ];
+    graph.harness.state.set("other", graph.props.graphs[1].id);
+    await graph.calculate();
+    graph.draw();
+    assert.equal(
+      graph.requests.at(-1).upper,
+      "pi",
+      "Analysis lost its symbolic bound",
+    );
+    assert(
+      graph.fills.length > 160,
+      "Symbolic bounds produced no interval shading",
+    );
+    assert(
+      graph.fills.every(({ y, height }) => y === 150 && height === 50),
+      "Integral shaded against the preceding comparison curve",
+    );
+    assert(Math.abs(graph.fills.at(-1).x - (320 + (Math.PI / 12) * 640)) < 1);
+    graph.harness.state.set("action", "area");
+    await graph.calculate();
+    graph.draw();
+    assert(
+      graph.fills.every(({ y, height }) => y === 50 && height === 100),
+      "Area did not shade between the two selected curves",
+    );
+  },
+);
+await check(
+  "graph shading uses degree settings, saved bounds and canonical curve radians",
+  async () => {
+    const graph = graphCanvas({
+      action: "integral",
+      lower: "0",
+      upper: "L+sin(90)",
+    });
+    graph.props.settings = { ...settings, angle: "deg" };
+    graph.props.definitions = [definition("L", "1")];
+    graph.props.graphs = [
+      { ...graph.harness.exports.makeGraph("sin(pi/2)*a"), radians: true },
+    ];
+    graph.harness.state.set("a", 2);
+    await graph.calculate();
+    graph.draw();
+    assert.equal(graph.requests.at(-1).canonical, "true");
+    assert.equal(graph.requests.at(-1).parameter, "2");
+    assert.equal(
+      graph.fills.length,
+      107,
+      "Bounds did not use the workspace angle setting and saved definition",
+    );
+    assert(
+      graph.fills.every(({ y, height }) => y === 100 && height === 100),
+      "Canonical curve or slider parameter changed units",
+    );
+  },
+);
+await check(
+  "graph shading rejects invalid bounds and failed analysis then recovers",
+  async () => {
+    const graph = graphCanvas({ action: "integral", lower: "0", upper: "2" });
+    graph.props.graphs = [graph.harness.exports.makeGraph("1")];
+    await graph.calculate();
+    graph.draw();
+    assert(graph.fills.length > 0);
+    for (const upper of ["", "Infinity", "0", "-1", "sum(ones(1e8))"]) {
+      graph.harness.state.set("upper", upper);
+      graph.result({ ...exact, status: "error", text: "Invalid interval" });
+      await graph.calculate();
+      graph.draw();
+      assert.equal(
+        graph.fills.length,
+        0,
+        `Invalid bound ${upper} retained shading`,
+      );
+    }
+    graph.harness.state.set("upper", "2");
+    for (const status of ["error", "unresolved", "conditional", "divergent"]) {
+      graph.result({ ...exact, status, text: "No established finite result" });
+      await graph.calculate();
+      graph.draw();
+      assert.equal(
+        graph.fills.length,
+        0,
+        `An ${status} analysis enabled shading`,
+      );
+    }
+    graph.result(undefined);
+    await graph.calculate();
+    graph.draw();
+    assert.equal(
+      graph.fills.length,
+      0,
+      "An abandoned analysis enabled shading",
+    );
+    graph.result({ ...exact, status: "numeric" });
+    await graph.calculate();
+    graph.draw();
+    assert.equal(
+      graph.fills.length,
+      107,
+      "Valid bounds did not recover shading",
+    );
+  },
+);
+await check(
+  "graph shading ignores async completion after its inputs change",
+  async () => {
+    const changes = [
+      (graph) => graph.harness.state.set("lower", "1"),
+      (graph) => graph.harness.state.set("upper", "3"),
+      (graph) => graph.harness.state.set("point", "1"),
+      (graph) => graph.harness.state.set("action", "value"),
+      (graph) => graph.harness.state.set("a", 2),
+      (graph) => graph.select(1),
+      (graph) => graph.control("Comparison graph").props.onChange("zero"),
+      (graph) => {
+        graph.props.graphs = [
+          { ...graph.props.graphs[0], expression: "3" },
+          graph.props.graphs[1],
+        ];
+      },
+      (graph) => {
+        graph.props.definitions = [definition("L", "2")];
+      },
+      (graph) => {
+        graph.props.graphs = [
+          graph.props.graphs[0],
+          { ...graph.props.graphs[1], expression: "4" },
+        ];
+      },
+      (graph) => {
+        graph.props.settings = { ...settings, angle: "deg" };
+      },
+    ];
+    for (const change of changes) {
+      const graph = graphCanvas({ action: "area", lower: "0", upper: "2" });
+      graph.props.graphs = [
+        graph.harness.exports.makeGraph("1"),
+        graph.harness.exports.makeGraph("2"),
+      ];
+      graph
+        .control("Comparison graph")
+        .props.onChange(graph.props.graphs[1].id);
+      let complete;
+      graph.result(
+        new Promise((resolve) => {
+          complete = resolve;
+        }),
+      );
+      const pending = graph.calculate();
+      graph.draw();
+      assert.equal(graph.fills.length, 0, "A pending analysis enabled shading");
+      change(graph);
+      graph.draw();
+      complete(exact);
+      await pending;
+      graph.draw();
+      assert.equal(
+        graph.fills.length,
+        0,
+        "An obsolete analysis completion enabled shading",
+      );
+    }
+  },
+);
+await check(
+  "History deletion removes automatic graph shading while explicit preview remains independent",
+  async () => {
+    const graph = graphCanvas({ action: "integral", lower: "0", upper: "1" });
+    graph.props.graphs = [graph.harness.exports.makeGraph("1")];
+    await graph.calculate();
+    graph.draw();
+    assert(
+      graph.fills.length > 0,
+      "Successful canonical analysis did not shade",
+    );
+    graph.props.history = [];
+    graph.draw();
+    assert.equal(
+      graph.fills.length,
+      0,
+      "Deleted canonical History retained automatic shading",
+    );
+    graph.shade(true);
+    graph.draw();
+    assert(
+      graph.fills.length > 0,
+      "Explicit preview incorrectly depends on a saved analysis",
+    );
+    graph.harness.state.set("upper", "2");
+    graph.draw();
+    assert.equal(
+      graph.fills.length,
+      0,
+      "Changed inputs retained manual preview",
+    );
+  },
+);
+await check(
+  "manual graph shading recovers finite bounds and clears when inputs change",
+  async () => {
+    const graph = graphCanvas({ lower: "0", upper: "pi" });
+    graph.props.graphs = [graph.harness.exports.makeGraph("1")];
+    graph.shade(true);
+    graph.draw();
+    assert(graph.fills.length > 160);
+    graph.shade(false);
+    graph.draw();
+    assert.equal(graph.fills.length, 0);
+    for (const upper of ["", "Infinity", "0", "sum(ones(1e8))"]) {
+      graph.harness.state.set("upper", upper);
+      graph.shade(true);
+      graph.draw();
+      assert.equal(graph.fills.length, 0, `Manual shading accepted ${upper}`);
+    }
+    graph.harness.state.set("upper", "2");
+    graph.shade(true);
+    graph.draw();
+    assert.equal(graph.fills.length, 107);
+    graph.harness.state.set("upper", "3");
+    graph.draw();
+    assert.equal(graph.fills.length, 0, "Changed inputs retained old shading");
+    graph.harness.state.set("upper", "2");
+    graph.draw();
+    assert.equal(
+      graph.fills.length,
+      0,
+      "Restoring an input resurrected cleared shading",
+    );
+  },
+);
+await check(
+  "sampled data draws singleton markers and keeps connected paths",
+  async () => {
+    const graph = graphCanvas();
+    graph.props.graphs = [
+      { ...graph.harness.exports.makeGraph("Point", "data"), points: [[2, 1]] },
+    ];
+    graph.draw();
+    assert.equal(
+      graph.marks.length,
+      1,
+      "A singleton data graph has no visible marker",
+    );
+    assert.equal(graph.marks[0].x, ((2 + 6) / 12) * 640);
+    assert.equal(graph.marks[0].y, 150);
+    assert(graph.marks[0].radius > 0);
+    graph.props.graphs = [
+      {
+        ...graph.props.graphs[0],
+        points: [
+          [0, 0],
+          [1, 1],
+          [2, 0],
+        ],
+      },
+    ];
+    graph.draw();
+    const path = graph.paths.find(
+      ({ color }) => color === graph.props.graphs[0].color,
+    );
+    assert.equal(
+      path.points.filter(({ connected }) => connected).length,
+      2,
+      "Markers broke the sampled trajectory's path",
+    );
+    assert(
+      graph.marks.every(({ x, y }) => Number.isFinite(x) && Number.isFinite(y)),
+    );
+    graph.props.graphs = [
+      { ...graph.props.graphs[0], points: [[Infinity, NaN]] },
+    ];
+    graph.draw();
+    assert.equal(
+      graph.marks.length,
+      0,
+      "Nonfinite sampled data reached a marker",
+    );
+    graph.props.graphs = [
+      { ...graph.props.graphs[0], points: [[0, 0]], visible: false },
+    ];
+    graph.draw();
+    assert.equal(
+      graph.marks.length,
+      0,
+      "A hidden singleton data graph was drawn",
+    );
   },
 );
 await check(

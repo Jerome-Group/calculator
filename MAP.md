@@ -7,7 +7,7 @@ Start with README.md, then app/page.tsx and components/calculator/CalculatorGate
 | Area                   | What lives there                                                        | Entry point                            |
 | ---------------------- | ----------------------------------------------------------------------- | -------------------------------------- |
 | `app/`                 | Routes, sign-in helpers and scoped workspace API                        | `app/api/workspace/route.ts`           |
-| `components/`          | Notebook, investigations, graphs, editor and vendored UI                | `components/calculator/Calculator.tsx` |
+| `components/`          | Notebook, shared answers, investigations, graphs and editor             | `components/calculator/Calculator.tsx` |
 | `lib/`                 | Catalogue, experiment plans and evidence, computation, sync and storage | `lib/calculator/sync.ts`               |
 | `public/`              | Offline engine, service worker, coverage and notices                    | `public/compute-worker.js`             |
 | `build/`, `scripts/`   | Sites integration, deterministic engine builds and verification         | `vite.config.ts`                       |

@@ -18,3 +18,5 @@
 - **Case sequence** — transient exact-literal generator that replaces next-plan cases after preview. A run stores the resulting cases, not a generator recipe.
 - **Numeric evidence** — a transient selected-run projection of saved scalar literals, approximations or direct numeric details. It preserves all cases and omissions without creating a graph or dataset.
 - **Original-run backup** — standard v1 workspace backup containing one run, its frozen inputs and original History entries. It resumes from historical inputs after normal import.
+
+- **Graph analysis selection** — transient input-bound reference to a canonical History entry. Leaving Graphs discards the selection and controls.
