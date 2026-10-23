@@ -1,0 +1,12 @@
+{
+  "syncCommit": "b5d21cc6539722e19fc3dc675d11c0f21981c9ba",
+  "files": {
+    "components/calculator/Calculator.tsx": "8b857690978d77719fe81ed020b80ae240cca990086030a51dcaed2dc51e5ed7",
+    "components/calculator/CalculatorGate.tsx": "753729ea643edd2c840e4b9689ab71a19db3f17dee4c7920b54771d5b7694d8d",
+    "lib/calculator/sync.ts": "5bcb98db9558e929d20acc3f16649e25d350737429e52683d6ef1305b9339aff",
+    "lib/calculator/storage.ts": "392bcec5a53d36e483f699667ee1618964a79cdd767f61873d41dc948592f62c",
+    "lib/calculator/drafts.ts": "2b4cfcd81e00456c14fb6c828c8be82932cd441ebd1d9141858063607f43cdd8",
+    "tests/component-harness.mjs": "e186698e5ac8ec0ac1313009400a2feb2c2a047b1771c92eab4bbd3fd135a92a",
+    "tests/resolve-types.mjs": "9e91ccc0a32a3aaf3faf118528df37cb0fca5a680f7cc65eea4b4185f883c7c0"
+  }
+}
