@@ -12,9 +12,13 @@ Open **Explore**, **Find an operation** or Cmd/Ctrl K. **Help and coverage** ope
 
 1. In **Explore**, use **Search tasks or examples** and **Subject**. Open a matching operation and verify its actual fields. Search a nonsense term and observe the empty state. Repeat search, selection and empty-state checks through **Find an operation**. Its finder has no Subject filter.
 2. Open **Help and coverage**, follow **Coverage, validation and sources**, then **Dependency licences**. Observe readable `/licenses.txt` and return to the notebook.
-3. Choose **Prepare for offline use** and wait for **Ready**. The completed control becomes **Verify / repair offline files**. Run it and confirm readiness again. Retain the served manifest and preparation result.
+3. Choose **Prepare for offline use** and wait for **Ready**. The completed control becomes **Verify / repair offline files**. Run it and confirm readiness again. Retain the served manifest, identified engine build and preparation result. Computation can load before offline preparation; **Ready** additionally requires a complete verified offline closure.
 4. Stop the owned proxy session while retaining Wrangler, the browser and service worker. Reload the same origin and calculate a bundled-engine input never previously evaluated, such as `7*13+2`, independently equal to `93`. Confirm the origin refuses connections while the cached application and fresh calculation work.
 5. Restart the owned proxy with the same ports before further online journeys. Run Doctor again and reload to confirm online saves resume. At required phone/desktop widths and both themes, observe dialogs and keyboard-visible targets after final styles load. Capture actual bounds, focus and visible result.
+
+## Updates and failed preparation
+
+Use the machine map recipes for `offline.engine-upgrade` and `offline.preparation-retention`. A newly served shell must load its matching immutable engine files. Retain the prior fully prepared build while the new preparation is partial or interrupted. A failed engine start must expose **Retry**; after correcting the owned fault, retry and calculate a fresh input. Never infer these update states from a normal reload or a unit-test trace.
 
 ## Gotchas
 

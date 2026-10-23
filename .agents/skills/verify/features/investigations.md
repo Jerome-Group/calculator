@@ -2,11 +2,11 @@
 
 ## Sub-features
 
-Four authored labs, fresh notebook creation, editable cases and operation steps, run settings, serial computation, comparison, preserved snapshots, observations, cancellation and missing-cell resume. `feature.investigations` owns the journeys. History is the only result collection. The focused domain and real-engine suite is `pnpm --silent verify run --suite investigations --json`. The controlled ownership suite is `investigation-async`. These checks do not operate a browser.
+Custom experiments and four authored labs, fresh notebook creation, up to six parameters and six questions, exact linear/geometric case generation, saved numeric evidence and original-run exports, editable cases and operation steps, run settings, serial computation, comparison, preserved snapshots, observations, cancellation and missing-cell resume. `feature.investigations` owns the journeys. History is the only result collection. The focused domain and real-engine suite is `pnpm --silent verify run --suite investigations --json`. The controlled ownership suite is `investigation-async`. These checks do not operate a browser.
 
 ## How to get to it
 
-Open **Investigate**. Each lab card has **Start in a new notebook**. The original notebook stays available. **Edit next run** contains cases, questions, operation choices and **Edit step N inputs**, which opens the existing structured operation editor. Its action is **Save next run step**. **Edit shared objects** opens Objects. Run settings are separate from Calculator settings.
+Open **Investigate**. **Start a custom experiment** creates one case with `p = 1` and a Simplify question for `p^2`. Each lab card has **Start in a new notebook**. The original notebook stays available. **Edit next run** contains cases, questions, operation choices and **Edit step N inputs**, which opens the existing structured operation editor. Its action is **Save next run step**. **Edit shared objects** opens Objects. Run settings are separate from Calculator settings.
 
 ## Drive the real workflow
 
@@ -19,6 +19,13 @@ Open **Investigate**. Each lab card has **Start in a new notebook**. The origina
 7. Export, inspect, import and restore a recovery copy. Confirm observations, original runs and case references survive in separate notebook copies. Load a legacy v1 backup, including objects without timestamps. Use disposable malformed backups for duplicate ids, cell addresses, missing run/case/step references, mismatched cell requests/settings/case bindings and exceeded cases, steps, runs and string bounds. Failed history and input-envelope preflight must change nothing. Retain an unexpectedly oversized real output and verify the remaining cells stop with the export-and-split notice.
 8. Remove a history cell and verify **No saved result**. Resume only that cell. Delete a selected run and verify its tagged history entries disappear together. **Remove plan, keep calculations** strips tags and retains ordinary entries. Separately exercise **Remove plan and its calculations** on disposable work. Clear history, when available, leaves saved run inputs with missing comparisons.
 9. At 320px and 390px, use **Comparison case**, run selection, form fields and full result details with keyboard and pointer. Check all five workspace destinations and visible focus. Compare the table on desktop and a narrow panel in both themes. Prepare offline, disconnect, reload and calculate a changed uncached case. Reconnect and observe the save acknowledgement.
+
+## Custom experiments and saved evidence
+
+1. Start a custom experiment, edit **Parameter names**, and apply them. Expand **Generate exact cases**, choose a linear sweep from `0` to `2` with three cases, preview, then apply the displayed replacement. Confirm exact values `0, 1, 2`. Change a draft after preview and verify that applying the stale preview is unavailable. Try a geometric sweep with a negative nonzero start and positive multiplier other than `1`; zero starts and multiplier `1` must explain rejection.
+2. Run the square question. In **Numeric evidence from this run**, verify the three saved samples `(0,0)`, `(1,1)`, `(2,4)` against the original sources in the table. Change the next-run question and confirm earlier evidence still uses its original snapshot. Missing cells, mathematical errors and non-scalar outputs need explicit omission reasons.
+3. Use **Export displayed numeric CSV** and **original run backup**, then inspect the actual downloaded files. CSV keeps every case, exact source text and omission/precision notices. JSON retains original inputs, objects, settings and saved History entries. Import that backup through the recovery UI and rerun it.
+4. At 320px and 390px, choose a long question through **Numeric evidence question**. Verify its full label, chart and table fit, with keyboard and pointer selection still working. Check readable numbered chart markers, full HTML axis ranges and a visibly numbered case key in both themes; coincident or nearby markers may overlap, and the table must retain every case. Distinct exact sources beyond browser number precision must produce a collision notice; numeric projections are not new exact calculations.
 
 ## Evidence boundaries
 

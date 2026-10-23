@@ -104,7 +104,7 @@ if (process.argv[2] === "doctor") {
         "Cache-Control": "no-store",
       });
       response.end(
-        `<title>Calculator verification identities</title><h1>Synthetic local identities</h1>${Object.keys(
+        `<title>Calculator verification identities</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><h1>Synthetic local identities</h1>${Object.keys(
           owners,
         )
           .map(
