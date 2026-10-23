@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
+import { generateEngineBuild } from "./scripts/engine-build.mjs";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
@@ -36,6 +37,7 @@ const localBindingConfig = {
 };
 
 export default defineConfig(async () => {
+  const { engine } = await generateEngineBuild();
   // Use Miniflare's local Request.cf placeholder unless fetching is requested.
   process.env.CLOUDFLARE_CF_FETCH_ENABLED ??= "false";
   process.env.WRANGLER_SEND_METRICS ??= "false";
@@ -51,6 +53,7 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    define: { __CALCULATOR_ENGINE_BUILD__: JSON.stringify(engine) },
     server: {
       ...(managedLinux
         ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] }

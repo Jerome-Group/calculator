@@ -7,7 +7,21 @@ import { createHash, webcrypto } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const readSource = (name) => fs.readFileSync(path.join(root, name), "utf8");
+const ENGINE_ID = "b".repeat(64);
+const buildMessage = { protocol: 1, engineId: ENGINE_ID };
+const shellHtml = `<html data-calculator-engine="${ENGINE_ID}">Signed-in app</html>`;
+const readyMarker = {
+  state: "Ready",
+  ...buildMessage,
+  version: "__BUILD_VERSION__",
+  completedAt: 1,
+  done: 1,
+  total: 1,
+};
+const readSource = (name) =>
+  fs
+    .readFileSync(path.join(root, name), "utf8")
+    .replace("__ENGINE_ID__", ENGINE_ID);
 const source = (name) => stripTypeScriptTypes(readSource(name));
 const flush = async () => {
   await new Promise(setImmediate);
@@ -66,9 +80,10 @@ async function tab(name, values, server, rewriteStorageWarnings = false) {
         }
       : webcrypto,
     Response,
+    AbortController,
+    AbortSignal,
     Request,
     URL,
-    AbortController,
     TextEncoder,
     setTimeout: server.clock
       ? server.clock.setTimeout
@@ -374,7 +389,7 @@ await check(
         ]),
         entries = new Map([
           ["/__calculator_shell__", new Response("A's prepared shell")],
-          ["/__calculator_offline_ready__", Response.json({ state: "Ready" })],
+          ["/__calculator_offline_ready__", Response.json(readyMarker)],
           ["/verified-asset.js", new Response("verified asset")],
         ]),
         listeners = {},
@@ -395,6 +410,8 @@ await check(
         };
       const context = vm.createContext({
         Response,
+        AbortController,
+        AbortSignal,
         URL,
         caches: {
           open: async () => cache,
@@ -424,7 +441,7 @@ await check(
       if (account === "b") await shellReached.promise;
       let status;
       listeners.message({
-        data: { type: "STATUS" },
+        data: { type: "STATUS", ...buildMessage },
         waitUntil: (promise) => (status = promise),
       });
       if (account === "b") {
@@ -463,7 +480,7 @@ await check(
   async () => {
     const entries = new Map([
         ["/__calculator_shell__", new Response("A's shell")],
-        ["/__calculator_offline_ready__", Response.json({ state: "Ready" })],
+        ["/__calculator_offline_ready__", Response.json(readyMarker)],
       ]),
       reading = Promise.withResolvers(),
       release = Promise.withResolvers(),
@@ -480,6 +497,8 @@ await check(
       },
       context = vm.createContext({
         Response,
+        AbortController,
+        AbortSignal,
         URL,
         caches: {
           open: async () => cache,
@@ -497,7 +516,7 @@ await check(
     vm.runInContext(readSource("public/sw.js"), context);
     let status, signout;
     listeners.message({
-      data: { type: "STATUS" },
+      data: { type: "STATUS", ...buildMessage },
       waitUntil: (value) => (status = value),
     });
     await reading.promise;
@@ -530,6 +549,8 @@ await check(
     };
     const context = vm.createContext({
       Response,
+      AbortController,
+      AbortSignal,
       URL,
       caches: {
         open: async () => cache,
@@ -540,10 +561,11 @@ await check(
         return url === "/offline-manifest.json"
           ? Response.json({
               version: "__BUILD_VERSION__",
+              engine: { id: ENGINE_ID, protocol: 1 },
               assets: [],
               bytes: 0,
             })
-          : new Response("B's signed-in app");
+          : new Response(shellHtml);
       },
       self: {
         clients: {
@@ -566,7 +588,7 @@ await check(
     });
     await reporting.promise;
     listeners.message({
-      data: { type: "PREPARE" },
+      data: { type: "PREPARE", ...buildMessage },
       waitUntil: (value) => (preparing = value),
     });
     await flush();
@@ -575,10 +597,7 @@ await check(
     await Promise.all([signout, preparing]);
     assert.equal(statuses[0]?.status.state, "Not prepared");
     assert.equal(statuses.at(-1)?.status.state, "Ready");
-    assert.equal(
-      await entries.get("/__calculator_shell__").text(),
-      "B's signed-in app",
-    );
+    assert.equal(await entries.get("/__calculator_shell__").text(), shellHtml);
   },
 );
 
@@ -605,19 +624,21 @@ await check(
     const context = vm.createContext({
       console,
       Response,
+      AbortController,
+      AbortSignal,
       URL,
       crypto: webcrypto,
       Uint8Array,
-      AbortController,
       TextEncoder,
       fetch: async (url) =>
         url === "/offline-manifest.json"
           ? Response.json({
               version: "__BUILD_VERSION__",
+              engine: { id: ENGINE_ID, protocol: 1 },
               assets: [],
               bytes: 0,
             })
-          : new Response("<html>Signed-in app</html>"),
+          : new Response(shellHtml),
       caches: {
         open: async () => cache,
         keys: async () => ["calculator-core-__BUILD_VERSION__"],
@@ -633,7 +654,7 @@ await check(
     vm.runInContext(readSource("public/sw.js"), context);
     let preparing, signout;
     listeners.message({
-      data: { type: "PREPARE" },
+      data: { type: "PREPARE", ...buildMessage },
       waitUntil: (promise) => (preparing = promise),
     });
     await shellReached;
@@ -641,8 +662,8 @@ await check(
       data: { type: "SIGN_OUT" },
       waitUntil: (promise) => (signout = promise),
     });
-    await signout;
     releaseShell();
+    await signout;
     await preparing;
     assert(
       !entries.has("/__calculator_shell__"),
@@ -672,6 +693,8 @@ for (const tampered of [false, true])
         reports = [];
       const context = vm.createContext({
         Response,
+        AbortController,
+        AbortSignal,
         URL,
         crypto: webcrypto,
         Uint8Array,
@@ -679,10 +702,11 @@ for (const tampered of [false, true])
           if (url === "/offline-manifest.json")
             return Response.json({
               version: "__BUILD_VERSION__",
+              engine: { id: ENGINE_ID, protocol: 1 },
               assets: [asset],
               bytes: asset.bytes,
             });
-          if (url === "/") return new Response("<html>Signed-in app</html>");
+          if (url === "/") return new Response(shellHtml);
           assert.equal(url, asset.url);
           assert.equal(options.credentials, "same-origin");
           const ajax =
@@ -717,7 +741,7 @@ for (const tampered of [false, true])
       vm.runInContext(readSource("public/sw.js"), context);
       let preparing;
       listeners.message({
-        data: { type: "PREPARE" },
+        data: { type: "PREPARE", ...buildMessage },
         waitUntil: (promise) => (preparing = promise),
       });
       await preparing;
@@ -815,19 +839,21 @@ await check(
     const context = vm.createContext({
       console,
       Response,
+      AbortController,
+      AbortSignal,
       URL,
       crypto: webcrypto,
       Uint8Array,
-      AbortController,
       TextEncoder,
       fetch: async (url) =>
         url === "/offline-manifest.json"
           ? Response.json({
               version: "__BUILD_VERSION__",
+              engine: { id: ENGINE_ID, protocol: 1 },
               assets: [],
               bytes: 0,
             })
-          : new Response("<html>App</html>"),
+          : new Response(shellHtml),
       caches: {
         open: async () => cache,
         keys: async () => ["calculator-core-__BUILD_VERSION__"],
@@ -848,7 +874,7 @@ await check(
     vm.runInContext(readSource("public/sw.js"), context);
     let preparing, signout;
     listeners.message({
-      data: { type: "PREPARE" },
+      data: { type: "PREPARE", ...buildMessage },
       waitUntil: (promise) => (preparing = promise),
     });
     await readyReached;
@@ -856,8 +882,8 @@ await check(
       data: { type: "SIGN_OUT" },
       waitUntil: (promise) => (signout = promise),
     });
-    await signout;
     releaseReady();
+    await signout;
     await preparing;
     assert(!entries.has("/__calculator_shell__"));
     assert(!entries.has("/__calculator_offline_ready__"));
@@ -874,6 +900,8 @@ await check(
       console: { error() {} },
       crypto: webcrypto,
       Response,
+      AbortController,
+      AbortSignal,
       Request,
       TextDecoder,
       TextEncoder,
