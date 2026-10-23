@@ -61,6 +61,14 @@ jobs:
         run: npm install --global pnpm@11.25.0
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Check bounded workspace safety and mutation controls
+        run: |
+          node .agents/skills/workspace-preservation/scripts/run.mjs
+          node .agents/skills/workspace-preservation/scripts/run.mjs --mutations
       - name: Verify application and failure detectors
         run: pnpm --silent verify run --group core --evidence-dir "${RUNNER_TEMP}/calculator-verification" --json
       - name: Retain verification evidence
@@ -69,6 +77,8 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: verification-${{ github.sha }}
-          path: ${{ runner.temp }}/calculator-verification
+          path: |
+            ${{ runner.temp }}/calculator-verification
+            outputs/workspace-preservation
           if-no-files-found: warn
           retention-days: 14
