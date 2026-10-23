@@ -1418,7 +1418,7 @@ td button {
   color: var(--foreground);
 }
 .result-plot svg,
-.data-plot svg {
+.data-plot > svg {
   width: 100%;
   height: auto;
   max-height: 340px;
