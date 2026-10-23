@@ -16,6 +16,12 @@ Open **Explore**, **Find an operation** or Cmd/Ctrl K. **Help and coverage** ope
 4. Stop the owned proxy session while retaining Wrangler, the browser and service worker. Reload the same origin and calculate a bundled-engine input never previously evaluated, such as `7*13+2`, independently equal to `93`. Confirm the origin refuses connections while the cached application and fresh calculation work.
 5. Restart the owned proxy with the same ports before further online journeys. Run Doctor again and reload to confirm online saves resume. At required phone/desktop widths and both themes, observe dialogs and keyboard-visible targets after final styles load. Capture actual bounds, focus and visible result.
 
+## Short desktop navigation
+
+For `navigation.short-desktop-scroll`, use a fine pointer at 844×390. Scroll inside the sidebar, expose the full **Objects** target, and activate it. Scroll back and activate each of the five workspace tabs. Retain sidebar scrollTop, clientHeight, scrollHeight, each target's visible bounds and hit samples, route changes, and before/after screenshots. Document scrolling without sidebar movement does not pass.
+
+Repeat at 1024×390 and confirm the existing 184px and 224px sidebar widths. At 320×844 and 390×844, check all five 44px navigation targets with each of the four math-keyboard layouts in both themes. Repeat short coarse landscape with the keyboard visible. The phone navigation parent has no height; verify its fixed tabs remain visible and usable. Keep original failing receipts beside the repaired source/build evidence.
+
 ## Updates and failed preparation
 
 Use the machine map recipes for `offline.engine-upgrade` and `offline.preparation-retention`. A newly served shell must load its matching immutable engine files. Retain the prior fully prepared build while the new preparation is partial or interrupted. A failed engine start must expose **Retry**; after correcting the owned fault, retry and calculate a fresh input. Never infer these update states from a normal reload or a unit-test trace.
