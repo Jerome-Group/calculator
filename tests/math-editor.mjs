@@ -498,7 +498,11 @@ const source = fs.readFileSync(
   "utf8",
 );
 const compiled = ts.transpileModule(source, {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
+  compilerOptions: {
+    module: ts.ModuleKind.CommonJS,
+    esModuleInterop: false,
+    jsx: ts.JsxEmit.ReactJSX,
+  },
 }).outputText;
 
 for (const bundle of ["mathlive.mjs", "mathlive.js"]) {
@@ -644,7 +648,9 @@ geometryNodes(geometrySource);
 assert(Number.isInteger(geometryStart) && Number.isInteger(geometryEnd));
 const geometryCode = ts.transpileModule(
   source.slice(geometryStart, geometryEnd),
-  { compilerOptions: { module: ts.ModuleKind.CommonJS } },
+  {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: false },
+  },
 ).outputText;
 function geometryHarness({
   standalone = false,
@@ -1267,6 +1273,7 @@ new Function(
   ts.transpileModule(dialogSource, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
+      esModuleInterop: false,
       jsx: ts.JsxEmit.ReactJSX,
     },
   }).outputText,
