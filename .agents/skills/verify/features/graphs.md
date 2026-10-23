@@ -20,6 +20,10 @@ Open **Graphs**, then **Plot a function** or **Add**. **Objects** can graph a sa
 
 Calculate the integral of `x^2` from `0` to `1`. Verify `1/3` inline, its approximation/details, the shaded interval and the matching saved History result. Editing relevant graph inputs or deleting the saved entry must clear stale analysis and its automatic shade. Manual shading has separate controls.
 
+Add a second Cartesian curve `x`. Refocus **Graph 1 expression** to select `x^2`, choose **area** in **Graph analysis operation**, choose `x` in **Comparison graph**, and set the Analysis **Interval start** to `0` and **Interval end** to `1`. Click **Calculate** and require exact `1/6` inline, valid shade and the same saved History result/request. Capture the selected primary and comparison curves; an x-axis calculation cannot establish area between curves.
+
+Replay all eight `graph.analysis` fixtures from `tests/fixtures/graph-analysis.json` through actual controls. Swapping curves gives `1/6`; extending their interval to `[0,2]` gives `1`; `x^2-1` against the x-axis on `[-2,2]` gives `4`; two distinct graph records both containing `x^2` give `0`; `a*x^2` against `a*x` with **Parameter value** `-2` gives `1/3`; `x^2` against the x-axis on `[-1,1]` gives `2/3`. Comparing with `1/x` on `[0,1]` retains the comparison-continuity error. Reversed bounds retain the increasing-interval error. Unknown symbolic coefficients and `sqrt(x)-x` may remain unresolved; do not force an exact status or weaken original-curve continuity checks.
+
 Start a sufficiently long analysis, use the visible **Stop calculation**, then retry. Pending feedback must clear without old completion replacing the new attempt. Retain actual error, unresolved and divergent statuses. Area against another graph uses an eligible distinct comparison; with one eligible curve it uses the x-axis. Symbolic bounds and angle-dependent parameters need their captured context, including DEG mode.
 
 ## Gotchas

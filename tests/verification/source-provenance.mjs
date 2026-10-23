@@ -70,6 +70,7 @@ export function sourceProvenanceChecks() {
     "tests/fixtures/maths-choices.json",
     "tests/fixtures/maths-invalid.json",
     "tests/fixtures/menu-math.json",
+    "tests/fixtures/graph-analysis.json",
     "tests/maths-oracle.py",
     "tests/maths-assertions.py",
     "tests/verification/observed-matcher.mjs",
