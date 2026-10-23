@@ -440,7 +440,7 @@ export function DistributionFields({
             aria-label={
               ["ppf", "isf"].includes(action) ? "Probability p" : "Value x"
             }
-            value={params.value || "0"}
+            value={params.value ?? "0"}
             onChange={(e) => set("value", e.target.value)}
           />
           <span className="field-hint">
@@ -1018,21 +1018,21 @@ export function ProblemPreview({
           /^(Implies|And|Or|Xor|Equivalent)\((.*)\)$/,
         ),
         a = match ? splitMath(match[2]) : [];
-      l = match
-        ? tex(a[0]) +
-          " " +
-          (
-            {
-              Implies: "\\implies",
-              And: "\\land",
-              Or: "\\lor",
-              Xor: "\\oplus",
-              Equivalent: "\\iff",
-            } as Record<string, string>
-          )[match[1]] +
-          " " +
-          tex(a[1])
-        : e;
+      const symbols: Record<string, string> = {
+        Implies: "\\implies",
+        And: "\\land",
+        Or: "\\lor",
+        Xor: "\\oplus",
+        Equivalent: "\\iff",
+      };
+      if (!match || a.length < 2 || (match[1] === "Implies" && a.length !== 2))
+        throw Error("Use the exact logical source");
+      l =
+        match[1] === "Equivalent" && a.length > 2
+          ? `\\operatorname{Equivalent}\\left(${a.map(tex).join(",")}\\right)`
+          : a
+              .map((value) => `\\left(${tex(value)}\\right)`)
+              .join(` ${symbols[match[1]]} `);
     } else if (op.id === "apart")
       l = `\\operatorname{apart}_{${tex(params.variable || "x")}}\\left(${e}\\right)`;
     else l = e;

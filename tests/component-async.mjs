@@ -1221,5 +1221,23 @@ await check(
     assert.equal(harness.state.get("notice"), "");
   },
 );
+await check(
+  "oversized function arguments cannot poison workspace saving",
+  async () => {
+    const book = notebook("arguments");
+    const harness = calculator([book], {
+      name: "f",
+      kind: "function",
+      args: Array.from(
+        { length: 10 },
+        (_, i) => `parameter${String(i).padStart(2, "0")}`,
+      ).join(","),
+      body: "1",
+    });
+    await harness.render().actions.saveObject();
+    assert.equal(harness.state.get("state").notebooks[0].definitions.length, 0);
+    assert.match(harness.state.get("notice"), /100 characters/);
+  },
+);
 console.log(JSON.stringify(results, null, 2));
 if (results.some((entry) => !entry.passed)) process.exitCode = 1;

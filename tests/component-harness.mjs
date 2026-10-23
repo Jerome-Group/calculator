@@ -223,6 +223,7 @@ export function componentHarness(
     "@/lib/calculator/catalog": { operations: [], categories: [] },
     "@/lib/calculator/operation-params": require("../lib/calculator/operation-params.ts"),
     "@/lib/calculator/graph-table-interval": require("../lib/calculator/graph-table-interval.ts"),
+    "@/lib/calculator/workspace-values": require("../lib/calculator/workspace-values.ts"),
     "@/lib/calculator/storage": {
       accountStorage: (key) => key,
       readDeviceSave: () => null,
