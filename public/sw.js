@@ -3,7 +3,9 @@ const VERSION = "__BUILD_VERSION__",
   READY = "/__calculator_offline_ready__",
   SHELL = "/__calculator_shell__";
 let preparing = false,
-  accountGeneration = 0;
+  accountGeneration = 0,
+  clearingAccount = Promise.resolve();
+const notPrepared = { state: "Not prepared", done: 0, total: 0 };
 const report = async (status, generation = accountGeneration) => {
   const clients = await self.clients.matchAll({ includeUncontrolled: true });
   if (generation !== accountGeneration) return;
@@ -13,26 +15,35 @@ self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) =>
   event.waitUntil(self.clients.claim()),
 );
+const clearAccount = async (generation) => {
+  for (const key of await caches.keys())
+    if (key.startsWith("calculator-core-")) {
+      const cache = await caches.open(key);
+      await cache.delete(SHELL);
+      await cache.delete(READY);
+    }
+  await report(notPrepared, generation);
+};
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SIGN_OUT") {
-    accountGeneration++;
-    event.waitUntil(
-      (async () => {
-        for (const key of await caches.keys())
-          if (key.startsWith("calculator-core-")) {
-            const cache = await caches.open(key);
-            await cache.delete(SHELL);
-            await cache.delete(READY);
-          }
-      })(),
-    );
+    const generation = ++accountGeneration;
+    clearingAccount = clearingAccount
+      .catch(() => {})
+      .then(() => clearAccount(generation));
+    event.waitUntil(clearingAccount);
     return;
   }
   if (event.data?.type === "STATUS") {
+    const generation = accountGeneration;
     event.waitUntil(
       (async () => {
-        const r = await (await caches.open(CACHE)).match(READY);
-        if (r) await report(await r.json());
+        try {
+          await clearingAccount;
+          const r = await (await caches.open(CACHE)).match(READY);
+          await report(r ? await r.json() : notPrepared, generation);
+        } catch {
+          await report(notPrepared, generation);
+        }
       })(),
     );
     return;
@@ -46,6 +57,9 @@ self.addEventListener("message", (event) => {
         total = 0,
         bytes = 0;
       try {
+        clearingAccount = clearingAccount.catch(() => clearAccount(generation));
+        await clearingAccount;
+        if (generation !== accountGeneration) return;
         const response = await fetch("/offline-manifest.json", {
           cache: "no-store",
           credentials: "same-origin",
@@ -178,18 +192,25 @@ self.addEventListener("fetch", (event) => {
     return;
   event.respondWith(
     (async () => {
+      const generation = accountGeneration;
+      try {
+        await clearingAccount;
+      } catch {
+        return fetch(event.request);
+      }
+      if (generation !== accountGeneration) return fetch(event.request);
       const cache = await caches.open(CACHE),
         ready = await cache.match(READY);
       if (event.request.mode === "navigate") {
         try {
           return await fetch(event.request);
         } catch (error) {
-          if (ready) {
+          if (ready && generation === accountGeneration) {
             const page = await cache.match(
               u.pathname === "/" ? SHELL : event.request,
               { ignoreSearch: true },
             );
-            if (page)
+            if (page && generation === accountGeneration)
               return new Response(page.body, {
                 status: page.status,
                 statusText: page.statusText,

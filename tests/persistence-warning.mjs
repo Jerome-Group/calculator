@@ -56,6 +56,7 @@ async function fixture(book = notebook("original")) {
       return values.size;
     },
   };
+  const exports = [];
   const browser = {
     addEventListener(type, callback) {
       const handlers = listeners.get(type) || new Set();
@@ -119,6 +120,33 @@ async function fixture(book = notebook("original")) {
   );
   h.render();
   h.render();
+  const gate = componentHarness(
+    "CalculatorGate",
+    [],
+    { ready: true, name: "a" },
+    {
+      "@/lib/calculator/sync": {
+        ...sync,
+        initializeAccount: async () => ({ id: "a", name: "a" }),
+      },
+      "@/lib/calculator/storage": {
+        ...storage,
+        download: (name, body) => exports.push({ name, body }),
+      },
+      "@/components/ui/dialog": Object.fromEntries(
+        [
+          "Dialog",
+          "DialogContent",
+          "DialogHeader",
+          "DialogTitle",
+          "DialogDescription",
+          "DialogFooter",
+        ].map((name) => [name, name]),
+      ),
+    },
+    { effects: "all", window: browser },
+  );
+  gate.render();
   const tick = (duration) => {
     now += duration;
     for (const [id, timer] of [...timers])
@@ -133,6 +161,8 @@ async function fixture(book = notebook("original")) {
   };
   return {
     h,
+    gate,
+    exports,
     cloud,
     values,
     device,
@@ -149,6 +179,40 @@ async function fixture(book = notebook("original")) {
       JSON.parse(values.get(storage.accountStorage(storage.STORAGE_KEY))),
   };
 }
+function click(gate, label, event) {
+  const control = find(
+    gate.render().tree,
+    (node) => node.props?.children === label,
+  );
+  assert(control, `Missing Gate control ${label}`);
+  control.props.onClick(event);
+}
+function assertDepartureBlocked(f, expectedName) {
+  let prevented = false;
+  click(f.gate, "Sign out", {
+    preventDefault() {
+      prevented = true;
+    },
+  });
+  assert(prevented, "Immediate Sign out must guard the latest committed edit");
+  assert.equal(
+    find(f.gate.render().tree, (node) => node.type === "Dialog").props.open,
+    true,
+  );
+  click(f.gate, "Export backup");
+  assert.equal(
+    JSON.parse(f.exports.at(-1).body).notebooks[0].name,
+    expectedName,
+  );
+  const event = {
+    preventDefault() {
+      this.prevented = true;
+    },
+  };
+  for (const listener of f.listeners.get("beforeunload") || []) listener(event);
+  assert.equal(event.prevented, true);
+  assert.equal(event.returnValue, "");
+}
 const results = [];
 async function check(name, action) {
   try {
@@ -160,6 +224,33 @@ async function check(name, action) {
     sync.forgetAccount();
   }
 }
+await check(
+  "actual Gate guards and exports the committed edit before the debounce, then respects explicit sign-out",
+  async () => {
+    const f = await fixture();
+    f.tick(200);
+    const durable = [...f.values];
+    f.edit("edit before debounce");
+    assert.deepEqual([...f.values], durable, "Commit must remain memory-only");
+    assertDepartureBlocked(f, "edit before debounce");
+    assert.equal(f.primary().notebooks[0].name, "original");
+    click(f.gate, "Keep working");
+    assert.equal(sync.currentAccount(), "a");
+    assert.equal(
+      find(f.gate.render().tree, (node) => node.type === "Dialog").props.open,
+      false,
+    );
+    click(f.gate, "Sign out", { preventDefault() {} });
+    click(f.gate, "Sign out anyway");
+    assert.equal(sync.sessionWorkspace(), null);
+    const afterSignout = [...f.values];
+    f.h.render();
+    f.exit();
+    f.tick(200);
+    assert.equal(sync.sessionWorkspace(), null);
+    assert.deepEqual([...f.values], afterSignout);
+  },
+);
 await check(
   "pending committed edits hide an older account acknowledgement before 200 ms",
   async () => {
@@ -241,7 +332,42 @@ await check("pagehide only saves a committed workspace snapshot", async () => {
   }));
   f.exit();
   assert.equal(f.primary().notebooks[0].name, "original");
+  assert.equal(sync.sessionWorkspace().notebooks[0].name, "original");
 });
+await check(
+  "an older persistence flush cannot replace the latest committed Gate export",
+  async () => {
+    const f = await fixture();
+    f.tick(200);
+    f.edit("older flush");
+    const older = f.h.state.get("state");
+    f.edit("latest committed");
+    const latest = f.h.state.get("state");
+    storage.persist(older);
+    assert.equal(sync.sessionWorkspace(), latest);
+    assert.equal(f.primary().notebooks[0].name, "older flush");
+    assertDepartureBlocked(f, "latest committed");
+  },
+);
+await check(
+  "committed edits remain guarded and exportable when device reads and writes are denied",
+  async () => {
+    const f = await fixture();
+    let writes = 0;
+    f.device.getItem = () => {
+      throw Error("Device storage denied");
+    };
+    f.device.setItem = () => {
+      writes++;
+      throw Error("Device storage denied");
+    };
+    f.edit("memory-only edit");
+    assert.equal(writes, 0, "Commit must not attempt a device write");
+    assert.equal(sync.sessionWorkspace(), f.h.state.get("state"));
+    assertDepartureBlocked(f, "memory-only edit");
+    assert.equal(sync.currentAccount(), "a");
+  },
+);
 for (const transition of [
   "same account renewal",
   "another account",
@@ -261,6 +387,9 @@ for (const transition of [
       await sync.initializeAccount();
       navigator.onLine = false;
     }
+    const remembered = sync.sessionWorkspace();
+    f.h.render();
+    assert.equal(sync.sessionWorkspace(), remembered);
     const before = [...f.values];
     f.exit();
     for (const callback of retainedExit) callback();
@@ -280,6 +409,8 @@ await check(
     const before = [...f.values];
     f.exit();
     f.tick(200);
+    assert.deepEqual([...f.values], before);
+    assertDepartureBlocked(f, "do not overwrite corrupt bytes");
     assert.deepEqual([...f.values], before);
   },
 );

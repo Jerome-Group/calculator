@@ -36,7 +36,10 @@ function fixture() {
     sessionWorkspace: () => null,
     captureAccountSession: () => {
       const captured = generation;
-      return { isCurrent: () => captured === generation };
+      return {
+        isCurrent: () => captured === generation,
+        stageCommittedWorkspace: () => captured === generation,
+      };
     },
     workspaceFitsCloud: (s, additionalBytes = 0) =>
       workspaceRequestFits(

@@ -150,8 +150,11 @@ function savedRevision() {
   const value = Number(readLocal(revKey()) || 0);
   return Number.isSafeInteger(value) && value >= 0 ? value : 0;
 }
-function assignAccount(identity: User) {
-  if (user && user.id !== identity.id) {
+function assignAccount(identity: User, cached: User | null = null) {
+  if (
+    (user && user.id !== identity.id) ||
+    (cached && cached.id !== identity.id)
+  ) {
     stopSave();
     pending = null;
     sessionOwner = "";
@@ -253,7 +256,7 @@ export async function initializeAccount(): Promise<User> {
       "The saved workspace response is invalid. Your local work is preserved.",
     );
   const remote = data.state ? validateState(data.state) : null;
-  assignAccount(data.user);
+  assignAccount(data.user, cached);
   if (!writeLocal(IDENTITY, JSON.stringify(user))) removeLocal(IDENTITY);
   revision = data.revision;
   cloudAcknowledgedText = remote ? JSON.stringify(remote) : "";
@@ -392,9 +395,16 @@ export function currentAccount() {
 export function captureAccountSession() {
   const generation = accountGeneration,
     owner = currentAccount();
+  const isCurrent = () =>
+    !!owner && generation === accountGeneration && owner === currentAccount();
   return {
-    isCurrent: () =>
-      !!owner && generation === accountGeneration && owner === currentAccount(),
+    isCurrent,
+    stageCommittedWorkspace(state: SavedState) {
+      if (!isCurrent()) return false;
+      sessionOwner = owner;
+      sessionState = state;
+      return true;
+    },
   };
 }
 export function workspaceFitsCloud(state: SavedState, additionalBytes = 0) {
@@ -419,7 +429,6 @@ export function forgetAccount() {
 export function syncWorkspace(state: SavedState) {
   const owner = currentAccount();
   if (!owner) throw Error("Sign in before saving a draft.");
-  rememberWorkspace(owner, state);
   try {
     writeDraft(owner, revision, state);
     durableDraftText = JSON.stringify(state);

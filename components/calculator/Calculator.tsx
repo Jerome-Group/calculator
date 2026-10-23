@@ -277,6 +277,7 @@ export default function Calculator() {
   useLayoutEffect(() => {
     current.current = state;
     pendingSave.current = paused ? null : state;
+    if (state && mounted.current) saveLease.stageCommittedWorkspace(state);
     if (objectModal.current !== modal) fieldConversionGeneration.current++;
     objectModal.current = modal;
     editingSource.current = {
@@ -287,7 +288,7 @@ export default function Calculator() {
       op: op?.id,
       params,
     };
-  }, [state, paused, modal, mode, input, latex, op, params]);
+  }, [state, paused, modal, mode, input, latex, op, params, saveLease]);
   const book = state?.notebooks.find((b) => b.id === state.active),
     settings = state?.settings || DEFAULT_SETTINGS,
     saveStatus = paused
