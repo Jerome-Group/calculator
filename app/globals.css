@@ -1508,6 +1508,11 @@ footer button {
     font-size: 20px;
   }
 }
+@media (min-width: 701px) {
+  .navigation {
+    overflow-y: auto;
+  }
+}
 @media (max-width: 1000px) and (min-width: 701px) {
   .workspace {
     margin-left: 184px;

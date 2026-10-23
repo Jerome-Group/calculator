@@ -8304,6 +8304,7 @@
       "explore-empty",
       "explore-search",
       "finder-empty",
+      "navigation.short-desktop-scroll",
       "nested-editor-keyboard",
       "nested-editor-result",
       "nested-editor-edited",
@@ -16796,6 +16797,7 @@
     {
       "id": "feature.navigation",
       "source": [
+        "app/globals.css",
         "components/calculator/Calculator.tsx",
         "components/calculator/TaskBrowser.tsx",
         "lib/calculator/catalog.ts",
@@ -16807,7 +16809,8 @@
         "help-licences",
         "explore-empty",
         "explore-search",
-        "finder-empty"
+        "finder-empty",
+        "navigation.short-desktop-scroll"
       ],
       "run": [
         "pnpm --silent verify run --suite assets --json",
@@ -16839,7 +16842,8 @@
         "ordered UI steps",
         "independent assertions",
         "semantic DOM/screenshot artifacts",
-        "revision + dirty source + built asset fingerprints"
+        "revision + dirty source + built asset fingerprints",
+        "navigation.short-desktop-scroll: actual sidebar wheel scrolling at844x390 fine pointer exposes and activates Objects; all five workspace tabs remain reachable. Retain sidebar scroll metrics, visible target bounds/hits and route changes. Repeat1024x390 with existing184px/224px widths, phone320x844/390x844 with four keyboard layouts in both themes, and short coarse landscape with the keyboard visible."
       ]
     },
     {
