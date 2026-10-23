@@ -94,7 +94,7 @@ function vendorHarness(file) {
     {
       [validity]: (field) => field.element?.mathfield === field,
       ...(scrimName ? { [scrimName]: scrim } : {}),
-      [infoName]: () => ({ bounds: { right: 30, bottom: 290 } }),
+      [infoName]: (field) => field.elementInfo,
       setTimeout: (callback) => timers.push(callback),
       window: { mathVirtualKeyboard: { removeEventListener: noop } },
       Event,
@@ -135,6 +135,14 @@ function vendorHarness(file) {
       host: { dispatchEvent: (event) => value.dispatched.push(event.type) },
       model,
       options: {},
+      elementInfo: { bounds: { right: 30, bottom: 290 } },
+      fieldBoundsReads: 0,
+      field: {
+        getBoundingClientRect() {
+          value.fieldBoundsReads++;
+          return { right: 400, bottom: 500 };
+        },
+      },
       sinkFocusCalls: 0,
       connections: 0,
       disconnections: 0,
@@ -151,6 +159,7 @@ function vendorHarness(file) {
         state: "open",
         show(options) {
           this.state = "open";
+          this.showOptions = options;
           this._onDismiss = options.onDismiss;
         },
         hide() {
@@ -593,6 +602,59 @@ for (const name of [
   const flush = () => {
     while (timers.length) timers.shift()();
   };
+  for (const [description, elementInfo] of [
+    ["no endpoint info", undefined],
+    ["no endpoint bounds", {}],
+    ["undefined endpoint bounds", { bounds: undefined }],
+    ["existing endpoint bounds", { bounds: { right: 30, bottom: 290 } }],
+  ]) {
+    const owner = field(true);
+    const selection = { ranges: [[0, 5]], direction: "forward" };
+    owner.model.selection = selection;
+    owner.elementInfo = elementInfo;
+    owner._menu.state = "closed";
+    assert.equal(
+      owner.toggleContextMenu(),
+      true,
+      name + " opens the menu with " + description,
+    );
+    assert.deepEqual(
+      owner._menu.showOptions.location,
+      elementInfo?.bounds ? { x: 30, y: 290 } : { x: 400, y: 500 },
+    );
+    assert.equal(
+      owner.fieldBoundsReads,
+      elementInfo?.bounds ? 0 : 1,
+      "existing endpoint bounds avoid reading fallback geometry",
+    );
+    assert.equal(owner.model.selection, selection);
+    assert.equal(owner.sinkFocusCalls, 0);
+    const reads = owner.fieldBoundsReads;
+    assert.equal(owner.toggleContextMenu(), true);
+    assert.equal(owner._menu.state, "closed");
+    assert.equal(
+      owner.fieldBoundsReads,
+      reads,
+      "toggling closed reads no bounds",
+    );
+    assert.equal(
+      owner.sinkFocusCalls,
+      1,
+      "fallback menu restores keyboard focus",
+    );
+    flush();
+    assert.equal(Field._globallyFocusedMathfield, owner);
+    assert.equal(owner.model.selection, selection);
+    owner.dispose();
+  }
+  const hiddenMenuOwner = field(true);
+  hiddenMenuOwner.elementInfo = undefined;
+  hiddenMenuOwner._menu.visible = false;
+  hiddenMenuOwner._menu.state = "closed";
+  assert.equal(hiddenMenuOwner.toggleContextMenu(), false);
+  assert.equal(hiddenMenuOwner.fieldBoundsReads, 0);
+  assert.equal(hiddenMenuOwner._menu.showOptions, undefined);
+  hiddenMenuOwner.dispose();
   for (const entry of ["menu", "scrim", "dispose", "readonly", "disabled"]) {
     const owner = field();
     if (entry === "readonly") owner.options.readOnly = true;
