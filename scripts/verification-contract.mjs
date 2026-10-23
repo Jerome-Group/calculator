@@ -21,6 +21,7 @@ export function readFixtures(root) {
     "maths-choices.json",
     "maths-invalid.json",
     "menu-math.json",
+    "graph-analysis.json",
   ].flatMap((file) => {
     const bundle = readJson(path.join(root, "tests/fixtures", file));
     if (bundle.schemaVersion !== 1 || !Array.isArray(bundle.fixtures))
@@ -156,6 +157,7 @@ export function mathContractFingerprint(root) {
     "tests/fixtures/maths-choices.json",
     "tests/fixtures/maths-invalid.json",
     "tests/fixtures/menu-math.json",
+    "tests/fixtures/graph-analysis.json",
     "tests/maths-oracle.py",
     "tests/maths-assertions.py",
     "tests/verification/observed-matcher.mjs",

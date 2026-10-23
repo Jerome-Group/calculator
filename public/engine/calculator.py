@@ -764,7 +764,7 @@ def compute(request):
   elif action in ['integral','area']:
    if interval.is_subset(domain) is not True:raise ValueError('This interval crosses an undefined point. Split the integral explicitly at discontinuities.')
    if action=='area' and interval.is_subset(continuous_domain(g,x,S.S.Reals)) is not True:raise ValueError('The comparison curve is not continuous on the interval.')
-   r=S.integrate(S.Abs(e-g) if action=='area' else e,(x,a,b))
+   r=S.integrate(S.Abs(S.factor(e-g)) if action=='area' else e,(x,a,b))
   elif action=='domain':r=domain
   elif action=='singularities':r=S.singularities(e,x,S.S.Reals)
   else:raise ValueError('Unknown graph analysis operation.')
