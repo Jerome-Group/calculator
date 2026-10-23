@@ -28,7 +28,7 @@ async function check(name, fn) {
 }
 function fixture() {
   const book = investigations.createInvestigationNotebook({
-    labId: "singular-matrix",
+    seed: { kind: "lab", labId: "singular-matrix" },
     workspaceSettings: settings,
   });
   let generation = 0;

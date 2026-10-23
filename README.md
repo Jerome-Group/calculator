@@ -6,6 +6,8 @@ Computation runs on the device in a cancellable browser worker using bundled Pyo
 
 ChatGPT Sites serves the application through a Worker. Sign in with ChatGPT identifies each workspace; D1 stores revision-checked, per-user cloud saves. Local browser saves continue when disconnected or when the server confirms the same account during a database outage. Conflicting local notebooks are retained as copies. Export backups for durable copies outside browser storage.
 
+Investigate starts a custom experiment or one of four guided investigations. Edit parameters and questions, preview exact linear or geometric cases, then compare saved results in a numeric scatter plot and complete table. Original-run backups preserve historical inputs for normal import and rerun. CSV exports retain omissions and escape formula-leading text.
+
 ## Status
 
 The application is ready for ChatGPT Sites deployment. Verification evidence and computational limits are recorded in [validation](docs/VALIDATION.md).

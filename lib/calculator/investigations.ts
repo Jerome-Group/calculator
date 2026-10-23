@@ -47,6 +47,19 @@ export type InvestigationCell = {
   caseId: string;
   stepId: string;
 };
+export type InvestigationSeed =
+  { kind: "lab"; labId: string } | { kind: "custom" };
+export type PlanEditResult =
+  | { kind: "ready"; plan: InvestigationPlan }
+  | { kind: "invalid"; field: string; message: string };
+export const INVESTIGATION_LIMITS = Object.freeze({
+  parameters: 6,
+  cases: 8,
+  steps: 6,
+  runs: 20,
+});
+const isParameterName = (name: string) =>
+  name.length <= 24 && /^[A-Za-z][A-Za-z0-9_]*$/.test(name);
 export type RunAction = { kind: "new" } | { kind: "resume"; runId: string };
 export type RunActivity =
   | { kind: "idle" }
@@ -133,19 +146,19 @@ function isPlan(value: unknown): value is InvestigationPlan {
     !str(value.guide, 8000) ||
     !isSettings(value.settings) ||
     !Array.isArray(value.parameters) ||
-    value.parameters.length > 6 ||
+    value.parameters.length > INVESTIGATION_LIMITS.parameters ||
     !value.parameters.every(
-      (p) => str(p, 24) && /^[A-Za-z][A-Za-z0-9_]*$/.test(p),
+      (p) => typeof p === "string" && isParameterName(p),
     ) ||
     new Set(value.parameters).size !== value.parameters.length ||
     !Array.isArray(value.cases) ||
     !value.cases.length ||
-    value.cases.length > 8 ||
+    value.cases.length > INVESTIGATION_LIMITS.cases ||
     !value.cases.every(isCase) ||
     new Set(value.cases.map((c) => c.id)).size !== value.cases.length ||
     !Array.isArray(value.steps) ||
     !value.steps.length ||
-    value.steps.length > 6 ||
+    value.steps.length > INVESTIGATION_LIMITS.steps ||
     !value.steps.every(isStep) ||
     new Set(value.steps.map((s) => s.id)).size !== value.steps.length
   )
@@ -255,7 +268,7 @@ export function validateInvestigation(
     value.version !== 1 ||
     !isPlan(value.plan) ||
     !Array.isArray(value.runs) ||
-    value.runs.length > 20 ||
+    value.runs.length > INVESTIGATION_LIMITS.runs ||
     !value.runs.every(isRun) ||
     new Set(value.runs.map((r) => r.id)).size !== value.runs.length ||
     (value.source !== undefined && !isSource(value.source))
@@ -292,13 +305,32 @@ export function validateInvestigation(
   };
 }
 export function createInvestigationNotebook({
-  labId,
+  seed,
   workspaceSettings,
 }: {
-  labId: string;
+  seed: InvestigationSeed;
   workspaceSettings: Settings;
 }): Notebook {
-  const lab = investigationLabs.find((l) => l.id === labId);
+  if (seed.kind === "custom") {
+    const notebook = newNotebook("My experiment");
+    return {
+      ...notebook,
+      investigation: {
+        version: 1,
+        plan: {
+          question: "How does the result change with p?",
+          guide:
+            "Choose parameters, cases and questions. Run the plan, then compare the saved evidence.",
+          parameters: ["p"],
+          cases: [{ id: uid(), label: "First case", values: { p: "1" } }],
+          steps: [newInvestigationStep("p^2")],
+          settings: { ...workspaceSettings },
+        },
+        runs: [],
+      },
+    };
+  }
+  const lab = investigationLabs.find((l) => l.id === seed.labId);
   if (!lab) throw Error("Choose an available investigation.");
   const notebook = newNotebook(lab.title);
   return {
@@ -319,43 +351,78 @@ export function createInvestigationNotebook({
     },
   };
 }
+function newInvestigationStep(expression: string): InvestigationStep {
+  return {
+    id: uid(),
+    question: "Calculate " + expression,
+    request: {
+      operation: "simplify",
+      input: expression,
+      mode: "text",
+      params: { expression },
+    },
+  };
+}
+export function setInvestigationParameters({
+  plan,
+  parameters,
+}: {
+  plan: InvestigationPlan;
+  parameters: readonly string[];
+}): PlanEditResult {
+  if (parameters.length > INVESTIGATION_LIMITS.parameters)
+    return {
+      kind: "invalid",
+      field: "parameters",
+      message: "Use at most six parameters.",
+    };
+  if (parameters.some((name) => !isParameterName(name)))
+    return {
+      kind: "invalid",
+      field: "parameters",
+      message:
+        "Names start with a letter and use up to 24 letters, digits or underscores.",
+    };
+  if (new Set(parameters).size !== parameters.length)
+    return {
+      kind: "invalid",
+      field: "parameters",
+      message: "Each parameter name must be unique.",
+    };
+  return {
+    kind: "ready",
+    plan: {
+      ...plan,
+      parameters: [...parameters],
+      cases: plan.cases.map((c) => ({
+        ...c,
+        values: Object.fromEntries(
+          parameters.map((name) => [
+            name,
+            plan.parameters.includes(name) ? c.values[name] : "0",
+          ]),
+        ),
+      })),
+    },
+  };
+}
+export function addInvestigationStep(plan: InvestigationPlan): PlanEditResult {
+  if (plan.steps.length >= INVESTIGATION_LIMITS.steps)
+    return {
+      kind: "invalid",
+      field: "steps",
+      message: "Use at most six questions.",
+    };
+  return {
+    kind: "ready",
+    plan: {
+      ...plan,
+      steps: [...plan.steps, newInvestigationStep(plan.parameters[0] || "0")],
+    },
+  };
+}
 function cellKey(cell: InvestigationCell) {
   return JSON.stringify([cell.runId, cell.caseId, cell.stepId]);
-}
-export function investigationComparison({
-  notebook,
-  runId,
-}: {
-  notebook: Notebook;
-  runId: string;
-}) {
-  const run = notebook.investigation?.runs.find((r) => r.id === runId);
-  if (!run) throw Error("This investigation run is no longer available.");
-  const entries = new Map(
-    notebook.history.flatMap((e) =>
-      e.investigation?.runId === runId
-        ? [[cellKey(e.investigation), e] satisfies [string, Entry]]
-        : [],
-    ),
-  );
-  let saved = 0;
-  const rows = run.snapshot.plan.steps.map((step) => ({
-    step,
-    cells: run.snapshot.plan.cases.map<ComparisonCell>((c) => {
-      const entry = entries.get(
-        cellKey({ runId, caseId: c.id, stepId: step.id }),
-      );
-      if (!entry) return { kind: "missing" };
-      saved++;
-      return { kind: "saved", entry };
-    }),
-  }));
-  return {
-    run,
-    rows,
-    saved,
-    total: run.snapshot.plan.cases.length * rows.length,
-  };
 }
 export function prepareInvestigationRun({
   notebook,
@@ -366,7 +433,10 @@ export function prepareInvestigationRun({
 }) {
   const investigation = notebook.investigation;
   if (!investigation) throw Error("Start an investigation first.");
-  if (action.kind === "new" && investigation.runs.length >= 20)
+  if (
+    action.kind === "new" &&
+    investigation.runs.length >= INVESTIGATION_LIMITS.runs
+  )
     throw Error(
       "This investigation has 20 runs. Delete a run or start a new notebook.",
     );

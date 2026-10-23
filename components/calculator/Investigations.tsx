@@ -4,16 +4,25 @@ import { Play, Square, Plus, Trash2, ArrowUpRight } from "lucide-react";
 import Choice from "./Choice";
 import MathView from "./MathView";
 import RichResult from "./RichResult";
+import InvestigationAuthoring from "./InvestigationAuthoring";
+import InvestigationTrend from "./InvestigationTrend";
+import { download } from "@/lib/calculator/storage";
+import {
+  investigationEvidence,
+  exportInvestigationRun,
+} from "@/lib/calculator/investigation-analysis";
 import { Preview, ProblemPreview } from "./StructuredFields";
 import { operations } from "@/lib/calculator/catalog";
 import { initialOperationParams } from "@/lib/calculator/operation-params";
 import { investigationLabs } from "@/lib/calculator/investigation-labs";
 import {
-  investigationComparison,
+  addInvestigationStep,
+  INVESTIGATION_LIMITS,
   investigationIsCurrent,
 } from "@/lib/calculator/investigations";
 import type {
   InvestigationPlan,
+  InvestigationSeed,
   InvestigationStep,
   RunAction,
   RunActivity,
@@ -115,7 +124,7 @@ export default function Investigations({
   activity: RunActivity;
   busy: boolean;
   ready: boolean;
-  onStart: (id: string) => void;
+  onStart: (seed: InvestigationSeed) => void;
   onPlan: (plan: InvestigationPlan) => void;
   onRun: (action: RunAction) => void;
   onStop: () => void;
@@ -125,6 +134,8 @@ export default function Investigations({
   onRemove: (keepResults: boolean) => void;
   onObjects: () => void;
 }) {
+  const [editError, setEditError] = useState("");
+  const [exportError, setExportError] = useState("");
   const [selection, setSelection] = useState("");
   const [caseSelection, setCaseSelection] = useState("");
   const investigation = notebook.investigation;
@@ -136,7 +147,7 @@ export default function Investigations({
     investigation?.runs.find((r) => r.id === (running?.runId || selection)) ||
     investigation?.runs.at(-1);
   const comparison = selected
-    ? investigationComparison({ notebook, runId: selected.id })
+    ? investigationEvidence({ notebook, runId: selected.id })
     : null;
   const displayedPlan = selected?.snapshot.plan || investigation?.plan;
   const selectedCase =
@@ -323,6 +334,10 @@ export default function Investigations({
                   }
                 />
               </label>
+              <InvestigationAuthoring
+                plan={investigation.plan}
+                onPlan={onPlan}
+              />
               <h3>Parameter cases</h3>
               <p className="small muted">
                 Each case overrides these named parameters. Other objects come
@@ -394,7 +409,9 @@ export default function Investigations({
               </div>
               <button
                 className="subtle"
-                disabled={investigation.plan.cases.length >= 8}
+                disabled={
+                  investigation.plan.cases.length >= INVESTIGATION_LIMITS.cases
+                }
                 onClick={() => {
                   const first = investigation.plan.cases[0];
                   if (first)
@@ -455,6 +472,20 @@ export default function Investigations({
                           }));
                       }}
                     />
+                    <button
+                      className="text-action"
+                      disabled={investigation.plan.steps.length <= 1}
+                      onClick={() =>
+                        onPlan({
+                          ...investigation.plan,
+                          steps: investigation.plan.steps.filter(
+                            (item) => item.id !== step.id,
+                          ),
+                        })
+                      }
+                    >
+                      Remove question {index + 1}
+                    </button>
                     {operation ? (
                       <>
                         <ProblemPreview
@@ -478,6 +509,26 @@ export default function Investigations({
                   </section>
                 );
               })}
+              <button
+                className="subtle"
+                disabled={
+                  investigation.plan.steps.length >= INVESTIGATION_LIMITS.steps
+                }
+                onClick={() => {
+                  const result = addInvestigationStep(investigation.plan);
+                  if (result.kind === "ready") {
+                    onPlan(result.plan);
+                    setEditError("");
+                  } else setEditError(result.message);
+                }}
+              >
+                <Plus size={15} /> Add question
+              </button>
+              {editError && (
+                <p className="warning" role="alert">
+                  {editError}
+                </p>
+              )}
             </details>
           </section>
           {comparison && selected && (
@@ -587,6 +638,37 @@ export default function Investigations({
                   </tbody>
                 </table>
               </div>
+              <InvestigationTrend key={selected.id} evidence={comparison} />
+              <button
+                className="subtle"
+                onClick={() => {
+                  try {
+                    download(
+                      "calculator-original-run-" + selected.id + ".json",
+                      exportInvestigationRun({ notebook, runId: selected.id }),
+                    );
+                    setExportError("");
+                  } catch (error) {
+                    setExportError(
+                      error instanceof Error
+                        ? error.message
+                        : "Could not export this run.",
+                    );
+                  }
+                }}
+              >
+                Export original run backup
+              </button>
+              {exportError && (
+                <p className="warning" role="alert">
+                  {exportError}
+                </p>
+              )}
+              <p className="small muted">
+                Standard Calculator backup containing this original run, its
+                objects and settings, and its saved results. Import it as a
+                separate notebook to continue from those inputs.
+              </p>
               <details className="investigation-snapshot">
                 <summary>Original run snapshot</summary>
                 <p>{selected.snapshot.plan.guide}</p>
@@ -647,9 +729,23 @@ export default function Investigations({
         <div className="section-heading">
           <div>
             <span className="section-label">START ANOTHER QUESTION</span>
-            <h2>Four ways to investigate.</h2>
+            <h2>Start with your own question.</h2>
           </div>
         </div>
+        <article className="investigation-custom">
+          <h3>Build an experiment</h3>
+          <p>
+            Choose parameters, generate exact cases, and ask up to six
+            questions. Keep each run as original evidence.
+          </p>
+          <button
+            className="primary"
+            onClick={() => onStart({ kind: "custom" })}
+          >
+            Start a custom experiment <ArrowUpRight size={16} />
+          </button>
+        </article>
+        <h3>Or adapt a guided investigation</h3>
         <div className="investigation-labs">
           {investigationLabs.map((lab) => (
             <article key={lab.id}>
@@ -659,7 +755,10 @@ export default function Investigations({
               </span>
               <h3>{lab.title}</h3>
               <p>{lab.summary}</p>
-              <button className="subtle" onClick={() => onStart(lab.id)}>
+              <button
+                className="subtle"
+                onClick={() => onStart({ kind: "lab", labId: lab.id })}
+              >
                 Start in a new notebook <ArrowUpRight size={16} />
               </button>
             </article>
