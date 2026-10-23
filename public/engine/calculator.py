@@ -503,9 +503,15 @@ def compute(request):
   from scipy.sparse.linalg import spsolve
   T=diags([np.ones(n-1),-2*np.ones(n),np.ones(n-1)],[-1,0,1])/h**2;A=kron(speye(n),T)+kron(T,speye(n));q=np.arange(1,n+1)*h;X,Y=np.meshgrid(q,q);rhs=np.broadcast_to(f(X,Y),X.shape).ravel();u=spsolve(A.tocsr(),rhs);r={'grid coordinates':q,'interior solution':u.reshape(n,n),'residual infinity norm':float(np.max(np.abs(A@u-rhs)))};numeric=True;c.notes.append('Δu=f on the unit square with u=0 on all boundaries; second-order five-point finite differences. Discretisation error is not the residual.')
  elif op=='distribution':
-  name=c.raw('distribution','normal');pars=c.arr('parameters','[0,1]').tolist();action=c.raw('action','cdf');value=c.num('value','0')
+  name=c.raw('distribution','normal');pars=c.arr('parameters','[0,1]').tolist();action=c.raw('action','cdf');value=c.num('value','0') if action!='moments' else None
   names={'normal':'norm','student-t':'t','chi-square':'chi2','F':'f','binomial':'binom','poisson':'poisson','geometric':'geom','hypergeometric':'hypergeom','uniform':'uniform','exponential':'expon','gamma':'gamma','beta':'beta','negative-binomial':'nbinom'}
   if name not in names:raise ValueError('Unknown distribution.')
+  if any(not np.isfinite(p) for p in pars):raise ValueError('Distribution parameters must be finite.')
+  shapes={'student-t':1,'chi-square':1,'F':2,'beta':2}
+  if name in shapes:
+   count=shapes[name]
+   if len(pars) not in [count,count+1,count+2] or min(pars[:count])<=0:raise ValueError('Use positive shape or degrees-of-freedom parameters, followed by optional location and positive scale.')
+   if len(pars)==count+2 and pars[-1]<=0:raise ValueError('Distribution scale must be positive.')
   if name=='normal':
    if len(pars)!=2 or pars[1]<=0:raise ValueError('Normal parameters are [mean, positive standard deviation].')
    dist=stats.norm(loc=pars[0],scale=pars[1])
@@ -520,8 +526,6 @@ def compute(request):
    dist=stats.gamma(pars[0],scale=pars[1])
   else:dist=getattr(stats,names[name])(*pars)
   mean,var=dist.stats(moments='mv')
-  if any(not np.isfinite(p) for p in pars):raise ValueError('Distribution parameters must be finite.')
-  if name in ['student-t','chi-square','F','beta'] and (not pars or min(pars)<=0):raise ValueError('Shape and degrees-of-freedom parameters must be positive.')
   if name in ['binomial','negative-binomial'] and (len(pars)!=2 or pars[0]!=int(pars[0]) or pars[0]<(1 if name=='negative-binomial' else 0) or not 0<=pars[1]<=1 or name=='negative-binomial' and pars[1]==0):raise ValueError('Use an integer trial/success count and a valid probability.')
   if name=='poisson' and (len(pars)!=1 or pars[0]<0):raise ValueError('Poisson mean must be nonnegative.')
   if name=='geometric' and (len(pars)!=1 or not 0<pars[0]<=1):raise ValueError('Success probability must lie in (0,1].')

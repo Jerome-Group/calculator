@@ -2,6 +2,17 @@ import unittest,json,math
 import sympy as S
 from calculator import compute_json
 class CurrentDispatchTests(unittest.TestCase):
+ def test_distribution_unused_threshold_and_location(self):
+  for value in ['', 'not_a_number(']:
+   out=self.call('distribution',{'distribution':'normal','parameters':'[0,1]','action':'moments','value':value})
+   self.assertEqual(out['details']['mean'],0)
+   self.assertEqual(out['details']['variance'],1)
+  for location in [-2,0,2]:
+   out=self.call('distribution',{'distribution':'student-t','parameters':str([5,location]),'action':'cdf','value':str(location)})
+   self.assertAlmostEqual(float(out['text']),.5)
+  for parameters in ['[0]', '[5,0,0]', '[5,0,-1]']:
+   out=json.loads(compute_json(json.dumps({'operation':'distribution','params':{'distribution':'student-t','parameters':parameters,'action':'cdf','value':'0'}})))
+   self.assertEqual(out['status'],'error',out)
  def test_latex_unary_plus_cut_remainder_and_domain(self):
   self.assertEqual(self.call('evaluate',input='+2',mode='latex')['text'],'2')
   self.assertEqual(self.call('evaluate',input='+x',mode='latex')['text'],'x')

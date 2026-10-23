@@ -83,6 +83,7 @@ import {
 } from "@/lib/calculator/notation";
 import { initialOperationParams } from "@/lib/calculator/operation-params";
 import { definitionDependenciesChanged } from "@/lib/calculator/definition-dependencies";
+import { isDefinition } from "@/lib/calculator/workspace-values";
 import { formatDisplayApprox } from "@/lib/calculator/display-format";
 import GraphWorkspace, { makeGraph } from "./GraphWorkspace";
 import { operations, categories } from "@/lib/calculator/catalog";
@@ -1080,6 +1081,12 @@ export default function Calculator() {
         updated: Date.now(),
       },
       defs = [...book.definitions.filter((x) => x.id !== d.id), d];
+    if (!isDefinition(d)) {
+      setNotice(
+        "Keep the expression within 12,000 characters and function arguments within 100 characters.",
+      );
+      return;
+    }
     const validationGeneration = ++computationGeneration.current,
       lease = captureAccountSession();
     busyRef.current = true;
@@ -2221,6 +2228,7 @@ export default function Calculator() {
               Arguments
               <input
                 aria-label="Function arguments"
+                maxLength={100}
                 value={args}
                 onChange={(e) => setArgs(e.target.value)}
               />

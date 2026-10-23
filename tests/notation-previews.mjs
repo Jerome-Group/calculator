@@ -676,6 +676,31 @@ const inverse = math(
 )[0];
 assert(inverse.includes("inverse") && inverse.includes("tail"));
 const logic = operations.find((entry) => entry.id === "logic");
+for (const operator of ["And", "Or", "Xor", "Equivalent"]) {
+  const preview = math(
+    ProblemPreview({ op: logic, params: { expression: `${operator}(a,b,c)` } }),
+  )[0];
+  assert(
+    preview.includes("a") && preview.includes("b") && preview.includes("c"),
+    `${operator} preview must retain every operand`,
+  );
+}
+assert.equal(
+  elements(
+    DistributionFields({
+      params: {
+        distribution: "normal",
+        parameters: "[0,1]",
+        action: "cdf",
+        value: "",
+      },
+      set: () => {},
+    }),
+    (node) => node.type === "input",
+  ).at(-1).props.value,
+  "",
+  "A cleared threshold must stay visibly empty",
+);
 function switchRelationship(value, relationship) {
   advancedMode = false;
   let changed;
