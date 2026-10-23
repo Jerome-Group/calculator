@@ -1,7 +1,18 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
+import { generateEngineBuild, verifyEngineBuild } from "./engine-build.mjs";
 const root = process.argv[2] || "dist/client";
+const build = await generateEngineBuild();
+await verifyEngineBuild({ ...build, directory: path.join(root, build.root) });
+await fs.rm(path.join(root, "engine"), { recursive: true, force: true });
+await fs.rm(path.join(root, "compute-worker.js"), { force: true });
+for (const entry of await fs.readdir(path.join(root, "engine-build")))
+  if (entry !== build.engine.id)
+    await fs.rm(path.join(root, "engine-build", entry), {
+      recursive: true,
+      force: true,
+    });
 const ignored = new Set([
   "sw.js",
   "offline-manifest.json",
@@ -35,13 +46,7 @@ for (const f of (await files(root)).sort()) {
     bytes: data.length,
   });
 }
-for (const required of [
-  "/compute-worker.js",
-  "/engine/calculator.py",
-  "/engine/presentation.py",
-  "/engine/extended.py",
-  "/engine/pyodide.asm.wasm",
-])
+for (const required of [...build.assets.map((asset) => asset.url)])
   if (!assets.some((a) => a.url === required))
     throw Error("Offline build is missing " + required);
 const version = crypto
@@ -51,14 +56,13 @@ const version = crypto
   .slice(0, 16);
 await fs.writeFile(
   path.join(root, "offline-manifest.json"),
-  JSON.stringify({ version, bytes, assets }),
+  JSON.stringify({ version, engine: build.engine, bytes, assets }),
 );
 await fs.writeFile(
   path.join(root, "sw.js"),
-  (await fs.readFile("public/sw.js", "utf8")).replace(
-    "__BUILD_VERSION__",
-    version,
-  ),
+  (await fs.readFile("public/sw.js", "utf8"))
+    .replace("__BUILD_VERSION__", version)
+    .replace("__ENGINE_ID__", build.engine.id),
 );
 console.log(
   JSON.stringify({ offlineVersion: version, assetCount: assets.length, bytes }),

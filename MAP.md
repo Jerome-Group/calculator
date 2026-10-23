@@ -10,7 +10,7 @@ Start with README.md, then app/page.tsx and components/calculator/CalculatorGate
 | `components/`          | Notebook, investigations, graphs, editor and vendored UI          | `components/calculator/Calculator.tsx` |
 | `lib/`                 | Catalogue, investigation snapshots, computation, sync and storage | `lib/calculator/sync.ts`               |
 | `public/`              | Offline engine, service worker, coverage and notices              | `public/compute-worker.js`             |
-| `build/`, `scripts/`   | Sites integration, portable tooling and asset preparation         | `vite.config.ts`                       |
+| `build/`, `scripts/`   | Sites integration, deterministic engine builds and verification   | `vite.config.ts`                       |
 | `db/`, `drizzle/`      | Workspace schema and migrations                                   | `db/schema.ts`                         |
 | `tests/`, `examples/`  | Release, sync, persistence and asset checks                       | `tests/sync.mjs`                       |
 | `docs/`                | Decisions, product scope and validation                           | `docs/VALIDATION.md`                   |

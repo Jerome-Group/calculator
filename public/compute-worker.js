@@ -1,38 +1,38 @@
-importScripts("/engine/pyodide.js");
+const engineBuild = __ENGINE_BUILD__;
+const engineRoot = new URL("./", self.location.href);
+importScripts(new URL("pyodide.js", engineRoot).href);
 let ready;
 async function init() {
-  self.postMessage({ type: "status", message: "Loading local mathematics…" });
+  self.postMessage({ type: "status", stage: "runtime" });
   const py = await loadPyodide({
-    indexURL: new URL("/engine/", self.location.href).href,
+    indexURL: engineRoot.href,
   });
   self.postMessage({
     type: "status",
-    message: "Preparing symbolic and numerical tools…",
+    stage: "packages",
   });
-  await py.loadPackage(["sympy", "scipy"]);
+  await py.loadPackage(__ENGINE_PACKAGES__);
   for (const file of [
     "networkx-3.4.2-py3-none-any.whl",
     "lark-1.2.2-py3-none-any.whl",
   ]) {
-    const r = await fetch("/engine/" + file);
+    const r = await fetch(new URL(file, engineRoot));
     if (!r.ok) throw Error("Could not load " + file);
     py.unpackArchive(await r.arrayBuffer(), "zip", {
       extractDir: "/lib/python3.12/site-packages",
     });
   }
-  for (const file of [
-    "latex_adapter.py",
-    "supplemental.py",
-    "presentation.py",
-    "extended.py",
-    "calculator.py",
-  ]) {
-    const r = await fetch("/engine/" + file);
+  for (const file of __ENGINE_PYTHON__) {
+    const r = await fetch(new URL(file, engineRoot));
     if (!r.ok) throw Error("Missing computation module");
     py.FS.writeFile("/home/pyodide/" + file, await r.text());
   }
   await py.runPythonAsync("from calculator import compute_json");
-  self.postMessage({ type: "ready" });
+  self.postMessage({
+    type: "ready",
+    protocol: engineBuild.protocol,
+    engineId: engineBuild.id,
+  });
   return py;
 }
 ready = init();

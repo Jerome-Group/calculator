@@ -18,6 +18,7 @@ const eslintConfig = defineConfig([
     ".sites-runtime/**",
     "outputs/**",
     "public/engine/**",
+    "public/engine-build/**",
   ]),
   {
     files: ["components/calculator/**/*.{ts,tsx}", "lib/calculator/**/*.ts"],

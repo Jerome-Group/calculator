@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "katex/dist/katex.min.css";
+import { engineBuild } from "@/lib/calculator/engine-build";
 
 export const metadata: Metadata = {
   title: "Calculator",
@@ -18,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-calculator-engine={engineBuild.id}>
       <body className="antialiased">{children}</body>
     </html>
   );

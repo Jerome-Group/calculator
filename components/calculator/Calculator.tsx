@@ -1,4 +1,6 @@
 "use client";
+import { engineBuild } from "@/lib/calculator/engine-build";
+import { readOfflineStatus } from "@/lib/calculator/offline-status";
 import {
   useCallback,
   useEffect,
@@ -370,7 +372,8 @@ export default function Calculator() {
       return;
     }
     const handler = (e: MessageEvent) => {
-      if (e.data?.type === "OFFLINE_STATUS") setOffline(e.data.status);
+      const status = readOfflineStatus(e.data);
+      if (status) setOffline(status);
     };
     navigator.serviceWorker.addEventListener("message", handler);
     navigator.serviceWorker
@@ -378,6 +381,8 @@ export default function Calculator() {
       .then((reg) =>
         (reg.active || reg.waiting || reg.installing)?.postMessage({
           type: "STATUS",
+          protocol: engineBuild.protocol,
+          engineId: engineBuild.id,
         }),
       )
       .catch(() =>
@@ -1230,7 +1235,11 @@ export default function Calculator() {
         throw Error(
           "Offline preparation is unavailable until the app worker is active. Reload and try again.",
         );
-      reg.active.postMessage({ type: "PREPARE" });
+      reg.active.postMessage({
+        type: "PREPARE",
+        protocol: engineBuild.protocol,
+        engineId: engineBuild.id,
+      });
       setOffline({ state: "Preparing", done: 0, total: 0 });
       navigator.storage?.persist?.().catch(() => {});
     } catch (e) {

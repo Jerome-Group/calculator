@@ -6,23 +6,33 @@ const manifest = JSON.parse(
   await fs.readFile(root + "/offline-manifest.json", "utf8"),
 );
 const assets = new Map(manifest.assets.map((a) => [a.url, a]));
+assert.match(manifest.engine.id, /^[a-f0-9]{64}$/);
+assert.equal(manifest.engine.protocol, 1);
+const engineRoot = `/engine-build/${manifest.engine.id}/`;
+assert(!assets.has("/compute-worker.js"));
+assert(![...assets.keys()].some((url) => url.startsWith("/engine/")));
+assert(
+  ![...assets.keys()].some(
+    (url) => url.startsWith("/engine-build/") && !url.startsWith(engineRoot),
+  ),
+);
 for (const p of [
-  "/compute-worker.js",
-  "/engine/calculator.py",
-  "/engine/latex_adapter.py",
-  "/engine/supplemental.py",
-  "/engine/presentation.py",
-  "/engine/extended.py",
-  "/engine/pyodide.js",
-  "/engine/pyodide.asm.js",
-  "/engine/pyodide.asm.wasm",
-  "/engine/python_stdlib.zip",
-  "/engine/pyodide-lock.json",
-  "/engine/networkx-3.4.2-py3-none-any.whl",
-  "/engine/lark-1.2.2-py3-none-any.whl",
+  engineRoot + "compute-worker.js",
+  engineRoot + "calculator.py",
+  engineRoot + "latex_adapter.py",
+  engineRoot + "supplemental.py",
+  engineRoot + "presentation.py",
+  engineRoot + "extended.py",
+  engineRoot + "pyodide.js",
+  engineRoot + "pyodide.asm.js",
+  engineRoot + "pyodide.asm.wasm",
+  engineRoot + "python_stdlib.zip",
+  engineRoot + "pyodide-lock.json",
+  engineRoot + "networkx-3.4.2-py3-none-any.whl",
+  engineRoot + "lark-1.2.2-py3-none-any.whl",
   "/coverage.html",
   "/licenses.txt",
-  "/engine/licenses/Pyodide-MPL-2.0.txt",
+  engineRoot + "licenses/Pyodide-MPL-2.0.txt",
 ])
   assert(assets.has(p), "Missing " + p);
 const lock = JSON.parse(
@@ -33,7 +43,7 @@ function closure(name) {
   if (seen.has(name)) return;
   seen.add(name);
   const p = lock.packages[name];
-  assert(assets.has("/engine/" + p.file_name), "Missing package " + name);
+  assert(assets.has(engineRoot + p.file_name), "Missing package " + name);
   p.depends.forEach(closure);
 }
 closure("sympy");
@@ -42,7 +52,7 @@ const pins = JSON.parse(
   await fs.readFile("scripts/engine-assets.json", "utf8"),
 );
 for (const pin of pins.assets) {
-  const asset = assets.get("/engine/" + pin.file);
+  const asset = assets.get(engineRoot + pin.file);
   assert(asset, "Missing pinned engine artifact " + pin.file);
   assert.equal(asset.sha256, pin.sha256, "Changed engine artifact " + pin.file);
 }
@@ -71,6 +81,7 @@ for (const [, , href] of coverage.matchAll(/\bhref\s*=\s*(["'])(.*?)\1/gi)) {
 const sw = await fs.readFile(root + "/sw.js", "utf8");
 assert(!sw.includes("__BUILD_VERSION__"));
 assert(sw.includes(manifest.version));
+assert(sw.includes(manifest.engine.id));
 console.log(
   JSON.stringify({
     assets: assets.size,

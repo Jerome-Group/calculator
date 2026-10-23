@@ -11,7 +11,8 @@ async function engine({ constructorFailure = false } = {}) {
     timers = new Map();
   let timerId = 0;
   class Worker {
-    constructor() {
+    constructor(url) {
+      this.url = url;
       if (constructorFailure) throw Error("Worker unavailable");
       workers.push(this);
     }
@@ -29,6 +30,7 @@ async function engine({ constructorFailure = false } = {}) {
   }
   const context = vm.createContext({
     Worker,
+    __CALCULATOR_ENGINE_BUILD__: { id: "b".repeat(64), protocol: 1 },
     Error,
     crypto: webcrypto,
     console,
@@ -43,6 +45,10 @@ async function engine({ constructorFailure = false } = {}) {
     engine: new vm.SourceTextModule(read("../lib/calculator/engine.ts"), {
       context,
     }),
+    "engine-build": new vm.SourceTextModule(
+      read("../lib/calculator/engine-build.ts"),
+      { context },
+    ),
     types: new vm.SourceTextModule(read("../lib/calculator/types.ts"), {
       context,
     }),
@@ -58,7 +64,18 @@ async function engine({ constructorFailure = false } = {}) {
     return modules[name];
   });
   await modules.engine.evaluate();
-  return { api: modules.engine.namespace, workers, timers };
+  const offline = new vm.SourceTextModule(
+    read("../lib/calculator/offline-status.ts"),
+    { context },
+  );
+  await offline.link((specifier) => modules[specifier.replace("./", "")]);
+  await offline.evaluate();
+  return {
+    api: modules.engine.namespace,
+    workers,
+    timers,
+    readOfflineStatus: offline.namespace.readOfflineStatus,
+  };
 }
 const result = { status: "exact", text: "4", latex: "4", notes: [] };
 const results = [];
@@ -75,7 +92,7 @@ await check(
   async () => {
     const { api, workers } = await engine();
     api.startEngine(() => {});
-    workers[0].send({ type: "ready" });
+    workers[0].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
     const pending = api.calculate({ input: "2+2" });
     const rejected = assert.rejects(
       pending,
@@ -90,7 +107,7 @@ await check(
 await check("a failed worker cannot report Ready when reopened", async () => {
   const { api, workers } = await engine();
   api.startEngine(() => {});
-  workers[0].send({ type: "ready" });
+  workers[0].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
   workers[0].onerror?.({ message: "Worker stopped" });
   const status = [];
   api.startEngine((message) => status.push(message));
@@ -104,7 +121,7 @@ await check(
     const previous = workers[0];
     api.cancelCalculation();
     const replacement = workers[1];
-    replacement.send({ type: "ready" });
+    replacement.send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
     const pending = api.calculate({ input: "2+2" });
     void pending.catch(() => {});
     previous.send({ type: "fatal", message: "Old worker failed" });
@@ -136,7 +153,7 @@ await check(
 await check("a postMessage failure rejects only its request", async () => {
   const { api, workers } = await engine();
   api.startEngine(() => {});
-  workers[0].send({ type: "ready" });
+  workers[0].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
   workers[0].postError = Error("Request could not be cloned");
   await assert.rejects(api.calculate({ input: "2+2" }), /cloned/);
   workers[0].postError = null;
@@ -153,7 +170,7 @@ await check(
   async () => {
     const { api, workers } = await engine();
     api.startEngine(() => {});
-    workers[0].send({ type: "ready" });
+    workers[0].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
     const pending = api.calculate({ input: "2+2" });
     const rejected = assert.rejects(pending);
     workers[0].send({
@@ -170,7 +187,7 @@ await check(
     for (const failure of ["fatal", "messageerror", "invalid"]) {
       const { api, workers, timers } = await engine();
       api.startEngine(() => {});
-      workers[0].send({ type: "ready" });
+      workers[0].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
       assert.equal(timers.size, 0);
       const pending = api.calculate({ operation: "evaluate", input: "2+2" });
       const rejected = assert.rejects(pending, /worker/i);
@@ -181,7 +198,7 @@ await check(
       await rejected;
       assert(workers[0].terminated);
       api.startEngine(() => {});
-      workers[1].send({ type: "ready" });
+      workers[1].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
       const retry = api.calculate({ operation: "evaluate", input: "2+2" });
       workers[1].send({
         type: "result",
@@ -197,7 +214,7 @@ await check(
   async () => {
     const { api, workers } = await engine();
     api.startEngine(() => {});
-    workers[0].send({ type: "ready" });
+    workers[0].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
     const malformed = api.calculate({ operation: "histogram", input: "[1]" });
     const rejected = assert.rejects(malformed, /Invalid mathematical result/);
     workers[0].send({
@@ -232,7 +249,15 @@ await check(
     assert.equal(workers.length, 0);
     assert.equal(timers.size, 0);
     assert.match(statuses.at(-1), /Retry/);
-    await assert.rejects(api.calculate({ input: "2+2" }), /not ready/);
+    await assert.rejects(
+      Promise.race([
+        api.calculate({ input: "2+2" }),
+        new Promise((_, reject) =>
+          setImmediate(() => reject(Error("calculation queued before Ready"))),
+        ),
+      ]),
+      /not ready/,
+    );
   },
 );
 await check(
@@ -242,20 +267,122 @@ await check(
     const statuses = [];
     api.startEngine((message) => statuses.push(message));
     const previous = workers[0];
-    const queued = api.calculate({ input: "2+2" });
-    const rejected = assert.rejects(queued, /timed out/);
+    await assert.rejects(
+      Promise.race([
+        api.calculate({ input: "2+2" }),
+        new Promise((_, reject) =>
+          setImmediate(() => reject(Error("calculation queued before Ready"))),
+        ),
+      ]),
+      /not ready/,
+    );
     const timeout = [...timers.values()][0].callback;
     timeout();
-    await rejected;
     assert(previous.terminated);
     api.startEngine((message) => statuses.push(message));
-    workers[1].send({ type: "ready" });
+    workers[1].send({ type: "ready", protocol: 1, engineId: "b".repeat(64) });
     previous.onerror?.({});
     previous.onmessageerror?.({});
     timeout();
     previous.send({ type: "status", message: "Stale loading" });
     assert.equal(statuses.at(-1), "Ready");
     assert(!workers[1].terminated);
+  },
+);
+await check(
+  "only identified current-worker Ready permits calculations",
+  async () => {
+    for (const receipt of [
+      { type: "ready" },
+      { type: "ready", protocol: 1, engineId: "a".repeat(64) },
+      { type: "ready", protocol: 2, engineId: "b".repeat(64) },
+    ]) {
+      const { api, workers, timers } = await engine();
+      const statuses = [];
+      api.startEngine((value) => statuses.push(value));
+      assert.equal(
+        workers[0].url,
+        "/engine-build/" + "b".repeat(64) + "/compute-worker.js",
+      );
+      await assert.rejects(
+        Promise.race([
+          api.calculate({ input: "2+2" }),
+          new Promise((_, reject) =>
+            setImmediate(() =>
+              reject(Error("calculation queued before Ready")),
+            ),
+          ),
+        ]),
+        /not ready/,
+      );
+      assert.equal(workers[0].messages, undefined);
+      workers[0].send(receipt);
+      assert(workers[0].terminated);
+      assert.equal(timers.size, 0);
+      assert(!statuses.includes("Ready"));
+      await assert.rejects(
+        Promise.race([
+          api.calculate({ input: "2+2" }),
+          new Promise((_, reject) =>
+            setImmediate(() =>
+              reject(Error("calculation queued before Ready")),
+            ),
+          ),
+        ]),
+        /not ready/,
+      );
+    }
+  },
+);
+await check(
+  "status text and pre-Ready results cannot bypass the handshake",
+  async () => {
+    const { api, workers } = await engine();
+    const statuses = [];
+    api.startEngine((value) => statuses.push(value));
+    workers[0].send({ type: "status", message: "Ready" });
+    workers[0].send({ type: "result", id: "unknown", result });
+    assert(!statuses.includes("Ready"));
+    await assert.rejects(
+      Promise.race([
+        api.calculate({ input: "2+2" }),
+        new Promise((_, reject) =>
+          setImmediate(() => reject(Error("calculation queued before Ready"))),
+        ),
+      ]),
+      /not ready/,
+    );
+  },
+);
+await check(
+  "offline Ready requires the expected build and a complete identified marker",
+  async () => {
+    const { readOfflineStatus } = await engine();
+    const status = {
+      state: "Ready",
+      done: 5,
+      total: 5,
+      version: "current",
+      protocol: 1,
+      engineId: "b".repeat(64),
+      completedAt: 1,
+    };
+    const message = {
+      type: "OFFLINE_STATUS",
+      protocol: 1,
+      engineId: "b".repeat(64),
+      status,
+    };
+    assert.equal(readOfflineStatus(message).state, "Ready");
+    for (const invalid of [
+      { type: "OFFLINE_STATUS", status },
+      { ...message, protocol: 2 },
+      { ...message, engineId: "a".repeat(64) },
+      { ...message, status: { state: "Ready", done: 5, total: 5 } },
+      { ...message, status: { ...status, done: 4 } },
+      { ...message, status: { ...status, completedAt: NaN } },
+    ])
+      assert.equal(readOfflineStatus(invalid), undefined);
   },
 );
 console.log(JSON.stringify(results, null, 2));

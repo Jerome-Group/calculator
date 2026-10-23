@@ -74,3 +74,4 @@ __pycache__/
 /public/engine/pyodide.asm.wasm
 /public/engine/*.whl
 /public/engine/*.zip
+/public/engine-build/
