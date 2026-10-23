@@ -113,7 +113,7 @@ export function checkWorkspaceNavigation({
   viewport,
   obstacles = [],
 }) {
-  const names = ["Calculate", "Explore", "Graphs", "Objects"];
+  const names = ["Calculate", "Explore", "Investigate", "Graphs", "Objects"];
   const valid = (rect) =>
     rect && [rect.x, rect.y, rect.width, rect.height].every(Number.isFinite);
   if (

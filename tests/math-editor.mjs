@@ -17,19 +17,41 @@ const { prepareMathLiveMenu } =
 
 const navigationGeometry = {
   tabs: Object.fromEntries(
-    ["Calculate", "Explore", "Graphs", "Objects"].map((name, index) => [
-      name,
-      {
-        rect: { x: 12 + index * 90, y: 514, width: 86, height: 52 },
-        hits: Array(9).fill(true),
-      },
-    ]),
+    ["Calculate", "Explore", "Investigate", "Graphs", "Objects"].map(
+      (name, index) => [
+        name,
+        {
+          rect: { x: 12 + index * 74, y: 514, width: 70, height: 52 },
+          hits: Array(9).fill(true),
+        },
+      ],
+    ),
   ),
   keyboardPaintTop: 603,
   viewport: { width: 390, height: 844 },
   obstacles: [{ x: 16, y: 460, width: 358, height: 44 }],
 };
 assert.deepEqual(checkWorkspaceNavigation(navigationGeometry), []);
+const missingInvestigate = structuredClone(navigationGeometry);
+delete missingInvestigate.tabs.Investigate;
+assert.deepEqual(checkWorkspaceNavigation(missingInvestigate), [
+  "Workspace navigation observation is incomplete",
+]);
+const undersizedInvestigate = structuredClone(navigationGeometry);
+undersizedInvestigate.tabs.Investigate.rect.width = 43;
+assert(
+  checkWorkspaceNavigation(undersizedInvestigate).includes(
+    "Investigate navigation target is smaller than44px",
+  ),
+);
+const obscuredInvestigate = structuredClone(navigationGeometry);
+obscuredInvestigate.tabs.Investigate.hits[0] = false;
+assert(
+  checkWorkspaceNavigation(obscuredInvestigate).includes(
+    "Investigate interior8px/edge-midpoint/center hits are not all correct",
+  ),
+);
+
 const coveredNavigation = structuredClone(navigationGeometry);
 for (const tab of Object.values(coveredNavigation.tabs)) {
   tab.rect.y = 778;
@@ -61,13 +83,15 @@ assert(
 
 const landscapeNavigation = {
   tabs: Object.fromEntries(
-    ["Calculate", "Explore", "Graphs", "Objects"].map((name, index) => [
-      name,
-      {
-        rect: { x: 10, y: 146 + index * 58, width: 164, height: 50 },
-        hits: Array(9).fill(true),
-      },
-    ]),
+    ["Calculate", "Explore", "Investigate", "Graphs", "Objects"].map(
+      (name, index) => [
+        name,
+        {
+          rect: { x: 10, y: 90 + index * 58, width: 164, height: 50 },
+          hits: Array(9).fill(true),
+        },
+      ],
+    ),
   ),
   keyboardRect: { x: 184, y: 125, width: 660, height: 266 },
   viewport: { width: 844, height: 391 },
@@ -91,7 +115,7 @@ const paintedSidebarNavigation = {
     Calculate: {
       rect: {
         x: 16,
-        y: 146,
+        y: 90,
         width: 192,
         height: 50,
       },
@@ -100,16 +124,20 @@ const paintedSidebarNavigation = {
     Explore: {
       rect: {
         x: 16,
-        y: 204,
+        y: 148,
         width: 192,
         height: 50,
       },
       hits: [true, true, true, true, true, true, true, true, true],
     },
+    Investigate: {
+      rect: { x: 16, y: 206, width: 192, height: 50 },
+      hits: Array(9).fill(true),
+    },
     Graphs: {
       rect: {
         x: 16,
-        y: 262,
+        y: 264,
         width: 192,
         height: 50,
       },
@@ -118,7 +146,7 @@ const paintedSidebarNavigation = {
     Objects: {
       rect: {
         x: 16,
-        y: 320,
+        y: 322,
         width: 192,
         height: 50,
       },
@@ -150,7 +178,7 @@ assert.deepEqual(
   [],
   "hit-only inspection misses pointer-transparent opaque paint",
 );
-for (const name of ["Calculate", "Explore", "Graphs", "Objects"])
+for (const name of ["Calculate", "Explore", "Investigate", "Graphs", "Objects"])
   assert(
     checkWorkspaceNavigation(paintedSidebarNavigation).includes(
       name + " target overlaps opaque keyboard backdrop",

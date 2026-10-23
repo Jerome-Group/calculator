@@ -22,7 +22,7 @@ overrides:
 
 patchedDependencies:
   mathjs@15.2.0: 1105b473db5eea0933e56cddcdb642be5f6b2b5e2865d7a724e8b73ae8b338ae
-  mathlive@0.110.0: 834fc9c298e808ea1fae3b452ccbdfdfc337f526c0bc55af465c0fa47ca4183b
+  mathlive@0.110.0: dd78d574aeb728542fe24eac4856b1b802f690e561c7d4a6cecdca7f99c62e70
 
 importers:
 
@@ -51,7 +51,7 @@ importers:
         version: 15.2.0(patch_hash=1105b473db5eea0933e56cddcdb642be5f6b2b5e2865d7a724e8b73ae8b338ae)
       mathlive:
         specifier: 0.110.0
-        version: 0.110.0(patch_hash=834fc9c298e808ea1fae3b452ccbdfdfc337f526c0bc55af465c0fa47ca4183b)
+        version: 0.110.0(patch_hash=dd78d574aeb728542fe24eac4856b1b802f690e561c7d4a6cecdca7f99c62e70)
       next:
         specifier: 16.4.2
         version: 16.4.2(@babel/core@7.29.6(supports-color@10.2.2))(@types/node@24.19.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -7237,7 +7237,7 @@ snapshots:
       tiny-emitter: 2.1.0
       typed-function: 4.2.2
 
-  mathlive@0.110.0(patch_hash=834fc9c298e808ea1fae3b452ccbdfdfc337f526c0bc55af465c0fa47ca4183b):
+  mathlive@0.110.0(patch_hash=dd78d574aeb728542fe24eac4856b1b802f690e561c7d4a6cecdca7f99c62e70):
     dependencies:
       '@cortex-js/compute-engine': 0.58.0
 

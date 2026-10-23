@@ -17,7 +17,10 @@ function vendorHarness(file) {
   let menuRoot;
   let scrimClass;
   let menuItem;
+  const functions = new Map();
   function inspect(node) {
+    if (ts.isFunctionDeclaration(node))
+      functions.set(node.name?.text, node.getText(ast));
     if (
       ts.isClassExpression(node) &&
       node.members.some((member) => member.name?.getText(ast) === "onFocus") &&
@@ -370,7 +373,178 @@ function vendorHarness(file) {
       },
     };
   }
-  return { Field, field, timers, events, scrim, realDismissal };
+  function selectionDisposal({ disposeAt, hideAt, nested = true } = {}) {
+    let time = 0,
+      nextTimer = 1,
+      dispatches = 0,
+      createdElements = 0;
+    const pending = new Map(),
+      trace = [];
+    const setTimeout = (callback, delay) => {
+      const id = nextTimer++;
+      pending.set(id, { callback, time: time + delay });
+      return id;
+    };
+    const advance = (until) => {
+      for (;;) {
+        const next = [...pending]
+          .filter(([, timer]) => timer.time <= until)
+          .sort((left, right) => left[1].time - right[1].time)[0];
+        if (!next) break;
+        pending.delete(next[0]);
+        time = next[1].time;
+        next[1].callback();
+      }
+      time = until;
+    };
+    const members = menuItem.members.filter((member) =>
+      [
+        "rootMenu",
+        "select",
+        "dispose",
+        "dispatchSelect",
+        "active",
+        "element",
+        "abortController",
+      ].includes(member.name?.getText(ast)),
+    );
+    const dependencies = new Set();
+    function calls(node) {
+      if (
+        ts.isCallExpression(node) &&
+        functions.has(node.expression.getText(ast))
+      )
+        dependencies.add(node.expression.getText(ast));
+      ts.forEachChild(node, calls);
+    }
+    members.forEach(calls);
+    const select = members.find(
+      (member) => member.name?.getText(ast) === "select",
+    );
+    let blink;
+    function findBlink(node) {
+      if (
+        ts.isCallExpression(node) &&
+        node.expression.getText(ast) === "setTimeout"
+      )
+        blink = node.arguments[1].getText(ast);
+      ts.forEachChild(node, findBlink);
+    }
+    findBlink(select);
+    assert(blink, "actual vendor selection uses the blink delay");
+    const Item = new Function(
+      "environment",
+      `with(environment) {
+        ${[...dependencies].map((name) => functions.get(name)).join("\n")}
+        return class {${members.map((member) => member.getText(ast)).join("\n")}};
+      }`,
+    )({
+      [blink]: 80,
+      setTimeout,
+      clearTimeout: (id) => pending.delete(id),
+      AbortController,
+      CustomEvent,
+      document: {
+        createElement() {
+          createdElements++;
+          return {
+            setAttribute() {},
+            addEventListener() {},
+            remove() {},
+            classList: { toggle() {}, contains: () => false },
+          };
+        },
+      },
+    });
+    const List = new Function(
+      `return class {${menuList.members
+        .filter((member) =>
+          ["rootMenu", "dispose", "dispatchEvent", "host"].includes(
+            member.name?.getText(ast),
+          ),
+        )
+        .map((member) => member.getText(ast))
+        .join("\n")}}`,
+    )();
+    const root = new List();
+    Object.defineProperties(root, {
+      rootMenu: { get: () => root },
+      host: { value: {} },
+    });
+    Object.assign(root, {
+      modifiers: {},
+      state: "open",
+      _menuItems: [],
+      cancelDelayedOperation() {},
+      hide() {
+        this.state = "closed";
+        trace.push("hide");
+      },
+      dispatchEvent: () => true,
+    });
+    const parent = nested ? new List() : root;
+    if (nested)
+      Object.assign(parent, { parentMenu: root, _menuItems: [], hide() {} });
+    const item = new Item();
+    const declaration = {
+      id: "insert-matrix-2x2",
+      onMenuSelect(options) {
+        assert.equal(
+          this,
+          declaration,
+          "selection retains its callback receiver",
+        );
+        assert.equal(options.target, root.host);
+        assert.equal(root.state, "closed", "selection hides before dispatch");
+        trace.push("dispatch");
+        dispatches++;
+      },
+    };
+    Object.assign(item, {
+      parentMenu: parent,
+      type: "command",
+      _declaration: declaration,
+    });
+    parent._menuItems = [item];
+    if (nested) {
+      const outer = new Item();
+      Object.assign(outer, {
+        parentMenu: root,
+        type: "submenu",
+        submenu: parent,
+      });
+      root._menuItems = [outer];
+    }
+    item.select();
+    if (hideAt !== undefined) {
+      advance(hideAt);
+      root.hide();
+    }
+    if (disposeAt !== undefined) {
+      advance(disposeAt);
+      root.dispose();
+    }
+    const elementsBeforeFlush = createdElements;
+    advance(159);
+    assert.equal(dispatches, 0, "selection preserves its two-phase blink");
+    advance(160);
+    return {
+      dispatches,
+      pending: pending.size,
+      trace,
+      createdElements,
+      elementsBeforeFlush,
+    };
+  }
+  return {
+    Field,
+    field,
+    timers,
+    events,
+    scrim,
+    realDismissal,
+    selectionDisposal,
+  };
 }
 
 for (const name of [
@@ -384,8 +558,38 @@ for (const name of [
     : fileURLToPath(
         new URL("../node_modules/mathlive/" + name, import.meta.url),
       );
-  const { Field, field, timers, events, scrim, realDismissal } =
-    vendorHarness(file);
+  const {
+    Field,
+    field,
+    timers,
+    events,
+    scrim,
+    realDismissal,
+    selectionDisposal,
+  } = vendorHarness(file);
+  const ordinary = selectionDisposal();
+  assert.equal(ordinary.dispatches, 1);
+  assert.deepEqual(ordinary.trace, ["hide", "dispatch"]);
+  assert.equal(selectionDisposal({ hideAt: 40 }).dispatches, 1);
+  for (const nested of [true, false])
+    for (const disposeAt of [0, 79, 80, 81, 159]) {
+      const disposed = selectionDisposal({ disposeAt, nested });
+      assert.equal(
+        disposed.dispatches,
+        0,
+        "disposed menu item cannot dispatch a stale action",
+      );
+      assert.equal(
+        disposed.pending,
+        0,
+        "item disposal cancels either pending blink phase",
+      );
+      assert.equal(
+        disposed.createdElements,
+        disposed.elementsBeforeFlush,
+        "disposed selection cannot recreate item elements or listeners",
+      );
+    }
   const flush = () => {
     while (timers.length) timers.shift()();
   };
