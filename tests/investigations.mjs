@@ -5,10 +5,17 @@ import { loadPyodide } from "../public/engine/pyodide.mjs";
 import {
   createInvestigationNotebook,
   prepareInvestigationRun,
-  investigationComparison,
   investigationIsCurrent,
   removeInvestigation,
+  setInvestigationParameters,
+  addInvestigationStep,
 } from "../lib/calculator/investigations.ts";
+import {
+  generateInvestigationCases,
+  investigationTrend,
+  exportInvestigationRun,
+  investigationEvidence,
+} from "../lib/calculator/investigation-analysis.ts";
 import { validateState } from "../lib/calculator/storage.ts";
 import { DEFAULT_SETTINGS } from "../lib/calculator/types.ts";
 const base = fileURLToPath(new URL("../public/engine/", import.meta.url));
@@ -37,7 +44,7 @@ for (const name of [
 await py.runPythonAsync("from calculator import compute_json");
 const compute = py.globals.get("compute_json");
 const notebook = createInvestigationNotebook({
-  labId: "singular-matrix",
+  seed: { kind: "lab", labId: "singular-matrix" },
   workspaceSettings: DEFAULT_SETTINGS,
 });
 assert.equal(notebook.history.length, 0);
@@ -73,7 +80,7 @@ assert.equal(by("regular", "solve").text, "{(1, 1)}");
 assert.equal(by("singular", "solve").text, "EmptySet");
 assert.equal(by("near", "solve").text, "{(-998, 1000)}");
 assert.equal(
-  investigationComparison({ notebook, runId: prepared.run.id }).saved,
+  investigationEvidence({ notebook, runId: prepared.run.id }).saved,
   9,
 );
 assert.equal(
@@ -251,7 +258,7 @@ for (const labId of [
   "probability-tails",
 ]) {
   const book = createInvestigationNotebook({
-    labId,
+    seed: { kind: "lab", labId },
     workspaceSettings: DEFAULT_SETTINGS,
   });
   const run = prepareInvestigationRun({
@@ -369,6 +376,187 @@ for (const labId of [
   });
   labs.push({ id: labId, history: book.history });
 }
+const custom = createInvestigationNotebook({
+  seed: { kind: "custom" },
+  workspaceSettings: DEFAULT_SETTINGS,
+});
+assert.equal(custom.investigation.source, undefined);
+assert.deepEqual(custom.definitions, []);
+const edited = setInvestigationParameters({
+  plan: custom.investigation.plan,
+  parameters: ["p", "q"],
+});
+assert.equal(edited.kind, "ready");
+custom.investigation.plan = edited.plan;
+const generated = generateInvestigationCases({
+  plan: custom.investigation.plan,
+  draft: {
+    kind: "linear",
+    parameter: "p",
+    baseCaseId: custom.investigation.plan.cases[0].id,
+    start: "0",
+    end: "4",
+    count: "5",
+  },
+});
+assert.equal(generated.kind, "ready");
+custom.investigation.plan = generated.plan;
+const question = custom.investigation.plan.steps[0];
+question.request.input = "p^2";
+question.request.params.expression = "p^2";
+question.question = "Square p";
+const second = addInvestigationStep(custom.investigation.plan);
+assert.equal(second.kind, "ready");
+assert.equal(second.plan.steps.length, 2);
+const original = prepareInvestigationRun({
+  notebook: custom,
+  action: { kind: "new" },
+});
+custom.investigation.runs.push(original.run);
+for (const { cell, request, context } of original.missing)
+  custom.history.push({
+    ...request,
+    ...context,
+    investigation: cell,
+    result: JSON.parse(compute(JSON.stringify({ ...request, ...context }))),
+    id: "custom-" + custom.history.length,
+    time: 1,
+  });
+assert.deepEqual(
+  custom.history.map((entry) => entry.result.text),
+  ["0", "1", "4", "9", "16"],
+);
+const frozen = JSON.stringify(original.run);
+custom.investigation.plan.steps[0].request.input = "p^3";
+custom.investigation.plan.steps[0].request.params.expression = "p^3";
+custom.definitions.push({
+  id: "unrelated",
+  name: "r",
+  expression: "99",
+  kind: "expression",
+  updated: 2,
+});
+const evidence = investigationEvidence({
+  notebook: custom,
+  runId: original.run.id,
+});
+const trend = investigationTrend({
+  evidence,
+  parameter: "p",
+  stepId: question.id,
+  measure: { kind: "result" },
+});
+assert.deepEqual(
+  trend.rows.map((row) => [row.kind, row.x, row.y.value]),
+  [
+    ["point", 0, 0],
+    ["point", 1, 1],
+    ["point", 2, 4],
+    ["point", 3, 9],
+    ["point", 4, 16],
+  ],
+);
+const imported = validateState(
+  JSON.parse(
+    exportInvestigationRun({ notebook: custom, runId: original.run.id }),
+  ),
+).notebooks[0];
+assert.deepEqual(imported.history, custom.history);
+assert.equal(
+  imported.investigation.plan.steps[0].request.params.expression,
+  "p^2",
+);
+assert.deepEqual(imported.definitions, []);
+assert.equal(JSON.stringify(original.run), frozen);
+const rerun = prepareInvestigationRun({
+  notebook: imported,
+  action: { kind: "new" },
+});
+assert.deepEqual(
+  rerun.missing.map(
+    ({ request, context }) =>
+      JSON.parse(compute(JSON.stringify({ ...request, ...context }))).text,
+  ),
+  ["0", "1", "4", "9", "16"],
+);
+custom.history.splice(2, 1);
+const partial = validateState(
+  JSON.parse(
+    exportInvestigationRun({ notebook: custom, runId: original.run.id }),
+  ),
+).notebooks[0];
+const resume = prepareInvestigationRun({
+  notebook: partial,
+  action: { kind: "resume", runId: original.run.id },
+});
+assert.equal(resume.missing.length, 1);
+assert.equal(
+  JSON.parse(
+    compute(
+      JSON.stringify({
+        ...resume.missing[0].request,
+        ...resume.missing[0].context,
+      }),
+    ),
+  ).text,
+  "4",
+);
+const derivative = labs.find((lab) => lab.id === "derivative-approximations");
+assert(derivative);
+const derivativeBook = createInvestigationNotebook({
+  seed: { kind: "lab", labId: "derivative-approximations" },
+  workspaceSettings: DEFAULT_SETTINGS,
+});
+const derivativeRun = prepareInvestigationRun({
+  notebook: derivativeBook,
+  action: { kind: "new" },
+});
+derivativeBook.investigation.runs.push(derivativeRun.run);
+for (const { cell, request, context } of derivativeRun.missing)
+  derivativeBook.history.push({
+    ...request,
+    ...context,
+    investigation: cell,
+    id: "detail-" + derivativeBook.history.length,
+    time: 1,
+    result: JSON.parse(compute(JSON.stringify({ ...request, ...context }))),
+  });
+const derivativeEvidence = investigationEvidence({
+  notebook: derivativeBook,
+  runId: derivativeRun.run.id,
+});
+const detailTrend = investigationTrend({
+  evidence: derivativeEvidence,
+  parameter: "h",
+  stepId: "central",
+  measure: { kind: "detail", key: "central difference" },
+});
+assert.equal(detailTrend.rows.filter((row) => row.kind === "point").length, 3);
+assert(
+  detailTrend.measures.some((measure) => measure.key === "step comparison"),
+);
+const approximationTrend = investigationTrend({
+  evidence: derivativeEvidence,
+  parameter: "h",
+  stepId: "reference",
+  measure: { kind: "result" },
+});
+assert(
+  approximationTrend.rows.every(
+    (row) =>
+      row.kind === "point" && row.y.origin === "approx" && row.y.approximate,
+  ),
+);
+console.log(
+  JSON.stringify({
+    studio: {
+      squares: trend.rows.map((row) => row.y.value),
+      partialResume: resume.missing.length,
+      detailRows: detailTrend.rows.length,
+    },
+  }),
+);
+
 console.log(JSON.stringify({ labs }));
 assert.equal(networkAttempts, 0);
 console.log(

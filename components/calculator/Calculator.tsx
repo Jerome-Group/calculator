@@ -690,7 +690,9 @@ export default function Calculator() {
       }
     }
   };
-  const startInvestigation = (labId: string) => {
+  const startInvestigation = (
+    seed: Parameters<typeof createInvestigationNotebook>[0]["seed"],
+  ) => {
     const s = current.current;
     if (!s || s.notebooks.length >= 100) {
       setNotice(
@@ -699,7 +701,7 @@ export default function Calculator() {
       return;
     }
     const created = createInvestigationNotebook({
-      labId,
+      seed,
       workspaceSettings: s.settings,
     });
     change(

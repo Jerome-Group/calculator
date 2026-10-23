@@ -281,7 +281,7 @@ await check(
   "pagehide saves a partial investigation and its latest observation before the timer",
   async () => {
     const book = investigations.createInvestigationNotebook({
-      labId: "singular-matrix",
+      seed: { kind: "lab", labId: "singular-matrix" },
       workspaceSettings: settings,
     });
     const f = await fixture(book);

@@ -997,6 +997,34 @@
         "4": "runner failure"
       },
       "evidence": ["offline-cache.stdout.log", "offline-cache.stderr.log"]
+    },
+    {
+      "id": "investigation-analysis",
+      "argv": [
+        "node",
+        "--import",
+        "./tests/resolve-types.mjs",
+        "tests/investigation-analysis.mjs"
+      ],
+      "prerequisites": ["lockedInstall"],
+      "reads": [
+        "exact case generation, complete saved evidence projections, standard backup validation and escaped CSV"
+      ],
+      "writes": [],
+      "network": "forbidden",
+      "risk": "isolated test contexts, no browser account data",
+      "fixtures": [],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "blocked",
+        "4": "runner failure"
+      },
+      "evidence": [
+        "investigation-analysis.stdout.log",
+        "investigation-analysis.stderr.log"
+      ]
     }
   ],
   "surfaces": [
@@ -7839,7 +7867,8 @@
       "investigations",
       "investigation-async",
       "engine-build",
-      "offline-cache"
+      "offline-cache",
+      "investigation-analysis"
     ]
   },
   "evidenceSchema": {
@@ -8320,7 +8349,11 @@
       "investigation.phone-offline",
       "investigation.deletions",
       "offline.engine-upgrade",
-      "offline.preparation-retention"
+      "offline.preparation-retention",
+      "investigation.custom-studio",
+      "investigation.exact-sweeps",
+      "investigation.numeric-evidence",
+      "investigation.original-run-exports"
     ],
     "requiredPhoneModalIds": [
       "finder",
@@ -8376,7 +8409,7 @@
       "id": "control.002",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1252,
+        "line": 1254,
         "signature": "1bd2749a8e2a65fa60daa93a11e514867eaa73b512025f6373ac11aa2b6befcb"
       },
       "kind": "button",
@@ -8414,7 +8447,7 @@
       "id": "control.003",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1271,
+        "line": 1273,
         "signature": "106894d07ac11fc0e008ca08882b5882ae419032504cb8f566f8e00168d05003"
       },
       "kind": "a",
@@ -8452,7 +8485,7 @@
       "id": "control.004",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1286,
+        "line": 1288,
         "signature": "ad6ddea7ab54766f0e5be8589ac4839c0c0e4579b4916b42e08125ee980cd1e2"
       },
       "kind": "button",
@@ -8490,7 +8523,7 @@
       "id": "control.005",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1295,
+        "line": 1297,
         "signature": "6e78804f81e7ff252dc44079b47aee1ec7d4586eed8920927e7f8d4c06f22306"
       },
       "kind": "button",
@@ -8528,7 +8561,7 @@
       "id": "control.006",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1302,
+        "line": 1304,
         "signature": "667a33f0df4ddba0bdcfb4db3e0e9cb7967d0acc6aa76deeeeb113c9f29620f7"
       },
       "kind": "button",
@@ -8566,7 +8599,7 @@
       "id": "control.007",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1312,
+        "line": 1314,
         "signature": "2db96ef79f4f039bd4402330a8e15bc18836cc30da323750d5784c11bae0982b"
       },
       "kind": "button",
@@ -8604,7 +8637,7 @@
       "id": "control.008",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1316,
+        "line": 1318,
         "signature": "6ecfcea61c020b03459dc2cfef5a8cf159ac6416f8a4fd45713d5850847e02fc"
       },
       "kind": "button",
@@ -8642,7 +8675,7 @@
       "id": "control.009",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1395,
+        "line": 1397,
         "signature": "476227989a3250ee768eafd91bc08e72f61cbce5e63f9c8b763c51099b7d77fa"
       },
       "kind": "button",
@@ -8680,7 +8713,7 @@
       "id": "control.010",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1413,
+        "line": 1415,
         "signature": "2263a7e1f50521b5582a530f73d8594bbd977f97e5477a80e248a792c5b8ac58"
       },
       "kind": "button",
@@ -8718,7 +8751,7 @@
       "id": "control.011",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1427,
+        "line": 1429,
         "signature": "d632f0244a8e36b24812a2f450db90cd95007aca30bc225ac663b97f78fb3848"
       },
       "kind": "MathEditor",
@@ -8756,7 +8789,7 @@
       "id": "control.012",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1434,
+        "line": 1436,
         "signature": "d4b5b5328e924677bb2bc10e298bd5249c8de732ca7dbb636f73f23fb686e9a8"
       },
       "kind": "textarea",
@@ -8794,7 +8827,7 @@
       "id": "control.013",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1454,
+        "line": 1456,
         "signature": "3e51a425774c735b05eb42341b3b87876bf71ddcff4d4ceb8a996771d91f3cd6"
       },
       "kind": "button",
@@ -8832,7 +8865,7 @@
       "id": "control.014",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1466,
+        "line": 1468,
         "signature": "94c2ba18df869882a7d4724b483b9ba523aec9ee66ed3b2c95043b2e6767dbe8"
       },
       "kind": "button",
@@ -8870,7 +8903,7 @@
       "id": "control.015",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1470,
+        "line": 1472,
         "signature": "038ffb3343b98232c2a94488039a0044fecfd6569784acd6c27e60b98192545d"
       },
       "kind": "button",
@@ -8908,7 +8941,7 @@
       "id": "control.016",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1482,
+        "line": 1484,
         "signature": "2ab5f14a6d418da32502b753de114ca0d9872e19b2a03c617a85ae3e085cb239"
       },
       "kind": "button",
@@ -8946,7 +8979,7 @@
       "id": "control.017",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1505,
+        "line": 1507,
         "signature": "d156f0d144252b7ed3dad9c88b4e76ea9bca935b2089a340d71304970554771f"
       },
       "kind": "button",
@@ -8984,7 +9017,7 @@
       "id": "control.018",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1508,
+        "line": 1510,
         "signature": "4daf31c6ae930aa142d3ac76239a9c9c0b50c8c6305e8007bf7c104a4740940a"
       },
       "kind": "button",
@@ -9022,7 +9055,7 @@
       "id": "control.019",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1521,
+        "line": 1523,
         "signature": "f76cb6fde8a59628ff6c9d413cf111ca64c69464841f6c96e3df0ab1d07ec53c"
       },
       "kind": "button",
@@ -9060,7 +9093,7 @@
       "id": "control.020",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1532,
+        "line": 1534,
         "signature": "983148481ad249f8253f49b10aeeb4dc6523198659cc534da5973d85a7ee82a1"
       },
       "kind": "button",
@@ -9098,7 +9131,7 @@
       "id": "control.021",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1566,
+        "line": 1568,
         "signature": "1fd28a49ac104f6e259b373e24acf8e74d131570a903a0332ff57851a971e315"
       },
       "kind": "button",
@@ -9136,7 +9169,7 @@
       "id": "control.022",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1588,
+        "line": 1590,
         "signature": "3c6b88ed21271a7a1624b157d3d57dd9783a16773591179f743251cfd7178858"
       },
       "kind": "button",
@@ -9174,7 +9207,7 @@
       "id": "control.023",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1700,
+        "line": 1702,
         "signature": "3859972b3a4bfed15876d5a2e3c486df51d7f2d1488ea8533cfd6addeefdbffb"
       },
       "kind": "button",
@@ -9212,7 +9245,7 @@
       "id": "control.024",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1713,
+        "line": 1715,
         "signature": "6fca7ef1f7468131ee98d414bb8dbee71b5ccca1b236fd8f504e4eca5bab1f01"
       },
       "kind": "button",
@@ -9250,7 +9283,7 @@
       "id": "control.025",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1716,
+        "line": 1718,
         "signature": "2454cf1595898d86d78710bc2d846e3642b3490fa9f96934bd3fe6fc4adc46ea"
       },
       "kind": "button",
@@ -9288,7 +9321,7 @@
       "id": "control.026",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1719,
+        "line": 1721,
         "signature": "9a1e9750bdbc58eef4fd0e7b8e335b11b58bb0d587f5b51ce5f6a3e7d6bd85fe"
       },
       "kind": "button",
@@ -9326,7 +9359,7 @@
       "id": "control.027",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1727,
+        "line": 1729,
         "signature": "ad357bc93193af186db12b2a0d781f57b6c3d46eab7b6015104e7613d1db2d7f"
       },
       "kind": "button",
@@ -9364,7 +9397,7 @@
       "id": "control.028",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1742,
+        "line": 1744,
         "signature": "a75d5a95e6ecd6498e4ac2f05e2bf07434e1e12f091f15c993ad4c808e7f90e0"
       },
       "kind": "button",
@@ -9402,7 +9435,7 @@
       "id": "control.029",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1746,
+        "line": 1748,
         "signature": "244291d76aa1ab8e1314bd901e67f3a7dea4ba8d17c55a74de276714a59b21c3"
       },
       "kind": "button",
@@ -9440,7 +9473,7 @@
       "id": "control.030",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1752,
+        "line": 1754,
         "signature": "4b66fa56d22056294c3e3e1a523781bf61b1673f1f57225f3af57aaa280eac96"
       },
       "kind": "button",
@@ -9478,7 +9511,7 @@
       "id": "control.031",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1777,
+        "line": 1779,
         "signature": "fbb612136d8fd37a970ea488f7d162ccd869cd42ae6d1c7d5897e2018c1d79c1"
       },
       "kind": "button",
@@ -9516,7 +9549,7 @@
       "id": "control.032",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1785,
+        "line": 1787,
         "signature": "cb063da00454446a4b5bf01607d9c8f8920b9abbab9a0ba1c1f6de02669a091a"
       },
       "kind": "button",
@@ -9554,7 +9587,7 @@
       "id": "control.033",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1867,
+        "line": 1869,
         "signature": "6ca7683add56fddc65a3ea0bbcadd3798cd183177a62aa69aad2ed0be39ac127"
       },
       "kind": "GraphWorkspace",
@@ -9592,7 +9625,7 @@
       "id": "control.034",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1893,
+        "line": 1895,
         "signature": "0e2e40c4fe8dceaa47e762664abf4c8f863293fbf93fdb73b743699bce8f29fd"
       },
       "kind": "button",
@@ -9630,7 +9663,7 @@
       "id": "control.035",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1905,
+        "line": 1907,
         "signature": "99721e895e6db84a2fb2b5598ccac02cc9169f6b8a11ff4245b27d30c23659dd"
       },
       "kind": "button",
@@ -9668,7 +9701,7 @@
       "id": "control.036",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1936,
+        "line": 1938,
         "signature": "06b50c4c4e73bbae6abde7b5c0fd10dccadfeced21dce12c70fc0a901ae81f08"
       },
       "kind": "button",
@@ -9706,7 +9739,7 @@
       "id": "control.037",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1962,
+        "line": 1964,
         "signature": "e422655705368b5e86de6d6bb2d82ba464288a8b692c0b246673ef328f7f3d6e"
       },
       "kind": "button",
@@ -9744,7 +9777,7 @@
       "id": "control.038",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1963,
+        "line": 1965,
         "signature": "d5937cd2d16faf97023b07cf5a7e921fdd2d0d58f43d30542fdc23e62ab72bcd"
       },
       "kind": "button",
@@ -9782,7 +9815,7 @@
       "id": "control.039",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1972,
+        "line": 1974,
         "signature": "a0797ca484dece7a353b1f042e4cd3979a047b9d44329c450a40a03cda841f84"
       },
       "kind": "button",
@@ -9820,7 +9853,7 @@
       "id": "control.040",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1976,
+        "line": 1978,
         "signature": "1aca6944e3a84786a1c033d4be99e51d68d4290765af59c94561683698a6ad57"
       },
       "kind": "button",
@@ -9858,7 +9891,7 @@
       "id": "control.041",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1986,
+        "line": 1988,
         "signature": "e422655705368b5e86de6d6bb2d82ba464288a8b692c0b246673ef328f7f3d6e"
       },
       "kind": "button",
@@ -9896,7 +9929,7 @@
       "id": "control.042",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 1991,
+        "line": 1993,
         "signature": "0031d2e5cd3f8eba2d9f14aaad01d0a537d9a57fa874a59b5a3231bd9f16abc7"
       },
       "kind": "button",
@@ -9934,7 +9967,7 @@
       "id": "control.043",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2015,
+        "line": 2017,
         "signature": "5739dd685d8de5fefab339630bf0a39382d01b2e771d7f52b63a5aaa216b317b"
       },
       "kind": "button",
@@ -9972,7 +10005,7 @@
       "id": "control.044",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2025,
+        "line": 2027,
         "signature": "21c0c339d54c74f3bfcf7b7e1f18c3764b48501d75a02d8423bd7cb36b4dbc53"
       },
       "kind": "button",
@@ -10010,7 +10043,7 @@
       "id": "control.045",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2043,
+        "line": 2045,
         "signature": "e4f49332fc912c449c55d2c00eb050e1a641214e07b4da19e9f115cee5b710e5"
       },
       "kind": "CommandInput",
@@ -10048,7 +10081,7 @@
       "id": "control.046",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2053,
+        "line": 2055,
         "signature": "cda20ba9cd4df31675dda33ac72df1c9b2d53181f3192b6d5506bac4c71cdfe1"
       },
       "kind": "CommandItem",
@@ -10086,7 +10119,7 @@
       "id": "control.047",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2084,
+        "line": 2086,
         "signature": "3ec04757f196ecfcdcb4645f883f995ff689b79dcfaa3910b44c7b518aeafd00"
       },
       "kind": "StructuredFields",
@@ -10124,7 +10157,7 @@
       "id": "control.048",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2095,
+        "line": 2097,
         "signature": "8df8683694da36b6fcd0195e24ed5701da3fd9e658a96f408b0da42881f2575e"
       },
       "kind": "button",
@@ -10162,7 +10195,7 @@
       "id": "control.049",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2104,
+        "line": 2106,
         "signature": "8665de672ea07bbc244df5e78977362eea3627d9a710a6f4f0c2a9e44d70ebf0"
       },
       "kind": "button",
@@ -10200,7 +10233,7 @@
       "id": "control.050",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2168,
+        "line": 2170,
         "signature": "90af04fe32c901d39e5a0b933a770848e622233951820cfea2b06a3b6eab1050"
       },
       "kind": "MathEditor",
@@ -10238,7 +10271,7 @@
       "id": "control.051",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2174,
+        "line": 2176,
         "signature": "295e3e1d9ce56f4cedb9a9860bdd148b1890b04275303c6e304aa6a5035770d2"
       },
       "kind": "button",
@@ -10276,7 +10309,7 @@
       "id": "control.052",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2180,
+        "line": 2182,
         "signature": "e2fbd54a7091c4a1549a76d37aad66b1332d782fe9f930a97ee254b45c635717"
       },
       "kind": "button",
@@ -10314,7 +10347,7 @@
       "id": "control.053",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2214,
+        "line": 2216,
         "signature": "8488f2eed25566f0d0bdbe53896800affce9d4ae4676d510b9cc45045f2e92f8"
       },
       "kind": "input",
@@ -10352,7 +10385,7 @@
       "id": "control.054",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2222,
+        "line": 2224,
         "signature": "241e6607551dff11e290e1b32c16370e4dcaf50e8915424fea723edf8379e8c5"
       },
       "kind": "Choice",
@@ -10390,7 +10423,7 @@
       "id": "control.055",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2239,
+        "line": 2241,
         "signature": "67027cf95baaf019658db6cfad0bc35f77d11c847850a8f84e8354fe47c5bc5d"
       },
       "kind": "input",
@@ -10428,7 +10461,7 @@
       "id": "control.056",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2252,
+        "line": 2254,
         "signature": "7c4b209812f754cf4b89d4ebaf70d6a9c37bcc52e502e74cd0e79884e81de06b"
       },
       "kind": "input",
@@ -10466,7 +10499,7 @@
       "id": "control.057",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2276,
+        "line": 2278,
         "signature": "d19683ade3968966b48d95c654edb719806bc278e2e97d577849e0c0be72dd00"
       },
       "kind": "input",
@@ -10504,7 +10537,7 @@
       "id": "control.058",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2310,
+        "line": 2312,
         "signature": "f2a29a0011b521f642a0265b6b4b5f6e0c8655fd45d1b208399b1fc1dfb26ad5"
       },
       "kind": "input",
@@ -10542,7 +10575,7 @@
       "id": "control.059",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2333,
+        "line": 2335,
         "signature": "888ac94c06b6a0131aba16769ef8884a6fe86ba644ac6acc79f43866c86bea72"
       },
       "kind": "ListInput",
@@ -10580,7 +10613,7 @@
       "id": "control.060",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2341,
+        "line": 2343,
         "signature": "39ecd325b0a4f3da883b6949558503509382b7e50d5bf4ce2cdb0dd36df7bba0"
       },
       "kind": "textarea",
@@ -10618,7 +10651,7 @@
       "id": "control.061",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2351,
+        "line": 2353,
         "signature": "8b98810504ce42e6d6c944dbbfa8b126de42ffdd9471456cabbefb173a0b0c00"
       },
       "kind": "button",
@@ -10656,7 +10689,7 @@
       "id": "control.062",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2354,
+        "line": 2356,
         "signature": "6e825ac79164a2b054f0fb0bb7783672d4e9bae33a3f4afe4bbb0f7591a2c9a4"
       },
       "kind": "button",
@@ -10694,7 +10727,7 @@
       "id": "control.063",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2378,
+        "line": 2380,
         "signature": "9d64c548cb57f1ed449239ddb10f364b9e3b6d41e38fb07ebe689946c17d16fd"
       },
       "kind": "button",
@@ -10732,7 +10765,7 @@
       "id": "control.064",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2399,
+        "line": 2401,
         "signature": "63eddb2c0bcf1d9705c74ca498abf5d69f8803ebdc3bbecd75da690bf64418e7"
       },
       "kind": "input",
@@ -10770,7 +10803,7 @@
       "id": "control.065",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2405,
+        "line": 2407,
         "signature": "18c6ddae16604285e74a7811987a08b34fbdf2e2a8ca24be3986e7abc482966c"
       },
       "kind": "button",
@@ -10808,7 +10841,7 @@
       "id": "control.066",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2428,
+        "line": 2430,
         "signature": "cf3b5ed247518b677c08b6e63acb76d6a518cfcb096362e1c3ecf63f636e1863"
       },
       "kind": "input",
@@ -10846,7 +10879,7 @@
       "id": "control.067",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2451,
+        "line": 2453,
         "signature": "a797d1385fd95e5b300d0615c024378a75ee98de8d9e37c9e977a0987e44da43"
       },
       "kind": "Choice",
@@ -10884,7 +10917,7 @@
       "id": "control.068",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2471,
+        "line": 2473,
         "signature": "fde14052262f70ef62be79c275a9279a45a5fb2eaef90efc68659e85fc025fd6"
       },
       "kind": "Choice",
@@ -10922,7 +10955,7 @@
       "id": "control.069",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2488,
+        "line": 2490,
         "signature": "db76932f2602c869a08438c4c9a3a96839268ad2c4235a09b79779d87bb3ea29"
       },
       "kind": "input",
@@ -10960,7 +10993,7 @@
       "id": "control.070",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2512,
+        "line": 2514,
         "signature": "02da84c0af322fd91de50e17e36cba33ced9c3411def140805464845bd3bd63e"
       },
       "kind": "input",
@@ -10998,7 +11031,7 @@
       "id": "control.071",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2534,
+        "line": 2536,
         "signature": "b89e8f9ed03046a5ec42871a24836bb8aec129230abb8b081f9e04501a38ea40"
       },
       "kind": "input",
@@ -11036,7 +11069,7 @@
       "id": "control.072",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2550,
+        "line": 2552,
         "signature": "2f3c3f9ae559a6772c29d0f2db151b4d3448e9fbffcac800a22b675da5cec48f"
       },
       "kind": "Choice",
@@ -11074,7 +11107,7 @@
       "id": "control.073",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2574,
+        "line": 2576,
         "signature": "3e6fa53aee221a97a3949af46e19fae308f2c9653dbf33fcc3defe30a595189a"
       },
       "kind": "button",
@@ -11112,7 +11145,7 @@
       "id": "control.074",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2626,
+        "line": 2628,
         "signature": "afacb7db8c7da7e3301ca5d467bb94fdb9c9a64b1f7536d11f8eb3338c5b607b"
       },
       "kind": "button",
@@ -11150,7 +11183,7 @@
       "id": "control.075",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2645,
+        "line": 2647,
         "signature": "375215f46b1220ae73ff4fab4ad1406fca0da99f1ca6dedd7e7091bc648df08f"
       },
       "kind": "button",
@@ -11188,7 +11221,7 @@
       "id": "control.076",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2656,
+        "line": 2658,
         "signature": "482aebee25fdac280c3269c175989b5026a3ccfa7462df7f0a7b23a2e9ec25d2"
       },
       "kind": "button",
@@ -11226,7 +11259,7 @@
       "id": "control.077",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2660,
+        "line": 2662,
         "signature": "695d8444d6e861e2daa3aa4e913be3d14660a9feb7f678d9ed1c2d9e31a87312"
       },
       "kind": "input",
@@ -11264,7 +11297,7 @@
       "id": "control.078",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2699,
+        "line": 2701,
         "signature": "11b08a53ef4c0d2e44ea3aa2b79d1b149d5e08ad00559dec0e57568baf217a32"
       },
       "kind": "button",
@@ -11302,7 +11335,7 @@
       "id": "control.079",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2721,
+        "line": 2723,
         "signature": "efc8337060ded27391ef66d1ab9d276a8622c58ab5b77a0b8a457f571fd69eab"
       },
       "kind": "button",
@@ -11340,7 +11373,7 @@
       "id": "control.080",
       "source": {
         "file": "components/calculator/Calculator.tsx",
-        "line": 2849,
+        "line": 2851,
         "signature": "ee5932715263bf2d3aa8c412bc65042e61c073abc3a5027d4ea31a9d4557c410"
       },
       "kind": "Choice",
@@ -14494,7 +14527,7 @@
       "id": "control.163",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 179,
+        "line": 190,
         "signature": "da52685e5eafc9f64e216f8357a7a3baed4ab2a8c6cc86ef16fbca91b98a2dd1"
       },
       "kind": "button",
@@ -14510,7 +14543,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14534,7 +14567,7 @@
       "id": "control.164",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 193,
+        "line": 204,
         "signature": "5b6f001a36a31fb0b7c5440601d15d898c83d5d1ce7cf3ddd14febfd0dc126a5"
       },
       "kind": "button",
@@ -14550,7 +14583,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14574,7 +14607,7 @@
       "id": "control.165",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 197,
+        "line": 208,
         "signature": "ef94b94ffbed8f3b1cba77a42620ff398c48dcfd00ccbefdc6d9484a5678ea2a"
       },
       "kind": "button",
@@ -14590,7 +14623,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14614,7 +14647,7 @@
       "id": "control.166",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 229,
+        "line": 240,
         "signature": "22f090704b76632d42715325f7e2729fe62b609f779c7bcf5c9d40a09bfaf4ae"
       },
       "kind": "textarea",
@@ -14630,7 +14663,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14654,7 +14687,7 @@
       "id": "control.167",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 239,
+        "line": 250,
         "signature": "459f763b427ec2c83743af4735296bcc26288e13c9ad42c02e883ea5861dbf53"
       },
       "kind": "textarea",
@@ -14670,7 +14703,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14694,7 +14727,7 @@
       "id": "control.168",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 251,
+        "line": 262,
         "signature": "5f6821bafde6c23bb92a7ba60d50077392bfcc3187efa51abfb377f92fc71cf9"
       },
       "kind": "Choice",
@@ -14710,7 +14743,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14734,7 +14767,7 @@
       "id": "control.169",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 269,
+        "line": 280,
         "signature": "ff148cf4d37691c554f194803133eab7d955ee4e46c4e19579093be84cad1bd0"
       },
       "kind": "Choice",
@@ -14750,7 +14783,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14774,7 +14807,7 @@
       "id": "control.170",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 287,
+        "line": 298,
         "signature": "f1c7d21b284ca9740948ff15a4e2a3a8f3eae9787d74d4582627c324f81613e7"
       },
       "kind": "input",
@@ -14790,7 +14823,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14814,7 +14847,7 @@
       "id": "control.171",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 312,
+        "line": 323,
         "signature": "4bee0109bb266480c873b2882904644d0a000b5e548ff2d66b58e4b8f8296f22"
       },
       "kind": "input",
@@ -14830,7 +14863,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14854,7 +14887,7 @@
       "id": "control.172",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 337,
+        "line": 352,
         "signature": "718973485a338ddd46aca6c86496e7beb7ae82da0dd79f31dd6bf8ea4d7271d6"
       },
       "kind": "input",
@@ -14870,7 +14903,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14894,7 +14927,7 @@
       "id": "control.173",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 355,
+        "line": 370,
         "signature": "87c959ef21fe1744fa9104aed87e878b43289d38a83c0a72dbf2188395b9d162"
       },
       "kind": "input",
@@ -14910,7 +14943,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14934,7 +14967,7 @@
       "id": "control.174",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 378,
+        "line": 393,
         "signature": "788e50271201422220bedb2badf9c7cd25669c4b10b8a3d187b6bcfce87dd0aa"
       },
       "kind": "button",
@@ -14950,7 +14983,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -14974,8 +15007,8 @@
       "id": "control.175",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 395,
-        "signature": "555d1cae782b2ffad79cf8ea70634a0a7e3f2caa6c336c70f327d09aa053e27c"
+        "line": 410,
+        "signature": "7d9444d8b0374bf32e73b0774a85a1bd09962ffd7eeffcd7be8962834b4df999"
       },
       "kind": "button",
       "label": "Add case",
@@ -14990,7 +15023,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15014,7 +15047,7 @@
       "id": "control.176",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 426,
+        "line": 443,
         "signature": "17d577662b5af8da0f894cb3d6e8d2c2d3c5350bfb1b3196d0e2df2ff744ab74"
       },
       "kind": "input",
@@ -15030,7 +15063,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15054,7 +15087,7 @@
       "id": "control.177",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 437,
+        "line": 454,
         "signature": "fd483926a6fcdd880225304a38bd2f724a863b4e843a61b9be33baf66238255a"
       },
       "kind": "Choice",
@@ -15070,7 +15103,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15094,7 +15127,7 @@
       "id": "control.178",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 465,
+        "line": 496,
         "signature": "85d35a2240ec00b2c83291cd5c500f61f34ec75f8c0360313a034866d65863d4"
       },
       "kind": "button",
@@ -15110,7 +15143,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15134,7 +15167,7 @@
       "id": "control.179",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 488,
+        "line": 539,
         "signature": "71d60739ab63d5c70fd9c09cd645bdec02259cd199b6668944ee80b608c1fdb1"
       },
       "kind": "Choice",
@@ -15150,7 +15183,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15174,7 +15207,7 @@
       "id": "control.180",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 517,
+        "line": 568,
         "signature": "94e00a632b7bffd9dd469f77cd08d53e68d174bfe89df8cefaa721108f7cacd7"
       },
       "kind": "button",
@@ -15190,7 +15223,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15214,7 +15247,7 @@
       "id": "control.181",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 528,
+        "line": 579,
         "signature": "4aeb13b9ff573212de4a68d50eaf01d057566e217c4fff5401bcea4816dead86"
       },
       "kind": "Choice",
@@ -15230,7 +15263,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15254,7 +15287,7 @@
       "id": "control.182",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 607,
+        "line": 689,
         "signature": "6268159ed4838ff74c6171352a9e1b26d7755bc5359d42f2ee081a854db93436"
       },
       "kind": "textarea",
@@ -15270,7 +15303,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15294,7 +15327,7 @@
       "id": "control.183",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 621,
+        "line": 703,
         "signature": "9ac377f2f794602659b7a092ff3ef774fc0d13ebc907dd52c1c5f4e56ec2b02c"
       },
       "kind": "button",
@@ -15310,7 +15343,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15334,7 +15367,7 @@
       "id": "control.184",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 636,
+        "line": 718,
         "signature": "a5fce153160c8299552911ba0ac91ed5a1b56219366cd1e83d3c6a137a31ffb9"
       },
       "kind": "button",
@@ -15350,7 +15383,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15374,7 +15407,7 @@
       "id": "control.185",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 639,
+        "line": 721,
         "signature": "660a4c94ff4a2bbf58d50d3dd74937934a092f3b8f68bb97d41eb157f1dd99b3"
       },
       "kind": "button",
@@ -15390,7 +15423,7 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -15414,8 +15447,8 @@
       "id": "control.186",
       "source": {
         "file": "components/calculator/Investigations.tsx",
-        "line": 662,
-        "signature": "13b83c4f081b78f4bb8d503e400859d1fc127ebf716cddf842f5ee992ba83596"
+        "line": 758,
+        "signature": "0f16f2b5e6ca101ca61ad91a26c4ff13f6fc3fcc57906a4793535e83abb61ea7"
       },
       "kind": "button",
       "label": "Start in a new notebook",
@@ -15430,7 +15463,767 @@
         "isolated fixture workspace"
       ],
       "reads": [
-        "actual investigation controls, saved snapshots and visible comparison cells"
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.187",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 475,
+        "signature": "407616d4a3891549d4ca51f0aebba3ee1f735b971f7ba4b83731dc46696a2d4c"
+      },
+      "kind": "button",
+      "label": "Remove question",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.187 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.188",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 512,
+        "signature": "27389f36d2c8a493ddd09f940b214fd17675df501ded5fe392279ffa7be8b6a4"
+      },
+      "kind": "button",
+      "label": "Add question",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.188 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.189",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 642,
+        "signature": "3af2dae5633b4aa5c83c4f009e39bfc39bb812a1c3c0d42bc2f7005ec0cfd940"
+      },
+      "kind": "button",
+      "label": "Export original run backup",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.189 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.190",
+      "source": {
+        "file": "components/calculator/Investigations.tsx",
+        "line": 741,
+        "signature": "858398914059bfc2ad7524dae8d07184a404a8c5740dc8f1078dce934250f348"
+      },
+      "kind": "button",
+      "label": "Start a custom experiment",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.190 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.191",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 49,
+        "signature": "393b5d1ee305b0474c9b0fa5f40c77c3d8ebcea0fb849e2870bd17fe31a7acb9"
+      },
+      "kind": "input",
+      "label": "Parameter names",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.191 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.192",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 64,
+        "signature": "d9e5520be4bca7f580ef3e024f43ebc065cd4383af0fded6bd9173ef0b3b0edc"
+      },
+      "kind": "button",
+      "label": "Apply parameter names",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.192 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.193",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 97,
+        "signature": "defe07e584c8b84b5f84749f135dfbbd28d995e158ce8e8e76173e2d7d9fe1d1"
+      },
+      "kind": "Choice",
+      "label": "Case sequence",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.193 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.194",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 119,
+        "signature": "0290cef76208d9fe2efffa9fab05b5a2a2a51f501d70c364854af5117eb9b7f3"
+      },
+      "kind": "Choice",
+      "label": "Sweep parameter",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.194 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.195",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 128,
+        "signature": "f78879aea581b6fdf4b33a889ecb9709c7c11016af24733d9d2e9bc6f68311df"
+      },
+      "kind": "Choice",
+      "label": "Sweep base case",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.195 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.196",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 140,
+        "signature": "f67bb2764797b90bbf32bbb568dfae3154e6ca471248979d097db8f633564140"
+      },
+      "kind": "input",
+      "label": "Start",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.196 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.197",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 150,
+        "signature": "08b553c2bf2e53726973b57a533a0b4b872d7b6c4f316815aefc86170152f848"
+      },
+      "kind": "input",
+      "label": "End",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.197 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.198",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 160,
+        "signature": "e83e516e83c6efaa177f9f2bf36db1daa68ba934ada9a6558c5ae9cc481ce5d7"
+      },
+      "kind": "input",
+      "label": "Multiplier",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.198 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.199",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 172,
+        "signature": "a03cd63e3009822a1c5c3c7dca4bca947b155c0c1c0d184608d605788a0eb982"
+      },
+      "kind": "input",
+      "label": "Number of cases",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.199 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.200",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 182,
+        "signature": "8ece909a564c709579b9ad8e54e8b871f5788764421be9254ed3587f4451078a"
+      },
+      "kind": "button",
+      "label": "Preview replacement cases",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.200 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.201",
+      "source": {
+        "file": "components/calculator/InvestigationAuthoring.tsx",
+        "line": 225,
+        "signature": "0b00051c30f790dbdb70ca140d5be159fecff5f8cf9741b6516dbe67d1b018cd"
+      },
+      "kind": "button",
+      "label": "Apply displayed cases",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.201 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.202",
+      "source": {
+        "file": "components/calculator/InvestigationTrend.tsx",
+        "line": 163,
+        "signature": "779ab6ff7bf51964e32a028dcf16f3685fdca777c28d169e8908b4851566edc0"
+      },
+      "kind": "Choice",
+      "label": "Numeric evidence parameter",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.202 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.203",
+      "source": {
+        "file": "components/calculator/InvestigationTrend.tsx",
+        "line": 172,
+        "signature": "954b31e7b2d7e5e22da3e9d429e87b52eddbac5c7753ab1aad5b1b61218929bb"
+      },
+      "kind": "Choice",
+      "label": "Numeric evidence question",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.203 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.204",
+      "source": {
+        "file": "components/calculator/InvestigationTrend.tsx",
+        "line": 187,
+        "signature": "b672bf427998370f383a4793c2bc90f8d6ba26d859df79bb0ff726e880bbef15"
+      },
+      "kind": "Choice",
+      "label": "Numeric evidence measure",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.204 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
+      ],
+      "writes": [
+        "local fixture state when the control changes state",
+        "external evidence directory"
+      ],
+      "exitCodes": {
+        "0": "pass",
+        "1": "assertion failure",
+        "2": "usage/schema error",
+        "3": "missing/blocked prerequisite or evidence",
+        "4": "harness error"
+      },
+      "evidence": [
+        "activated control",
+        "observed state/visible effect",
+        "independent assertion",
+        "current-source browser manifest"
+      ]
+    },
+    {
+      "id": "control.205",
+      "source": {
+        "file": "components/calculator/InvestigationTrend.tsx",
+        "line": 289,
+        "signature": "297fedeaec9d3e082a81e282267851158d3e4bb2f5d71d6de18d522bdd9094c3"
+      },
+      "kind": "button",
+      "label": "Export displayed numeric CSV",
+      "verification": "Activate control and assert visible/state effect in browser; source-only runtime pass prohibited",
+      "risk": "isolated investigation fixtures; remove only disposable runs",
+      "run": [
+        "pnpm --silent verify show control.205 --json",
+        "pnpm --silent verify browser validate --evidence FILE"
+      ],
+      "prerequisites": [
+        "actual browser automation",
+        "isolated fixture workspace"
+      ],
+      "reads": [
+        "current experiment plan, sequence preview or selected original run evidence"
       ],
       "writes": [
         "local fixture state when the control changes state",
@@ -16138,7 +16931,12 @@
         "tests/investigations.mjs",
         "tests/investigation-async.mjs",
         "lib/calculator/workspace-values.ts",
-        "tests/persistence-warning.mjs"
+        "tests/persistence-warning.mjs",
+        "components/calculator/InvestigationAuthoring.tsx",
+        "components/calculator/InvestigationTrend.tsx",
+        "components/calculator/investigations.css",
+        "lib/calculator/investigation-analysis.ts",
+        "tests/investigation-analysis.mjs"
       ],
       "browserScenarioIds": [
         "investigation.matrix",
@@ -16151,7 +16949,11 @@
         "investigation.limits",
         "investigation.backup-recovery",
         "investigation.phone-offline",
-        "investigation.deletions"
+        "investigation.deletions",
+        "investigation.custom-studio",
+        "investigation.exact-sweeps",
+        "investigation.numeric-evidence",
+        "investigation.original-run-exports"
       ],
       "run": ["pnpm --silent verify browser validate --evidence FILE"],
       "prerequisites": [
@@ -16183,7 +16985,11 @@
         "synthetic account generation and target-removal isolation with limitations",
         "exported/imported/recovered notebook-local references and observation",
         "history, cloud input and real output ceilings with retained oversized evidence",
-        "320px/390px case switching, desktop comparison, keyboard focus and genuine offline run"
+        "320px/390px case switching, desktop comparison, keyboard focus and genuine offline run",
+        "custom notebook authoring, atomic parameter roster and bounded question controls",
+        "exact linear and geometric previews, invalid inputs, stale preview invalidation and exact displayed identities",
+        "complete selected-run numeric table, saved detail selection, single-point scatter and explicit omissions",
+        "downloaded original-run standard backup and safely escaped numeric CSV, normal import and rerun from snapshot"
       ]
     }
   ]
