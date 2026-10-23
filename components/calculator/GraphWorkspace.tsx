@@ -21,13 +21,20 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import Choice from "./Choice";
+import CalculationAnswer, { CalculationStatus } from "./CalculationAnswer";
+import { Preview } from "./StructuredFields";
 import MathEditor, { MathEditorHandle } from "./MathEditor";
 import { sourceToMath, mathToSource } from "@/lib/calculator/notation";
 import { formatDisplayApprox } from "@/lib/calculator/display-format";
 import { graphTableInterval } from "@/lib/calculator/graph-table-interval";
 import { calculate } from "@/lib/calculator/engine";
 import { uid } from "@/lib/calculator/types";
-import type { GraphSpec, Definition, Settings } from "@/lib/calculator/types";
+import type {
+  GraphSpec,
+  Definition,
+  Settings,
+  Entry,
+} from "@/lib/calculator/types";
 import {
   compileMath,
   graphScope,
@@ -40,6 +47,42 @@ import {
   MAX_GRAPHS,
 } from "@/lib/calculator/graph";
 const colors = ["#254cdb", "#cb510f", "#8b48cb", "#047d70", "#c62c72"];
+type ShadingInput = {
+  graph: GraphSpec | undefined;
+  comparison: GraphSpec | undefined;
+  action: string;
+  point: string;
+  lower: string;
+  upper: string;
+  definitions: Definition[];
+  settings: Settings;
+  parameter: number;
+};
+type ShadedInterval = {
+  origin: "preview" | "analysis";
+  input: ShadingInput;
+  lower: number;
+  upper: number;
+  f: ReturnType<typeof graphFunctions>["f"];
+  other: ReturnType<typeof graphFunctions>["f"];
+};
+type AnalysisState =
+  | { kind: "idle" }
+  | { kind: "running"; requestId: number; input: ShadingInput }
+  | { kind: "saved"; input: ShadingInput; entryId: Entry["id"] };
+function sameShadingInput(a: ShadingInput, b: ShadingInput) {
+  return (
+    a.graph === b.graph &&
+    a.comparison === b.comparison &&
+    a.action === b.action &&
+    a.point === b.point &&
+    a.lower === b.lower &&
+    a.upper === b.upper &&
+    a.definitions === b.definitions &&
+    a.settings === b.settings &&
+    a.parameter === b.parameter
+  );
+}
 export function makeGraph(
   expression = "sin(x)",
   type: GraphSpec["type"] = "cartesian",
@@ -58,19 +101,25 @@ export function makeGraph(
 }
 export default function GraphWorkspace({
   graphs,
+  history,
   onChange,
   definitions,
   settings,
   onAnalyze,
+  onStop,
+  onOpenHistory,
   onReuse,
   onCompute = calculate,
   workerBusy = false,
 }: {
   graphs: GraphSpec[];
+  history: readonly Entry[];
   onChange: (g: GraphSpec[]) => void;
   definitions: Definition[];
   settings: Settings;
-  onAnalyze: (op: string, p: Record<string, string>) => void;
+  onAnalyze: (params: Entry["params"]) => Promise<Readonly<Entry> | undefined>;
+  onStop: () => void;
+  onOpenHistory: (entryId: Entry["id"]) => void;
   onReuse: (s: string) => void;
   onCompute?: typeof calculate;
   workerBusy?: boolean;
@@ -93,9 +142,10 @@ export default function GraphWorkspace({
     [lower, setLower] = useState("-2"),
     [upper, setUpper] = useState("2"),
     [other, setOther] = useState("zero"),
-    [shade, setShade] = useState(false),
+    [shade, setShade] = useState<ShadedInterval | null>(null),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
+    [analysis, setAnalysis] = useState<AnalysisState>({ kind: "idle" }),
     [editing, setEditing] = useState<{
       id: string;
       field: "expression" | "second";
@@ -112,7 +162,9 @@ export default function GraphWorkspace({
   }, [graphs, onChange]);
   const mounted = useRef(true),
     deriving = useRef(false),
-    generation = useRef(0);
+    generation = useRef(0),
+    analysisRequest = useRef(0),
+    analysisPending = useRef(false);
   useEffect(() => {
     mounted.current = true;
     const generationAtMount = generation.current;
@@ -120,6 +172,8 @@ export default function GraphWorkspace({
       mounted.current = false;
       generation.current = generationAtMount + 1;
       deriving.current = false;
+      analysisRequest.current++;
+      analysisPending.current = false;
     };
   }, []);
   const commitGraphs = (next: GraphSpec[]) => {
@@ -139,6 +193,12 @@ export default function GraphWorkspace({
     ]);
   };
   const current = graphs.find((g) => g.id === selection) || graphs[0],
+    comparison = graphs.find(
+      (g) => g.id === other && g.id !== current?.id && g.type === "cartesian",
+    ),
+    analysisComparison = ["intersection", "area"].includes(action)
+      ? comparison
+      : undefined,
     scope = useMemo(
       () => graphScope(definitions, settings, a),
       [definitions, settings, a],
@@ -160,6 +220,76 @@ export default function GraphWorkspace({
       }),
     [graphs, scope],
   );
+  if (other !== "zero" && !comparison) setOther("zero");
+  const shadingInput: ShadingInput = {
+    graph: current,
+    comparison: analysisComparison,
+    action,
+    point,
+    lower,
+    upper,
+    definitions,
+    settings,
+    parameter: a,
+  };
+  const shadingLatest = useRef(shadingInput);
+  useLayoutEffect(() => {
+    shadingLatest.current = shadingInput;
+  });
+  if (shade && !sameShadingInput(shade.input, shadingInput)) setShade(null);
+  if (
+    analysis.kind !== "idle" &&
+    !sameShadingInput(analysis.input, shadingInput)
+  ) {
+    if (analysis.kind === "running") {
+      analysisRequest.current++;
+      analysisPending.current = false;
+    }
+    setAnalysis({ kind: "idle" });
+  }
+  const analyzedEntry =
+    analysis.kind === "saved" && sameShadingInput(analysis.input, shadingInput)
+      ? history.find((entry) => entry.id === analysis.entryId)
+      : undefined;
+  const visibleShade =
+    shade &&
+    sameShadingInput(shade.input, shadingInput) &&
+    (shade.origin === "preview" ||
+      (analyzedEntry &&
+        ["exact", "numeric"].includes(analyzedEntry.result.status)))
+      ? shade
+      : null;
+  const intervalShading = (): ShadedInterval | null => {
+    if (!current || current.type !== "cartesian") return null;
+    try {
+      if (!lower.trim() || !upper.trim()) return null;
+      const lo = compileMath(lower).evaluate(scope),
+        hi = compileMath(upper).evaluate(scope),
+        curve = prepared.find((p) => p.g.id === current.id),
+        baseline = prepared.find((p) => p.g.id === analysisComparison?.id);
+      if (
+        typeof lo !== "number" ||
+        typeof hi !== "number" ||
+        !Number.isFinite(lo) ||
+        !Number.isFinite(hi) ||
+        lo >= hi ||
+        !curve ||
+        curve.error ||
+        baseline?.error
+      )
+        return null;
+      return {
+        origin: "preview",
+        input: shadingInput,
+        lower: lo,
+        upper: hi,
+        f: curve.f,
+        other: baseline?.f || (() => 0),
+      };
+    } catch {
+      return null;
+    }
+  };
   const trace = useMemo<[number, number] | null>(() => {
     const p = prepared.find((p) => p.g.id === (selection || current?.id));
     if (
@@ -171,7 +301,7 @@ export default function GraphWorkspace({
     const x = p.g.type === "sequence" ? Math.round(traceX) : traceX,
       y = p.f(x);
     return Number.isFinite(x) && Number.isFinite(y) ? [x, y] : null;
-  }, [traceX, prepared, selection, current?.id]);
+  }, [traceX, prepared, selection, current]);
   const diagnostic =
     error ||
     prepared.find((p) => p.error)?.error ||
@@ -305,16 +435,32 @@ export default function GraphWorkspace({
           } else prev = null;
         }
         ctx.stroke();
-        if (shade && g.id === current?.id && g.type === "cartesian") {
-          const lo = Number(lower),
-            hi = Number(upper),
-            q = prepared.find((p) => p.g.id === other);
+        if (g.type === "data" && pts.length === 1) {
+          const px = sx(pts[0][0]),
+            py = sy(pts[0][1]);
+          if (
+            Number.isFinite(px) &&
+            Number.isFinite(py) &&
+            Math.abs(py) < h * 10
+          ) {
+            ctx.beginPath();
+            ctx.arc(px, py, 3, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        }
+        if (visibleShade && g.id === visibleShade.input.graph?.id) {
           ctx.globalAlpha = 0.14;
           for (let i = 0; i < w; i++) {
             const x = xl + ((xr - xl) * i) / w,
-              y = f(x),
-              z = q ? q.f(x) : 0;
-            if (x >= lo && x <= hi && Number.isFinite(y + z))
+              y = visibleShade.f(x),
+              z = visibleShade.other(x);
+            if (
+              x >= visibleShade.lower &&
+              x <= visibleShade.upper &&
+              Number.isFinite(y + z) &&
+              Number.isFinite(sy(y)) &&
+              Number.isFinite(sy(z))
+            )
               ctx.fillRect(
                 i,
                 Math.min(sy(y), sy(z)),
@@ -462,10 +608,7 @@ export default function GraphWorkspace({
     range,
     rotation,
     trace,
-    shade,
-    lower,
-    upper,
-    other,
+    visibleShade,
     scope,
     settings,
     current?.id,
@@ -540,7 +683,23 @@ export default function GraphWorkspace({
         );
       return;
     }
-    const requestGeneration = generation.current;
+    const requestGeneration = generation.current,
+      requestInput = shadingInput;
+    const contextIsCurrent = () => {
+      const input = shadingLatest.current,
+        source = latest.current.graphs.find((graph) => graph.id === current.id);
+      return (
+        mounted.current &&
+        generation.current === requestGeneration &&
+        source?.expression === current.expression &&
+        source.type === current.type &&
+        source.radians === current.radians &&
+        input.definitions === requestInput.definitions &&
+        input.settings === requestInput.settings &&
+        input.parameter === requestInput.parameter &&
+        input.point === requestInput.point
+      );
+    };
     deriving.current = true;
     setBusy(true);
     setError("");
@@ -560,16 +719,9 @@ export default function GraphWorkspace({
           angle: current.radians ? "rad" : settings.angle,
         },
       });
+      if (!contextIsCurrent()) return;
       if (r.status === "error" || r.status === "unresolved" || !r.reusable)
         throw Error(r.text);
-      if (!mounted.current || generation.current !== requestGeneration) return;
-      const source = latest.current.graphs.find((g) => g.id === current.id);
-      if (
-        !source ||
-        source.expression !== current.expression ||
-        source.type !== current.type
-      )
-        return;
       if (latest.current.graphs.length >= MAX_GRAPHS)
         throw Error(
           "Use at most 100 graphs per notebook. Delete a graph before adding another.",
@@ -581,28 +733,72 @@ export default function GraphWorkspace({
       commitGraphs([...latest.current.graphs, g]);
       select(g.id);
     } catch (e) {
-      if (mounted.current && generation.current === requestGeneration)
-        setError(String(e));
+      if (contextIsCurrent()) setError(String(e));
     } finally {
       if (generation.current === requestGeneration) deriving.current = false;
       if (mounted.current && generation.current === requestGeneration)
         setBusy(false);
     }
   };
-  const analyze = () => {
-    if (!current || workerBusy || current.type !== "cartesian") return;
-    onAnalyze("graph_analysis", {
-      expression: current.expression,
-      other: graphs.find((g) => g.id === other)?.expression || "0",
-      action,
-      point,
-      lower,
-      upper,
-      parameter: String(a),
-      canonical: String(!!current.radians),
-      otherCanonical: String(!!graphs.find((g) => g.id === other)?.radians),
-    });
-    if (["integral", "area"].includes(action)) setShade(true);
+  const stopAnalysis = () => {
+    analysisRequest.current++;
+    analysisPending.current = false;
+    setAnalysis({ kind: "idle" });
+    setShade(null);
+    onStop();
+  };
+  const analyze = async () => {
+    if (
+      !current ||
+      workerBusy ||
+      analysisPending.current ||
+      current.type !== "cartesian"
+    )
+      return;
+    const requestGeneration = generation.current,
+      requestId = ++analysisRequest.current,
+      input = shadingInput,
+      interval = ["integral", "area"].includes(action)
+        ? intervalShading()
+        : null;
+    const owns = () =>
+      mounted.current &&
+      generation.current === requestGeneration &&
+      analysisRequest.current === requestId;
+    analysisPending.current = true;
+    setAnalysis({ kind: "running", requestId, input });
+    setShade(null);
+    setError("");
+    try {
+      const entry = await onAnalyze({
+        expression: current.expression,
+        other: analysisComparison?.expression || "0",
+        action,
+        point,
+        lower,
+        upper,
+        parameter: String(a),
+        canonical: String(!!current.radians),
+        otherCanonical: String(!!analysisComparison?.radians),
+      });
+      if (!owns() || !sameShadingInput(input, shadingLatest.current) || !entry)
+        return;
+      setAnalysis({ kind: "saved", input, entryId: entry.id });
+      if (interval && ["exact", "numeric"].includes(entry.result.status))
+        setShade({ ...interval, origin: "analysis" });
+    } catch (error) {
+      if (owns() && sameShadingInput(input, shadingLatest.current))
+        setError(String(error));
+    } finally {
+      if (owns()) {
+        analysisPending.current = false;
+        setAnalysis((state) =>
+          state.kind === "running" && state.requestId === requestId
+            ? { kind: "idle" }
+            : state,
+        );
+      }
+    }
   };
   const openMath = async (g: GraphSpec, field: "expression" | "second") => {
     try {
@@ -970,7 +1166,7 @@ export default function GraphWorkspace({
               Compare with
               <Choice
                 label="Comparison graph"
-                value={other}
+                value={comparison?.id || "zero"}
                 onChange={setOther}
                 options={[
                   { value: "zero", label: "x axis" },
@@ -986,19 +1182,75 @@ export default function GraphWorkspace({
           <div className="row spread">
             <label className="check-label">
               <Checkbox
-                checked={shade}
-                onCheckedChange={(x) => setShade(!!x)}
+                checked={!!visibleShade}
+                onCheckedChange={(x) => setShade(x ? intervalShading() : null)}
               />{" "}
               Shade interval
             </label>
             <button
               className="primary"
               disabled={current.type !== "cartesian"}
+              aria-disabled={workerBusy || analysis.kind === "running"}
               onClick={analyze}
             >
               Calculate
             </button>
           </div>
+          <p role="status" aria-live="polite" className="small muted">
+            {analysis.kind === "running"
+              ? "Calculating graph analysis…"
+              : workerBusy
+                ? "Calculating locally…"
+                : analyzedEntry
+                  ? "Graph analysis saved."
+                  : ""}
+          </p>
+          {(analysis.kind === "running" || workerBusy) && (
+            <button onClick={stopAnalysis}>Stop calculation</button>
+          )}
+          {analyzedEntry && (
+            <section
+              className="graph-analysis-result"
+              aria-label="Graph analysis result"
+            >
+              <div className="row spread">
+                <CalculationStatus status={analyzedEntry.result.status} />
+                <button onClick={() => onOpenHistory(analyzedEntry.id)}>
+                  Open saved calculation in Calculate
+                </button>
+              </div>
+              <CalculationAnswer
+                result={analyzedEntry.result}
+                displayDecimals={settings.displayDecimals ?? 9}
+              />
+              {analyzedEntry.result.approx && (
+                <details className="approximation">
+                  <summary>Decimal approximation</summary>
+                  <Preview
+                    source={formatDisplayApprox(
+                      analyzedEntry.result.approx,
+                      settings.displayDecimals ?? 9,
+                    )}
+                    block
+                  />
+                </details>
+              )}
+              {analyzedEntry.result.notes.length > 0 && (
+                <details
+                  open={["error", "unresolved"].includes(
+                    analyzedEntry.result.status,
+                  )}
+                >
+                  <summary>Conditions and diagnostics</summary>
+                  {analyzedEntry.result.notes.map((note, index) => (
+                    <p className="small muted" key={index}>
+                      {note}
+                    </p>
+                  ))}
+                </details>
+              )}
+            </section>
+          )}
           {table && (
             <div className="table-scroll">
               {tableIntervalError && (
@@ -1047,7 +1299,8 @@ export default function GraphWorkspace({
             Plots are finite samples, not proofs. Undefined regions remain open;
             steep curves may have gaps. Implicit grids can miss small features.
             Drag to pan, pinch or use ± to zoom. Drag a surface to rotate.
-            Analysis is saved in Calculate.
+            Analysis appears here and is saved in Calculate. Leaving Graphs
+            resets these controls.
           </p>
         </section>
       )}

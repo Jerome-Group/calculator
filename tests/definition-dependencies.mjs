@@ -271,11 +271,13 @@ const book = notebook("A", currentDefinitions);
 book.history = [entry];
 const state = workspace([book]);
 state.settings.precision = 50;
+const answer = componentHarness("CalculationAnswer", []);
 const harness = componentHarness(
   "Calculator",
   ["run"],
   { state },
   {
+    "./CalculationAnswer": answer.exports,
     "@/lib/calculator/definition-dependencies": {
       definitionDependenciesChanged,
     },
@@ -288,7 +290,17 @@ assert.equal(
   1,
   "Reordered function arguments must expose the saved result's stale warning",
 );
-assert(elements(tree).some((element) => element.props?.latex === "5"));
+const savedAnswer = elements(tree).find(
+  (element) => element.type === answer.exports.default,
+);
+assert(savedAnswer, "History renders its shared saved answer");
+assert.equal(savedAnswer.props.result, entry.result);
+assert(
+  elements(answer.render(savedAnswer.props).tree).some(
+    (element) => element.props?.latex === "5",
+  ),
+  "The shared History answer retains the original saved LaTeX",
+);
 const button = (text) =>
   elements(tree).find(
     (element) => element.type === "button" && element.props.children === text,

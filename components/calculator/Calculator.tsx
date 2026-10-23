@@ -51,6 +51,10 @@ import StructuredFields, {
   ListInput,
 } from "./StructuredFields";
 import RichResult from "./RichResult";
+import CalculationAnswer, {
+  CalculationDetails,
+  CalculationStatus,
+} from "./CalculationAnswer";
 import TaskBrowser from "./TaskBrowser";
 import Investigations from "./Investigations";
 import {
@@ -101,7 +105,6 @@ import type {
   Definition,
   Entry,
   Operation,
-  Result,
   Settings,
   GraphSpec,
 } from "@/lib/calculator/types";
@@ -161,41 +164,6 @@ const initial = (): SavedState => {
 const hide = () => {
   (window as any).mathVirtualKeyboard?.hide();
 };
-const pretty = (x: any) =>
-  typeof x === "string" ? x : JSON.stringify(x, null, 2);
-function Details({
-  data,
-  sources,
-  onSave,
-  displayDecimals,
-}: {
-  data: any;
-  sources?: Record<string, string>;
-  displayDecimals: number;
-  onSave: (s: string) => void;
-}) {
-  return (
-    <div className="table-scroll">
-      <table>
-        <tbody>
-          {Object.entries(data).map(([key, value]) => (
-            <tr key={key}>
-              <th>{key}</th>
-              <td>
-                <pre>{formatDisplayApprox(pretty(value), displayDecimals)}</pre>
-                {value !== null && sources?.[key] && (
-                  <button onClick={() => onSave(sources[key])}>
-                    Save value
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
 export default function Calculator() {
   const [saveLease] = useState(captureAccountSession);
   const [saveAttempt, setSaveAttempt] = useState<{
@@ -259,6 +227,10 @@ export default function Calculator() {
     objectModal = useRef(modal),
     fieldConversionGeneration = useRef(0),
     conversionGeneration = useRef(0),
+    historyTarget = useRef<{ notebookId: string; entryId: Entry["id"] } | null>(
+      null,
+    ),
+    historyArticles = useRef(new Map<Entry["id"], HTMLElement>()),
     editingSource = useRef({
       mode,
       input,
@@ -300,6 +272,36 @@ export default function Calculator() {
         : saveAttempt?.result === "failed"
           ? "Device save failed · export a backup"
           : syncStatus;
+  const focusHistoryTarget = useCallback(() => {
+    const target = historyTarget.current;
+    if (!target) return;
+    if (
+      view !== "calculate" ||
+      book?.id !== target.notebookId ||
+      !book.history.some((entry) => entry.id === target.entryId)
+    ) {
+      historyTarget.current = null;
+      return;
+    }
+    const article = historyArticles.current.get(target.entryId);
+    if (!article) return;
+    historyTarget.current = null;
+    article.focus();
+    article.scrollIntoView({ block: "nearest" });
+  }, [view, book]);
+  useLayoutEffect(focusHistoryTarget, [focusHistoryTarget, historyCount]);
+  const openHistoryEntry = (notebookId: string, entryId: Entry["id"]) => {
+    const latest = current.current;
+    if (latest?.active !== notebookId) return;
+    const index = latest.notebooks
+      .find((b) => b.id === notebookId)
+      ?.history.findIndex((entry) => entry.id === entryId);
+    if (index === undefined || index < 0) return;
+    historyTarget.current = { notebookId, entryId };
+    setHistoryCount((count) => Math.max(count, index + 1));
+    setView("calculate");
+    hide();
+  };
   useEffect(() => {
     const listener = (event: Event) =>
       setSyncStatus((event as CustomEvent).detail);
@@ -557,7 +559,8 @@ export default function Calculator() {
     generation: number;
     lease: ReturnType<typeof captureAccountSession>;
   }): Promise<
-    { kind: "saved"; result: Result; oversized: boolean } | { kind: "obsolete" }
+    | { kind: "saved"; entry: Readonly<Entry>; oversized: boolean }
+    | { kind: "obsolete" }
   > => {
     const owns = () =>
       mounted.current &&
@@ -608,7 +611,7 @@ export default function Calculator() {
         };
         resolve({
           kind: "saved",
-          result,
+          entry,
           oversized: !workspaceFitsCloud(next),
         });
         return next;
@@ -621,7 +624,7 @@ export default function Calculator() {
     override?: Partial<
       Pick<Entry, "input" | "mode" | "settings" | "definitions">
     >,
-  ) => {
+  ): Promise<Readonly<Entry> | undefined> => {
     const s = current.current;
     if (!s || busyRef.current) return;
     const b = s.notebooks.find((b) => b.id === s.active)!;
@@ -657,7 +660,7 @@ export default function Calculator() {
     setBusy(true);
     hide();
     setModal("");
-    setView("calculate");
+    if (operation !== "graph_analysis") setView("calculate");
     try {
       const completed = await executeEntry({
         request: { operation, params: p, input: source, mode: format },
@@ -672,7 +675,7 @@ export default function Calculator() {
       });
       if (completed.kind === "saved") {
         if (completed.oversized) setNotice(WORKSPACE_SIZE_ERROR);
-        return completed.result;
+        return completed.entry;
       }
     } catch (error) {
       if (
@@ -891,11 +894,13 @@ export default function Calculator() {
             )
               throw Error("A nonempty expression is required.");
             if (busyRef.current) throw Error("Another calculation is running.");
-            return runRef.current(
-              "evaluate",
-              {},
-              { input: p.expression, mode: "text" },
-            );
+            return (
+              await runRef.current(
+                "evaluate",
+                {},
+                { input: p.expression, mode: "text" },
+              )
+            )?.result;
           },
         },
         { signal: lifecycle.signal },
@@ -1324,6 +1329,7 @@ export default function Calculator() {
         className="workbench"
         value={view}
         onValueChange={(v) => {
+          historyTarget.current = null;
           setView(v);
           hide();
         }}
@@ -1543,7 +1549,18 @@ export default function Calculator() {
                   </button>
                 </div>
                 {book.history.slice(0, historyCount).map((h, i) => (
-                  <article className="calculation" key={h.id}>
+                  <article
+                    className="calculation"
+                    key={h.id}
+                    tabIndex={-1}
+                    aria-label={`Saved calculation ${book.history.length - i}`}
+                    ref={(element) => {
+                      if (element) {
+                        historyArticles.current.set(h.id, element);
+                        focusHistoryTarget();
+                      } else historyArticles.current.delete(h.id);
+                    }}
+                  >
                     <div className="calculation-meta">
                       <span>
                         {String(book.history.length - i).padStart(2, "0")}
@@ -1554,17 +1571,7 @@ export default function Calculator() {
                             ? "Graph · " + h.params.action
                             : "Calculation")}
                       </span>
-                      <span
-                        className={"result-badge status-" + h.result.status}
-                      >
-                        {h.result.status === "exact"
-                          ? "Exact"
-                          : h.result.status === "numeric"
-                            ? "Approximate"
-                            : h.result.status === "unresolved"
-                              ? "Unresolved"
-                              : "Needs attention"}
-                      </span>
+                      <CalculationStatus status={h.result.status} />
                       <button
                         className="icon-btn"
                         aria-label="Remove calculation"
@@ -1609,40 +1616,13 @@ export default function Calculator() {
                       )}
                       <span>Edit</span>
                     </button>
-                    <div className="answer">
-                      {h.result.status === "error" ? (
-                        <p>{h.result.text}</p>
-                      ) : h.result.display ? (
-                        <RichResult
-                          node={h.result.display}
-                          displayDecimals={settings.displayDecimals ?? 9}
-                          numeric={h.result.status === "numeric"}
-                        />
-                      ) : h.result.latex ? (
-                        <MathView
-                          latex={h.result.latex}
-                          block
-                          displayDecimals={settings.displayDecimals ?? 9}
-                          numeric={h.result.status === "numeric"}
-                        />
-                      ) : h.result.details ? (
-                        <Details
-                          data={h.result.details}
-                          sources={h.result.detailSources}
-                          displayDecimals={settings.displayDecimals ?? 9}
-                          onSave={(s) =>
-                            openObject({ expression: s, kind: "object" })
-                          }
-                        />
-                      ) : (
-                        <pre>
-                          {formatDisplayApprox(
-                            h.result.text,
-                            settings.displayDecimals ?? 9,
-                          )}
-                        </pre>
-                      )}
-                    </div>
+                    <CalculationAnswer
+                      result={h.result}
+                      displayDecimals={settings.displayDecimals ?? 9}
+                      onSave={(source) =>
+                        openObject({ expression: source, kind: "object" })
+                      }
+                    />
                     {h.result.approx && (
                       <details className="approximation">
                         <summary>Decimal approximation</summary>
@@ -1672,7 +1652,7 @@ export default function Calculator() {
                             numeric={h.result.status === "numeric"}
                           />
                         ) : (
-                          <Details
+                          <CalculationDetails
                             data={h.result.details}
                             sources={h.result.detailSources}
                             displayDecimals={settings.displayDecimals ?? 9}
@@ -1869,6 +1849,7 @@ export default function Calculator() {
           <GraphWorkspace
             key={book.id}
             graphs={book.graphs}
+            history={book.history}
             onChange={(graphs) => {
               if (graphs.length > 100) {
                 setNotice(
@@ -1882,7 +1863,9 @@ export default function Calculator() {
             settings={settings}
             onCompute={computeAuxiliary}
             workerBusy={busy}
-            onAnalyze={run}
+            onAnalyze={(params) => run("graph_analysis", params)}
+            onStop={stopCalculation}
+            onOpenHistory={(entryId) => openHistoryEntry(book.id, entryId)}
             onReuse={reuse}
           />
         </TabsContent>
