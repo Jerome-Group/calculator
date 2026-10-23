@@ -97,6 +97,7 @@ new Function(
   ts.transpileModule(viewSource, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
+      esModuleInterop: false,
       jsx: ts.JsxEmit.ReactJSX,
     },
   }).outputText,

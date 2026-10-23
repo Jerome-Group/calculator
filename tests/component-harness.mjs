@@ -97,6 +97,7 @@ function instrument(source, component, actions) {
   return ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
+      esModuleInterop: false,
       jsx: ts.JsxEmit.ReactJSX,
     },
     transformers: { before: [transform] },
@@ -245,7 +246,12 @@ export function componentHarness(
         new URL("../lib/calculator/graph.ts", import.meta.url),
         "utf8",
       ),
-      { compilerOptions: { module: ts.ModuleKind.CommonJS } },
+      {
+        compilerOptions: {
+          module: ts.ModuleKind.CommonJS,
+          esModuleInterop: false,
+        },
+      },
     ).outputText,
   )(
     (name) =>

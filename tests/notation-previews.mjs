@@ -16,6 +16,7 @@ const compiled = ts.transpileModule(
   {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
+      esModuleInterop: false,
       jsx: ts.JsxEmit.ReactJSX,
     },
   },
