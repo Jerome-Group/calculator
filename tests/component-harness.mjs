@@ -212,7 +212,10 @@ export function componentHarness(
     "@/lib/calculator/engine": engine,
     "@/lib/calculator/sync": {
       sessionWorkspace: () => null,
-      captureAccountSession: () => ({ isCurrent: () => true }),
+      captureAccountSession: () => ({
+        isCurrent: () => true,
+        stageCommittedWorkspace: () => true,
+      }),
       workspaceFitsCloud: () => true,
     },
     "@/lib/calculator/types": {

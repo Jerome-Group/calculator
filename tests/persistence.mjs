@@ -32,7 +32,7 @@ globalThis.fetch = async () =>
     state: null,
     revision: 0,
   });
-const { initializeAccount, forgetAccount } =
+const { initializeAccount, forgetAccount, captureAccountSession } =
   await import("../lib/calculator/sync.ts");
 const {
   validateState,
@@ -46,6 +46,11 @@ const { newNotebook, DEFAULT_SETTINGS } =
   await import("../lib/calculator/types.ts");
 await initializeAccount();
 navigator.onLine = false;
+const lease = captureAccountSession();
+function commitWorkspace(state) {
+  assert.equal(lease.stageCommittedWorkspace(state), true);
+  return state;
+}
 const key = accountStorage(STORAGE_KEY),
   backup = accountStorage(BACKUP_KEY);
 const book = newNotebook();
@@ -55,7 +60,7 @@ const first = {
   active: book.id,
   settings: DEFAULT_SETTINGS,
 };
-persist(first);
+persist(commitWorkspace(first));
 const second = structuredClone(first);
 second.notebooks[0].definitions.push({
   id: "a",
@@ -64,7 +69,7 @@ second.notebooks[0].definitions.push({
   kind: "matrix",
   updated: 1,
 });
-persist(second);
+persist(commitWorkspace(second));
 assert.deepEqual(loadState().state, second);
 assert.equal(loadState().readable, true);
 assert.deepEqual(validateState(JSON.parse(JSON.stringify(second))), second);
@@ -83,7 +88,10 @@ values.delete(backup);
 assert.equal(loadState().state, null);
 assert.equal(loadState().readable, false);
 assert.equal(values.get(key), "{broken");
-assert.throws(() => persist(second), /unreadable device save is preserved/);
+assert.throws(
+  () => persist(commitWorkspace(second)),
+  /unreadable device save is preserved/,
+);
 assert.equal(values.get(key), "{broken");
 values.set(key, JSON.stringify(first));
 globalThis.localStorage = {
@@ -92,7 +100,7 @@ globalThis.localStorage = {
     throw Error("Quota exceeded");
   },
 };
-assert.throws(() => persist(second), /Quota/);
+assert.throws(() => persist(commitWorkspace(second)), /Quota/);
 assert.equal(values.get(key), JSON.stringify(first));
 globalThis.localStorage = storage;
 values.set(key, "{broken");
